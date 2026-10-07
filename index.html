@@ -8570,154 +8570,137 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
     }, 120);
 });
 </script>
-/* ==========================================================
-   🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
-   ========================================================== */
-(function() {
-    // 1. ฟังก์ชันกลางสำหรับดึงค่าวันจร (Transit) ที่ผู้ใช้เลือกจากฟอร์มหลัก
-    window.getGlobalTransitParams = function() {
-        var dEl = document.getElementById('transitDay');
-        var mEl = document.getElementById('transitMonth');
-        var yEl = document.getElementById('transitYearBE');
-        var hEl = document.getElementById('transitHour24');
-        var minEl = document.getElementById('transitMinute24');
+/* ========================================================== 🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที ========================================================== */ 
+(function() { 
+    // 1. ฟังก์ชันกลางสำหรับดึงค่าวันจร (Transit) ที่ผู้ใช้เลือกจากฟอร์มหลัก 
+    window.getGlobalTransitParams = function() { 
+        var dEl = document.getElementById('transitDay'); 
+        var mEl = document.getElementById('transitMonth'); 
+        var yEl = document.getElementById('transitYearBE'); 
+        var hEl = document.getElementById('transitHour24'); 
+        var minEl = document.getElementById('transitMinute24'); 
+        var day = dEl ? parseInt(dEl.value, 10) || 16 : 16; 
+        var month = mEl ? parseInt(mEl.value, 10) || 10 : 10; 
+        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569; 
+        var hour = hEl ? parseInt(hEl.value, 10) || 6 : 6; 
+        var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0; 
+        return { 
+            day: day, 
+            month: month, 
+            yearBE: yearBE, 
+            yearCE: yearBE - 543, 
+            hour: hour, 
+            minute: minute, 
+            seed: (day * 13) + (month * 31) + yearBE + hour, 
+            dateStr: day + " / " + month + " / " + yearBE 
+        }; 
+    }; 
 
-        var day = dEl ? parseInt(dEl.value, 10) || 16 : 16;
-        var month = mEl ? parseInt(mEl.value, 10) || 10 : 10;
-        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
-        var hour = hEl ? parseInt(hEl.value, 10) || 6 : 6;
-        var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0;
+    // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์ให้แปรผันตามวันจร 
+    window.applyTransitToAllVipFeatures = function() { 
+        var t = window.getGlobalTransitParams(); 
+        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true'; 
+        if (!isVip) return; 
+        console.log("⚡ กำลังคำนวณและอัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr); 
 
-        return {
-            day: day,
-            month: month,
-            yearBE: yearBE,
-            yearCE: yearBE - 543,
-            hour: hour,
-            minute: minute,
-            seed: (day * 13) + (month * 31) + yearBE + hour,
-            dateStr: `${day} / ${month} / ${yearBE}`
-        };
-    };
+        // --- 1. ฟีเจอร์คำนวณหวยมงคล VIP --- 
+        var lottoVipContent = document.getElementById('lottoVipContent'); 
+        if (lottoVipContent) { 
+            var l1 = (t.seed % 9) + 1; 
+            var l2 = ((t.seed * 3) % 8) + 1; 
+            var l3 = ((t.seed * 7) % 9) + 1; 
+            var l2D = "" + l1 + l2; 
+            var l3D = "" + l3 + l1 + l2; 
+            lottoVipContent.innerHTML = "<p><b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (" + t.dateStr + ")</b></p><p>🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ " + t.dateStr + "</p><ul><li>เลขวิ่งเด่นประจำวันจร: <b>" + l3 + "</b></li><li>ชุดเลขท้าย 2 ตัวจร: <b>" + l2D + ", " + ((l2+2)%10) + l1 + "</b></li><li>ชุดเลขท้าย 3 ตัวจร: <b>" + l3D + "</b></li></ul>"; 
+        } 
 
-    // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์ให้แปรผันตามวันจร
-    window.applyTransitToAllVipFeatures = function() {
-        var t = window.getGlobalTransitParams();
-        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-        if (!isVip) return;
+        // --- 2. ฟีเจอร์กราฟชีวิต VIP (ให้เลื่อนอายุตามปี พ.ศ. ของวันจร) --- 
+        var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522; 
+        var transitAge = t.yearBE - birthBE; 
+        if (transitAge >= 1 && transitAge <= 80) { 
+            var slider = document.getElementById('ageRangeSlider'); 
+            if (slider && typeof applyAgeChange === 'function') { 
+                slider.value = transitAge; 
+                applyAgeChange(transitAge); 
+            } 
+        } 
 
-        console.log("⚡ กำลังคำนวณและอัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr);
+        // --- 3 & 4. ฟีเจอร์ปาจื่อ (BaZi) และ ซาจู (Saju) VIP --- 
+        ['bazi-vip-result', 'sajuResultBox'].forEach(function(boxId) { 
+            var box = document.getElementById(boxId); 
+            if (box && box.style.display !== 'none') { 
+                var badge = box.querySelector('.transit-date-tag-custom'); 
+                if (!badge) { 
+                    badge = document.createElement('div'); 
+                    badge.className = 'transit-date-tag-custom'; 
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;"; 
+                    box.insertBefore(badge, box.firstChild); 
+                } 
+                badge.innerHTML = "ผลการวิเคราะห์อิงตามวันจร: " + t.dateStr; 
+            } 
+        }); 
 
-        // --- 1. ฟีเจอร์คำนวณหวยมงคล VIP ---
-        var lottoVipContent = document.getElementById('lottoVipContent');
-        if (lottoVipContent) {
-            var l1 = (t.seed % 9) + 1;
-            var l2 = ((t.seed * 3) % 8) + 1;
-            var l3 = ((t.seed * 7) % 9) + 1;
-            var l2D = `${l1}${l2}`;
-            var l3D = `${l3}${l1}${l2}`;
-            
-            lottoVipContent.innerHTML = `
-                <div style="background: rgba(14,20,38,0.95); padding: 16px; border-radius: 10px; border: 1px solid #ffd700; text-align: left;">
-                    <div style="font-size: 0.92rem; color: #ffd700; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,215,0,0.3); padding-bottom: 6px;">
-                        <i class="fa-solid fa-crown"></i> <b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (${t.dateStr})</b>
-                    </div>
-                    <div style="font-size: 0.85rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ ${t.dateStr}</div>
-                    <div style="font-size: 0.88rem; color: #81c784; margin-bottom: 4px;">• เลขวิ่งเด่นประจำวันจร: <b style="font-size: 1.25rem; color: #fff;">${l3}</b></div>
-                    <div style="font-size: 0.88rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l2D}, ${(l2+2)%10}${l1}</b></div>
-                    <div style="font-size: 0.88rem; color: #f48fb1; margin-bottom: 4px;">• ชุดเลขท้าย 3 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l3D}</b></div>
-                </div>
-            `;
-        }
+        // --- 5. ฟีเจอร์เลข 7 ตัว 4/9 ฐาน VIP --- 
+        var num7Box = document.getElementById('num7AnalysisBox'); 
+        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free'; 
+        if (num7Box && num7Mode === 'vip') { 
+            var badge = num7Box.querySelector('.transit-date-tag-custom'); 
+            if (!badge) { 
+                    badge = document.createElement('div'); 
+                    badge.className = 'transit-date-tag-custom'; 
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;"; 
+                    num7Box.insertBefore(badge, num7Box.firstChild); 
+            } 
+            badge.innerHTML = "การอ่านฐาน 9 ฐานอิงตามวันจร: " + t.dateStr; 
+        } 
 
-        // --- 2. ฟีเจอร์กราฟชีวิต VIP (ให้เลื่อนอายุตามปี พ.ศ. ของวันจร) ---
-        var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-        var transitAge = t.yearBE - birthBE;
-        if (transitAge >= 1 && transitAge <= 80) {
-            var slider = document.getElementById('ageRangeSlider');
-            if (slider && typeof applyAgeChange === 'function') {
-                slider.value = transitAge;
-                applyAgeChange(transitAge);
-            }
-        }
+        // --- 6 & 7. ฟีเจอร์ยูเรเนียน และ โหราศาสตร์สากล VIP --- 
+        ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) { 
+            var box = document.getElementById(boxId); 
+            if (box && box.style.display !== 'none') { 
+                var badge = box.querySelector('.transit-date-tag-custom'); 
+                if (!badge) { 
+                    badge = document.createElement('div'); 
+                    badge.className = 'transit-date-tag-custom'; 
+                    badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;"; 
+                    box.insertBefore(badge, box.firstChild); 
+                } 
+                badge.innerHTML = "มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: " + t.dateStr; 
+            } 
+        }); 
 
-        // --- 3 & 4. ฟีเจอร์ปาจื่อ (BaZi) และ ซาจู (Saju) VIP ---
-        // เพิ่มข้อความระบุวันจรกำกับไว้ในผลลัพธ์
-        ['bazi-vip-result', 'sajuResultBox'].forEach(function(boxId) {
-            var box = document.getElementById(boxId);
-            if (box && box.style.display !== 'none') {
-                let badge = box.querySelector('.transit-date-tag-custom');
-                if (!badge) {
-                    badge = document.createElement('div');
-                    badge.className = 'transit-date-tag-custom';
-                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
-                    box.insertBefore(badge, box.firstChild);
-                }
-                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลการวิเคราะห์อิงตามวันจร: ${t.dateStr}`;
-            }
-        });
+        // --- 8, 9, 10, 11. ฟีเจอร์พรีเมียม 4 เมนู --- 
+        ['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) { 
+            var box = document.getElementById(boxId); 
+            if (box && box.style.display !== 'none') { 
+                var badge = box.querySelector('.transit-date-tag-custom'); 
+                if (!badge) { 
+                    badge = document.createElement('div'); 
+                    badge.className = 'transit-date-tag-custom'; 
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;"; 
+                    box.insertBefore(badge, box.firstChild); 
+                } 
+                badge.innerHTML = "พยากรณ์พิเศษเจาะลึก ณ วันจร: " + t.dateStr; 
+            } 
+        }); 
+    }; 
 
-        // --- 5. ฟีเจอร์เลข 7 ตัว 4/9 ฐาน VIP ---
-        var num7Box = document.getElementById('num7AnalysisBox');
-        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free';
-        if (num7Box && num7Mode === 'vip') {
-            let badge = num7Box.querySelector('.transit-date-tag-custom');
-            if (!badge) {
-                badge = document.createElement('div');
-                badge.className = 'transit-date-tag-custom';
-                badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
-                num7Box.insertBefore(badge, num7Box.firstChild);
-            }
-            badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> การอ่านฐาน 9 ฐานอิงตามวันจร: ${t.dateStr}`;
-        }
+    // 3. ผูก Event Listener ดักจับการเปลี่ยนค่าในช่องวันจรทั้งหมดอัตโนมัติ 
+    document.addEventListener('DOMContentLoaded', function() { 
+        ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) { 
+            var el = document.getElementById(id); 
+            if (el) { 
+                el.addEventListener('change', function() { 
+                    window.applyTransitToAllVipFeatures(); 
+                }); 
+            } 
+        }); 
+    }); 
 
-        // --- 6 & 7. ฟีเจอร์ยูเรเนียน และ โหราศาสตร์สากล VIP ---
-        ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) {
-            var box = document.getElementById(boxId);
-            if (box && box.style.display !== 'none') {
-                let badge = box.querySelector('.transit-date-tag-custom');
-                if (!badge) {
-                    badge = document.createElement('div');
-                    badge.className = 'transit-date-tag-custom';
-                    badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
-                    box.insertBefore(badge, box.firstChild);
-                }
-                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: ${t.dateStr}`;
-            }
-        });
-
-        // --- 8, 9, 10, 11. ฟีเจอร์พรีเมียม 4 เมนู (รหัสกรรม, มหาพิชัยสงคราม, ถอดรหัสวิญญาณ, ขุมทรัพย์) ---
-        ['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) {
-            var box = document.getElementById(boxId);
-            if (box && box.style.display !== 'none') {
-                let badge = box.querySelector('.transit-date-tag-custom');
-                if (!badge) {
-                    badge = document.createElement('div');
-                    badge.className = 'transit-date-tag-custom';
-                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
-                    box.insertBefore(badge, box.firstChild);
-                }
-                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> พยากรณ์พิเศษเจาะลึก ณ วันจร: ${t.dateStr}`;
-            }
-        });
-    };
-
-    // 3. ผูก Event Listener ดักจับการเปลี่ยนค่าในช่องวันจรทั้งหมดอัตโนมัติ
-    document.addEventListener('DOMContentLoaded', function() {
-        ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('change', function() {
-                    window.applyTransitToAllVipFeatures();
-                });
-            }
-        });
-    });
-
-    // สำรองเรียกทำงานหลังโหลดหน้าเว็บเสร็จ
-    setTimeout(function() {
-        window.applyTransitToAllVipFeatures();
-    }, 500);
+    // สำรองเรียกทำงานหลังโหลดหน้าเว็บเสร็จ 
+    setTimeout(function() { 
+        window.applyTransitToAllVipFeatures(); 
+    }, 500); 
 })();
 <script>
 </html>
