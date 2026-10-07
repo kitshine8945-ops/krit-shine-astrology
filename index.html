@@ -8719,12 +8719,11 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         window.applyTransitToAllVipFeatures();
     }, 500);
 })();
-</script>
+<script>
 /* ==========================================================
-   🌟 ระบบแทรกเสริมตัวจริง: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
+   🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
    ========================================================== */
 (function() {
-    // 1. ฟังก์ชันดึงค่าวันจร (Transit) จากฟอร์ม VIP จริงบนหน้าเว็บ
     window.getRealTransitValues = function() {
         var dEl = document.getElementById('transitDay');
         var mEl = document.getElementById('transitMonth');
@@ -8734,22 +8733,18 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         var month = mEl ? parseInt(mEl.value, 10) || 12 : 12;
         var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
         
-        // สร้างสูตรคำนวณ Seed ที่ไม่ซ้ำกันตามวัน เดือน และปีจรที่เลือก
         var transitSeed = (day * 31) + (month * 113) + yearBE;
-        
         var thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         var dateStr = `${day} ${thMonths[month - 1] || 'ธันวาคม'} พ.ศ. ${yearBE}`;
         
         return { day: day, month: month, yearBE: yearBE, seed: transitSeed, dateStr: dateStr };
     };
 
-    // 2. ฟังก์ชันคำนวณและอัปเดตหวย VIP ให้เปลี่ยนตามวันจร
     window.updateLottoVipByTransit = function() {
         var t = window.getRealTransitValues();
         var lottoVipContent = document.getElementById('lottoVipContent');
         if (!lottoVipContent) return;
 
-        // สุ่มตัวเลขตามวันจรที่เลือก (เปลี่ยนทุกครั้งที่เปลี่ยนวัน)
         var runNum = (t.seed % 9) + 1;
         var d1 = ((t.seed * 3) % 8) + 1;
         var d2 = ((t.seed * 7) % 9) + 1;
@@ -8777,7 +8772,6 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         `;
     };
 
-    // 3. ดักจับเหตุการณ์เมื่อผู้ใช้เปลี่ยนวันจรในฟอร์ม
     document.addEventListener('DOMContentLoaded', function() {
         ['transitDay', 'transitMonth', 'transitYearBE'].forEach(function(id) {
             var el = document.getElementById(id);
@@ -8789,7 +8783,6 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         });
     });
 
-    // เรียกทำงานทันทีหลังโหลดเสร็จ
     setTimeout(window.updateLottoVipByTransit, 400);
 })();
 </script>
