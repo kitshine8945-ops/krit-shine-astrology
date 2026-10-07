@@ -8599,14 +8599,22 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
     // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์ให้แปรผันตามวันจร 
     window.applyTransitToAllVipFeatures = function() { 
         var t = window.getGlobalTransitParams(); 
-        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true'; 
-        if (!isVip) return; 
-        console.log("⚡ กำลังคำนวณและอัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr); 
+        
+        // 🔍 ตรวจสอบสิทธิ์ VIP อย่างแม่นยำจากป้ายสถานะบนหน้าจอจริงของคุณ
+        var pageText = document.body ? document.body.innerText : "";
+        var hasVipBadge = pageText.indexOf("สมาชิก VIP") !== -1 || pageText.indexOf("VIP") !== -1;
+        var isVip = hasVipBadge || (typeof AppState !== 'undefined' && (AppState.isVipUser || AppState.isVip)) || localStorage.getItem('ks_vip_active') === 'true'; 
+        
+        if (!isVip) {
+            console.log("🔒 พยายามอัปเดตระบบจร VIP แต่ระบบตรวจไม่พบสถานะสมาชิก");
+            return; 
+        }
+        console.log("⚡ [VIP Active] กำลังคำนวณและอัปเดตคำทำนายตามวันจร: ", t.dateStr); 
 
         // 🌟 คลังข้อความคำทำนายสำหรับฟีเจอร์ต่างๆ เพื่อสลับสับเปลี่ยนตามตัวแปรดาวจร (Seed)
         var predictions = {
             bazi: [
-                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ทรัพย์สินงอกเงย เกื้อหนุนทิศมงคลในการประกอบการ",
+                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ททรัพย์สินงอกเงย เกื้อหนุนทิศมงคลในการประกอบการ",
                 "ช่วงเวลาแห่งการปรับฐานชีวิตตามโครงสร้างดวงจร มีเกณฑ์ขยับขยายหน้าที่การงาน แต่ควรเพิ่มความรอบคอบในเอกสารสัญญา",
                 "กระแสธาตุทองให้โชค ลาภลอยเด่นชัด การงานก้าวไกล ศัตรูหมู่มารหรืออุปสรรคแพ้ภัยดวงจรชะตาตนเองชั่วคราว"
             ],
@@ -8682,7 +8690,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         var baziPredMap = { 'bazi-vip-result': predictions.bazi, 'sajuResultBox': predictions.saju };
         ['bazi-vip-result', 'sajuResultBox'].forEach(function(boxId) { 
             var box = document.getElementById(boxId); 
-            if (box && box.style.display !== 'none') { 
+            if (box) { 
                 var badge = box.querySelector('.transit-date-tag-custom'); 
                 if (!badge) { 
                     badge = document.createElement('div'); 
@@ -8696,8 +8704,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 
         // --- 5. ฟีเจอร์เลข 7 ตัว 4/9 ฐาน VIP --- 
         var num7Box = document.getElementById('num7AnalysisBox'); 
-        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free'; 
-        if (num7Box && num7Mode === 'vip') { 
+        if (num7Box) { 
             var badge = num7Box.querySelector('.transit-date-tag-custom'); 
             if (!badge) { 
                 badge = document.createElement('div'); 
@@ -8712,14 +8719,14 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         var westernPredMap = { 'uranianVipBox': predictions.uranian, 'westernVipBox': predictions.western };
         ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) { 
             var box = document.getElementById(boxId); 
-            if (box && box.style.display !== 'none') { 
+            if (box) { 
                 var badge = box.querySelector('.transit-date-tag-custom'); 
                 if (!badge) { 
                     badge = document.createElement('div'); 
                     badge.className = 'transit-date-tag-custom'; 
-                    badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #3498db;"; 
-                    box.insertBefore(badge, box.firstChild); 
-                } 
+badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #3498db;";
+box.insertBefore(badge, box.firstChild);
+}
 badge.innerHTML = "📌 มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: " + t.dateStr + "" + pickPred(westernPredMap[boxId]) + "";
 }
 });
@@ -8732,7 +8739,7 @@ var premiumPredMap = {
 };
 ['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) {
 var box = document.getElementById(boxId);
-if (box && box.style.display !== 'none') {
+if (box) {
 var badge = box.querySelector('.transit-date-tag-custom');
 if (!badge) {
 badge = document.createElement('div');
@@ -8745,19 +8752,23 @@ badge.innerHTML = "📌 พยากรณ์พิเศษเจาะลึ�
 });
 };
 // 3. ผูก Event Listener ดักจับการเปลี่ยนค่าในช่องวันจรทั้งหมดอัตโนมัติ
-document.addEventListener('DOMContentLoaded', function() {
+function initTransit() {
 ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
 var el = document.getElementById(id);
 if (el) {
-el.addEventListener('change', function() {
-window.applyTransitToAllVipFeatures();
-});
+el.removeEventListener('change', window.applyTransitToAllVipFeatures);
+el.addEventListener('change', window.applyTransitToAllVipFeatures);
 }
 });
-});
-// สำรองเรียกทำงานหลังโหลดหน้าเว็บเสร็จ
-setTimeout(function() {
 window.applyTransitToAllVipFeatures();
-}, 500);
+}
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', initTransit);
+} else {
+initTransit();
+}
+// ตั้งเวลาสำรองช่วยคำนวณซ้ำเผื่อกรณีระบบ UI วาดขึ้นมาทีหลัง
+setTimeout(initTransit, 800);
+setTimeout(initTransit, 2000);
 })();
 </script>  
