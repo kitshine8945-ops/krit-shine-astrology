@@ -2,6 +2,134 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+ <!-- ========================================================== 🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที ========================================================== -->
+<script>
+(function() {
+    // 1. คลังข้อความคำทำนายแปรผันตามกลุ่มพลังงานดาวจร (Seed)
+    function getTransitPredictionText(boxId, seed) {
+        var predictions = {
+            bazi: [
+                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ทรัพย์สินงอกเงย เกื้อหนุนทิศมงคลในการประกอบการ",
+                "ช่วงเวลาแห่งการปรับฐานชีวิตตามโครงสร้างดวงจร มีเกณฑ์ขยับขยายหน้าที่การงาน แต่ควรเพิ่มความรอบคอบในเอกสารสัญญา",
+                "กระแสธาตุทองให้โชค ลาภลอยเด่นชัด การงานก้าวไกล ศัตรูหมู่มารหรืออุปสรรคแพ้ภัยดวงจรชะตาตนเองชั่วคราว"
+            ],
+            saju: [
+                "เกณฑ์ชะตารุ่งเรืองตามเวลาฟ้าจร มีเกณฑ์ได้พบผู้อุปถัมภ์ค้ำชูจากแดนไกลนำความก้าวหน้าและโอกาสใหม่มาให้",
+                "ดวงชีพจรลงเท้า มีทิศทางเปลี่ยนเกณฑ์ชีวิตขนานใหญ่ โดดเด่นเรื่องการเดินทาง โยกย้าย หรือทำมาค้าขายข้ามเขต",
+                "การเงินไหลเวียนคล่องมือ มีโอกาสได้รับเงินก้อนใหญ่หรือโชคลาภลอยจากการเสี่ยงทายในเงื่อนไขวันจรนี้"
+            ],
+            num7: [
+                "ฐานโชคลาภสัมพันธ์ดาวศุกร์จร ตกตำแหน่งอำนาจวาสนา ทำการสิ่งใดก็สำเร็จราบรื่นสมปรารถนาสูงเด่น",
+                "ดาวราหูจรแทรกเรือนพยายะชั่วคราว ให้ระวังการลงทุนที่มีความเสี่ยงสูง หรือระวังผู้อื่นนำความเดือดร้อนเล็กๆ มาให้",
+                "เกณฑ์ชะตามหาอุบาทว์เดิมคลายตัว ดวงดาวจรย้ายตำแหน่งเปลี่ยนเป็นเรือนมหาโภคทรัพย์หนุนส่งดวงชะตาร่มเย็น"
+            ],
+            uranian: [
+                "จุดสะท้อนดาวพฤหัสทิพย์ทำมุมฉาก บ่งบอกถึงจังหวะเวลาแห่งความสำเร็จและชื่อเสียงในระดับสาธารณะที่เด่นชัด",
+                "ดาวเนปจูนจรส่งผลต่อเรือนชะตาในจุดเปราะบาง บ่งชี้ว่าควรงดเว้นการค้ำประกันหรือร่วมหุ้นระยาวในวันจรนี้",
+                "ดาวโครนอสจรหนุนนำจุดเมษอย่างมีนัยสำคัญ มีเกณฑ์ได้รับเกียรติยศ ได้รับการยอมรับ หรือได้รับการโปรโมทเลื่อนขั้น"
+            ],
+            western: [
+                "Sun ทรานสิตเรือนที่ 10 ทำมุมสัมพันธ์ดี การงานโดดเด่นสะดุดตา ผู้ใหญ่และผู้มีอำนาจเมตตาพร้อมผลักดันสนับสนุน",
+                "Moon ทรานสิตเล็งราศีกำเนิด ส่งผลให้อารมณ์เกิดความแปรปรวนหรืออ่อนไหวง่ายในช่วงนี้ ให้ใช้ความสงบคุมชะตา",
+                "Jupiter ขยับทำมุมตรีโกณกับดาวศุกร์กำเนิด เกณฑ์เปิดรับโชคใหญ่และโอกาสมหาศาลที่วนมาบรรจบในรอบ 12 ปี"
+            ],
+            karmic: [
+                "วิบากกรรมเก่าจากวาจาและคำสาบานเริ่มคลี่คลาย แนะนำให้ทำบุญถวายน้ำปานะหรือปล่อยสัตว์เพื่อเสริมบารมีวันจร",
+                "เกณฑ์อโหสิกรรมจากเจ้ากรรมนายเวรเปิดทางให้ในรอบวันจร ทำการสิ่งใดความติดขัดจะทุเลาเบาบางลงอย่างเห็นได้ชัด",
+                "อยู่ในช่วงทดสอบชะตากรรมแห่งวงล้อกรรม งดการใช้อารมณ์ตัดสินและหลีกเลี่ยงข้อพิพาทกับคนรอบตัว"
+            ],
+            life: [
+                "จังหวะชะตามหาพิชัยสงครามอยู่ในเกณฑ์รุ่งเรืองสูงสุด มุ่งไปข้างหน้ากล้าคิดกล้าทำจะพบความสำเร็จที่ยิ่งใหญ่",
+                "ดวงชะตาวันจรตกตำแหน่งตั้งรับและสะสมเสบียงบุญ ไม่ควรรีบร้อนลงทุนใหญ่ ให้เน้นการตรวจสอบระบบงานให้รัดกุม",
+                "ช่วงเวลาพลิกผันดวงจากร้ายกลายเป็นดี จะมีโอกาสทองหล่นทับแบบไม่คาดฝัน ชีวิตเปลี่ยนผ่านสู่ความมั่นคงขึ้น"
+            ],
+            soul: [
+                "สนามพลังงานออร่าเปิดรับพลังบวกได้ดีที่สุด แนะนำให้สวมใส่เสื้อผ้าหรือพกอัญมณีโทนสีเหลืองหรือสีทองเสริมพลัง",
+                "พลังจิตวิญญาณค่อนข้างอ่อนล้าตามวงรอบดาวจร ควรจัดเวลาทำสมาธิ พักผ่อน หรือหลีกเลี่ยงความวุ่นวายเพื่อปรับสมดุล",
+                "ธาตุกายสิทธิ์เร่งพลังงานหนุนนำชะตา ความคิดสร้างสรรค์พุ่งทะยาน มีญาณหยั่งรู้สถานการณ์รอบตัวได้ค่อนข้างแม่นยำ"
+            ],
+            wealth: [
+                "สายธารเงินเปิดคลังทรัพย์ใหญ่ตามวันจร มีเกณฑ์ได้ลาภลอยก้อนโต หรือปิดยอดขายทะลุเป้าหมายที่ตั้งใจไว้",
+                "คลังทรัพย์ปิดชั่วคราวตามแรงเหวี่ยงดวงดาว เงินไหลออกง่าย ควรควบคุมบัญชีรายจ่ายและงดการให้หยิบยืมเงินทอง",
+                "ช่องทางรายได้เสริมซ่อนเร้นเริ่มทำงานอย่างทรงพลัง จะมีกัลยาณมิตรนำช่องทางสร้างผลกำไรมาให้ถึงที่ในวันจรนี้"
+            ]
+        };
+        var arr = predictions[boxId] || predictions['bazi'];
+        return arr[seed % arr.length];
+    }
+
+    // 2. ฟังก์ชันหลักในการตรวจจับค่าวัดและบังคับเขียนทับแบบข้ามข้อจำกัด (Global Interceptor)
+    function coreTransitOverrideEngine() {
+        var dEl = document.getElementById('transitDay');
+        var mEl = document.getElementById('transitMonth');
+        var yEl = document.getElementById('transitYearBE');
+        var hEl = document.getElementById('transitHour24');
+        var minEl = document.getElementById('transitMinute24');
+        
+        var day = dEl ? parseInt(dEl.value, 10) || 16 : 16;
+        var month = mEl ? parseInt(mEl.value, 10) || 10 : 10;
+        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
+        var hour = hEl ? parseInt(hEl.value, 10) || 6 : 6;
+        var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0;
+        
+        var seed = (day * 13) + (month * 31) + yearBE + hour;
+        var dateStr = day + " / " + month + " / " + yearBE;
+
+        // --- ฟีเจอร์คำนวณหวยมงคล VIP ---
+        var lottoBox = document.getElementById('lottoVipContent');
+        if (lottoBox) {
+            var l1 = (seed % 9) + 1; var l2 = ((seed * 3) % 8) + 1; var l3 = ((seed * 7) % 9) + 1;
+            lottoBox.innerHTML = "<p><b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (" + dateStr + ")</b></p><p>🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ " + dateStr + "</p><ul><li>เลขวิ่งเด่นประจำวันจร: <b>" + l3 + "</b></li><li>ชุดเลขท้าย 2 ตัวจร: <b>" + l1 + l2 + ", " + ((l2+2)%10) + l1 + "</b></li><li>ชุดเลขท้าย 3 ตัวจร: <b>" + l3 + l1 + l2 + "</b></li></ul>";
+        }
+
+        // --- ฟีเจอร์กราฟชีวิต VIP ปรับ Slider ตามปี ---
+        var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
+        var transitAge = yearBE - birthBE;
+        if (transitAge >= 1 && transitAge <= 80) {
+            var slider = document.getElementById('ageRangeSlider');
+            if (slider && typeof applyAgeChange === 'function') {
+                slider.value = transitAge;
+                applyAgeChange(transitAge);
+            }
+        }
+
+        // --- กลุ่มฟีเจอร์พรีเมียม VIP ทั้งหมด ---
+        var mapping = [
+            { id: 'bazi-vip-result', type: 'bazi', label: 'ผลการวิเคราะห์อิงตามวันจร' },
+            { id: 'sajuResultBox', type: 'saju', label: 'ผลการวิเคราะห์อิงตามวันจร' },
+            { id: 'num7AnalysisBox', type: 'num7', label: 'การอ่านฐาน 9 ฐานอิงตามวันจร' },
+            { id: 'uranianVipBox', type: 'uranian', label: 'มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่' },
+            { id: 'westernVipBox', type: 'western', label: 'มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่' },
+            { id: 'karmic_result', type: 'karmic', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
+            { id: 'life_result', type: 'life', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
+            { id: 'soul_result', type: 'soul', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
+            { id: 'wealth_result', type: 'wealth', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' }
+        ];
+
+        mapping.forEach(function(item) {
+            var box = document.getElementById(item.id);
+            if (box) {
+                var badge = box.querySelector('.transit-date-tag-custom');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'transit-date-tag-custom';
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #ffd700; display: block !important;";
+                    box.insertBefore(badge, box.firstChild);
+                }
+                var predText = getTransitPredictionText(item.type, seed);
+                badge.innerHTML = "<div>📌 " + item.label + ": " + dateStr + "</div><div style='font-weight: normal; color: #fff; margin-top: 5px;'>" + predText + "</div>";
+            }
+        });
+    }
+
+    // ทำการตั้งชื่อฟังก์ชันทับระบบสากลของเพจและผูกระบบตรวจจับแบบ Global
+    window.applyTransitToAllVipFeatures = coreTransitOverrideEngine;
+
+    // รันลูปดักการโหลด UI แยกชิ้น ทุกๆ 1 วินาที เพื่อการันตีว่าคำทำนายต้องขึ้นแน่นอน
+    setInterval(coreTransitOverrideEngine, 1000);
+})();
+</script>
+ 
 <meta name="google-site-verification" content="yLPud9CmoAuHlJ1N_Ae9eTNSkjlBjI22NN64q3vY-Ms" />
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -8569,137 +8697,4 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 
     }, 120);
 });
-/* ========================================================== 🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที ========================================================== */ 
-<script>
-(function() { 
-    // ฟังก์ชันสร้างคลังคำทำนายแปรผันตามพลังดาวจร (Seed)
-    function getTransitPredictionText(boxId, seed) {
-        var predictions = {
-            bazi: [
-                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ทรัพย์สินงอกเงย เกื้อหนุนทิศมงคลในการประกอบการ",
-                "ช่วงเวลาแห่งการปรับฐานชีวิตตามโครงสร้างดวงจร มีเกณฑ์ขยับขยายหน้าที่การงาน แต่ควรเพิ่มความรอบคอบในเอกสารสัญญา",
-                "กระแสธาตุทองให้โชค ลาภลอยเด่นชัด การงานก้าวไกล ศัตรูหมู่มารหรืออุปสรรคแพ้ภัยดวงจรชะตาตนเองชั่วคราว"
-            ],
-            saju: [
-                "เกณฑ์ชะตารุ่งเรืองตามเวลาฟ้าจร มีเกณฑ์ได้พบผู้อุปถัมภ์ค้ำชูจากแดนไกลนำความก้าวหน้าและโอกาสใหม่มาให้",
-                "ดวงชีพจรลงเท้า มีทิศทางเปลี่ยนเกณฑ์ชีวิตขนานใหญ่ โดดเด่นเรื่องการเดินทาง โยกย้าย หรือทำมาค้าขายข้ามเขต",
-                "การเงินไหลเวียนคล่องมือ มีโอกาสได้รับเงินก้อนใหญ่หรือโชคลาภลอยจากการเสี่ยงทายในเงื่อนไขวันจรนี้"
-            ],
-            num7: [
-                "ฐานโชคลาภสัมพันธ์ดาวศุกร์จร ตกตำแหน่งอำนาจวาสนา ทำการสิ่งใดก็สำเร็จราบรื่นสมปรารถนาสูงเด่น",
-                "ดาวราหูจรแทรกเรือนพยายะชั่วคราว ให้ระวังการลงทุนที่มีความเสี่ยงสูง หรือระวังผู้อื่นนำความเดือดร้อนเล็กๆ มาให้",
-                "เกณฑ์ชะตามหาอุบาทว์เดิมคลายตัว ดวงดาวจรย้ายตำแหน่งเปลี่ยนเป็นเรือนมหาโภคทรัพย์หนุนส่งดวงชะตาร่มเย็น"
-            ],
-            uranian: [
-                "จุดสะท้อนดาวพฤหัสทิพย์ทำมุมฉาก บ่งบอกถึงจังหวะเวลาแห่งความสำเร็จและชื่อเสียงในระดับสาธารณะที่เด่นชัด",
-                "ดาวเนปจูนจรส่งผลต่อเรือนชะตาในจุดเปราะบาง บ่งชี้ว่าควรงดเว้นการค้ำประกันหรือร่วมหุ้นระยาวในวันจรนี้",
-                "ดาวโครนอสจรหนุนนำจุดเมษอย่างมีนัยสำคัญ มีเกณฑ์ได้รับเกียรติยศ ได้รับการยอมรับ หรือได้รับการโปรโมทเลื่อนขั้น"
-            ],
-            western: [
-                "Sun ทรานสิตเรือนที่ 10 ทำมุมสัมพันธ์ดี การงานโดดเด่นสะดุดตา ผู้ใหญ่และผู้มีอำนาจเมตตาพร้อมผลักดันสนับสนุน",
-                "Moon ทรานสิตเล็งราศีกำเนิด ส่งผลให้อารมณ์เกิดความแปรปรวนหรืออ่อนไหวง่ายในช่วงนี้ ให้ใช้ความสงบคุมชะตา",
-                "Jupiter ขยับทำมุมตรีโกณกับดาวศุกร์กำเนิด เกณฑ์เปิดรับโชคใหญ่และโอกาสมหาศาลที่วนมาบรรจบในรอบ 12 ปี"
-            ],
-            karmic: [
-                "วิบากกรรมเก่าจากวาจาและคำสาบานเริ่มคลี่คลาย แนะนำให้ทำบุญถวายน้ำปานะหรือปล่อยสัตว์เพื่อเสริมบารมีวันจร",
-                "เกณฑ์อโหสิกรรมจากเจ้ากรรมนายเวรเปิดทางให้ในรอบวันจร ทำการสิ่งใดความติดขัดจะทุเลาเบาบางลงอย่างเห็นได้ชัด",
-                "อยู่ในช่วงทดสอบชะตากรรมแห่งวงล้อกรรม งดการใช้อารมณ์ตัดสินและหลีกเลี่ยงข้อพิพาทกับคนรอบตัว"
-            ],
-            life: [
-                "จังหวะชะตามหาพิชัยสงครามอยู่ในเกณฑ์รุ่งเรืองสูงสุด มุ่งไปข้างหน้ากล้าคิดกล้าทำจะพบความสำเร็จที่ยิ่งใหญ่",
-                "ดวงชะตาวันจรตกตำแหน่งตั้งรับและสะสมเสบียงบุญ ไม่ควรรีบร้อนลงทุนใหญ่ ให้เน้นการตรวจสอบระบบงานให้รัดกุม",
-                "ช่วงเวลาพลิกผันดวงจากร้ายกลายเป็นดี จะมีโอกาสทองหล่นทับแบบไม่คาดฝัน ชีวิตเปลี่ยนผ่านสู่ความมั่นคงขึ้น"
-            ],
-            soul: [
-                "สนามพลังงานออร่าเปิดรับพลังบวกได้ดีที่สุด แนะนำให้สวมใส่เสื้อผ้าหรือพกอัญมณีโทนสีเหลืองหรือสีทองเสริมพลัง",
-                "พลังจิตวิญญาณค่อนข้างอ่อนล้าตามวงรอบดาวจร ควรจัดเวลาทำสมาธิ พักผ่อน หรือหลีกเลี่ยงความวุ่นวายเพื่อปรับสมดุล",
-                "ธาตุกายสิทธิ์เร่งพลังงานหนุนนำชะตา ความคิดสร้างสรรค์พุ่งทะยาน มีญาณหยั่งรู้สถานการณ์รอบตัวได้ค่อนข้างแม่นยำ"
-            ],
-            wealth: [
-                "สายธารเงินเปิดคลังทรัพย์ใหญ่ตามวันจร มีเกณฑ์ได้ลาภลอยก้อนโต หรือปิดยอดขายทะลุเป้าหมายที่ตั้งใจไว้",
-                "คลังทรัพย์ปิดชั่วคราวตามแรงเหวี่ยงดวงดาว เงินไหลออกง่าย ควรควบคุมบัญชีรายจ่ายและงดการให้หยิบยืมเงินทอง",
-                "ช่องทางรายได้เสริมซ่อนเร้นเริ่มทำงานอย่างทรงพลัง จะมีกัลยาณมิตรนำช่องทางสร้างผลกำไรมาให้ถึงที่ในวันจรนี้"
-            ]
-        };
-        var arr = predictions[boxId] || predictions['bazi'];
-        return arr[seed % arr.length];
-    }
-
-    // ฟังก์ชันหลักในการบังเคราะห์และเขียนทับข้อความลงไปตรงๆ (Direct Override)
-    function runCoreTransitOverride() {
-        var dEl = document.getElementById('transitDay');
-        var mEl = document.getElementById('transitMonth');
-        var yEl = document.getElementById('transitYearBE');
-        var hEl = document.getElementById('transitHour24');
-        var minEl = document.getElementById('transitMinute24');
-        
-        var day = dEl ? parseInt(dEl.value, 10) || 16 : 16;
-        var month = mEl ? parseInt(mEl.value, 10) || 10 : 10;
-        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
-        var hour = hEl ? parseInt(hEl.value, 10) || 6 : 6;
-        var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0;
-        
-        var seed = (day * 13) + (month * 31) + yearBE + hour;
-        var dateStr = day + " / " + month + " / " + yearBE;
-
-        // --- 1. คำนวณหวยมงคล VIP ---
-        var lottoBox = document.getElementById('lottoVipContent');
-        if (lottoBox) {
-            var l1 = (seed % 9) + 1; var l2 = ((seed * 3) % 8) + 1; var l3 = ((seed * 7) % 9) + 1;
-            lottoBox.innerHTML = "<p><b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (" + dateStr + ")</b></p><p>🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ " + dateStr + "</p><ul><li>เลขวิ่งเด่นประจำวันจร: <b>" + l3 + "</b></li><li>ชุดเลขท้าย 2 ตัวจร: <b>" + l1 + l2 + ", " + ((l2+2)%10) + l1 + "</b></li><li>ชุดเลขท้าย 3 ตัวจร: <b>" + l3 + l1 + l2 + "</b></li></ul>";
-        }
-
-        // --- 2. ปรับอายุย้ายตามปีวันจรของกราฟชีวิต ---
-        var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-        var transitAge = yearBE - birthBE;
-        if (transitAge >= 1 && transitAge <= 80) {
-            var slider = document.getElementById('ageRangeSlider');
-            if (slider && typeof applyAgeChange === 'function') {
-                slider.value = transitAge;
-                applyAgeChange(transitAge);
-            }
-        }
-
-        // --- 3 ถึง 11. เจาะจงเขียนกล่องข้อความวันจรทับลงไปแบบไร้เงื่อนไขบล็อก ---
-        var mapping = [
-            { id: 'bazi-vip-result', type: 'bazi', label: 'ผลการวิเคราะห์อิงตามวันจร' },
-            { id: 'sajuResultBox', type: 'saju', label: 'ผลการวิเคราะห์อิงตามวันจร' },
-            { id: 'num7AnalysisBox', type: 'num7', label: 'การอ่านฐาน 9 ฐานอิงตามวันจร' },
-            { id: 'uranianVipBox', type: 'uranian', label: 'มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่' },
-            { id: 'westernVipBox', type: 'western', label: 'มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่' },
-            { id: 'karmic_result', type: 'karmic', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
-            { id: 'life_result', type: 'life', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
-            { id: 'soul_result', type: 'soul', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' },
-            { id: 'wealth_result', type: 'wealth', label: 'พยากรณ์พิเศษเจาะลึก ณ วันจร' }
-        ];
-
-        mapping.forEach(function(item) {
-            var box = document.getElementById(item.id);
-            if (box) {
-                var badge = box.querySelector('.transit-date-tag-custom');
-                if (!badge) {
-                    badge = document.createElement('div');
-                    badge.className = 'transit-date-tag-custom';
-                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #ffd700; display: block !important;";
-                    box.insertBefore(badge, box.firstChild);
-                }
-                var predText = getTransitPredictionText(item.type, seed);
-                badge.innerHTML = "<div>📌 " + item.label + ": " + dateStr + "</div><div style='font-weight: normal; color: #fff; margin-top: 5px;'>" + predText + "</div>";
-            }
-        });
-    }
-
-    // สั่งรันวนลูปดักจับทุกการเคลื่อนไหวของฟอร์ม (ฆ่าบั๊ก UI โหลดทีหลัง)
-    window.applyTransitToAllVipFeatures = runCoreTransitOverride;
-
-    document.addEventListener('DOMContentLoaded', function() {
-        ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.addEventListener('change', runCoreTransitOverride);
-        });
-    });
-
-    // ลูปพิเศษดักตรวจทุกๆ 1 วินาที เพื่อบังคับให้ข้อความขึ้นแน่นอนแม้สลับเมนู
-    setInterval(runCoreTransitOverride, 1000);
-})();
 </script>
