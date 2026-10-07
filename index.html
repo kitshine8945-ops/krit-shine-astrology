@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<!-- ========================================================== 🌟 ระบบแทรกเสริม: เชื่อมโยงระบบสลับคำทำนาย VIP ของแท้และจัดระเบียบป้ายวันจรตามปฏิทินจรหลัก ========================================================== -->
+<!-- ========================================================== 🌟 ระบบแทรกเสริม: จัดระเบียบป้ายวันจร & ผูกดวงคำทำนาย VIP ของแท้ให้เปลี่ยนตามวันจร ========================================================== -->
 <script>
 (function() {
-    // ฟังก์ชันหลักในการดึงค่า คำนวณราศีจร และบังคับเปลี่ยนคำทำนาย VIP ดั้งเดิมทุกศาสตร์ให้ขยับตามวันจร
-    function runVipTransitCalculatorEngine() {
-        // 1. ดึงค่าจากฟอร์มวันจรปฏิทินหลักของคุณ
+    // ฟังก์ชันหลักในการดึงสูตรคำนวณลัคนาจร ผูกเข้ากับคลังคำทำนาย VIP ดั้งเดิมของคุณ
+    function coreVipTransitInterceptorEngine() {
+        // 1. ดึงค่าปฏิทินวันจรหลักจากหน้าเว็บ
         var dEl = document.getElementById('transitDay');
         var mEl = document.getElementById('transitMonth');
         var yEl = document.getElementById('transitYearBE');
@@ -20,74 +20,81 @@
         var tH = hEl ? parseInt(hEl.value, 10) || 6 : 6;
         var tMin = minEl ? parseInt(minEl.value, 10) || 0 : 0;
         
-        var seed = (tD * 13) + (tMVal * 31) + tY + tH;
         var dateStr = tD + " / " + tMVal + " / " + tY;
 
-        // บังคับสถานะระบบให้ถือว่าเป็น VIP เสมอเพื่อให้ฟังก์ชันภายในยอมทำงาน
+        // ปลดล็อกระบบจำลองเพื่อให้ฟังก์ชันหลักเข้าใจว่าเป็นสิทธิ์ VIP
         if (typeof AppState !== 'undefined') {
             AppState.isVipUser = true;
             AppState.isVip = true;
         }
 
-        // 2. คำนวณราศีและลัคนาจรตามตรรกะระบบลัคนาพยากรณ์ VIP ของแท้ของคุณ
+        // 🌟 ป้องกันปัญหาตัวแปรโหลดช้า: เช็กว่าคลังข้อมูลดวงดาวดั้งเดิมในระบบหลักของคุณพร้อมใช้งานหรือยัง
+        if (typeof ZODIAC_DATA === 'undefined' || typeof ZODIAC_START_DAYS === 'undefined') {
+            console.log("⏳ กำลังรอให้ระบบคลังข้อมูลดวงชะตาหลักในเว็บโหลดเสร็จสิ้น...");
+            return; // ถ้าระบบหลักยังโหลดตัวแปรไม่เสร็จ ให้รอรอบถัดไปชั่วคราว
+        }
+
+        // 2. คำนวณสูตรจักรราศีลัคนาจรตามตรรกะ VIP ของแท้ที่คุณสร้างไว้
         var transitSunIndex = 0;
-        if (typeof ZODIAC_START_DAYS !== 'undefined') {
-            for (var i = 0; i < 12; i++) {
-                var cur = ZODIAC_START_DAYS[i];
-                if (tMVal === cur.m) {
-                    if (tD >= cur.d) transitSunIndex = i;
-                    else transitSunIndex = (i + 11) % 12;
-                    break;
-                }
+        for (var i = 0; i < 12; i++) {
+            var cur = ZODIAC_START_DAYS[i];
+            if (tMVal === cur.m) {
+                if (tD >= cur.d) transitSunIndex = i;
+                else transitSunIndex = (i + 11) % 12;
+                break;
             }
         }
         var transitElapsed = (tH >= 6) ? (tH - 6) * 60 + tMin : (18 + tH) * 60 + tMin;
         var transitAscIndex = (transitSunIndex + Math.floor(transitElapsed / 120)) % 12;
-
-        // ดึงชุดข้อมูลดวงดาว VIP ดั้งเดิมในระบบหลักของคุณออกมาใช้งาน
-        var transitInfo = (typeof ZODIAC_DATA !== 'undefined') ? ZODIAC_DATA[transitAscIndex] : null;
+        
+        // เข้าถึงข้อมูลดวงดาว VIP ของแท้จากระบบของคุณโดยตรง
+        var transitInfo = ZODIAC_DATA[transitAscIndex];
+        if (!transitInfo) return;
 
         // ----------------------------------------------------
-        // 🛠️ จัดการข้อ 1. กลุ่ม 4 เมนูพรีเมียม (ศาสตร์ชั้นสูงเรือนชะตา)
+        // 🛠️ ข้อ 1. กลุ่ม 4 เมนูพรีเมียม (ศาสตร์ชั้นสูงเรือนชะตาด้านบน)
         // ----------------------------------------------------
-        var premiumBoxes = ['karmic_result', 'life_result', 'soul_result', 'wealth_result'];
-        premiumBoxes.forEach(function(boxId) {
+        var premiumMapping = {
+            'karmic_result': transitInfo.vipSummary || transitInfo.desc,
+            'life_result': transitInfo.vipWork,
+            'soul_result': transitInfo.vipHealth,
+            'wealth_result': transitInfo.vipMoney
+        };
+
+        Object.keys(premiumMapping).forEach(function(boxId) {
             var box = document.getElementById(boxId);
             if (box) {
-                // ซ่อนป้ายวันจรที่เกินออก ให้เหลือป้ายหลักเพียง 1 จุดด้านบนสุดตามดีไซน์
-                var tags = box.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"], .transit-badge, div:contains("วันจร")');
+                // จัดระเบียบป้ายวันจรซ้ำซ้อน: บังคับให้เหลือเพียง 1 จุดเดี่ยว ๆ ด้านบนสุด
+                var tags = box.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"], .transit-badge');
                 if (tags.length > 1) {
-                    for (var i = 1; i < tags.length; i++) {
-                        tags[i].style.setProperty('display', 'none', 'important');
-                    }
+                    for (var i = 1; i < tags.length; i++) { tags[i].style.setProperty('display', 'none', 'important'); }
                 }
-                
-                // นำข้อมูลดวงจร VIP ดั้งเดิมของคุณ (vipSummary, vipWork, vipMoney) มาสลับคำทำนายดลล่างตามพลังดาวจร
-                var pSlot = box.querySelectorAll('p, div.forecast-content');
-                if (pSlot.length >= 2 && transitInfo) {
-                    var targetContent = pSlot[pSlot.length - 1];
-                    if (boxId === 'karmic_result') targetContent.innerHTML = "👑 <b>[บทวิเคราะห์วิบากกรรม VIP จร]</b> ลัคนาจรเคลื่อนสู่ " + transitInfo.name + " " + transitInfo.vipSummary;
-                    if (boxId === 'life_result') targetContent.innerHTML = "👑 <b>[จังหวะชะตามหาพิชัยสงคราม VIP จร]</b> เกณฑ์การงานและการเผชิญหน้า: " + transitInfo.vipWork;
-                    if (boxId === 'soul_result') targetContent.innerHTML = "👑 <b>[สแกนคลื่นจิตวิญญาณ & ธาตุกายสิทธิ์ VIP จร]</b> สภาวะธาตุจรเกื้อหนุนล้างพลังงานลบ: " + transitInfo.vipHealth;
-                    if (boxId === 'wealth_result') targetContent.innerHTML = "👑 <b>[เปิดคลังขุมทรัพย์มหาเศรษฐี VIP จร]</b> เกณฑ์กระแสสายธารเงินทองไหลเข้า: " + transitInfo.vipMoney;
+                // เจาะจงเปลี่ยนข้อความคำทำนายบรรทัดด้านล่างให้เป็นข้อมูล VIP แท้ๆ สลับแปรผันตามจักรราศีจร
+                var pSlots = box.querySelectorAll('p, div.forecast-content, span.desc-text');
+                if (pSlots.length >= 1) {
+                    var targetSlot = pSlots[pSlots.length - 1]; // เลือกช่องเนื้อหาพยากรณ์ตัวล่างสุด
+                    if (targetSlot) {
+                        targetSlot.style.setProperty('color', '#ffffff', 'important');
+                        targetSlot.innerHTML = "👑 <b>[บทวิเคราะห์ระดับพรีเมียม VIP จร]</b> " + premiumMapping[boxId];
+                    }
                 }
             }
         });
 
         // ----------------------------------------------------
-        // 🛠️ จัดการข้อ 3. กราฟชีวิต (เอาป้ายวันจรออก + อัปเดตคำทำนายพื้นดวง/12 ภพละเอียดตามตารางและอายุจร)
+        // 🛠️ ข้อ 3. กราฟชีวิต (เอาวันจรออกทั้งหมด + อัปเดตคำทำนายละเอียดพื้นดวง/12 ภพตาม Slider อายุจร)
         // ----------------------------------------------------
         var slider = document.getElementById('ageRangeSlider') || document.getElementById('graphAgeSlider');
         if (slider) {
             var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-            var calculatedAge = tY - birthBE;
-            if (calculatedAge >= 1 && calculatedAge <= 80) {
-                slider.value = calculatedAge;
-                if (typeof applyAgeChange === 'function') applyAgeChange(calculatedAge);
-                else if (typeof updateGraphForecast === 'function') updateGraphForecast(calculatedAge);
+            var currentAge = tY - birthBE;
+            if (currentAge >= 1 && currentAge <= 80) {
+                slider.value = currentAge;
+                if (typeof applyAgeChange === 'function') applyAgeChange(currentAge);
+                else if (typeof updateGraphForecast === 'function') updateGraphForecast(currentAge);
             }
         }
-        // สั่งซ่อนป้ายวันจรออกจากกล่องกราฟชีวิตทั้งหมดอย่างเด็ดขาดตามสั่ง
+        // สั่งเคลียร์และซ่อนป้ายวันจรออกจากกล่องโซนกราฟชีวิตออกให้เกลี้ยงเกลาตามสั่ง
         var graphBlocks = document.querySelectorAll('#graphResultBox, #lifeGraphContainer, .graph-forecast-area');
         graphBlocks.forEach(function(block) {
             if (block) {
@@ -97,32 +104,29 @@
         });
 
         // ----------------------------------------------------
-        // 🛠️ จัดการข้อ 4. ปาจื่อ BaZi (เอาวันจรออกให้เหลือ 1 อัน + บังคับเปลี่ยนคำทำนาย VIP ด้านล่างตามดวงดาวจร)
+        // 🛠️ ข้อ 4. ปาจื่อ BaZi (ลดวันจรเหลือ 1 อัน + บังคับใช้คำทำนาย VIP สลับค่าตามปฏิทินจร)
         // ----------------------------------------------------
         var baziBox = document.getElementById('bazi-vip-result') || document.getElementById('baziResultBox');
         if (baziBox) {
-            var baziBadges = baziBox.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"]');
-            if (baziBadges.length > 1) {
-                for (var i = 1; i < baziBadges.length; i++) { baziBadges[i].style.setProperty('display', 'none', 'important'); }
+            var baziTags = baziBox.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"]');
+            if (baziTags.length > 1) {
+                for (var i = 1; i < baziTags.length; i++) { baziTags[i].style.setProperty('display', 'none', 'important'); }
             }
-            if (transitInfo) {
-                var baziVipSlot = baziBox.querySelector('.vip-analysis-deep, #baziVipDeepText') || baziBox.querySelectorAll('div')[baziBox.querySelectorAll('div').length - 1];
-                if (baziVipSlot) baziVipSlot.innerHTML = "👑 <b>[คัมภีร์ปาจื่อ VIP ประจำดวงดาวจร]</b> เกณฑ์พลังงาน 5 ธาตุสัมพันธ์ลัคนาจรราศีกุมภ์/กาลจร ส่งผลหนุนดวงชะตา: " + transitInfo.vipSummary;
-            }
+            var baziSlot = baziBox.querySelector('.vip-analysis-deep, #baziVipDeepText, p.desc');
+            if (!baziSlot) { baziSlot = baziBox.querySelectorAll('p, div')[baziBox.querySelectorAll('p, div').length - 1]; }
+            if (baziSlot) baziSlot.innerHTML = "👑 <b>[คัมภีร์ปาจื่อวิเคราะห์ดวง VIP จร]</b> " + transitInfo.vipSummary;
         }
 
         // ----------------------------------------------------
-        // 🛠️ จัดการข้อ 5 & 6. ซาจู และ เลข 7 ตัว 4/9 ฐาน (เอาวันจรออกจากกล่องฟรี + เขียนคำทำนาย VIP ของแท้ด้านล่าง)
+        // 🛠️ ข้อ 5 & 6. ซาจู และ เลข 7 ตัว 4/9 ฐาน (เอาวันจรออกจากกล่องฟรี + อัปเดตคำทำนาย VIP ด้านล่าง)
         // ----------------------------------------------------
         var sajuFree = document.getElementById('sajuFreeBox') || document.querySelector('.saju-free-container');
         if (sajuFree) {
             var sBadges = sajuFree.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"]');
             sBadges.forEach(function(el) { el.style.setProperty('display', 'none', 'important'); });
         }
-        var sajuVipBox = document.getElementById('sajuResultBox');
-        if (sajuVipBox && transitInfo) {
-            sajuVipBox.innerHTML = "👑 <b>[บทวิเคราะห์สี่เสาชะตาเกาหลี ซาจู VIP]</b> เกณฑ์ทางผ่านกรรมตามเวลาจร หนุนโชครุ่งเรือง: " + transitInfo.vipSummary;
-        }
+        var sajuVipBox = document.getElementById('sajuResultBox') || document.getElementById('sajuVipContent');
+        if (sajuVipBox) sajuVipBox.innerHTML = "👑 <b>[บทวิเคราะห์สี่เสาชะตาเกาหลี ซาจู VIP จร]</b> " + transitInfo.vipSummary;
 
         var num7Box = document.getElementById('num7AnalysisBox');
         if (num7Box) {
@@ -131,14 +135,13 @@
                 var nBadges = num7Free.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"]');
                 nBadges.forEach(function(el) { el.style.setProperty('display', 'none', 'important'); });
             }
-            if (transitInfo) {
-                var num7VipSlot = document.getElementById('num7VipTextSlot') || num7Box.querySelector('.vip-content-area');
-                if (num7VipSlot) num7VipSlot.innerHTML = "👑 <b>[คลังทำนายเลข 7 ตัว 9 ฐานฉบับพิสดาร VIP]</b> การอ่านวิเคราะห์ฐานชะตาละเอียดอิงกาลจรดาวสัมพันธ์เรือน: " + transitInfo.vipSummary;
-            }
+            var num7Slot = document.getElementById('num7VipTextSlot') || num7Box.querySelector('.vip-content-area, p.analysis-text');
+            if (!num7Slot) { num7Slot = num7Box.querySelectorAll('p, div')[num7Box.querySelectorAll('p, div').length - 1]; }
+            if (num7Slot) num7Slot.innerHTML = "👑 <b>[วิเคราะห์ฐาน 9 ฐานฉบับพิสดาร VIP จร]</b> " + transitInfo.vipSummary;
         }
 
         // ----------------------------------------------------
-        // 🛠️ จัดการข้อ 7. โหราศาสตร์ยูเรเนียน และสากล (ลดเหลือ 1 จุด + คำทำนายดลล่างสลับตามดาวจร)
+        // 🛠️ ข้อ 7. โหราศาสตร์ยูเรเนียน และสากล (ลดเหลือ 1 จุด + บังคับสลับคำทำนายดลล่างดาวจร)
         // ----------------------------------------------------
         ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) {
             var box = document.getElementById(boxId);
@@ -147,28 +150,30 @@
                 if (uBadges.length > 1) {
                     for (var i = 1; i < uBadges.length; i++) { uBadges[i].style.setProperty('display', 'none', 'important'); }
                 }
-                if (transitInfo) {
-                    var txtSlot = box.querySelector('.transit-aspects-vip-text, .forecast-desc') || box.querySelectorAll('div')[box.querySelectorAll('div').length - 1];
-                    if (txtSlot) txtSlot.innerHTML = "👑 <b>[โหราศาสตร์ระดับพรีเมียม VIP ทรานสิต]</b> มุมดาวฉากคู่อิงปฏิทินจรล่วงหน้า: " + (boxId === 'uranianVipBox' ? transitInfo.vipWork : transitInfo.vipMoney);
+                var txtSlot = box.querySelector('.transit-aspects-vip-text, .forecast-desc, #uranianVipContent, #westernVipContent');
+                if (!txtSlot) { txtSlot = box.querySelectorAll('p, div')[box.querySelectorAll('p, div').length - 1]; }
+                if (txtSlot) {
+                    txtSlot.innerHTML = "👑 <b>[บทพยากรณ์มุมสัมพันธ์ดวงดาว VIP จร]</b> " + (boxId === 'uranianVipBox' ? transitInfo.vipWork : transitInfo.vipMoney);
                 }
             }
         });
     }
 
-    // ลงทะเบียนเปิดช่องดักฟังระดับ Global และผูก Event กับปฏิทินหลัก
-    window.applyTransitToAllVipFeatures = runVipTransitCalculatorEngine;
-     document.addEventListener('DOMContentLoaded', function() {
-         var inputIds = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
-       inputIds.forEach(function(id) {
-             var el = document.getElementById(id);
-             if (el) el.addEventListener('change', runVipTransitCalculatorEngine);
-         });
-     });
-  
-     // ลูปพิเศษรันตรวจสอบทุกๆ 500 มิลลิวินาที เพื่อล้างการซ้อนและเปลี่ยนข้อความ VIP ของแท้ทันทีไม่ว่าจะคลิกสลับเมนูใดๆ
-     setInterval(runVipTransitCalculatorEngine, 500);
- })();
-  </script>
+    // สั่งเชื่อมต่อระบบดักจับพฤติกรรมความเปลี่ยนแปลง
+    window.applyTransitToAllVipFeatures = coreVipTransitInterceptorEngine;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+        inputs.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('change', coreVipTransitInterceptorEngine);
+        });
+    });
+
+    // ลูปหน่วงเวลาตรวจสอบสภาพแวดล้อม ทุกๆ 500 มิลลิวินาที เพื่อล้างการซ้อนและดึงข้อความ VIP ของแท้สลับทันทีเมื่อตัวแปรพร้อม
+    setInterval(coreVipTransitInterceptorEngine, 500);
+})();
+</script>
 
 <meta name="google-site-verification" content="yLPud9CmoAuHlJ1N_Ae9eTNSkjlBjI22NN64q3vY-Ms" />
   <!-- Supabase SDK -->
