@@ -605,7 +605,15 @@ footer {
   border: 2px solid #facc15 !important;
   box-shadow: 0 0 12px rgba(250, 204, 21, 0.4) !important;
 }
-  </style>
+.vip-plan-card.selected, .vip-plan-card.active {
+      background: rgba(234, 179, 8, 0.25) !important;
+      border: 2px solid #facc15 !important;
+      box-shadow: 0 0 12px rgba(250, 204, 21, 0.4) !important;
+    }
+
+    /* เพิ่มโค้ดคำสั่งสำหรับพิมพ์รายงานตรงนี้ครับ */
+     
+</style>
 </head>
 <body>
 
@@ -622,7 +630,7 @@ footer {
       <li><a href="#" class="active">หน้าแรก</a></li>
       <li><a onclick="scrollToSection('category-bar')">รวมศาสตร์</a></li>
       <li><a onclick="scrollToForm()">ผูกดวงลัคนา</a></li>
-      <li><a onclick="openFeatureModal('daily')">ดวงรายวัน</a></li>
+      <li><a onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();} else{openFeatureModal('daily');}">ดวงรายวัน</a></li>
       <li><a onclick="openFeatureModal('num7base')">เลข 7 ตัว</a></li>
       <li><a onclick="openFeatureModal('compatibility')">สมพงษ์คู่</a></li>
       <li><a onclick="openFeatureModal('auspicious')">ฤกษ์มงคล</a></li>
@@ -637,6 +645,12 @@ footer {
         <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
       </button>
     </div>
+<button type="button" onclick="if((typeof AppState!=='undefined'&&AppState.isVipUser)||localStorage.getItem('ks_vip_active')==='true'){alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทั้งหมด');}else{openFeatureModal('member');}" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #1a0f00; font-weight: 700; padding: 6px 16px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; border: none; box-shadow: 0 0 15px rgba(255,215,0,0.4); display: inline-flex; align-items: center; gap: 6px; margin-left: 6px;">
+      <i class="fa-solid fa-crown"></i> สมัคร VIP
+    </button>
+<a href="https://drive.google.com/uc?export=download&id=1hZ6EnHziTamlJIuh726tsq7tVttsxFxL" download style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; font-weight: 700; padding: 6px 14px; border-radius: 20px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); margin-left: 6px;">
+      <i class="fa-solid fa-download"></i> ดาวน์โหลดแอป
+    </a>
   </header>
 
   <!-- 2. Hero Section -->
@@ -663,33 +677,43 @@ footer {
     <h3 class="category-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> ศูนย์รวมศาสตร์พยากรณ์ชั้นสูง (ศาสตร์ครบวงจร)</h3>
     <div class="category-grid">
    <!-- 4 เมนูพยากรณ์พรีเมียม -->
-<div class="cat-item" onclick="openKsPremFeature('karmicModal')">
+<div class="cat-item" onclick="openKSpremFeature('karmicModal'); showVipQrModal();">
     <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
     <div class="cat-name">รหัสกรรมข้ามภพ</div>
     <div class="cat-sub">ถอดบทเรียนชีวิต & วาสนา</div>
 </div>
 
-<div class="cat-item" onclick="openKsPremFeature('lifeTurningModal')">
+<div class="cat-item" onclick="openKSpremFeature('lifeTurningModal'); showVipQrModal();">
     <div class="cat-icon-circle" style="background: rgba(52,152,219,0.2); border: 1px solid #3498db;"><i class="fa-solid fa-shield-halved" style="color: #5dade2;"></i></div>
     <div class="cat-name">มหาพิชัยสงคราม</div>
     <div class="cat-sub">จังหวะพลิกชีวิต 12 ฤดูกาล</div>
 </div>
 
-<div class="cat-item" onclick="openKsPremFeature('soulElementModal')">
+<div class="cat-item" onclick="openKSpremFeature('soulElementModal'); showVipQrModal();">
     <div class="cat-icon-circle" style="background: rgba(155,89,182,0.2); border: 1px solid #9b59b6;"><i class="fa-solid fa-gem" style="color: #c39bd3;"></i></div>
     <div class="cat-name">ถอดรหัสจิตวิญญาณ</div>
     <div class="cat-sub">ธาตุกายสิทธิ์เสริมออร่า</div>
 </div>
 
-<div class="cat-item" onclick="openKsPremFeature('wealthFlowModal')">
+<div class="cat-item" onclick="openKSpremFeature('wealthFlowModal'); showVipQrModal();">
     <div class="cat-icon-circle" style="background: rgba(46,204,113,0.2); border: 1px solid #2ecc71;"><i class="fa-solid fa-coins" style="color: #2ecc71;"></i></div>
     <div class="cat-name">ขุมทรัพย์มหาเศรษฐี</div>
     <div class="cat-sub">เปิดสายธารเงิน & รหัสรวย</div>
-</div>   
+</div> 
+  <!-- เมนูคำนวณหวยมงคล -->
+    <div class="cat-item" onclick="openLottoModal()">
+    <div class="cat-icon-circle" style="background: rgba(245,158,11,0.2); border: 1px solid #f59e0b;"><i class="fa-solid fa-ticket" style="color: #f59e0b;"></i></div>
+    <div class="cat-name">คำนวณหวยมงคล</div>
+    <div class="cat-sub">เลขเด่นประจำวัน & เฉพาะดวง</div>
+</div>
 <div class="cat-item" onclick="openFeatureModal('daily')"><div class="cat-icon-circle"><i class="fa-solid fa-sun"></i></div><div class="cat-name">ดูดวงรายวัน</div><div class="cat-sub">ดวงประจำวันตามลัคนา</div></div>
       <div class="cat-item" onclick="openFeatureModal('zodiac')"><div class="cat-icon-circle"><i class="fa-solid fa-star-and-crescent"></i></div><div class="cat-name">ดวงตามราศี</div><div class="cat-sub">12 ราศี รายเดือน/ปี</div></div>
       <div class="cat-item" onclick="scrollToFormVip()"><div class="cat-icon-circle"><i class="fa-solid fa-moon"></i></div><div class="cat-name">ลัคนาพยากรณ์</div><div class="cat-sub">ผูกดวงกำเนิด & วันจร</div></div>
-      <div class="cat-item" onclick="openFeatureModal('lifegraph')"><div class="cat-icon-circle"><i class="fa-solid fa-chart-line"></i></div><div class="cat-name">กราฟชีวิต</div><div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div></div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('lifegraph');}">
+    <div class="cat-icon-circle"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="cat-name">กราฟชีวิต</div>
+    <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
+</div>
       <div class="cat-item" onclick="openFeatureModal('tarot')"><div class="cat-icon-circle"><i class="fa-solid fa-clone"></i></div><div class="cat-name">ไพ่ทาโรต์</div><div class="cat-sub">เปิดไพ่สื่อจิตจักรวาล</div></div>
       <div class="cat-item" onclick="openFeatureModal('bazi')"><div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div><div class="cat-name">ปาจื่อ (BaZi)</div><div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div></div>
 <div class="cat-item" onclick="openSajuModal()">
@@ -702,12 +726,24 @@ footer {
       <div class="cat-item" onclick="openFeatureModal('house')"><div class="cat-icon-circle"><i class="fa-solid fa-house"></i></div><div class="cat-name">บ้านเลขที่</div><div class="cat-sub">พลังกำลังดาวร่มเย็น</div></div>
             
       <div class="cat-item" onclick="openFeatureModal('compatibility')"><div class="cat-icon-circle"><i class="fa-solid fa-heart-circle-bolt"></i></div><div class="cat-name">สมพงษ์คู่ & หุ้นส่วน</div><div class="cat-sub">เช็กเกณฑ์รัก & ธุรกิจ</div></div>
-      <div class="cat-item" onclick="openFeatureModal('num7base')"><div class="cat-icon-circle"><i class="fa-solid fa-table-cells"></i></div><div class="cat-name">เลข 7 ตัว 4/9 ฐาน</div><div class="cat-sub">ฟรี vs VIP คลังทำนาย</div></div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('num7base');}">
+    <div class="cat-icon-circle"><i class="fa-solid fa-table-cells"></i></div>
+    <div class="cat-name">เลข 7 ตัว 4/9 ฐาน</div>
+    <div class="cat-sub">ฟรี vs VIP คลังทำนาย</div>
+</div>
       <div class="cat-item" onclick="openFeatureModal('mahataksa')"><div class="cat-icon-circle"><i class="fa-solid fa-ring"></i></div><div class="cat-name">มหาทักษาเสวยอายุ</div><div class="cat-sub">เทวดาเสวยอายุ & แทรก</div></div>
       <div class="cat-item" onclick="openFeatureModal('chatra')"><div class="cat-icon-circle"><i class="fa-solid fa-shield-halved"></i></div><div class="cat-name">ดวงฉัตรสามชั้น</div><div class="cat-sub">วิเคราะห์ 3 ระดับชะตา</div></div>
       <div class="cat-item" onclick="openFeatureModal('auspicious')"><div class="cat-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="cat-name">ฤกษ์มงคลเฉพาะตน</div><div class="cat-sub">เปิดร้าน ออกรถ ไม่ชง</div></div>
-      <div class="cat-item" onclick="openFeatureModal('uranian')"><div class="cat-icon-circle"><i class="fa-solid fa-atom"></i></div><div class="cat-name">ยูเรเนียน </div><div class="cat-sub">ฮาร์มอนิก & ดาวทิพย์</div></div>
-      <div class="cat-item" onclick="openFeatureModal('western')"><div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div><div class="cat-name">โหราศาสตร์สากล</div><div class="cat-sub">Natal Chart Big 3</div></div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('uranian');}">
+    <div class="cat-icon-circle"><i class="fa-solid fa-atom"></i></div>
+    <div class="cat-name">ยูเรเนียน</div>
+    <div class="cat-sub">ฮาร์มอนิก & ดาวทิพย์</div>
+</div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('western');}">
+    <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
+    <div class="cat-name">โหราศาสตร์สากล</div>
+    <div class="cat-sub">Natal Chart Big 3</div>
+</div>
     </div>
   </section>
 
@@ -906,7 +942,7 @@ footer {
       <div id="result-view-box">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <span class="res-tag-badge" id="res-badge-type" style="background:rgba(245,196,105,0.15); color:var(--gold-bright); padding:4px 10px; border-radius:12px; font-size:0.8rem;">ผลการผูกดวงชะตาเฉพาะบุคคล</span>
-          <button class="btn-print-vip" onclick="window.print()"><i class="fa-solid fa-file-pdf"></i> พิมพ์รายงาน / บันทึกเป็น PDF</button>
+          <button class="btn-print-vip" onclick="printReportBox()"><i class="fa-solid fa-file-pdf"></i> พิมพ์รายงาน / บันทึกเป็น PDF</button>
         </div>
         
         <h3 id="resAscendantTitle" style="color: #ffd700; margin: 10px 0 6px;">ลัคนาสถิตราศีกุมภ์</h3>
@@ -1195,7 +1231,7 @@ footer {
         <ul>
           <li><a onclick="window.scrollTo({top:0, behavior:'smooth'})">หน้าแรก</a></li>
           <li><a onclick="scrollToForm()">ดูดวงทั่วไป</a></li>
-          <li><a onclick="openFeatureModal('daily')">ดูดวงรายวัน</a></li>
+          <li><a onclick="if(!userData || !userData.birthDate){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');}else{openFeatureModal('daily');}">ดูดวงรายวัน</a></li>
           <li><a onclick="openFeatureModal('auspicious')">ฤกษ์มงคลเฉพาะตน</a></li>
         </ul>
       </div>
@@ -1231,7 +1267,34 @@ footer {
   </footer>
 
   <!-- ================= POPUP MODALS ================= -->
+    <!-- MODAL: ทำนายตัวเลข & หวยมงคลเฉพาะบุคคล -->
+<div class="modal-overlay" id="modal-lotto">
+    <div class="modal-content" style="max-width: 650px;">
+        <div class="modal-close-btn" onclick="closeModal('modal-lotto')"><i class="fa-solid fa-xmark"></i></div>
+        <div class="profile-astro-badge dynamic-user-badge"></div>
+        
+        <!-- ปุ่มสลับโหมด ฟรี / VIP -->
+        <div class="tier-switcher" style="margin-bottom:14px;">
+            <button type="button" class="tier-btn active" id="btn-lotto-free" onclick="switchLottoMode('free')">เลขมงคลประจำวัน (ดูฟรี)</button>
+            <button type="button" class="tier-btn" id="btn-lotto-vip" onclick="switchLottoMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสเลขเด่นเฉพาะบุคคล (VIP)</button>
+        </div>
 
+        <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-ticket"></i> คำนวณเลขมงคล & สถิติดวงดาว</h3>
+        
+        <div id="lottoFreeBox" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft); text-align:center;">
+            <h4 style="color:#ffd700; margin-bottom:8px;">สถิติเลขเด่นงวดนี้ (พลังงานดาวประจำวัน)</h4>
+            <div style="font-size: 2rem; font-weight: bold; color: #81c784; margin: 12px 0;" id="lottoFreeNum">5 - 8 - 9</div>
+            <p style="font-size:0.86rem; color:#cfd8dc;">วิเคราะห์จากกระแสพลังงานดาวประจำวันและสถิติย้อนหลัง</p>
+        </div>
+
+        <div id="lottoVipBox" style="display:none; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main); text-align:center;">
+            <h4 style="color:#ffd700; margin-bottom:8px;"><i class="fa-solid fa-crown"></i> เจาะลึกเลขมงคลเฉพาะดวงชะตาคุณ</h4>
+            <div id="lottoVipContent">
+                <!-- เนื้อหาคำนวณเฉพาะบุคคล หรือปุ่มสมัคร VIP จะถูกเรนเดอร์มาที่นี่อัตโนมัติ -->
+            </div>
+        </div>
+    </div>
+</div>
   <!-- MODAL: ทำนายฝัน & ถอดรหัสเลขเด็ด -->
   <div class="modal-overlay" id="modal-dream">
     <div class="modal-content" style="max-width: 680px;">
@@ -1261,8 +1324,8 @@ footer {
       <div class="modal-close-btn" onclick="closeModal('modal-compatibility')"><i class="fa-solid fa-xmark"></i></div>
       <div class="profile-astro-badge dynamic-user-badge"></div>
       <div class="tier-switcher">
-        <button type="button" class="tier-btn active" id="btn-comp-love" onclick="switchCompMode('love')"><i class="fa-solid fa-heart"></i> สมพงษ์เนื้อคู่ & ความรัก</button>
-        <button type="button" class="tier-btn" id="btn-comp-business" onclick="switchCompMode('business')"><i class="fa-solid fa-briefcase"></i> สมพงษ์หุ้นส่วน & คู่ค้าธุรกิจ</button>
+        <button type="button" class="tier-btn active" id="btn-comp-love" onclick="switchCompMode('love'); setTimeout(calcCompatibility, 50);"><i class="fa-solid fa-heart"></i> สมพงษ์เนื้อคู่ & ความรัก</button>
+                    <button type="button" class="tier-btn" id="btn-comp-business" onclick="switchCompMode('business'); setTimeout(calcCompatibility, 50);"><i class="fa-solid fa-briefcase"></i> สมพงษ์หุ้นส่วน & คู่ค้าธุรกิจ</button>
       </div>
       <h3 id="compModalTitle" style="color:var(--gold-bright); text-align:center; margin-bottom:12px;">วิเคราะห์ดวงสมพงษ์เนื้อคู่ & ความรัก</h3>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
@@ -2467,9 +2530,18 @@ if (typeof applyAgeChange === 'function') {
       document.getElementById('compScoreText').textContent = `ระดับความสมพงษ์: ${score}%`;
       document.getElementById('compLevelBadge').textContent = score >= 85 ? 'เกณฑ์ดีเยี่ยม หนุนดวง' : (score >= 70 ? 'เกณฑ์ปานกลาง เติมเต็มกัน' : 'เกณฑ์ต้องปรับจูนอารมณ์');
       document.getElementById('compLevelBadge').style.background = score >= 85 ? '#ffd700' : (score >= 70 ? '#81c784' : '#ff7675');
-      document.getElementById('compVerdict').innerHTML = isLove 
-        ? `<strong>ด้านชีวิตคู่:</strong> ${reason} แนะนำให้หมั่นทำบุญปล่อยปลาและถวายแจกันคู่ร่วมกันเพื่อเสริมความรักให้แน่นแฟ้นยิ่งขึ้น`
-        : `<strong>ด้านการทำธุรกิจร่วมกัน:</strong> ${reason} การแบ่งหน้าที่รับผิดชอบตามความถนัดจะช่วยให้ธุรกิจเติบโตไว ลดข้อขัดแย้งเรื่องผลประโยชน์ได้ชัดเจน`;
+      // กำหนดข้อความคำทำนายแยกเนื้อหาความรักกับธุรกิจออกจากกันอย่างชัดเจน
+    // กำหนดข้อความคำทำนายแยกเนื้อหาความรักกับธุรกิจออกจากกันอย่างอิสระชัดเจน
+    const loveAdvice = "ธาตุลมช่วยโหมกระพือธาตุไฟ ความสัมพันธ์มีความเร่าร้อน ตื่นเต้น คอยสนับสนุนและพากันสร้างสรรค์ความก้าวหน้าด้วยความเข้าใจ";
+    const bizAdvice = "ธาตุลมหนุนธาตุไฟ เป็นพาร์ทเนอร์ทางธุรกิจที่โดดเด่น ไอเดียพรั่งพรู ขับเคลื่อนงานไว พากันสร้างยอดขายและขยายกิจการเติบโตอย่างยอดเยี่ยม";
+
+    // เช็กว่าตอนนี้หน้าต่างแสดงหัวข้ออะไรอยู่ เพื่อสลับข้อความให้ตรงกัน
+    const currentTitle = document.getElementById('compModalTitle')?.textContent || '';
+    const isLoveMode = !currentTitle.includes('หุ้นส่วน');
+
+    document.getElementById('compVerdict').innerHTML = isLoveMode 
+        ? `<strong>ด้านชีวิตคู่ & ความรัก:</strong> ${loveAdvice}`
+        : `<strong>ด้านการทำธุรกิจ & หุ้นส่วน:</strong> ${bizAdvice}`;
 
       document.getElementById('compResultBox').style.display = 'block';
     }
@@ -2777,100 +2849,100 @@ function switchWesternMode(mode) {
     }
   }
 }
-    function updateDailyHoroscopeView() {
-      const ascInfo = ZODIAC_DATA[AppState.currentCalculatedAscIndex] || ZODIAC_DATA[10];
-      const now = new Date();
-      const dateStr = `${now.getDate()} ${MONTH_NAMES[now.getMonth()]} พ.ศ. ${now.getFullYear() + 543}`;
-      
-      const dateEl = document.getElementById('daily-current-date-str');
-      const ascEl = document.getElementById('daily-ascendant-label');
-      if (dateEl) dateEl.textContent = dateStr;
-      if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
-
-      (function() {
-            var dailyNow = new Date();
-            var dateSeed = (dailyNow.getFullYear() * 1000) + ((dailyNow.getMonth() + 1) * 35) + dailyNow.getDate();
-            var zodiacIndex = (ascInfo && ascInfo.name) ? ascInfo.name.length : 1;
-            var seed = dateSeed + zodiacIndex;
-
-            var summaryPool = [
-                ascInfo.dailySummary || "จังหวะชีวิตเปิดรับสิ่งใหม่ โอกาสดีกำลังเข้ามาหาคุณอย่างต่อเนื่อง",
-                "วันนี้พลังแห่งการเริ่มต้นทำงานอย่างเต็มที่ สิ่งที่วางแผนไว้จะเริ่มเห็นผลเป็นรูปธรรมและราบรื่นขึ้น",
-                "มีเกณฑ์ได้รับการสนับสนุนจากคนรอบข้าง ความคิดสร้างสรรค์และความมุ่งมั่นจะนำพาความสำเร็จมาให้",
-                "การตัดสินใจที่รอบคอบจะเปิดทางสู่ความก้าวหน้า จงเชื่อมั่นในศักยภาพของตัวเองแล้วเดินหน้าต่อ",
-                "เป็นวันที่ความพยายามเริ่มออกดอกออกผล สิ่งที่ติดขัดจะได้รับการคลี่คลายอย่างน่าอัศจรรย์ใจ"
-            ];
-
-            var workPool = [
-                ascInfo.dailyWork || "งานออนไลน์ งานสร้างสรรค์ และโครงการใหม่ได้รับการตอบรับดีเยี่ยม ขยับขยายได้ดี",
-                "งานก้าวหน้าชัดเจน มีผู้ใหญ่หรือหัวหน้าคอยช่วยเหลือ ให้เน้นความละเอียดรอบคอบจะยิ่งเด่น",
-                "ได้รับโอกาสในการแสดงฝีมือ หรือได้รับมอบหมายงานสำคัญที่จะสร้างชื่อเสียงและผลงาน",
-                "การเจรจาติดต่อประสานงานราบรื่น ปัญหาที่คั่งค้างสามารถจัดการได้อย่างเป็นมืออาชีพ",
-                "มีจังหวะขยับขยายหรือเริ่มต้นโปรเจกต์ใหม่ ความร่วมมือในทีมช่วยขับเคลื่อนงานให้สำเร็จเร็วขึ้น"
-            ];
-
-            var moneyPool = [
-                ascInfo.dailyMoney || "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้พิเศษเข้ามาจากการลงทุนหรือโปรเจกต์เสริม",
-                "การเงินมีทิศทางที่ดีขึ้น มีโชคลาภเล็กๆ น้อยๆ หรือได้เงินคืนจากลูกหนี้/งานเสริม",
-                "มีเกณฑ์ได้รับลาภลอยหรือโบนัสพิเศษ แต่ควรวางแผนจัดสรรรายจ่ายให้สมดุลเพื่อความมั่นคง",
-                "กระแสเงินสดไหลเข้าต่อเนื่อง เป็นจังหวะดีในการวางแผนออมหรือต่อยอดผลกำไร",
-                "รายรับคล่องมือดี การลงทุนระยะสั้นเริ่มให้ผลตอบแทนคุ้มค่า มีผู้ใหญ่คอยเกื้อหนุนเรื่องเงิน"
-            ];
-
-            var lovePool = [
-                ascInfo.dailyLove || "คนโสดมีเกณฑ์พบมิตรภาพดีๆ ที่พัฒนาได้ คนมีคู่บรรยากาศสบายใจ ให้เกียรติซึ่งกันและกัน",
-                "คนโสดมีคนเข้ามาทำให้หัวใจกระชุ่มกระชวย คนมีคู่เข้าใจกันดี คอยเป็นกำลังใจสำคัญให้กัน",
-                "คนโสดเสน่ห์แรง มีคนให้ความสนใจ คนมีคู่ความสัมพันธ์อบอุ่นโรแมนติก มีเวลาทำกิจกรรมร่วมกัน",
-                "คนโสดยังคงรักอิสระแต่มีคนแอบมอง คนมีคู่ควรพูดจากันด้วยความเข้าใจและให้อภัยกัน",
-                "บรรยากาศความรักสดใส มีความเข้าใจลึกซึ้ง คนมีคู่จับมือกันวางแผนเรื่องอนาคตได้อย่างลงตัว"
-            ];
-
-            var healthPool = [
-                ascInfo.dailyHealth || "ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้เต็มที่ ระวังอาการเมื่อยล้าจากการทำงาน",
-                "สุขภาพโดยรวมแข็งแรงดี ควรยืดเส้นยืดสายบ้างระหว่างวันเพื่อลดอาการออฟฟิศซินโดรม",
-                "ระวังอาการปวดหลัง คอ บ่า ไหล่ จากการนั่งนาน ควรหาเวลาพักสายตาและออกกำลังกายเบาๆ",
-                "ร่างกายต้องการการพักผ่อนที่มีคุณภาพ ลดความเครียดและหลีกเลี่ยงของหวานจัดหรือของมัน",
-                "กระปรี้กระเปร่า สุขภาพกายใจแจ่มใส หากมีอาการเหนื่อยล้าให้นอนพักเร็วขึ้นจะฟื้นตัวได้ไว"
-            ];
-
-            var luckyNums = [
-                ascInfo.luckyNum || "8, 17, 26",
-                "1, 14, 28",
-                "2, 19, 36",
-                "5, 23, 41",
-                "9, 18, 45",
-                "3, 12, 21",
-                "6, 15, 24"
-            ];
-
-            var luckyColors = [
-                ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน",
-                "สีขาวมุก, สีทองสว่าง",
-                "สีเขียวเหนี่ยวทรัพย์, สีมรกต",
-                "สีส้มอิฐ, สีแสด",
-                "สีม่วงเข้ม, สีน้ำเงินกรมท่า",
-                "สีชมพูหวาน, สีโอลด์โรส"
-            ];
-
-            var luckyDirs = [
-                ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ",
-                "ทิศตะวันออก",
-                "ทิศเหนือ",
-                "ทิศใต้",
-                "ทิศตะวันตกเฉียงใต้",
-                "ทิศตะวันออกเฉียงใต้"
-            ];
-
-            document.getElementById('dailySummaryText').textContent = summaryPool[seed % summaryPool.length];
-            document.getElementById('dailyWorkText').textContent = workPool[(seed + 1) % workPool.length];
-            document.getElementById('dailyMoneyText').textContent = moneyPool[(seed + 2) % moneyPool.length];
-            document.getElementById('dailyLoveText').textContent = lovePool[(seed + 3) % lovePool.length];
-            document.getElementById('dailyHealthText').textContent = healthPool[(seed + 4) % healthPool.length];
-            document.getElementById('dailyLuckyNumber').textContent = luckyNums[(seed + 5) % luckyNums.length];
-            document.getElementById('dailyLuckyColor').textContent = luckyColors[(seed + 6) % luckyColors.length];
-            document.getElementById('dailyLuckyDirection').textContent = luckyDirs[(seed + 7) % luckyDirs.length];
-        })();
+    
+// ==========================================
+// ระบบดวงรายวันอัตโนมัติ (เปลี่ยนตามวันที่จริงแบบไดนามิก)
+// ==========================================
+const DAILY_PREDICTIONS_POOL = [
+    {
+        summary: "กระแสพลังงานดาวประจำวันโคจรหนุนมุมลัคนา ส่งผลให้ทิศทางชีวิตมีความราบรื่นและคล่องตัวเป็นพิเศษ เป็นจังหวะดีในการเริ่มต้นงานใหญ่",
+        work: "การติดต่อประสานงาน การเจรจาค้าขาย หรือการนำเสนอผลงานราบรื่นไร้อุปสรรค ได้รับความร่วมมือจากทีมงานและผู้ร่วมงานเป็นอย่างดี",
+        money: "กระแสการเงินหมุนเวียนดี มีโอกาสได้รับทรัพย์ก้อนเล็กๆ หรือเงินตกเบิกจากช่องทางที่เคยลงทุนลงแรงไว้",
+        love: "คนโสดมีเกณฑ์พบมิตรภาพใหม่ที่พูดคุยถูกคอ คนมีคู่ความสัมพันธ์อบอุ่น คอยช่วยเหลือและเป็นที่ปรึกษาให้กันดีเยี่ยม",
+        health: "สุขภาพแข็งแรงดี แต่อาจมีอาการล้าเล็กน้อยจากการใช้งานสายตาหรือสมอง ควรพักผ่อนให้เพียงพอ",
+        num: "3, 6, 9",
+        color: "สีสว่างสดใส (สีทอง, สีส้ม, สีเขียวมรกต)",
+        dir: "ทิศตะวันออก และ ทิศเหนือ"
+    },
+    {
+        summary: "พลังงานจักรวาลเปิดรับโอกาสใหม่ๆ ความตั้งใจและความพยายามที่ผ่านมาเริ่มส่งผลเด่นชัด ความสำเร็จอยู่ใกล้แค่เอื้อม",
+        work: "งานด้านการวางแผน การบริหารจัดการ หรืองานที่ต้องใช้ความคิดสร้างสรรค์โดดเด่นมาก ได้รับคำชื่นชมจากผู้ใหญ่",
+        money: "การเงินมีความมั่นคง มีเกณฑ์ได้รับผลกำไรหรือผลตอบแทนจากการลงทุนตามเป้าหมาย แต่ควรหลีกเลี่ยงการค้ำประกัน",
+        love: "คนโสดเสน่ห์แรง มีคนเข้ามาทักทายพูดคุย คนมีคู่มีความเข้าใจกันลึกซึ้ง มีเกณฑ์วางแผนเดินทางท่องเที่ยวร่วมกัน",
+        health: "ระวังอาการตึงเมื่อยกล้ามเนื้อบริเวณบ่า ไหล่ และหลัง ควรยืดเส้นยืดสายระหว่างวัน",
+        num: "1, 5, 8",
+        color: "สีฟ้าพาสเทล, สีน้ำเงินกรมท่า",
+        dir: "ทิศใต้ และ ทิศตะวันตก"
+    },
+    {
+        summary: "สัญชาตญาณและความรู้สึกเฉียบคมเป็นพิเศษ เป็นวันที่เหมาะกับการตัดสินใจเรื่องสำคัญหรือเคลียร์ภาระงานที่ค้างคาให้จบสิ้น",
+        work: "งานเบื้องหลัง งานวิเคราะห์ข้อมูล หรือการแก้ไขปัญหาเฉพาะหน้าทำได้ยอดเยี่ยม ผลงานเป็นที่ประจักษ์",
+        money: "มีโชคลาภจากการติดต่อหรือคนใกล้ชิดแนะนำช่องทางสร้างรายได้เสริม การบริหารจัดการหนี้สินทำได้ดี",
+        love: "คนโสดอาจพบคนถูกใจจากแวดวงการทำงาน คนมีคู่ดูแลเอาใจใส่ความรู้สึกกันและกันอย่างอบอุ่น",
+        health: "ระวังเรื่องระบบทางเดินอาหาร หรืออาการท้องอืดท้องเฟ้อ ควรกินอาหารให้ตรงเวลา",
+        num: "2, 4, 7",
+        color: "สีขาวบริสุทธิ์, สีเงินควันบุหรี่",
+        dir: "ทิศตะวันออกเฉียงเหนือ"
     }
+];
+
+function updateDailyHoroscopeView() {
+    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
+    const ascIndex = AppState.currentCalculatedAscIndex;
+// คำนวณรหัสเปลี่ยนใหม่ทุกๆ เที่ยงคืน (00:00 น.) ของแต่ละวัน
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const date = now.getDate();
+const daySeed = year * 10000 + month * 100 + date;
+
+    const dateEl = document.getElementById('daily-current-date-str');
+    const ascEl = document.getElementById('daily-ascendant-label');
+    const sumEl = document.getElementById('dailySummaryText');
+    const workEl = document.getElementById('dailyWorkText');
+    const moneyEl = document.getElementById('dailyMoneyText');
+    const loveEl = document.getElementById('dailyLoveText');
+    const healthEl = document.getElementById('dailyHealthText');
+    const luckyNumEl = document.getElementById('dailyLuckyNumber');
+    const luckyColorEl = document.getElementById('dailyLuckyColor');
+    const luckyDirEl = document.getElementById('dailyLuckyDirection');
+
+    // ตรวจสอบว่ากรอกวันเกิดหรือยัง
+    if (!bDayVal || ascIndex === null || ascIndex === undefined) {
+        if (dateEl) dateEl.textContent = '-';
+        if (ascEl) ascEl.textContent = '-';
+        if (sumEl) sumEl.textContent = '⚠️ กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรก แล้วกด "ดูดวงลัคนาเลย" ก่อนเปิดดูดวงรายวันเฉพาะบุคคลครับ';
+        if (workEl) workEl.textContent = '-';
+        if (moneyEl) moneyEl.textContent = '-';
+        if (loveEl) loveEl.textContent = '-';
+        if (healthEl) healthEl.textContent = '-';
+        if (luckyNumEl) luckyNumEl.textContent = '-';
+        if (luckyColorEl) luckyColorEl.textContent = '-';
+        if (luckyDirEl) luckyDirEl.textContent = '-';
+        return;
+    }
+
+// สลับชุดคำทำนายประจำวันจาก Pool โดยอิงตามรหัสวันใหม่และลัคนา
+    const poolIndex = (daySeed + ascIndex) % DAILY_PREDICTIONS_POOL.length;
+    const todayPred = DAILY_PREDICTIONS_POOL[poolIndex];
+
+    if (sumEl) sumEl.textContent = `${ascInfo.name} : ${todayPred.summary}`;
+    if (workEl) workEl.textContent = todayPred.work;
+    if (moneyEl) workEl.textContent = todayPred.money;
+    if (loveEl) workEl.textContent = todayPred.love;
+    if (healthEl) workEl.textContent = todayPred.health;
+    if (luckyNumEl) luckyNumEl.textContent = todayPred.num;
+    if (luckyColorEl) luckyColorEl.textContent = todayPred.color;
+    if (luckyDirEl) luckyDirEl.textContent = todayPred.dir;
+}
+
+window.renderDailyHoroscope = updateDailyHoroscopeView;
+// ฟังก์ชันเปิด Modal ดวงรายวัน
+window.openDailyHoroscopeModal = function() {
+    updateDailyHoroscopeView();
+    const m = document.getElementById('modal-daily');
+    if (m) m.style.display = 'flex';
+};
 const POEMS_DATABASE = {
       1: `ได้เลขหนึ่งพึงระวังอย่าพลั้งพลาด ศัตรูร้ายหมายมาดจะบั่นทอน<br>
 แม้เหนื่อยล้าจงอดทนอย่าท้อแท้ ถึงย่ำแย่ยังมีหวังในวันหน้า<br>
@@ -3980,37 +4052,55 @@ function openAllArticlesModal() {
     function scrollToForm() { switchTierMode('free'); document.getElementById('birth-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     function scrollToFormVip() { switchTierMode('vip'); document.getElementById('birth-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 
-    function openFeatureModal(name) {
-      if (name === 'member' && !currentUser) {
-if (name === 'siamsi') {
-        const sm = document.getElementById('siamsiModal');
-        if (sm) {
-            sm.style.display = 'flex';
-            const res = document.getElementById('siamsiResult');
-            if (res) res.style.display = 'none';
-        }
-        return;
+ function updateDailyHoroscopeView() {
+    // 1. ตรวจสอบว่าผู้ใช้กรอกวันเกิดหรือยัง (ตรวจสอบจาก AppState หรือช่อง input)
+    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
+    const ascIndex = AppState.currentCalculatedAscIndex;
+
+    const dateEl = document.getElementById('daily-current-date-str');
+    const ascEl = document.getElementById('daily-ascendant-label');
+    const sumEl = document.getElementById('dailySummaryText');
+    const workEl = document.getElementById('dailyWorkText');
+    const moneyEl = document.getElementById('dailyMoneyText');
+    const loveEl = document.getElementById('dailyLoveText');
+    const healthEl = document.getElementById('dailyHealthText');
+    const luckyNumEl = document.getElementById('dailyLuckyNumber');
+    const luckyColorEl = document.getElementById('dailyLuckyColor');
+    const luckyDirEl = document.getElementById('dailyLuckyDirection');
+
+    // ถ้ายังไม่ได้กรอกวันเกิด หรือยังไม่ได้คำนวณลัคนา ให้เคลียร์ข้อความให้ว่างเปล่าทั้งหมด
+    if (!bDayVal || ascIndex === null || ascIndex === undefined) {
+        if (dateEl) dateEl.textContent = '-';
+        if (ascEl) ascEl.textContent = '-';
+        if (sumEl) sumEl.textContent = 'กรุณากรอก วัน/เดือน/ปีเกิด และกดผูกดวงที่หน้าแรกก่อนครับ';
+        if (workEl) workEl.textContent = '-';
+        if (moneyEl) moneyEl.textContent = '-';
+        if (loveEl) loveEl.textContent = '-';
+        if (healthEl) healthEl.textContent = '-';
+        if (luckyNumEl) luckyNumEl.textContent = '-';
+        if (luckyColorEl) luckyColorEl.textContent = '-';
+        if (luckyDirEl) luckyDirEl.textContent = '-';
+        return; // หยุดการทำงาน ไม่แสดงคำทำนายมั่ว
     }
-        alert('กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนดำเนินการครับ');
-        openAuthModal();
-        return;
-      }
-      const m = document.getElementById(`modal-${name}`);
-      if (m) {
-        m.style.display = 'flex';
-        syncBirthDataToAllModules();
-        if (name === 'tarot') renderTarotDeck();
-        const bDayFilled = document.getElementById('birthDay') && document.getElementById('birthDay').value;
-            if (name === 'compatibility' && bDayFilled) calcCompatibility();
-            if (name === 'auspicious' && bDayFilled) calcAuspiciousDates();
-                        if (name === 'mahataksa') {
-          calcMahataksaReal();
-        }
-                if (name === 'chatra') {
-          calcChatraReal();
-        }
-      }
-    }
+
+    // 2. หากกรอกวันเกิดแล้ว ให้แสดงผลตามลัคนาจริงปกติ
+    const ascInfo = ZODIAC_DATA[ascIndex] || ZODIAC_DATA[10];
+    const now = new Date();
+    const dateStr = `${now.getDate()} ${MONTH_NAMES[now.getMonth()]} พ.ศ. ${now.getFullYear() + 543}`;
+    
+    if (dateEl) dateEl.textContent = dateStr;
+    if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
+
+    // ดึงคำทำนายตามลัคนาจริง
+    if (sumEl) sumEl.textContent = ascInfo.dailySummary || "จังหวะชีวิตเปิดรับสิ่งใหม่ โอกาสดีกำลังเข้ามาหาคุณอย่างต่อเนื่อง";
+    if (workEl) workEl.textContent = ascInfo.dailyWork || "งานออนไลน์ งานสร้างสรรค์ และโครงการใหม่ได้รับการตอบรับดีเยี่ยม ขยับขยายได้ดี";
+    if (moneyEl) moneyEl.textContent = ascInfo.dailyMoney || "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้พิเศษเข้ามาจากการลงทุนหรือโปรเจกต์เสริม";
+    if (loveEl) loveEl.textContent = ascInfo.dailyLove || "คนโสดมีเกณฑ์พบมิตรภาพดีๆ ที่พัฒนาได้ คนมีคู่บรรยากาศสบายใจ ให้เกียรติซึ่งกันและกัน";
+    if (healthEl) healthEl.textContent = ascInfo.dailyHealth || "ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้เต็มที่ ระวังอาการเมื่อยล้าจากการทำงาน";
+    if (luckyNumEl) luckyNumEl.textContent = ascInfo.luckyNum || "8, 17, 26";
+    if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
+    if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
+}   
 // ฟังก์ชันเปิด Modal ซาจู
 function openSajuModal() {
   const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
@@ -4141,7 +4231,7 @@ function calcSajuEngine(mode) {
         <p style="color:#cbd5e1; font-size:0.86rem; line-height:1.6; margin:0 0 16px;">
           กรุณาสมัครสมาชิก VIP เพื่อปลดล็อกคัมภีร์วิเคราะห์แทอุน 10 ปี, เกณฑ์ดวงคู่ครอง-ธุรกิจ และทิศทางเสริมพลังทรัพย์
         </p>
-        <button onclick="openVipCheckoutModal()" style="padding:10px 24px; background:linear-gradient(90deg, #eab308, #ca8a04); color:#000; border:none; border-radius:8px; font-weight:bold; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 15px rgba(234,179,8,0.4);">
+        <button onclick="event.stopPropagation(); event.preventDefault(); const m=document.getElementById('modal-member'); if(m){m.style.setProperty('display','flex','important');} if(typeof openVipCheckoutModal==='function') openVipCheckoutModal();" style="padding:10px 24px; background:linear-gradient(90deg, #eab308, #ca8a04); color:#000; border:none; border-radius:8px; font-weight:bold; font-size:0.92rem; cursor:pointer; box-shadow:0 4px 15px rgba(234,179,8,0.4);">
           ⭐ สมัครสมาชิก VIP
         </button>
       </div>
@@ -4416,11 +4506,14 @@ function renderSajuResult(tier, day, month, year, time, birthText) {
       }
 
       const bHourSelect = document.getElementById('baziHour24');
-      for (let h = 0; h < 24; h++) {
+if (bHourSelect) {
+    for (let h = 0; h < 24; h++) {
         let opt = document.createElement('option');
-        opt.value = h; opt.textContent = `${String(h).padStart(2, '0')}:00 น.`;
+        opt.value = h; 
+        opt.textContent = `${String(h).padStart(2, '0')}:00 น.`;
         bHourSelect.appendChild(opt);
-      }
+    }
+}
 
       const bMinSelect = document.getElementById('baziMinute24');
       for (let m = 0; m < 60; m++) {
@@ -4782,6 +4875,10 @@ const DAILY_PREDICTIONS = {
 
 // ฟังก์ชันอัปเดตดวงรายวันตามราศีจริง
 function updateDailyForecast(ascSign) {
+if (!userData || !userData.birthDate) {
+    alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
+    return;
+}
   const data = DAILY_PREDICTIONS[ascSign] || DAILY_PREDICTIONS["ราศีกุมภ์"];
   
   const overviewEl = document.getElementById('dailyOverviewText');
@@ -5326,179 +5423,193 @@ function calcNumerologyReal() {
   if (boxEl) boxEl.style.display = 'block';
 }
 // ==========================================
-// ฟังก์ชันอัปเดตดวงชะตารายวันเฉพาะบุคคลแบบไดนามิก
+// ฟังก์ชันอัปเดตดวงชะตารายวันเฉพาะบุคคลแบบไดนามิก (แก้ไขตรวจสอบวันเกิดแล้ว)
 // ==========================================
 function renderDailyHoroscope(customSign) {
-  // 1. ดึงวันที่ปัจจุบันภาษาไทย
-  const now = new Date();
-  const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  const dateStr = `${now.getDate()} ${thMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
+    // 1. ตรวจสอบว่าผู้ใช้กรอก วัน / เดือน / ปีเกิด ในฟอร์มหน้าแรกหรือยัง
+    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
+    const bMonthVal = document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : '';
+    const bYearVal = document.getElementById('birthYearBE') ? document.getElementById('birthYearBE').value : '';
 
-  // 2. ระบุราศี (หากไม่ได้ส่งเข้ามา ให้ดึงจากโปรไฟล์ หรือใช้ค่าเริ่มต้นเป็นราศีเมษ)
-  let sign = customSign || (window.currentProfile && window.currentProfile.zodiac) || "ราศีเมษ";
+    const dateEl = document.getElementById('daily-current-date-str');
+    const ascEl = document.getElementById('daily-ascendant-label');
+    const sumEl = document.getElementById('dailySummaryText');
+    const workEl = document.getElementById('dailyWorkText');
+    const moneyEl = document.getElementById('dailyMoneyText');
+    const loveEl = document.getElementById('dailyLoveText');
+    const healthEl = document.getElementById('dailyHealthText');
+    const numEl = document.getElementById('dailyLuckyNumber');
+    const colorEl = document.getElementById('dailyLuckyColor');
+    const dirEl = document.getElementById('dailyLuckyDirection');
 
-  // ฐานข้อมูลดวงรายวันแยกตาม 12 ราศี
-  const ZODIAC_DAILY = {
-  "ราศีเมษ": {
-    summary: "พลังแห่งการขับเคลื่อนเด่นชัด ความกระตือรือร้นและไฟในการริเริ่มสิ่งใหม่กำลังเปิดกว้าง เป็นจังหวะดีที่จะก้าวไปข้างหน้าอย่างมั่นใจ",
-    work: "โปรเจกต์ที่วางแผนไว้มีความคืบหน้าชัดเจน การเจรจาติดต่อหรือประสานงานราบรื่น การตัดสินใจที่เด็ดขาดและเฉียบคมจะช่วยปลดล็อกปัญหาค้างคา",
-    money: "มีเกณฑ์รับทรัพย์จากการทำงานหรือช่องทางเสริม แต่ควรจัดระเบียบการใช้จ่ายให้รอบคอบ หลีกเลี่ยงการช้อปปิ้งตามอารมณ์ชั่ววูบ",
-    love: "คนโสดมีเสน่ห์ดึงดูดใจ มีโอกาสพบคนน่าสนใจผ่านแวดวงการทำงาน คนมีคู่ความสัมพันธ์อบอุ่น เป็นที่ปรึกษาและกำลังใจให้กันอย่างดี",
-    health: "ระวังอาการตึงเมื่อยกล้ามเนื้อบริเวณหลัง บ่า และคอ ควรยืดเส้นสายระหว่างวันและดื่มน้ำให้เพียงพอ",
-    luckyNum: "1, 9, 19",
-    luckyColor: "สีแดงทับทิม, สีทองอำพัน"
-  },
-  "ราศีพฤษภ": {
-    summary: "ความอดทนและความสุขุมเริ่มผลิดอกออกผล สิ่งที่เคยกดดันหรือติดขัดจะค่อยๆ คลี่คลาย บรรยากาศรอบตัวผ่อนคลายและลงตัวมากขึ้น",
-    work: "งานเอกสาร การเซ็นสัญญา หรือการวางระบบระยะยาวดำเนินไปได้สวย ได้รับความไว้วางใจจากผู้ใหญ่และเพื่อนร่วมทีม",
-    money: "การเงินนิ่งและมั่นคงขึ้น มีเกณฑ์รับผลตอบแทนจากการลงทุนเดิมหรือของกำนัลมีค่า เหมาะแก่การวางแผนออมหรือต่อยอดทุน",
-    love: "คนโสดเริ่มมีคนเข้ามาทำความรู้จักอย่างจริงใจ ไม่หวือหวาแต่มั่นคง คนมีคู่ดูแลกันด้วยความเข้าใจ มีเกณฑ์ร่วมวางแผนอนาคตด้วยกัน",
-    health: "ระวังเรื่องระบบทางเดินหายใจ หรืออาการเจ็บคอ ควรหลีกเลี่ยงของทอดของมันและพักผ่อนให้เต็มที่",
-    luckyNum: "2, 6, 24",
-    luckyColor: "สีเขียวมรกต, สีขาวไข่มุก"
-  },
-  "ราศีเมถุน": {
-    summary: "สมองปลอดโปร่ง วาทศิลป์และการสื่อสารโดดเด่นเป็นพิเศษ เป็นวันที่ไอเดียสร้างสรรค์พรั่งพรูและหยิบจับสิ่งใดก็คล่องตัว",
-    work: "งานด้านการเจรจา การขาย การตลาด หรือออนไลน์ได้รับการตอบรับดีเยี่ยม คำพูดมีน้ำหนักและน่าเชื่อถือ จูงใจผู้คนได้สำเร็จ",
-    money: "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้พิเศษเข้ามาให้ชื่นใจ แต่ควรระวังการจ่ายเงินไปกับการเข้าสังคมหรือบันเทิง",
-    love: "คนโสดเสน่ห์แพรวพราว มีคนเข้ามาทักทายคุยเล่นจนหัวใจกระชุ่มกระชวย คนมีคู่พูดคุยปรับความเข้าใจกันได้ดี มีเรื่องให้ยิ้มร่วมกัน",
-    health: "สายตาอาจล้าจากการจ้องจอนานเกินไป ควรพักสายตาและหลีกเลี่ยงการนอนดึก",
-    luckyNum: "4, 5, 14",
-    luckyColor: "สีส้มสว่าง, สีบรอนซ์เงิน"
-  },
-  "ราศีกรกฎ": {
-    summary: "สัญชาตญาณและความรู้สึกแม่นยำ เป็นช่วงเวลาที่จิตใจต้องการความสงบและความมั่นคง เหมาะแก่การเคลียร์ภาระเก่าๆ ให้เสร็จสิ้น",
-    work: "งานเบื้องหลัง งานตรวจสอบข้อมูล หรืองานบริการดูแลผู้อื่นจะทำได้ราบรื่นเป็นพิเศษ ผลงานสะท้อนถึงความประณีตตั้งใจ",
-    money: "มีโชคลาภเล็กๆ น้อยๆ จากคนใกล้ชิดหรือครอบครัว แต่ให้ระวังรายจ่ายจุกจิกเกี่ยวกับการดูแลคนอื่นหรือของตกแต่งบ้าน",
-    love: "คนโสดอาจมีความรู้สึกดีๆ กับคนที่คุ้นเคยมานาน คนมีคู่ต้องการการใส่ใจเป็นพิเศษ ลองหาเวลาทานข้าวหรือพูดคุยด้วยความอบอุ่น",
-    health: "ระวังระบบทางเดินอาหาร ปวดท้อง หรือกรดไหลย้อน ควรกินอาหารให้ตรงเวลาและหลีกเลี่ยงรสจัด",
-    luckyNum: "2, 8, 28",
-    luckyColor: "สีขาวบริสุทธิ์, สีเงินควันบุหรี่"
-  },
-  "ราศีสิงห์": {
-    summary: "พลังงานความมั่นใจและความเป็นผู้นำโดดเด่น มีโอกาสได้แสดงความสามารถหรือยืนอยู่แถวหน้าอย่างน่าชื่นชม",
-    work: "การทำงานเป็นทีมหรือการคุมโปรเจกต์ใหญ่เป็นไปอย่างราบรื่น ได้รับคำชื่นชมจากผู้ใหญ่และผลงานประจักษ์ชัดเจน",
-    money: "มีโอกาสทางการเงินใหม่ๆ เข้ามา หรือได้กำไรจากการค้าขาย แต่ระวังหน้าใหญ่ใจกว้าง ใช้จ่ายเกินงบประมาณที่ตั้งไว้",
-    love: "คนโสดมีเกณฑ์พบเจอคนโดดเด่นมีเสน่ห์สะดุดตา คนมีคู่ความรักหวานชื่น ได้รับการดูแลเอาใจใส่และยกย่องเกียรติซึ่งกันและกัน",
-    health: "สุขภาพแข็งแรงดี แต่อาจมีความเหนื่อยล้าทางหัวใจหรือความดัน ควรหาเวลาพักผ่อนและทำสมาธิสั้นๆ",
-    luckyNum: "1, 3, 19",
-    luckyColor: "สีทองคำ, สีเหลืองมัสตาร์ด"
-  },
-  "ราศีกันย์": {
-    summary: "ความละเอียดรอบคอบและการคิดวิเคราะห์จะช่วยให้รอดพ้นจากข้อผิดพลาด จัดการระบบงานและชีวิตส่วนตัวได้อย่างสมบูรณ์แบบ",
-    work: "เหมาะแก่การจัดการงานเอกสาร บัญชี หรืองานวิจัยที่ต้องใช้สมาธิสูง ความรอบคอบจะช่วยลดความผิดพลาดและได้รับความไว้วางใจ",
-    money: "การเงินมีการวางแผนอย่างเป็นระเบียบ รายรับรายจ่ายสมดุลดี มีโอกาสสร้างรายได้จากทักษะเฉพาะทางหรือความรู้ของตนเอง",
-    love: "คนโสดโฟกัสกับเป้าหมายชีวิตตนเองเป็นหลัก หากมีใครเข้ามาก็ค่อยๆ ดูใจกันไป คนมีคู่คอยช่วยเหลือสนับสนุนงานบ้านและงานชีวิตอย่างดี",
-    health: "ระวังอาการไมเกรนหรือความเครียดสะสมจากการคิดมาก ลองฟังเพลงบรรเลงเบาๆ เพื่อผ่อนคลายสมอง",
-    luckyNum: "4, 6, 24",
-    luckyColor: "สีเขียวใบไม้, สีน้ำตาลอ่อน"
-  },
-  "ราศีตุลย์": {
-    summary: "เสน่ห์แห่งความเป็นมิตรและการประนีประนอมช่วยสร้างโอกาสดีๆ เข้ามาทั้งในเรื่องส่วนตัวและสายสัมพันธ์ทางธุรกิจ",
-    work: "การเจรจาต่อรอง หรืองานที่ต้องร่วมมือกับหุ้นส่วนคู่ค้าดำเนินไปด้วยความราบรื่น บรรยากาศการทำงานปรองดองไร้ความขัดแย้ง",
-    money: "การเงินหมุนเวียนดี มีโชคลาภจากการติดต่อหรือคนแนะนำช่องทางให้ แต่ควรหลีกเลี่ยงการให้ผู้อื่นหยิบยืมเงินในระยะนี้",
-    love: "คนโสดมีเกณฑ์มีคนเข้ามาถูกใจหรือชวนคุยสานสัมพันธ์ คนมีคู่บรรยากาศรักสดใส ชวนกันไปพักผ่อนเปลี่ยนบรรยากาศจะยิ่งผูกพัน",
-    health: "ระวังอาการปวดหลังช่วงเอวหรือระบบไต ควรดื่มน้ำสะอาดมากๆ และเลี่ยงการนั่งหลังค่อม",
-    luckyNum: "6, 7, 16",
-    luckyColor: "สีฟ้าพาสเทล, สีชมพูกลีบบัว"
-  },
-  "ราศีพิจิก": {
-    summary: "พลังใจและสมาธิแน่วแน่ สามารถเอาชนะอุปสรรคหรือความท้าทายที่ยากได้ สิ่งที่พยายามทุ่มเทไว้ใกล้จะบรรลุเป้าหมาย",
-    work: "งานที่มีความซับซ้อนหรืองานแก้ปัญหาเฉพาะหน้าทำได้ยอดเยี่ยม การสืบค้นข้อมูลหรือค้นคว้าจะพบจุดเปลี่ยนที่สำคัญ",
-    money: "มีโชคจากการบริหารจัดการหนี้สิน หรือมีรายได้ทางอ้อมเข้ามา แต่ควรเก็บออมไว้สำรองสำหรับแผนการในอนาคต",
-    love: "คนโสดความรักลึกซึ้งและจริงจัง หากถูกใจใครจะศึกษาอย่างถี่ถ้วน คนมีคู่ความรักเหนียวแน่น มั่นคง และปกป้องดูแลกันเสมอ",
-    health: "ระวังอาการอักเสบของกล้ามเนื้อหรือระบบขับถ่าย ควรทานผักผลไม้ที่มีกากใยสูง",
-    luckyNum: "3, 8, 18",
-    luckyColor: "สีแดงเลือดหมู, สีดำเงามัน"
-  },
-  "ราศีธนู": {
-    summary: "มุมมองชีวิตเปิดกว้าง พร้อมเรียนรู้และเปิดรับประสบการณ์ใหม่ๆ การเดินทางหรือการติดต่อต่างแดนจะนำพาโชคดีมาให้",
-    work: "งานด้านการศึกษา การอบรม หรืองานต่างประเทศโดดเด่นมาก ได้รับแรงบันดาลใจใหม่ๆ ทำให้ทำงานได้อย่างมีพลังและมองการณ์ไกล",
-    money: "มีสภาพคล่องที่ดี มีแนวโน้มได้เงินสนับสนุนหรือทุนการศึกษา/ทำงาน แต่ระวังการใช้จ่ายไปกับการเดินทางหรือซื้อของตามใจตัว",
-    love: "คนโสดมีโอกาสพบคนถูกคอที่มีแนวคิดหรือทัศนคติคล้ายกัน คนมีคู่คอยผลักดันให้กำลังใจซึ่งกันและกันสู่ความสำเร็จ",
-    health: "ระวังอาการปวดเมื่อยบริเวณสะโพกหรือต้นขาจากการเดินหรือยืนเป็นเวลานาน",
-    luckyNum: "5, 9, 15",
-    luckyColor: "สีม่วงเข้ม, สีส้มอิฐ"
-  },
-  "ราศีมังกร": {
-    summary: "ความมีวินัยและความมุ่งมั่นหนักแน่นพาชีวิตก้าวหน้าอย่างต่อเนื่อง รากฐานที่สร้างไว้เริ่มแข็งแกร่งจนผู้อื่นยอมรับ",
-    work: "งานใหญ่หรืองานที่มีความรับผิดชอบสูงเดินหน้าไปตามแผน แม้จะเหนื่อยแต่ผลลัพธ์คุ้มค่าและสร้างชื่อเสียงให้อย่างมาก",
-    money: "การเงินมั่นคง มีวินัยในการเก็บออมดีเยี่ยม มีเกณฑ์ได้รับทรัพย์สินชิ้นใหญ่หรือผลตอบแทนจากการทุ่มเทแรงกายแรงใจ",
-    love: "คนโสดมีท่าทีสำรวมแต่มีเสน่ห์ที่ความจริงใจ คนมีคู่อยู่เคียงข้างกันด้วยความรับผิดชอบและความซื่อสัตย์ ร่วมกันสร้างอนาคต",
-    health: "ระวังอาการปวดข้อต่อ หัวเข่า หรือกระดูก ควรขยับร่างกายเบาๆ และหลีกเลี่ยงการยกของหนัก",
-    luckyNum: "7, 8, 27",
-    luckyColor: "สีเทาควันบุหรี่, สีน้ำเงินกรมท่า"
-  },
-  "ราศีกุมภ์": {
-    summary: "ไอเดียล้ำหน้า แปลกใหม่ และไม่ซ้ำใคร การเปิดกว้างรับนวัตกรรมหรือเทคโนโลยีใหม่ๆ จะสร้างโอกาสทองให้แบบก้าวกระโดด",
-    work: "งานออนไลน์ คอนเทนต์สร้างสรรค์ และงานที่ใช้เทคโนโลยีได้รับการตอบรับดีเยี่ยม ผู้คนชื่นชอบความสดใหม่ในแนวคิดของคุณ",
-    money: "การเงินคล่องตัว มีช่องทางรายได้พิเศษเข้ามาจากเครือข่ายเพื่อนฝูงหรือการทำงานโปรเจกต์เสริม",
-    love: "คนโสดมีเกณฑ์พบมิตรภาพดีๆ ที่อาจพัฒนาความรู้สึกได้แบบไม่ทันตั้งตัว คนมีคู่สบายใจ ให้เกียรติและให้อิสระทางความคิดต่อกัน",
-    health: "ระวังอาการล้าที่บริเวณข้อเท้า ปลีน่อง หรือนอนไม่หลับ ควรดื่มน้ำให้เพียงพอและงดเล่นมือก่อนนอน",
-    luckyNum: "8, 17, 26",
-    luckyColor: "สีฟ้าน้ำทะเล, สีบรอนซ์เข้ม"
-  },
-  "ราศีมีน": {
-    summary: "จินตนาการและลางสังหรณ์ยอดเยี่ยม มีความเห็นอกเห็นใจผู้อื่น เป็นที่พึ่งทางใจและได้รับความเมตตาจากคนรอบตัว",
-    work: "งานสายศิลปะ งานออกแบบ หรือการช่วยเหลือดูแลผู้อื่นสร้างความประทับใจ การทำงานด้วยใจจะส่งผลลัพธ์กลับมาอย่างงดงาม",
-    money: "มีโชคลาภจากการทำบุญหรือสิ่งศักดิ์สิทธิ์ แต่ให้ระวังใจอ่อนช่วยเหลือคนอื่นจนตนเองติดขัด",
-    love: "คนโสดมีความโรแมนติก มีโอกาสพบคนที่สื่อสารทางใจเข้าใจกันง่าย คนมีคู่รักใคร่ผูกพัน ดูแลความรู้สึกกันและกันอย่างดีเยี่ยม",
-    health: "ระวังอาการแพ้อากาศ แพ้น้ำ หรือภูมิแพ้กำเริบ ควรดูแลความสะอาดรอบตัวและพักผ่อนในที่ที่อากาศถ่ายเท",
-    luckyNum: "2, 9, 29",
-    luckyColor: "สีเขียวน้ำทะเล, สีม่วงลาเวนเดอร์"
-  }
-};
+    // ถ้ายังไม่ได้กรอกวันเกิด ให้เคลียร์ค่าทั้งหมดและแสดงข้อความบังคับเตือนทันที
+    if (!bDayVal || !bMonthVal || !bYearVal || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
+        if (dateEl) dateEl.textContent = '-';
+        if (ascEl) ascEl.textContent = 'ยังไม่ได้เลือกวันเกิด';
+        if (sumEl) sumEl.textContent = '⚠️ กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรก แล้วกด "ดูดวงลัคนาเลย" ก่อนเปิดดูดวงรายวันเฉพาะบุคคลครับ';
+        if (workEl) workEl.textContent = '-';
+        if (moneyEl) moneyEl.textContent = '-';
+        if (loveEl) loveEl.textContent = '-';
+        if (healthEl) healthEl.textContent = '-';
+        if (numEl) numEl.textContent = '-';
+        if (colorEl) colorEl.textContent = '-';
+        if (dirEl) dirEl.textContent = '-';
+        return;
+    }
 
-  // หมุนเวียนคำทำนายตามวันที่ปัจจุบัน (วันในสัปดาห์ + วันที่)
-  const zodiacKeys = Object.keys(ZODIAC_DAILY);
-  const baseIndex = zodiacKeys.indexOf(sign) !== -1 ? zodiacKeys.indexOf(sign) : 0;
-  const dayOffset = (now.getDate() + now.getDay()) % zodiacKeys.length;
-  const targetSign = zodiacKeys[(baseIndex + dayOffset) % zodiacKeys.length];
+    // 2. ดึงวันที่ปัจจุบันภาษาไทย
+    const now = new Date();
+    const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    const dateStr = `${now.getDate()} ${thMonths[now.getMonth()]} พ.ศ. ${now.getFullYear() + 543}`;
 
-  const data = ZODIAC_DAILY[targetSign] || ZODIAC_DAILY[sign] || ZODIAC_DAILY["ราศีเมษ"];
+    // 3. ระบุราศีตามลัคนาจริงของผู้ใช้
+    let ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[AppState.currentCalculatedAscIndex]) ? ZODIAC_DATA[AppState.currentCalculatedAscIndex] : null;
+    let sign = customSign || (ascInfo ? ascInfo.name : "ราศีกุมภ์");
 
-  // 3. แสดงผลลงใน Element ตาม ID ที่มีอยู่ใน Modal
-  const dateEl = document.getElementById('daily-current-date-str');
-  const ascEl = document.getElementById('daily-ascendant-label');
-  const sumEl = document.getElementById('dailySummaryText');
-  const workEl = document.getElementById('dailyWorkText');
-  const moneyEl = document.getElementById('dailyMoneyText');
-  const loveEl = document.getElementById('dailyLoveText');
-  const healthEl = document.getElementById('dailyHealthText');
-  const numEl = document.getElementById('dailyLuckyNumber');
-  const colorEl = document.getElementById('dailyLuckyColor');
+    // ฐานข้อมูลดวงรายวันแบบยาวตามเดิมของคุณกฤศ
+    const ZODIAC_DAILY = {
+      "ราศีเมษ": {
+        summary: "พลังแห่งการขับเคลื่อนเด่นชัด ความกระตือรือร้นและไฟในการริเริ่มสิ่งใหม่กำลังเปิดกว้าง เป็นจังหวะดีที่จะก้าวไปข้างหน้าอย่างมั่นใจ",
+        work: "โปรเจกต์ที่วางแผนไว้มีความคืบหน้าชัดเจน การเจรจาติดต่อหรือประสานงานราบรื่น การตัดสินใจที่เด็ดขาดและเฉียบคมจะช่วยปลดล็อกปัญหาค้างคา",
+        money: "มีเกณฑ์รับทรัพย์จากการทำงานหรือช่องทางเสริม แต่ควรจัดระเบียบการใช้จ่ายให้รอบคอบ หลีกเลี่ยงการช้อปปิ้งตามอารมณ์ชั่ววูบ",
+        love: "คนโสดมีเสน่ห์ดึงดูดใจ มีโอกาสพบคนน่าสนใจผ่านแวดวงการทำงาน คนมีคู่ความสัมพันธ์อบอุ่น เป็นที่ปรึกษาและกำลังใจให้กันอย่างดี",
+        health: "ระวังอาการตึงเมื่อยกล้ามเนื้อบริเวณหลัง บ่า และคอ ควรยืดเส้นสายระหว่างวันและดื่มน้ำให้เพียงพอ",
+        luckyNum: "1, 9, 19",
+        luckyColor: "สีแดงทับทิม, สีทองอำพัน",
+        luckyDir: "ทิศตะวันออก"
+      },
+      "ราศีพฤษภ": {
+        summary: "ความอดทนและความสุขุมเริ่มผลิดอกออกผล สิ่งที่เคยกดดันหรือติดขัดจะค่อยๆ คลี่คลาย บรรยากาศรอบตัวผ่อนคลายและลงตัวมากขึ้น",
+        work: "งานเอกสาร การเซ็นสัญญา หรือการวางระบบระยะยาวดำเนินไปได้สวย ได้รับความไว้วางใจจากผู้ใหญ่และเพื่อนร่วมทีม",
+        money: "การเงินนิ่งและมั่นคงขึ้น มีเกณฑ์รับผลตอบแทนจากการลงทุนเดิมหรือของกำนัลมีค่า เหมาะแก่การวางแผนออมหรือต่อยอดทุน",
+        love: "คนโสดเริ่มมีคนเข้ามาทำความรู้จักอย่างจริงใจ ไม่หวือหวาแต่มั่นคง คนมีคู่ดูแลกันด้วยความเข้าใจ มีเกณฑ์ร่วมวางแผนอนาคตด้วยกัน",
+        health: "ระวังเรื่องระบบทางเดินหายใจ หรืออาการเจ็บคอ ควรหลีกเลี่ยงของทอดของมันและพักผ่อนให้เต็มที่",
+        luckyNum: "2, 6, 24",
+        luckyColor: "สีเขียวมรกต, สีขาวไข่มุก",
+        luckyDir: "ทิศใต้"
+      },
+      "ราศีเมถุน": {
+        summary: "สมองปลอดโปร่ง วาทศิลป์และการสื่อสารโดดเด่นเป็นพิเศษ เป็นวันที่ไอเดียสร้างสรรค์พรั่งพรูและหยิบจับสิ่งใดก็คล่องตัว",
+        work: "งานด้านการเจรจา การขาย การตลาด หรือออนไลน์ได้รับการตอบรับดีเยี่ยม คำพูดมีน้ำหนักและน่าเชื่อถือ จูงใจผู้คนได้สำเร็จ",
+        money: "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้พิเศษเข้ามาให้ชื่นใจ แต่ควรระวังการจ่ายเงินไปกับการเข้าสังคมหรือบันเทิง",
+        love: "คนโสดเสน่ห์แพรวพราว มีคนเข้ามาทักทายคุยเล่นจนหัวใจกระชุ่มกระชวย คนมีคู่พูดคุยปรับความเข้าใจกันได้ดี มีเรื่องให้ยิ้มร่วมกัน",
+        health: "สายตาอาจล้าจากการจ้องจอนานเกินไป ควรพักสายตาและหลีกเลี่ยงการนอนดึก",
+        luckyNum: "4, 5, 14",
+        luckyColor: "สีส้มสว่าง, สีบรอนซ์เงิน",
+        luckyDir: "ทิศตะวันตกเฉียงเหนือ"
+      },
+      "ราศีกรกฎ": {
+        summary: "สัญชาตญาณและความรู้สึกแม่นยำ เป็นช่วงเวลาที่จิตใจต้องการความสงบและความมั่นคง เหมาะแก่การเคลียร์ภาระเก่าๆ ให้เสร็จสิ้น",
+        work: "งานเบื้องหลัง งานตรวจสอบข้อมูล หรืองานบริการดูแลผู้อื่นจะทำได้ราบรื่นเป็นพิเศษ ผลงานสะท้อนถึงความประณีตตั้งใจ",
+        money: "มีโชคลาภเล็กๆ น้อยๆ จากคนใกล้ชิดหรือครอบครัว แต่ให้ระวังรายจ่ายจุกจิกเกี่ยวกับการดูแลคนอื่นหรือของตกแต่งบ้าน",
+        love: "คนโสดอาจมีความรู้สึกดีๆ กับคนที่คุ้นเคยมานาน คนมีคู่ต้องการการใส่ใจเป็นพิเศษ ลองหาเวลาทานข้าวหรือพูดคุยด้วยความอบอุ่น",
+        health: "ระวังระบบทางเดินอาหาร ปวดท้อง หรือกรดไหลย้อน ควรกินอาหารให้ตรงเวลาและหลีกเลี่ยงรสจัด",
+        luckyNum: "2, 8, 28",
+        luckyColor: "สีขาวบริสุทธิ์, สีเงินควันบุหรี่",
+        luckyDir: "ทิศเหนือ"
+      },
+      "ราศีสิงห์": {
+        summary: "พลังงานความมั่นใจและความเป็นผู้นำโดดเด่น มีโอกาสได้แสดงความสามารถหรือยืนอยู่แถวหน้าอย่างน่าชื่นชม",
+        work: "การทำงานเป็นทีมหรือการคุมโปรเจกต์ใหญ่เป็นไปอย่างราบรื่น ได้รับคำชื่นชมจากผู้ใหญ่และผลงานประจักษ์ชัดเจน",
+        money: "มีโอกาสทางการเงินใหม่ๆ เข้ามา หรือได้กำไรจากการค้าขาย แต่ระวังหน้าใหญ่ใจกว้าง ใช้จ่ายเกินงบประมาณที่ตั้งไว้",
+        love: "คนโสดมีเกณฑ์พบเจอคนโดดเด่นมีเสน่ห์สะดุดตา คนมีคู่ความรักหวานชื่น ได้รับการดูแลเอาใจใส่และยกย่องเกียรติซึ่งกันและกัน",
+        health: "สุขภาพแข็งแรงดี แต่อาจมีความเหนื่อยล้าทางหัวใจหรือความดัน ควรหาเวลาพักผ่อนและทำสมาธิสั้นๆ",
+        luckyNum: "1, 3, 19",
+        luckyColor: "สีทองคำ, สีเหลืองมัสตาร์ด",
+        luckyDir: "ทิศตะวันออกเฉียงเหนือ"
+      },
+      "ราศีกันย์": {
+        summary: "ความละเอียดรอบคอบและการคิดวิเคราะห์จะช่วยให้รอดพ้นจากข้อผิดพลาด จัดการระบบงานและชีวิตส่วนตัวได้อย่างสมบูรณ์แบบ",
+        work: "เหมาะแก่การจัดการงานเอกสาร บัญชี หรืองานวิจัยที่ต้องใช้สมาธิสูง ความรอบคอบจะช่วยลดความผิดพลาดและได้รับความไว้วางใจ",
+        money: "การเงินมีการวางแผนอย่างเป็นระเบียบ รายรับรายจ่ายสมดุลดี มีโอกาสสร้างรายได้จากทักษะเฉพาะทางหรือความรู้ของตนเอง",
+        love: "คนโสดโฟกัสกับเป้าหมายชีวิตตนเองเป็นหลัก หากมีใครเข้ามาก็ค่อยๆ ดูใจกันไป คนมีคู่คอยช่วยเหลือสนับสนุนงานบ้านและงานชีวิตอย่างดี",
+        health: "ระวังอาการไมเกรนหรือความเครียดสะสมจากการคิดมาก ลองฟังเพลงบรรเลงเบาๆ เพื่อผ่อนคลายสมอง",
+        luckyNum: "4, 6, 24",
+        luckyColor: "สีเขียวใบไม้, สีน้ำตาลอ่อน",
+        luckyDir: "ทิศตะวันตกเฉียงใต้"
+      },
+      "ราศีตุลย์": {
+        summary: "เสน่ห์แห่งความเป็นมิตรและการประนีประนอมช่วยสร้างโอกาสดีๆ เข้ามาทั้งในเรื่องส่วนตัวและสายสัมพันธ์ทางธุรกิจ",
+        work: "การเจรจาต่อรอง หรืองานที่ต้องร่วมมือกับหุ้นส่วนคู่ค้าดำเนินไปด้วยความราบรื่น บรรยากาศการทำงานปรองดองไร้ความขัดแย้ง",
+        money: "การเงินหมุนเวียนดี มีโชคลาภจากการติดต่อหรือคนแนะนำช่องทางให้ แต่ควรหลีกเลี่ยงการให้ผู้อื่นหยิบยืมเงินในระยะนี้",
+        love: "คนโสดมีเกณฑ์มีคนเข้ามาถูกใจหรือชวนคุยสานสัมพันธ์ คนมีคู่บรรยากาศรักสดใส ชวนกันไปพักผ่อนเปลี่ยนบรรยากาศจะยิ่งผูกพัน",
+        health: "ระวังอาการปวดหลังช่วงเอวหรือระบบไต ควรดื่มน้ำสะอาดมากๆ และเลี่ยงการนั่งหลังค่อม",
+        luckyNum: "6, 7, 16",
+        luckyColor: "สีฟ้าพาสเทล, สีชมพูกลีบบัว",
+        luckyDir: "ทิศตะวันตก"
+      },
+      "ราศีพิจิก": {
+        summary: "พลังใจและสมาธิแน่วแน่ สามารถเอาชนะอุปสรรคหรือความท้าทายที่ยากได้ สิ่งที่พยายามทุ่มเทไว้ใกล้จะบรรลุเป้าหมาย",
+        work: "งานที่มีความซับซ้อนหรืองานแก้ปัญหาเฉพาะหน้าทำได้ยอดเยี่ยม การสืบค้นข้อมูลหรือค้นคว้าจะพบจุดเปลี่ยนที่สำคัญ",
+        money: "มีโชคจากการบริหารจัดการหนี้สิน หรือมีรายได้ทางอ้อมเข้ามา แต่ควรเก็บออมไว้สำรองสำหรับแผนการในอนาคต",
+        love: "คนโสดความรักลึกซึ้งและจริงจัง หากถูกใจใครจะศึกษาอย่างถี่ถ้วน คนมีคู่ความรักเหนียวแน่น มั่นคง และปกป้องดูแลกันเสมอ",
+        health: "ระวังอาการอักเสบของกล้ามเนื้อหรือระบบขับถ่าย ควรทานผักผลไม้ที่มีกากใยสูง",
+        luckyNum: "3, 8, 18",
+        luckyColor: "สีแดงเลือดหมู, สีดำเงามัน",
+        luckyDir: "ทิศใต้"
+      },
+      "ราศีธนู": {
+        summary: "มุมมองชีวิตเปิดกว้าง พร้อมเรียนรู้และเปิดรับประสบการณ์ใหม่ๆ การเดินทางหรือการติดต่อต่างแดนจะนำพาโชคดีมาให้",
+        work: "งานด้านการศึกษา การอบรม หรืองานต่างประเทศโดดเด่นมาก ได้รับแรงบันดาลใจใหม่ๆ ทำให้ทำงานได้อย่างมีพลังและมองการณ์ไกล",
+        money: "มีสภาพคล่องที่ดี มีแนวโน้มได้เงินสนับสนุนหรือทุนการศึกษา/ทำงาน แต่ระวังการใช้จ่ายไปกับการเดินทางหรือซื้อของตามใจตัว",
+        love: "คนโสดมีโอกาสพบคนถูกคอที่มีแนวคิดหรือทัศนคติคล้ายกัน คนมีคู่คอยผลักดันให้กำลังใจซึ่งกันและกันสู่ความสำเร็จ",
+        health: "ระวังอาการปวดเมื่อยบริเวณสะโพกหรือต้นขาจากการเดินหรือยืนเป็นเวลานาน",
+        luckyNum: "5, 9, 15",
+        luckyColor: "สีม่วงเข้ม, สีส้มอิฐ",
+        luckyDir: "ทิศตะวันออกเฉียงเหนือ"
+      },
+      "ราศีมังกร": {
+        summary: "ความมีวินัยและความมุ่งมั่นหนักแน่นพาชีวิตก้าวหน้าอย่างต่อเนื่อง รากฐานที่สร้างไว้เริ่มแข็งแกร่งจนผู้อื่นยอมรับ",
+        work: "งานใหญ่หรืองานที่มีความรับผิดชอบสูงเดินหน้าไปตามแผน แม้จะเหนื่อยแต่ผลลัพธ์คุ้มค่าและสร้างชื่อเสียงให้อย่างมาก",
+        money: "การเงินมั่นคง มีวินัยในการเก็บออมดีเยี่ยม มีเกณฑ์ได้รับทรัพย์สินชิ้นใหญ่หรือผลตอบแทนจากการทุ่มเทแรงกายแรงใจ",
+        love: "คนโสดมีท่าทีสำรวมแต่มีเสน่ห์ที่ความจริงใจ คนมีคู่อยู่เคียงข้างกันด้วยความรับผิดชอบและความซื่อสัตย์ ร่วมกันสร้างอนาคต",
+        health: "ระวังอาการปวดข้อต่อ หัวเข่า หรือกระดูก ควรขยับร่างกายเบาๆ และหลีกเลี่ยงการยกของหนัก",
+        luckyNum: "7, 8, 27",
+        luckyColor: "สีเทาควันบุหรี่, สีน้ำเงินกรมท่า",
+        luckyDir: "ทิศตะวันตกเฉียงใต้"
+      },
+      "ราศีกุมภ์": {
+        summary: "ไอเดียล้ำหน้า แปลกใหม่ และไม่ซ้ำใคร การเปิดกว้างรับนวัตกรรมหรือเทคโนโลยีใหม่ๆ จะสร้างโอกาสทองให้แบบก้าวกระโดด",
+        work: "งานออนไลน์ คอนเทนต์สร้างสรรค์ และงานที่ใช้เทคโนโลยีได้รับการตอบรับดีเยี่ยม ผู้คนชื่นชอบความสดใหม่ในแนวคิดของคุณ",
+        money: "การเงินคล่องตัว มีช่องทางรายได้พิเศษเข้ามาจากเครือข่ายเพื่อนฝูงหรือการทำงานโปรเจกต์เสริม",
+        love: "คนโสดมีเกณฑ์พบมิตรภาพดีๆ ที่อาจพัฒนาความรู้สึกได้แบบไม่ทันตั้งตัว คนมีคู่สบายใจ ให้เกียรติและให้อิสระทางความคิดต่อกัน",
+        health: "ระวังอาการล้าที่บริเวณข้อเท้า ปลีน่อง หรือนอนไม่หลับ ควรดื่มน้ำให้เพียงพอและงดเล่นมือก่อนนอน",
+        luckyNum: "8, 17, 26",
+        luckyColor: "สีฟ้าน้ำทะเล, สีบรอนซ์เข้ม",
+        luckyDir: "ทิศตะวันออกเฉียงเหนือ"
+      },
+      "ราศีมีน": {
+        summary: "จินตนาการและลางสังหรณ์ยอดเยี่ยม มีความเห็นอกเห็นใจผู้อื่น เป็นที่พึ่งทางใจและได้รับความเมตตาจากคนรอบตัว",
+        work: "งานสายศิลปะ งานออกแบบ หรือการช่วยเหลือดูแลผู้อื่นสร้างความประทับใจ การทำงานด้วยใจจะส่งผลลัพธ์กลับมาอย่างงดงาม",
+        money: "มีโชคลาภจากการทำบุญหรือสิ่งศักดิ์สิทธิ์ แต่ให้ระวังใจอ่อนช่วยเหลือคนอื่นจนตนเองติดขัด",
+        love: "คนโสดมีความโรแมนติก มีโอกาสพบคนที่สื่อสารทางใจเข้าใจกันง่าย คนมีคู่รักใคร่ผูกพัน ดูแลความรู้สึกกันและกันอย่างดีเยี่ยม",
+        health: "ระวังอาการแพ้อากาศ แพ้น้ำ หรือภูมิแพ้กำเริบ ควรดูแลความสะอาดรอบตัวและพักผ่อนในที่ที่อากาศถ่ายเท",
+        luckyNum: "2, 9, 29",
+        luckyColor: "สีเขียวน้ำทะเล, สีม่วงลาเวนเดอร์",
+        luckyDir: "ทิศเหนือ"
+      }
+    };
 
-  if (dateEl) dateEl.textContent = dateStr;
-  if (ascEl) ascEl.textContent = sign;
-  if (sumEl) sumEl.textContent = data.summary;
-  if (workEl) workEl.textContent = data.work;
-  if (moneyEl) moneyEl.textContent = data.money;
-  if (loveEl) loveEl.textContent = data.love;
-  if (healthEl) healthEl.textContent = data.health;
-  if (numEl) numEl.textContent = data.luckyNum;
-  if (colorEl) colorEl.textContent = data.luckyColor;
+    // หมุนเวียนคำทำนายตามวันที่ปัจจุบัน
+    const zodiacKeys = Object.keys(ZODIAC_DAILY);
+    const baseIndex = zodiacKeys.indexOf(sign) !== -1 ? zodiacKeys.indexOf(sign) : 0;
+    const dayOffset = (now.getDate() + now.getDay()) % zodiacKeys.length;
+    const targetSign = zodiacKeys[(baseIndex + dayOffset) % zodiacKeys.length];
+
+    const data = ZODIAC_DAILY[targetSign] || ZODIAC_DAILY[sign] || ZODIAC_DAILY["ราศีเมษ"];
+
+    // 4. แสดงผลลงใน Element ตาม ID ที่มีอยู่ใน Modal
+    if (dateEl) dateEl.textContent = dateStr;
+    if (ascEl) ascEl.textContent = sign;
+    if (sumEl) sumEl.textContent = data.summary;
+    if (workEl) workEl.textContent = data.work;
+    if (moneyEl) moneyEl.textContent = data.money;
+    if (loveEl) loveEl.textContent = data.love;
+    if (healthEl) healthEl.textContent = data.health;
+    if (numEl) numEl.textContent = data.luckyNum;
+    if (colorEl) colorEl.textContent = data.luckyColor;
+    if (dirEl) dirEl.textContent = data.luckyDir;
 }
-
-// ผูกให้เรียกฟังก์ชันนี้ทันทีที่มีการเปิด Modal ดูดวงรายวัน และตอนโหลดหน้าเว็บ
-document.addEventListener('DOMContentLoaded', function() {
-  if (typeof renderDailyHoroscope === 'function') renderDailyHoroscope();
-
-  // ดักจับปุ่มเปิด Modal ดูดวงรายวัน เพื่อให้อัปเดตคำทำนายตามวันปัจจุบันทันทีที่คลิก
-  const dailyBtn = document.getElementById('btnDailyHoroscope') || 
-                   document.querySelector('[data-target="#dailyModal"]') || 
-                   document.querySelector('[onclick*="DailyHoroscope"]') ||
-                   document.querySelector('.btn-daily-horoscope');
-  if (dailyBtn) {
-    dailyBtn.addEventListener('click', function() {
-      if (typeof renderDailyHoroscope === 'function') renderDailyHoroscope();
-    });
-  }
-});
-
-// ฟังก์ชันเปิด Modal ดวงรายวัน (กันเหนียวหากหน้าเว็บเรียกผ่าน onclick)
-window.openDailyHoroscopeModal = function(sign) {
-  if (typeof renderDailyHoroscope === 'function') renderDailyHoroscope(sign);
-};
 // ==========================================
 // ฟังก์ชันคำนวณมหาทักษาเทวดาเสวยอายุ & แทรกจริง
 // ==========================================
@@ -6700,24 +6811,24 @@ window.isKsVipUser = function() {
 
 // แก้ข้อ 2: ปิดป๊อปอัปทันที แล้วดึงหน้าต่าง QR VIP ให้ลอยเด่นอยู่ข้างหน้าสุด
 window.triggerKsVipCheckout = function() {
-    window.closeAllKsPremModals(); // ปิดป๊อปอัปเดิมทันที QR จะได้ไม่โดนบัง
-    
-    if (typeof openVipCheckoutModal === 'function') {
-        openVipCheckoutModal();
-    } else if (typeof openModal === 'function') {
-        openModal('vipCheckoutModal');
-    } else {
-        var vipModal = document.getElementById('vipCheckoutModal') || document.querySelector('.vip-modal');
-        if (vipModal) vipModal.style.display = 'flex';
+    if (typeof window.closeAllKsPremModals === 'function') {
+        window.closeAllKsPremModals();
     }
-
-    // ดันหน้าต่าง QR VIP ขึ้นมาด้านหน้าสุด
-    setTimeout(function() {
-        var vipModal = document.getElementById('vipCheckoutModal') || document.querySelector('.vip-modal');
-        if (vipModal) {
-            vipModal.style.zIndex = '2147483647';
-        }
-    }, 50);
+    
+    var vipModal = document.getElementById('modal-member');
+    if (vipModal) {
+        document.body.appendChild(vipModal);
+        vipModal.style.setProperty('display', 'flex', 'important');
+        vipModal.style.setProperty('z-index', '2147483647', 'important');
+        vipModal.classList.add('active', 'show');
+        
+        setTimeout(function() {
+            if (typeof selectVipPackage === 'function') {
+                var defaultCard = document.querySelector('.vip-plan-card.selected') || document.querySelector('[onclick*="299"]');
+                selectVipPackage(299, 'รายปี', defaultCard);
+            }
+        }, 50);
+    }
 };
 
 // แก้ข้อ 1: ดึงวันเดือนปีเกิดจากฟอร์มหน้าเว็บ
@@ -6827,6 +6938,7 @@ function getKsCalculatedProfile() {
 }
 
 // 1. รหัสกรรม & วาสนาข้ามภพ
+// 1. รหัสกรรม & วาสนาข้ามภพ (แยกกล่อง ฟรี และ VIP อย่างเด็ดขาด)
 window.calcKarmic = function() {
     var bdate = window.getKsUserBirthData();
     var res = document.getElementById('karmic_result');
@@ -6856,37 +6968,49 @@ window.calcKarmic = function() {
     ];
     var k = karmicData[p.kNum];
 
-    var freeContent = `
-        <div style="color:#f1c40f; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:1px solid rgba(241,196,15,0.3); padding-bottom:6px;">
-            📜 ผลวิเคราะห์รหัสกรรมฐานดวง: รหัสกรรมชั้นที่ ${p.kNum}
-        </div>
-        <div style="font-size:12.5px; color:#cbd5e1; margin-bottom:10px;">📅 คำนวณจาก: <b>${p.dateStr}</b></div>
-        <div style="margin-bottom:12px;">
-            <b style="color:#f9e79f;">⚖️ ปมกรรมดั้งเดิม (Karmic Debt):</b><br>
-            ${k.debt}
-        </div>
-        <div style="margin-bottom:12px;">
-            <b style="color:#f9e79f;">🔍 บททดสอบใหญ่ของชีวิต:</b><br>
-            ${k.lesson}
+    // 1. กล่องเนื้อหาฝั่งฟรี (แสดงผลตลอดเวลา)
+    var freeBox = `
+        <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(234,179,8,0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+            <div style="color:#ffd700; font-weight:bold; font-size:1rem; margin-bottom:8px; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:6px;">
+                📜 ผลวิเคราะห์รหัสกรรมฐานดวง: รหัสกรรมชั้นที่ ${p.kNum}
+            </div>
+            <div style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">📅 คำนวณจาก: <b>${p.dateStr}</b></div>
+            <div style="margin-bottom:10px; font-size:13px; color:#e2e8f0;">
+                <b style="color:#ffd700;">⚖️ ปมกรรมดั้งเดิม (Karmic Debt):</b><br>${k.debt}
+            </div>
+            <div style="font-size:13px; color:#e2e8f0;">
+                <b style="color:#ffd700;">🔍 บททดสอบใหญ่ของชีวิต:</b><br>${k.lesson}
+            </div>
         </div>
     `;
 
-    if (!isVip) {
-        res.innerHTML = freeContent + `
-            <div class="ksprem-vip-lock-card">
-                <div style="color:#f1c40f; font-weight:bold; font-size:15px; margin-bottom:6px;">🔒 ปลดล็อกรหัสตัดวิบากกรรมเฉพาะดวง (VIP)</div>
-                <div style="font-size:12.5px; color:#cbd5e1; margin-bottom:10px;">ดูรูปพรรณเจ้ากรรมนายเวร, พิธีขอขมาข้ามภพ, บุญเฉพาะดวง และพระคาถาประจำตัว</div>
-                <button class="ksprem-vip-unlock-btn" onclick="triggerKsVipCheckout()">⭐ สมัคร VIP ปลดล็อกทันที</button>
-            </div>`;
+    // 2. กล่องเนื้อหาฝั่ง VIP (แยกเป็นกล่องอิสระอีกกล่องต่างหาก)
+    var vipBox = `
+        <div style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(15,23,42,0.95)); border: 1.5px solid #ffd700; border-radius: 14px; padding: 18px; margin-top: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);">
+            <div style="color:#ffd700; font-weight:bold; font-size:1.05rem; margin-bottom:10px; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:6px;">
+                👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE)
+            </div>
+            <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>1. เจ้ากรรมนายเวรที่เด่นชัดประจำรหัส ${p.kNum}:</b><br>${k.exp}</p>
+            <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>2. พิธีขอขมาและตัดสัญญากรรมเฉพาะตัว:</b><br>จุดธูป 16 ดอกกลางแจ้งในวันพระ ขึ้นต้นด้วย นะโม 3 จบ แล้วกล่าว: <i>"กายกรรม วจีกรรม มโนกรรม รหัสกรรมที่ ${p.kNum} ที่ข้าพเจ้าได้เคยก่อไว้ต่อดวงจิตใดในอดีตชาติ ขอถอนพันธะสัญญาและวิบากกรรมทั้งหมด ณ บัดนี้ ขออโหสิกรรมซึ่งกันและกันเทอญ"</i></p>
+            <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>3. บุญเฉพาะทางแก้ดวงรหัสกรรมที่ ${p.kNum}:</b><br>${k.act}</p>
+            <p style="font-size:13px; color:#e2e8f0;"><b>4. พระคาถาคุ้มครองดวงชะตา:</b><br>สวด <b>${k.prayer}</b> เป็นประจำทุกค่ำวันเกิด จะช่วยสลายพลังงานลบและเปิดทางสว่างให้ชีวิตทันตาเห็น</p>
+        </div>
+    `;
+
+    // 3. การ์ดล็อกสำหรับผู้ใช้ทั่วไป (ยังไม่เป็นสมาชิก)
+    var lockCard = `
+        <div style="background: rgba(234,179,8,0.08); border: 1.5px dashed #ffd700; border-radius: 14px; padding: 18px; text-align: center; margin-top: 16px;">
+            <div style="color:#ffd700; font-weight:bold; font-size:0.95rem; margin-bottom:6px;">🔒 ปลดล็อกรหัสตัดวิบากกรรมเฉพาะดวง (VIP)</div>
+            <div style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px;">ดูรูปพรรณเจ้ากรรมนายเวร, พิธีขอขมาข้ามภพ, บุญเฉพาะดวง และพระคาถาประจำตัว</div>
+            <button onclick="checkKsVipAndOpen()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">⭐ สมัคร VIP ปลดล็อกทันที</button>
+        </div>
+    `;
+
+    // ประกอบร่างแสดงผลตามสถานะสมาชิก
+    if (isVip) {
+        res.innerHTML = freeBox + vipBox;
     } else {
-        res.innerHTML = freeContent + `
-            <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #d4af37; background:rgba(212,175,55,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#f1c40f; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE)</div>
-                <p><b>1. เจ้ากรรมนายเวรที่เด่นชัดประจำรหัส ${p.kNum}:</b><br>${k.exp}</p>
-                <p><b>2. พิธีขอขมาและตัดสัญญากรรมเฉพาะตัว:</b><br>จุดธูป 16 ดอกกลางแจ้งในวันพระ ขึ้นต้นด้วย นะโม 3 จบ แล้วกล่าว: <i>"กายกรรม วจีกรรม มโนกรรม รหัสกรรมที่ ${p.kNum} ที่ข้าพเจ้าได้เคยก่อไว้ต่อดวงจิตใดในอดีตชาติ ขอถอนพันธะสัญญาและวิบากกรรมทั้งหมด ณ บัดนี้ ขออโหสิกรรมซึ่งกันและกันเทอญ"</i></p>
-                <p><b>3. บุญเฉพาะทางแก้ดวงรหัสกรรมที่ ${p.kNum}:</b><br>${k.act}</p>
-                <p><b>4. พระคาถาคุ้มครองดวงชะตา:</b><br>สวด <b>${k.prayer}</b> เป็นประจำทุกค่ำวันเกิด จะช่วยสลายพลังงานลบและเปิดทางสว่างให้ชีวิตทันตาเห็น</p>
-            </div>`;
+        res.innerHTML = freeBox + lockCard;
     }
 };
 
@@ -7185,7 +7309,7 @@ window.triggerKsVipCheckout = function() {
     }
 };
 
-// 2. ปลดล็อกระบบ สมพงษ์เนื้อคู่ & ธุรกิจ ให้แสดงผลได้ทันที
+// 2. ปลดล็อกระบบ สมพงษ์เนื้อคู่ & ธุรกิจ ให้แสดงผลได้ทันที (แยกข้อความความรักและธุรกิจอิสระจากกัน)
 window.calcCompatibility = function() {
     var resultBox = document.getElementById('compResultBox');
     if (!resultBox) return;
@@ -7217,23 +7341,29 @@ window.calcCompatibility = function() {
 
     var isLove = (typeof AppState === 'undefined' || AppState.currentCompMode === 'love');
     var score = 80;
-    var reason = "";
+    var loveReason = "";
+    var bizReason = "";
 
     if (elem1 === elem2) {
         score = 92;
-        reason = `ทั้งคู่สถิตใน${elem1}เหมือนกัน ธาตุหนุนเนื่องเข้าใจกันได้เร็ว ปรับจูนง่าย ความคิดเห็นตรงกันในเป้าหมายหลัก`;
+        loveReason = `ทั้งคู่สถิตใน${elem1}เหมือนกัน ธาตุหนุนเนื่องความรักเข้าใจกันได้เร็ว ปรับจูนง่าย ความคิดเห็นและเป้าหมายชีวิตคู่ตรงกัน`;
+        bizReason = `ทั้งคู่สถิตใน${elem1}เหมือนกัน ทำงานเข้าขา รู้ใจกันเร็ว แต่อาจต้องหาคนกลางมาช่วยคุมเรื่องความรอบคอบและบริหารเงินสด`;
     } else if ((elem1 === 'ธาตุไฟ' && elem2 === 'ธาตุลม') || (elem1 === 'ธาตุลม' && elem2 === 'ธาตุไฟ')) {
         score = 95;
-        reason = "ธาตุลมช่วยโหมกระพือให้ธาตุไฟเจริญรุ่งเรือง เป็นคู่ส่งเสริม พากันสร้างสรรค์ความก้าวหน้า นำไอเดียมาเปลี่ยนเป็นเงินทองได้ยอดเยี่ยม";
+        loveReason = "ธาตุลมช่วยโหมกระพือให้ธาตุไฟรักกันเร่าร้อนและตื่นเต้น คอยสนับสนุนและพากันสร้างครอบครัวให้อบอุ่นก้าวหน้า";
+        bizReason = "ธาตุลมช่วยโหมกระพือให้ธาตุไฟเจริญรุ่งเรือง เป็นพาร์ทเนอร์ทางธุรกิจที่โดดเด่น พากันสร้างสรรค์ยอดขายและขยายกิจการเติบโตยอดเยี่ยม";
     } else if ((elem1 === 'ธาตุดิน' && elem2 === 'ธาตุน้ำ') || (elem1 === 'ธาตุน้ำ' && elem2 === 'ธาตุดิน')) {
         score = 90;
-        reason = "ธาตุน้ำชุ่มชื่นหล่อเลี้ยงธาตุดินให้เกิดความอุดมสมบูรณ์ มีความมั่นคง ช่วยเหลือเกื้อกูลและเป็นที่พึ่งพาทางใจแก่กัน";
+        loveReason = "ธาตุน้ำชุ่มชื่นหล่อเลี้ยงธาตุดินให้เกิดความมั่นคง ดูแลเอาใจใส่และเป็นที่พึ่งพาทางใจแก่กันและกันได้อย่างลึกซึ้ง";
+        bizReason = "ธาตุน้ำหนุนธาตุดิน ด้านธุรกิจมีความมั่นคงสูง ฝ่ายหนึ่งลุยงานโครงสร้างและลงทุน อีกฝ่ายบริหารจัดการเงินทุนหมุนเวียนได้ดีเยี่ยม";
     } else if ((elem1 === 'ธาตุไฟ' && elem2 === 'ธาตุน้ำ') || (elem1 === 'ธาตุน้ำ' && elem2 === 'ธาตุไฟ')) {
         score = 65;
-        reason = "ธาตุน้ำกับธาตุไฟ อารมณ์อาจขัดแย้งกันบ่อย ต้องใช้ความใจเย็นและความเข้าใจในการประคับประคอง อย่าใช้อารมณ์ตัดสิน";
+        loveReason = "ธาตุน้ำกับธาตุไฟ อารมณ์ความรู้สึกอาจขัดแย้งกันบ่อย ต้องใช้ความใจเย็นและการอภัยให้กันสูงเพื่อประคับประคองความรัก";
+        bizReason = "ธาตุน้ำกับธาตุไฟ แนวคิดการบริหารและการทำงานสวนทางกันชัดเจน ต้องตกลงแบ่งอำนาจตัดสินใจให้เด็ดขาดเพื่อเลี่ยงข้อขัดแย้ง";
     } else {
         score = 78;
-        reason = "ธาตุผสมผสาน แม้ต่างมุมมองแต่สามารถเติมเต็มส่วนที่ขาดของกันและกันได้เป็นอย่างดี";
+        loveReason = "ธาตุผสมผสาน แม้มีมุมมองความรักต่างกัน แต่สามารถปรับตัวและเติมเต็มส่วนที่ขาดของกันและกันได้เป็นอย่างดี";
+        bizReason = "ธาตุผสมผสาน แม้แนวคิดการทำงานต่างกัน แต่หากแบ่งหน้าที่รับผิดชอบตามความถนัด จะช่วยเสริมจุดเด่นและขับเคลื่อนธุรกิจได้ดี";
     }
 
     resultBox.innerHTML = `
@@ -7245,7 +7375,7 @@ window.calcCompatibility = function() {
         </div>
         <p style="font-size:0.88rem; color:#d1d9ec; line-height:1.8;">
             <b>${signName1} (${elem1}) + ${signName2} (${elem2})</b><br>
-            ${isLove ? '<strong>ด้านชีวิตคู่:</strong> ' : '<strong>ด้านธุรกิจ:</strong> '}${reason}
+            ${isLove ? `<strong>ด้านชีวิตคู่:</strong> ${loveReason}` : `<strong>ด้านธุรกิจ:</strong> ${bizReason}`}
         </p>
     `;
     resultBox.style.display = 'block';
@@ -7736,12 +7866,714 @@ window.syncBirthDataToAllModules = function() {
     if (typeof _coreSync === 'function') _coreSync();
     updateDualBirthDayDisplay();
 };
+function printReportBox() {
+    // 1. ดึงกล่องผลลัพธ์การทำนาย
+    const resultBox = document.getElementById('result-view-box');
+    if (!resultBox || resultBox.style.display === 'none') {
+        alert('กรุณากรอกข้อมูลและคำนวณดวงชะตาก่อนพิมพ์รายงานครับ');
+        scrollToForm();
+        return;
+    }
+
+    // 2. สร้างหน้าต่างจำลองสำหรับพิมพ์เฉพาะกล่องผลลัพธ์
+    const printWindow = window.open('', '_blank', 'height=700,width=900');
+    printWindow.document.write('<html><head><title>Krit Shine Astrology - รายงานดวงชะตา</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { font-family: "Prompt", sans-serif; background: #fff; color: #000; padding: 20px; line-height: 1.6; }');
+    printWindow.document.write('.res-metric { border: 1px solid #ccc; padding: 12px; margin-bottom: 10px; border-radius: 8px; text-align: center; }');
+    printWindow.document.write('.desc-block { border: 1px solid #eee; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #f9f9f9; }');
+    printWindow.document.write('.house-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 8px; border-radius: 6px; }');
+    printWindow.document.write('.btn-print-vip, .res-tag-badge, button { display: none !important; }');
+    printWindow.document.write('h3, h4 { color: #b87c1c; }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    
+    // 3. ก๊อปปี้เนื้อหาเฉพาะในกล่องผลลัพธ์มาใส่
+    printWindow.document.write(resultBox.innerHTML);
+    printWindow.document.write('</body></html>');
+    
+    printWindow.document.close();
+    printWindow.focus();
+
+    // 4. สั่งปริ้นต์ทันทีหลังจากโหลดข้อมูลเสร็จ
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 500);
+}
+// สถานะโหมดหวยปัจจุบัน
+AppState.currentLottoMode = 'free';
+
+// ฟังก์ชันเปิด Modal หวย (ตรวจสอบการกรอกวันเกิดก่อนเปิด)
+function openLottoModal() {
+    var bD = document.getElementById('birthDay');
+    if (!bD || !bD.value) {
+        if (typeof openFeatureModal === 'function') {
+            openFeatureModal('birthDayPrompt') || alert('กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรกก่อนครับ');
+        } else {
+            alert('กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรกก่อนครับ');
+        }
+        if (typeof scrollToForm === 'function') scrollToForm();
+        return;
+    }
+    
+    // เปิด Modal หวย
+    var modal = document.getElementById('modal-lotto');
+    if (modal) {
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('z-index', '999999', 'important');
+        modal.classList.add('active', 'show');
+    }
+    switchLottoMode('free');
+}
+
+// ฟังก์ชันสลับโหมด ฟรี / VIP
+function switchLottoMode(mode) {
+    AppState.currentLottoMode = mode;
+    document.getElementById('btn-lotto-free').classList.toggle('active', mode === 'free');
+    document.getElementById('btn-lotto-vip').classList.toggle('active', mode === 'vip');
+
+    document.getElementById('lottoFreeBox').style.display = (mode === 'free') ? 'block' : 'none';
+    document.getElementById('lottoVipBox').style.display = (mode === 'vip') ? 'block' : 'none';
+
+    if (mode === 'free') {
+        renderLottoFreeContent();
+    } else {
+        renderLottoVipContent();
+    }
+}
+
+// ฟังก์ชันเรนเดอร์เลขฟรี (อิงวันเกิดเจ้าชะตา)
+function renderLottoFreeContent() {
+    const container = document.getElementById('lottoFreeContent');
+    if (!container) return;
+
+    // ตรวจสอบวันเกิดจากฟอร์มหน้าเว็บ
+    const bD = parseInt(document.getElementById('birthDay')?.value) || 15;
+    const bM = parseInt(document.getElementById('birthMonth')?.value) || 6;
+    
+    // คำนวณเลขเด่นจากวันเกิดแบบเข้าใจง่าย
+    const d1 = (bD % 9) || 9;
+    const d2 = ((bD + bM) % 8) + 1;
+    const d3 = ((bD * 2) % 9) + 1;
+
+    container.innerHTML = `
+        <h4 style="color:#ffd700; margin-bottom:8px;">เลขเด่นประจำวันเกิดและดวงชะตาคุณ</h4>
+        <div style="font-size: 2rem; font-weight: bold; color: #81c784; margin: 12px 0;">${d1} - ${d2} - ${d3}</div>
+        <p style="font-size:0.86rem; color:#cfd8dc;">วิเคราะห์จากพื้นดวงวันเกิดเบื้องต้น เสริมโชคลาภงวดนี้</p>
+    `;
+}
+
+// ฟังก์ชันเรนเดอร์เนื้อหา VIP แบบจัดเต็ม น่าเชื่อถือ
+function renderLottoVipContent() {
+    const container = document.getElementById('lottoVipContent');
+    if (!container) return;
+
+    // ตรวจสอบสถานะ VIP
+    const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+
+    if (!isVip) {
+        container.innerHTML = `
+            <div style="text-align:center; padding: 10px;">
+                <p style="font-size: 0.88rem; color: #ffd700; margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> ปล็อกชุดวิเคราะห์ลับระดับปรมาจารย์ (VIP EXCLUSIVE)</p>
+                <p style="font-size: 0.82rem; color: #cfd8dc; margin-bottom: 14px; line-height: 1.6;">
+                    • เจาะลึกกระแสพลังงานดาวจรวันหวยออก<br>
+                    • ถอดรหัสเลขมงคล 3 ตัว และ 2 ตัวตรง จากลัคนาเฉพาะบุคคล<br>
+                    • ตารางตัดเลขกาลกิณี และทิศมงคลรับโชค
+                </p>
+                <button class="btn-vip-gold" onclick="openVipCheckoutModal()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">
+                    <i class="fa-solid fa-crown"></i> สมัครสมาชิก VIP เพื่อปลดล็อกเลขเด่นฉบับเต็ม
+                </button>
+            </div>
+        `;
+    } else {
+        // กรณีเป็น VIP แล้ว คำนวณเลขชุดใหญ่จัดเต็ม
+        const bD = parseInt(document.getElementById('birthDay')?.value) || 15;
+        const bM = parseInt(document.getElementById('birthMonth')?.value) || 6;
+        const asc = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 1;
+        
+        const v1 = (bD % 9) || 7;
+        const v2 = (bM + asc) % 10;
+        const v3 = ((bD + bM + asc) % 9) + 1;
+        const v2Digit = `${v1}${v2}`;
+        const v3Digit = `${v3}${v1}${v2}`;
+        const avoidDigit = (v3 + 3) % 10; // เลขควรหลีกเลี่ยง
+
+        container.innerHTML = `
+            <div style="background: rgba(14,20,38,0.9); padding: 16px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--gold-main); text-align: left;">
+                <div style="font-size: 0.9rem; color: #ffd700; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,215,0,0.3); padding-bottom: 6px;">
+                    <i class="fa-solid fa-star"></i> <b>รายงานวิเคราะห์เลขมงคลเฉพาะบุคคล (VIP)</b>
+                </div>
+                <div style="font-size: 0.82rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>เกณฑ์ดาวจรและพลังงานลัคนา:</b> ส่งผลให้งวดนี้เด่นธาตุลมและธาตุไฟ มีเกณฑ์รับโชคใหญ่จากทิศเหนือ</div>
+                <div style="font-size: 0.85rem; color: #81c784; margin-bottom: 4px;">• เลขวิ่งตัวเดียวเสริมดวง: <b style="font-size: 1.2rem; color: #fff;">${v3}</b></div>
+                <div style="font-size: 0.85rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวเน้นๆ: <b style="font-size: 1.3rem; color: #ffd700;">${v2Digit}, ${(v2+1)%10}${v1}</b></div>
+                <div style="font-size: 0.85rem; color: #f48fb1; margin-bottom: 6px;">• ชุดเลขท้าย 3 ตัวมงคล: <b style="font-size: 1.3rem; color: #ffd700;">${v3Digit}</b></div>
+                <div style="font-size: 0.78rem; color: #ff6b6b; margin-top: 6px;">⚠️ <b>เลขที่ควรระวัง/งดเว้นงวดนี้:</b> ${avoidDigit} (ดาวกาลกิณีทับมุมดวงชะตา)</div>
+            </div>
+            <p style="font-size: 0.76rem; color: var(--text-muted); text-align: center;">วิเคราะห์ตามหลักโหราศาสตร์ไทยและสถิติดวงดาว ขอให้ทุกท่านโชคดีมีลาภครับ!</p>
+        `;
+    }
+}
+window.triggerKsVipCheckout = function() {
+    // ใช้เงื่อนไขเช็กแบบเดียวกับฟังก์ชันคำนวณในระบบ
+    var userIsVip = false;
+    if (typeof window.isKsVipUser === 'function') {
+        userIsVip = window.isKsVipUser();
+    } else if (typeof isVip !== 'undefined') {
+        userIsVip = isVip;
+    }
+
+    if (userIsVip) {
+        alert("🎉 คุณเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์ทั้งหมดได้ทันที!");
+        return;
+    }
+    
+    // ถ้ายังไม่ได้เป็น VIP ให้เปิดหน้า QR Code ชำระเงิน
+    if (typeof window.closeAllKsPremModals === 'function') {
+        window.closeAllKsPremModals();
+    }
+    
+    var vipModal = document.getElementById('modal-member');
+    if (vipModal) {
+        document.body.appendChild(vipModal);
+        vipModal.style.setProperty('display', 'flex', 'important');
+        vipModal.style.setProperty('z-index', '2147483647', 'important');
+        vipModal.classList.add('active', 'show');
+        
+        setTimeout(function() {
+            if (typeof selectVipPackage === 'function') {
+                var defaultCard = document.querySelector('.vip-plan-card.selected') || document.querySelector('[onclick*="299"]');
+                selectVipPackage(299, 'รายปี', defaultCard);
+            }
+        }, 50);
+    }
+};
+window.checkKsVipAndOpen = function() {
+    // ดึงค่าเช็กจากตัวแปร isVip หรือฟังก์ชันเช็ก VIP ของระบบที่มีอยู่เดิม
+    var vipActive = false;
+    try {
+        if (typeof isVip !== 'undefined') {
+            vipActive = isVip;
+        } else if (typeof window.isKsVipUser === 'function') {
+            vipActive = window.isKsVipUser();
+        }
+    } catch(e) {
+        vipActive = false;
+    }
+
+    if (vipActive) {
+        alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทั้งหมด');
+    } else {
+        if (typeof window.closeAllKsPremModals === 'function') {
+            window.closeAllKsPremModals();
+        }
+        if (typeof openFeatureModal === 'function') {
+            openFeatureModal('member');
+        }
+    }
+};
 </script>
 </body>
+<!-- ========================================================== -->
+<!-- 🌟 โค้ดสคริปต์เสริมฉบับสมบูรณ์ (แก้หวย, ข้อความฟรี, และวันจร VIP) -->
+<!-- ========================================================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // 1. ทำให้หวยฟรี (Lotto Free) เปลี่ยนตัวเลขตาม "วันเกิดของผู้ใช้ + วันปัจจุบัน" (แต่ละคนไม่เหมือนกัน และเปลี่ยนรายวัน)
+    const originalOpenLotto = window.openLottoModal;
+    window.openLottoModal = function() {
+        if (typeof originalOpenLotto === 'function') originalOpenLotto();
+        
+        const now = new Date();
+        const dateSeed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+        
+        // ดึงวันเกิดจากฟอร์มมาคำนวณร่วมด้วยเพื่อให้แต่ละวันเกิดได้เลขไม่เหมือนกัน
+        const bDay = parseInt(document.getElementById('birthDay')?.value, 10) || 15;
+        const bMonth = parseInt(document.getElementById('birthMonth')?.value, 10) || 6;
+        
+        const d1 = ((dateSeed + bDay) % 7) + 1;
+        const d2 = ((dateSeed * 3 + bMonth) % 8) + 1;
+        const d3 = ((dateSeed * 7 + bDay + bMonth) % 9) + 1;
+        
+        const lottoFreeNum = document.getElementById('lottoFreeNum');
+        if (lottoFreeNum) {
+            lottoFreeNum.textContent = `${d1} - ${d2} - ${d3}`;
+        }
+    };
+
+    // 2. เพิ่มข้อความ "ดวงชะตาเปลี่ยนตามลัคนาราศี" ในส่วนฟรี (แสดงผลใต้หัวข้อหรือด้านบนผลลัพธ์ฟรี)
+    const freeResultContent = document.getElementById('free-result-content');
+    if (freeResultContent && !document.getElementById('free-zodiac-notice')) {
+        const fNotice = document.createElement('div');
+        fNotice.id = 'free-zodiac-notice';
+        fNotice.style.cssText = "background: rgba(56,189,248,0.1); border: 1px solid #38bdf8; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.85rem; color: #38bdf8; text-align: center;";
+        fNotice.innerHTML = `<i class="fa-solid fa-sparkles"></i> <b>เกณฑ์ดวงชะตา:</b> ดวงชะตาและคำทำนายด้านล่างจะแปรผันและเปลี่ยนแปลงตาม <u>ลัคนาราศีและวันเดือนปีเกิด</u> ของท่าน`;
+        freeResultContent.insertBefore(fNotice, freeResultContent.firstChild);
+    }
+
+    // 3 & 4. ทำให้ VIP เปลี่ยนคำทำนายตามวันจร พร้อมเพิ่มข้อความและแปะ "วันเวลาจร" ไว้ที่มุมบนของการ์ด VIP
+    const mainSubmitBtn = document.getElementById('main-submit-btn');
+    if (mainSubmitBtn) {
+        mainSubmitBtn.addEventListener('click', function() {
+            setTimeout(function() {
+                const vipContent = document.getElementById('vip-result-content');
+                if (!vipContent || vipContent.style.display === 'none') return;
+
+                // ดึงค่าวัน เวลา และสถานที่จรที่ผู้ใช้เลือก
+                const tD = document.getElementById('transitDay')?.value || '1';
+                const tMVal = document.getElementById('transitMonth')?.value || '1';
+                const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                const tM = thMonths[parseInt(tMVal, 10) - 1] || "มกราคม";
+                const tY = document.getElementById('transitYearBE')?.value || '2569';
+                const tH = document.getElementById('transitHour24')?.value || '06';
+                const tMin = document.getElementById('transitMinute24')?.value || '00';
+                const tProv = document.getElementById('transitProvince')?.selectedOptions[0]?.text || 'กรุงเทพมหานคร';
+                
+                const transitDateTimeStr = `${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. (${tProv})`;
+
+                // สร้างกล่องแสดงผลและข้อความแจ้งเตือนที่มุมบนของการ์ด VIP
+                let banner = document.getElementById('vip-transit-dynamic-banner');
+                if (!banner) {
+                    banner = document.createElement('div');
+                    banner.id = 'vip-transit-dynamic-banner';
+                    banner.style.cssText = "background: linear-gradient(135deg, rgba(234,179,8,0.25), rgba(184,134,11,0.15)); border: 1.5px solid #ffd700; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; font-size: 0.88rem; color: #fff; box-shadow: 0 0 20px rgba(255,215,0,0.25); position: relative;";
+                    vipContent.insertBefore(banner, vipContent.firstChild);
+                }
+
+                banner.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid rgba(255,215,0,0.3); padding-bottom: 8px; margin-bottom: 8px;">
+                        <span style="color: #ffd700; font-weight: bold; font-size: 0.95rem;">
+                            <i class="fa-solid fa-crown"></i> รายงาน VIP อิงตามวันเวลาจร
+                        </span>
+                        <span style="background: rgba(255,215,0,0.2); color: #fef08a; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: bold;">
+                            📅 ${transitDateTimeStr}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.84rem; color: #f8fafc; line-height: 1.6;">
+                        <b>💬 สถานะการพยากรณ์:</b> กำลังแสดงผลคำทำนายอิงตามวันจรที่ท่านเลือก ระบบได้ประมวลผลมุมสัมพันธ์ดวงดาวและ 12 ภพจร ณ วันเวลาดังกล่าวให้ท่านเรียบร้อยแล้ว
+                    </div>
+                `;
+
+                // สลับปรับเปลี่ยนข้อความสรุป VIP ให้สอดคล้องกับวันจรที่เลือกแบบไดนามิก
+                const bigText = document.getElementById('vipTransitSummaryBigText');
+                if (bigText) {
+                    // ใช้ตัวเลขวันจรมาสลับคำทำนายย่อยให้เปลี่ยนตามจริง
+                    const transitSeed = parseInt(tD) + parseInt(tMVal) * 30 + parseInt(tY);
+                    const summaries = [
+                        `ณ ช่วงเวลาจร <b>${transitDateTimeStr}</b> กระแสพลังงานดาวจรทำมุมตรีโกณกับลัคนา ส่งผลให้ทิศทางธุรกิจและการงานมีความก้าวเด่นชัด โปรเจกต์ที่ติดขัดจะได้รับการปลดล็อก การเจรจาต่อรองประสบผลสำเร็จเกินคาด`,
+                        `ภายใต้อิทธิพล ณ วันที่ <b>${transitDateTimeStr}</b> เป็นจังหวะทองของการบริหารจัดการเงินทองและสภาพคล่อง มีเกณฑ์รับทรัพย์ก้อนใหญ่จากผลงานหรือการลงทุน การตัดสินใจลงทุนในช่วงเวลานี้ให้ผลตอบแทนงดงาม`,
+                        `ช่วงเวลาจร ณ <b>${transitDateTimeStr}</b> โดดเด่นเป็นพิเศษด้านความสัมพันธ์ การเจรจาประสานงาน และมิตรภาพใหม่ๆ จะนำพาโอกาสทางธุรกิจและช่องทางสร้างรายได้เสริมเข้ามาสู่ตัวท่านอย่างต่อเนื่อง`
+                    ];
+                    bigText.innerHTML = summaries[transitSeed % summaries.length];
+                }
+            }, 250);
+        });
+    }
+
+});
+</script>
+<!-- ========================================================== -->
+<!-- 🌟 โค้ดเสริมฉบับแยกกล่องคำทำนาย ฟรี / VIP ภายในตัว (ครอบคลุมทั้ง 4 ฟีเจอร์) -->
+<!-- ========================================================== -->
+<style>
+    /* ซ่อนส่วนคำพยากรณ์ VIP ทันทีเมื่อยังไม่ได้เปิดโหมด VIP หรือยังไม่เป็นสมาชิก */
+    .modal-content:not(.vip-unlocked) .isolated-vip-prediction-block {
+        display: none !important;
+    }
+    /* แสดงส่วนคำพยากรณ์ VIP เมื่อปลดล็อกแล้ว */
+    .modal-content.vip-unlocked .isolated-vip-prediction-block {
+        display: block !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    function forceSplitFreeAndVipBoxes() {
+        const modals = document.querySelectorAll('.modal-overlay, .modal-content, [id*="modal-"], div[id*="Modal"]');
+
+        modals.forEach(modal => {
+            if (!modal.id) return;
+
+            const isTarget = modal.id.includes('karmic') || modal.id.includes('lifeTurning') || 
+                             modal.id.includes('soulElement') || modal.id.includes('wealthFlow');
+
+            if (isTarget && (modal.style.display === 'flex' || modal.style.display === 'block')) {
+                
+                // ตรวจสอบสถานะการเป็น VIP
+                const isVip = window.isKsVipUser ? window.isKsVipUser() : false;
+                if (isVip) {
+                    modal.classList.add('vip-unlocked');
+                } else {
+                    modal.classList.remove('vip-unlocked');
+                }
+
+                // ค้นหาข้อความหัวข้อที่เป็น VIP EXCLUSIVE เพื่อจับห่อหุ้มเป็นกล่อง VIP แยกต่างหาก
+                const allDivs = modal.querySelectorAll('div, p');
+                allDivs.forEach(el => {
+                    const txt = el.innerText || '';
+                    if ((txt.includes('VIP EXCLUSIVE') || txt.includes('มหาคัมภีร์') || txt.includes('ผังมหาพิชัยสงคราม') || txt.includes('ผลวิเคราะห์เมทริกซ์') || txt.includes('ผังการเงินมหาเศรษฐี')) && !el.dataset.wrapped) {
+                        
+                        // ค้นหากล่องแม่หรือย่อหน้าที่ยาวพอ แล้วเติมคลาสแยกกล่อง
+                        let targetBox = el.closest('div');
+                        if (targetBox && !targetBox.classList.contains('isolated-vip-prediction-block')) {
+                            targetBox.classList.add('isolated-vip-prediction-block');
+                            targetBox.dataset.wrapped = "true";
+                            
+                            // จัดแต่งสไตล์กล่อง VIP ให้เป็นกรอบสีทองอิสระสวยงาม
+                            targetBox.style.cssText = `
+                                background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(15,23,42,0.95)) !important;
+                                border: 1.5px solid #ffd700 !important;
+                                border-radius: 14px !important;
+                                padding: 18px !important;
+                                margin-top: 16px !important;
+                                box-shadow: 0 8px 25px rgba(0,0,0,0.6) !important;
+                            `;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // ดักจับทุกการคลิกเพื่ออัปเดตการแสดงผลกล่องแบบเรียลไทม์
+    document.addEventListener('click', function() {
+        setTimeout(forceSplitFreeAndVipBoxes, 80);
+    });
+
+});
+</script>
+<!-- ========================================================== -->
+<!-- 🌟 โค้ดเสริมฉบับแยกกล่องคำทำนาย ฟรี / VIP และซ่อนกล่อง VIP สำหรับผู้ใช้ทั่วไป -->
+<!-- ========================================================== -->
+<style>
+    /* ซ่อนกล่อง VIP ทันทีเมื่อผู้ใช้ยังไม่ได้เป็นสมาชิก */
+    .modal-content:not(.vip-member-active) .isolated-vip-prediction-block {
+        display: none !important;
+    }
+    /* แสดงกล่อง VIP เมื่อเป็นสมาชิกแล้ว */
+    .modal-content.vip-member-active .isolated-vip-prediction-block {
+        display: block !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    function strictlySplitFreeAndVipBoxes() {
+        const modals = document.querySelectorAll('.modal-overlay, .modal-content, [id*="modal-"], div[id*="Modal"]');
+
+        modals.forEach(modal => {
+            if (!modal.id) return;
+
+            const isTarget = modal.id.includes('karmic') || modal.id.includes('lifeTurning') || 
+                             modal.id.includes('soulElement') || modal.id.includes('wealthFlow');
+
+            if (isTarget && (modal.style.display === 'flex' || modal.style.display === 'block')) {
+                
+                // ตรวจสอบสถานะการเป็นสมาชิก VIP จริงจากระบบ
+                const isRealVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || 
+                                  localStorage.getItem('ks_vip_active') === 'true';
+
+                if (isRealVip) {
+                    modal.classList.add('vip-member-active');
+                } else {
+                    modal.classList.remove('vip-member-active');
+                }
+
+                // ค้นหาข้อความหัวข้อ VIP EXCLUSIVE เพื่อแยกกล่องอิสระ
+                const allDivs = modal.querySelectorAll('div, p');
+                allDivs.forEach(el => {
+                    const txt = el.innerText || '';
+                    if ((txt.includes('VIP EXCLUSIVE') || txt.includes('มหาคัมภีร์') || txt.includes('ผังมหาพิชัยสงคราม') || txt.includes('ผลวิเคราะห์เมทริกซ์') || txt.includes('ผังการเงินมหาเศรษฐี')) && !el.dataset.wrapped) {
+                        
+                        let targetBox = el.closest('div');
+                        if (targetBox && !targetBox.classList.contains('isolated-vip-prediction-block')) {
+                            targetBox.classList.add('isolated-vip-prediction-block');
+                            targetBox.dataset.wrapped = "true";
+                            
+                            // จัดกรอบกล่อง VIP ให้เป็นสัดส่วนชัดเจน
+                            targetBox.style.cssText = `
+                                background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(15,23,42,0.95)) !important;
+                                border: 1.5px solid #ffd700 !important;
+                                border-radius: 14px !important;
+                                padding: 18px !important;
+                                margin-top: 16px !important;
+                                box-shadow: 0 8px 25px rgba(0,0,0,0.6) !important;
+                            `;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // อัปเดตการแสดงผลแบบเรียลไทม์ทุกครั้งที่มีการคลิก
+    document.addEventListener('click', function() {
+        setTimeout(strictlySplitFreeAndVipBoxes, 80);
+    });
+
+});
+// --- 1. ระบบจัดการวันจรส่วนกลาง (Global Transit State) ---
+const TransitManager = {
+    getDay: function() {
+        return parseInt(document.getElementById('transitDay')?.value, 10) || new Date().getDate();
+    },
+    getMonth: function() {
+        return parseInt(document.getElementById('transitMonth')?.value, 10) || (new Date().getMonth() + 1);
+    },
+    getYearBE: function() {
+        return parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
+    },
+    getDateObj: function() {
+        return {
+            day: this.getDay(),
+            month: this.getMonth(),
+            yearBE: this.getYearBE(),
+            yearCE: this.getYearBE() - 543,
+            string: `${this.getDay()} / ${this.getMonth()} / ${this.getYearBE()}`
+        };
+    }
+};
+
+// --- 2. ฟังก์ชันอัปเดตและคำนวณฟีเจอร์ VIP ทั้งหมดให้อิงตาม "วันจร" ---
+function updateAllVipFeaturesByTransit() {
+    const t = TransitManager.getDateObj();
+    console.log("🔄 ระบบกำลังอัปเดตคำทำนาย VIP ตามวันจรใหม่:", t.string);
+
+    // 1. อัปเดตคำนวณหวยมงคล (Lotto VIP) ตามวันจร
+    if (typeof renderLottoVipContent === 'function') {
+        renderLottoVipContent(t);
+    }
+
+    // 2. อัปเดตศาตร์กราฟชีวิตประจำปี (ให้ขยับตามปี พ.ศ. ของวันจรที่เลือก)
+    const targetAge = t.yearBE - (AppState.birthBE || 2522);
+    if (targetAge >= 1 && targetAge <= 80) {
+        const slider = document.getElementById('ageRangeSlider');
+        if (slider) {
+            slider.value = targetAge;
+            if (typeof applyAgeChange === 'function') applyAgeChange(targetAge);
+        }
+    }
+
+    // 3. อัปเดตปาจื่อ & ซาจู (BaZi / Saju) ให้คำนวณพลังงานอิงวันจร
+    if (typeof calcBaziEngine === 'function') {
+        // ใช้ค่าวันจรมาคำนวณพลังงานจร (Transit Pillars)
+        window.currentTransitBazi = calculateDynamicBaZi(t.yearBE, t.month, t.day, 12);
+        if (AppState.currentBaziMode === 'vip') calcBaziEngine();
+    }
+    if (typeof calcSajuEngine === 'function') {
+        if (typeof AppState !== 'undefined' && AppState.currentSajuMode === 'vip') {
+            calcSajuEngine('vip');
+        }
+    }
+
+    // 4. อัปเดตเลข 7 ตัว 4/9 ฐาน (คำนวณฐานจรผสมวันเกิด)
+    if (typeof calcNum7Base === 'function' && AppState.currentNum7Mode === 'vip') {
+        calcNum7Base();
+    }
+
+    // 5. อัปเดตยูเรเนียน & โหราศาสตร์สากล (Transit Aspects)
+    if (typeof renderUranianVip === 'function') renderUranianVip(t);
+    if (typeof renderWesternVip === 'function') renderWesternVip(t);
+
+    // 6. อัปเดต 4 ฟีเจอร์พรีเมียม (รหัสกรรม, มหาพิชัยสงคราม, จิตวิญญาณ, ขุมทรัพย์)
+    // ทำให้ข้อความวิเคราะห์ปรับเปลี่ยนตามห้วงเวลาวันจรที่กำลังทำนาย
+    updateTransitForPremiumModal('karmic_result', t);
+    updateTransitForPremiumModal('life_result', t);
+    updateTransitForPremiumModal('soul_result', t);
+    updateTransitForPremiumModal('wealth_result', t);
+}
+
+// ฟังก์ชันช่วยสลับข้อความใน 4 ป๊อปอัปพรีเมียมตามวันจร
+function updateTransitForPremiumModal(elementId, t) {
+    const el = document.getElementById(elementId);
+    if (!el || el.style.display === 'none') return;
+    
+    // เติมป้ายกำกับวันจรกำกับไว้ที่หัวข้อผลลัพธ์ เพื่อให้ผู้ใช้รู้ว่ากำลังดูคำทำนาย ณ วันใด
+    let transitBadge = el.querySelector('.transit-date-tag');
+    if (!transitBadge) {
+        transitBadge = document.createElement('div');
+        transitBadge.className = 'transit-date-tag';
+        transitBadge.style.cssText = "background: rgba(234,179,8,0.2); color: #ffd700; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 8px; font-weight: bold;";
+        el.insertBefore(transitBadge, el.firstChild);
+    }
+    transitBadge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลคำทำนายเจาะลึก ณ วันจร: ${t.string}`;
+}
+
+// --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด ---
+document.addEventListener('DOMContentLoaded', function() {
+    ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', function() {
+                updateAllVipFeaturesByTransit();
+            });
+        }
+    });
+});
+// --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
+function getCleanTransitBadgeString() {
+    var dEl = document.getElementById('transitDay');
+    var mEl = document.getElementById('transitMonth');
+    var yEl = document.getElementById('transitYearBE');
+    var hEl = document.getElementById('transitHour24');
+    var minEl = document.getElementById('transitMinute24');
+
+    var day = dEl ? (dEl.value || '7') : '7';
+    var monthVal = mEl ? (parseInt(mEl.value, 10) || 10) : 10;
+    var yearBE = yEl ? (yEl.value || '2569') : '2569';
+    var hour = hEl ? (hEl.value || '06') : '06';
+    var minute = minEl ? (minEl.value || '00') : '00';
+    
+    var thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    var monthName = thMonths[monthVal - 1] || "ตุลาคม";
+    
+    return `${day} ${monthName} พ.ศ. ${yearBE} เวลา ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} น.`;
+}
+
+function renderCleanTransitHtml() {
+    return `
+        <div class="transit-active-badge-bar" style="background: linear-gradient(135deg, rgba(234,179,8,0.22), rgba(184,134,11,0.12)); border: 1.5px solid #ffd700; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.25);">
+            <span><i class="fa-solid fa-satellite-dish"></i> <b>อิงวันจรลัคนาพยากรณ์:</b></span>
+            <span style="background: rgba(255,215,0,0.3); padding: 2px 8px; border-radius: 6px; color: #fff; font-weight: bold;">${getCleanTransitBadgeString()}</span>
+        </div>
+    `;
+}
+
+// --- 2. ฟังก์ชันแปะแถบวันจรเข้าสู่กล่องเป้าหมาย ---
+function injectBadgeDirectly(container, selector) {
+    if (!container) return;
+    // ลบอันเก่าออกก่อน
+    container.querySelectorAll('.transit-active-badge-bar').forEach(b => b.remove());
+    
+    var targetBox = selector ? container.querySelector(selector) : container;
+    if (targetBox) {
+        var badge = document.createElement('div');
+        badge.className = 'transit-active-badge-bar';
+        badge.innerHTML = renderCleanTransitHtml();
+        targetBox.insertBefore(badge, targetBox.firstChild);
+    }
+}
+
+// --- 3. ควบคุมการแสดงผลตามข้อกำหนด 2 ข้อ ---
+document.addEventListener('click', function(e) {
+    var target = e.target.closest('button, .tier-btn, .cat-item, [onclick]');
+    if (!target) return;
+
+    setTimeout(function() {
+        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+
+        // -------------------------------------------------------------
+        // ข้อ 1: กลุ่มฟีเจอร์พรีเมียม (หวย, กราฟชีวิต, ปาจื่อ, ซาจู, เลข 7 ตัว, ยูเรเนียน, สากล) -> แสดงเฉพาะ VIP
+        // -------------------------------------------------------------
+        
+        // 1.1 หวย VIP
+        var lottoVip = document.getElementById('lottoVipBox');
+        if (lottoVip && lottoVip.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(lottoVip);
+        }
+
+        // 1.2 กราฟชีวิต VIP
+        var graphVip = document.getElementById('vip-graph-full-details');
+        if (graphVip && graphVip.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(graphVip);
+        }
+
+        // 1.3 ปาจื่อ VIP
+        var baziVip = document.getElementById('bazi-vip-result');
+        if (baziVip && baziVip.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(baziVip);
+        }
+
+        // 1.4 ซาจู VIP (และล้างออกจากโหมดฟรี)
+        var sajuBox = document.getElementById('sajuResultBox');
+        var sajuMode = (typeof AppState !== 'undefined') ? AppState.currentSajuMode : 'free';
+        if (sajuBox) {
+            if (sajuMode === 'vip' && isVip) {
+                injectBadgeDirectly(sajuBox);
+            } else {
+                sajuBox.querySelectorAll('.transit-active-badge-bar').forEach(b => b.remove());
+            }
+        }
+
+        // 1.5 เลข 7 ตัว VIP (และล้างออกจากโหมดฟรี)
+        var num7Free = document.getElementById('num7TableWrapper');
+        if (num7Free) num7Free.querySelectorAll('.transit-active-badge-bar').forEach(b => b.remove());
+        
+        var num7Box = document.getElementById('num7AnalysisBox');
+        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free';
+        if (num7Box && num7Mode === 'vip' && isVip) {
+            injectBadgeDirectly(num7Box);
+        }
+
+        // 1.6 ยูเรเนียน VIP
+        var uranVip = document.getElementById('uranianVipBox');
+        if (uranVip && uranVip.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(uranVip);
+        }
+
+        // 1.7 โหราศาสตร์สากล VIP
+        var westVip = document.getElementById('westernVipBox');
+        if (westVip && westVip.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(westVip);
+        }
+
+
+        // -------------------------------------------------------------
+        // ข้อ 2: 4 เมนูหลัก (รหัสกรรม, มหาพิชัยสงคราม, ถอดรหัสวิญญาณ, ขุมทรัพย์) -> ใส่ในช่อง VIP ด้านล่าง
+        // -------------------------------------------------------------
+        
+        // 2.1 รหัสกรรมข้ามภพ
+        var karmicEl = document.getElementById('karmic_result');
+        if (karmicEl && karmicEl.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(karmicEl, '.isolated-vip-prediction-block');
+        }
+
+        // 2.2 มหาพิชัยสงคราม (แก้ไขให้ลงมาอยู่ช่อง VIP ด้านล่างเป๊ะๆ)
+var lifeEl = document.getElementById('life_result');
+if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
+    // ค้นหากล่องข้อความหัวข้อ VIP EXCLUSIVE ด้านล่างสุดของมหาพิชัยสงคราม
+    var targetVipCard = null;
+    var allDivs = lifeEl.querySelectorAll('div');
+    for (var i = 0; i < allDivs.length; i++) {
+        var txt = allDivs[i].innerText || '';
+        if (txt.includes('แผนภูมิพิชัยสงคราม') || txt.includes('EXCLUSIVE')) {
+            targetVipCard = allDivs[i];
+        }
+    }
+    if (!targetVipCard) targetVipCard = lifeEl.querySelector('div[style*="gradient"], div[style*="border-top"]') || lifeEl.lastElementChild;
+
+    if (targetVipCard) {
+        targetVipCard.querySelectorAll('.transit-active-badge-bar').forEach(b => b.remove());
+        var badge = document.createElement('div');
+        badge.className = 'transit-active-badge-bar';
+        badge.innerHTML = renderCleanTransitHtml();
+        targetVipCard.insertBefore(badge, targetVipCard.firstChild);
+    }
+}
+
+        // 2.3 ถอดรหัสจิตวิญญาณ
+        var soulEl = document.getElementById('soul_result');
+        if (soulEl && soulEl.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(soulEl, '.isolated-vip-prediction-block');
+        }
+
+        // 2.4 ขุมทรัพย์มหาเศรษฐี
+        var wealthEl = document.getElementById('wealth_result');
+        if (wealthEl && wealthEl.style.display !== 'none' && isVip) {
+            injectBadgeDirectly(wealthEl, '.isolated-vip-prediction-block');
+        }
+
+    }, 120);
+});
+</script>
 /* ==========================================================
    🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
    ========================================================== */
 (function() {
+    // 1. ฟังก์ชันกลางสำหรับดึงค่าวันจร (Transit) ที่ผู้ใช้เลือกจากฟอร์มหลัก
     window.getGlobalTransitParams = function() {
         var dEl = document.getElementById('transitDay');
         var mEl = document.getElementById('transitMonth');
@@ -7756,24 +8588,34 @@ window.syncBirthDataToAllModules = function() {
         var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0;
 
         return {
-            day: day, month: month, yearBE: yearBE, yearCE: yearBE - 543,
-            hour: hour, minute: minute,
+            day: day,
+            month: month,
+            yearBE: yearBE,
+            yearCE: yearBE - 543,
+            hour: hour,
+            minute: minute,
             seed: (day * 13) + (month * 31) + yearBE + hour,
             dateStr: `${day} / ${month} / ${yearBE}`
         };
     };
 
+    // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์ให้แปรผันตามวันจร
     window.applyTransitToAllVipFeatures = function() {
         var t = window.getGlobalTransitParams();
         var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
         if (!isVip) return;
 
-        // อัปเดตหวย VIP ตามวันจร
+        console.log("⚡ กำลังคำนวณและอัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr);
+
+        // --- 1. ฟีเจอร์คำนวณหวยมงคล VIP ---
         var lottoVipContent = document.getElementById('lottoVipContent');
         if (lottoVipContent) {
             var l1 = (t.seed % 9) + 1;
             var l2 = ((t.seed * 3) % 8) + 1;
             var l3 = ((t.seed * 7) % 9) + 1;
+            var l2D = `${l1}${l2}`;
+            var l3D = `${l3}${l1}${l2}`;
+            
             lottoVipContent.innerHTML = `
                 <div style="background: rgba(14,20,38,0.95); padding: 16px; border-radius: 10px; border: 1px solid #ffd700; text-align: left;">
                     <div style="font-size: 0.92rem; color: #ffd700; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,215,0,0.3); padding-bottom: 6px;">
@@ -7781,13 +8623,13 @@ window.syncBirthDataToAllModules = function() {
                     </div>
                     <div style="font-size: 0.85rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ ${t.dateStr}</div>
                     <div style="font-size: 0.88rem; color: #81c784; margin-bottom: 4px;">• เลขวิ่งเด่นประจำวันจร: <b style="font-size: 1.25rem; color: #fff;">${l3}</b></div>
-                    <div style="font-size: 0.88rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l1}${l2}, ${(l2+2)%10}${l1}</b></div>
-                    <div style="font-size: 0.88rem; color: #f48fb1; margin-bottom: 4px;">• ชุดเลขท้าย 3 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l3}${l1}${l2}</b></div>
+                    <div style="font-size: 0.88rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l2D}, ${(l2+2)%10}${l1}</b></div>
+                    <div style="font-size: 0.88rem; color: #f48fb1; margin-bottom: 4px;">• ชุดเลขท้าย 3 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l3D}</b></div>
                 </div>
             `;
         }
 
-        // อัปเดตอายุตามปี พ.ศ. ของวันจรสำหรับกราฟชีวิต
+        // --- 2. ฟีเจอร์กราฟชีวิต VIP (ให้เลื่อนอายุตามปี พ.ศ. ของวันจร) ---
         var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
         var transitAge = t.yearBE - birthBE;
         if (transitAge >= 1 && transitAge <= 80) {
@@ -7797,8 +8639,69 @@ window.syncBirthDataToAllModules = function() {
                 applyAgeChange(transitAge);
             }
         }
+
+        // --- 3 & 4. ฟีเจอร์ปาจื่อ (BaZi) และ ซาจู (Saju) VIP ---
+        // เพิ่มข้อความระบุวันจรกำกับไว้ในผลลัพธ์
+        ['bazi-vip-result', 'sajuResultBox'].forEach(function(boxId) {
+            var box = document.getElementById(boxId);
+            if (box && box.style.display !== 'none') {
+                let badge = box.querySelector('.transit-date-tag-custom');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'transit-date-tag-custom';
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
+                    box.insertBefore(badge, box.firstChild);
+                }
+                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลการวิเคราะห์อิงตามวันจร: ${t.dateStr}`;
+            }
+        });
+
+        // --- 5. ฟีเจอร์เลข 7 ตัว 4/9 ฐาน VIP ---
+        var num7Box = document.getElementById('num7AnalysisBox');
+        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free';
+        if (num7Box && num7Mode === 'vip') {
+            let badge = num7Box.querySelector('.transit-date-tag-custom');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'transit-date-tag-custom';
+                badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
+                num7Box.insertBefore(badge, num7Box.firstChild);
+            }
+            badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> การอ่านฐาน 9 ฐานอิงตามวันจร: ${t.dateStr}`;
+        }
+
+        // --- 6 & 7. ฟีเจอร์ยูเรเนียน และ โหราศาสตร์สากล VIP ---
+        ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) {
+            var box = document.getElementById(boxId);
+            if (box && box.style.display !== 'none') {
+                let badge = box.querySelector('.transit-date-tag-custom');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'transit-date-tag-custom';
+                    badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
+                    box.insertBefore(badge, box.firstChild);
+                }
+                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: ${t.dateStr}`;
+            }
+        });
+
+        // --- 8, 9, 10, 11. ฟีเจอร์พรีเมียม 4 เมนู (รหัสกรรม, มหาพิชัยสงคราม, ถอดรหัสวิญญาณ, ขุมทรัพย์) ---
+        ['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) {
+            var box = document.getElementById(boxId);
+            if (box && box.style.display !== 'none') {
+                let badge = box.querySelector('.transit-date-tag-custom');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'transit-date-tag-custom';
+                    badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: center;";
+                    box.insertBefore(badge, box.firstChild);
+                }
+                badge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> พยากรณ์พิเศษเจาะลึก ณ วันจร: ${t.dateStr}`;
+            }
+        });
     };
 
+    // 3. ผูก Event Listener ดักจับการเปลี่ยนค่าในช่องวันจรทั้งหมดอัตโนมัติ
     document.addEventListener('DOMContentLoaded', function() {
         ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
             var el = document.getElementById(id);
@@ -7809,8 +8712,13 @@ window.syncBirthDataToAllModules = function() {
             }
         });
     });
+
+    // สำรองเรียกทำงานหลังโหลดหน้าเว็บเสร็จ
+    setTimeout(function() {
+        window.applyTransitToAllVipFeatures();
+    }, 500);
 })();
-</script>    
+</script>
 /* ==========================================================
    🌟 ระบบแทรกเสริมตัวจริง: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
    ========================================================== */
