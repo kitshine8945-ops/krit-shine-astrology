@@ -8572,7 +8572,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 /* ========================================================== 🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที ========================================================== */ 
 <script>
 (function() { 
-    // 1. ฟังก์ชันดึงค่าวันจรจากฟอร์มหลัก
+    // 1. ฟังก์ชันกลางสำหรับดึงค่าวันจร (Transit) ที่ผู้ใช้เลือกจากฟอร์มหลัก 
     window.getGlobalTransitParams = function() { 
         var dEl = document.getElementById('transitDay'); 
         var mEl = document.getElementById('transitMonth'); 
@@ -8596,56 +8596,59 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         }; 
     }; 
 
-    // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์
+    // 2. ฟังก์ชันอัปเดตคำทำนาย VIP ทั้ง 10 ฟีเจอร์ให้แปรผันตามวันจร 
     window.applyTransitToAllVipFeatures = function() { 
         var t = window.getGlobalTransitParams(); 
-        console.log("⚡ [Force Run] อัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr); 
+        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true'; 
+        if (!isVip) return; 
+        console.log("⚡ กำลังคำนวณและอัปเดตคำทำนาย VIP อิงตามวันจร: ", t.dateStr); 
 
+        // 🌟 คลังข้อความคำทำนายสำหรับฟีเจอร์ต่างๆ เพื่อสลับสับเปลี่ยนตามตัวแปรดาวจร (Seed)
         var predictions = {
             bazi: [
-                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ทรัพย์สินงอกเงย เกื้อหนุนทิศมงคล",
-                "ช่วงเวลาแห่งการปรับฐานชีวิตตามโครงสร้างดวงจร มีเกณฑ์ขยับขยายหน้าที่การงาน แต่ควรระวังเอกสารสัญญา",
-                "กระแสธาตุทองให้โชค ลาภลอยเด่นชัด การงานก้าวไกล ศัตรูหมู่มารแพ้ภัยดวงจรชะตาตนเอง"
+                "เกณฑ์ดวงชะตาฟ้าเปิด กระแสธาตุในแผ่นดวงวันจรส่งผลดีเยี่ยม ทรัพย์สินงอกเงย เกื้อหนุนทิศมงคลในการประกอบการ",
+                "ช่วงเวลาแห่งการปรับฐานชีวิตตามโครงสร้างดวงจร มีเกณฑ์ขยับขยายหน้าที่การงาน แต่ควรเพิ่มความรอบคอบในเอกสารสัญญา",
+                "กระแสธาตุทองให้โชค ลาภลอยเด่นชัด การงานก้าวไกล ศัตรูหมู่มารหรืออุปสรรคแพ้ภัยดวงจรชะตาตนเองชั่วคราว"
             ],
             saju: [
-                "เกณฑ์ชะตารุ่งเรืองตามเวลาฟ้าจร มีเกณฑ์ได้พบผู้อุปถัมภ์ค้ำชูจากแดนไกลนำความก้าวหน้ามาให้",
-                "ดวงชีพจรลงเท้า มีทิศทางเปลี่ยนเกณฑ์ชีวิตขนานใหญ่ โดดเด่นเรื่องการทำมาค้าขายในโลกออนไลน์",
-                "การเงินไหลเวียนคล่องมือ มีโอกาสได้รับเงินก้อนใหญ่หรือโชคลาภลอยจากการเสี่ยงทายในวันจรนี้"
+                "เกณฑ์ชะตารุ่งเรืองตามเวลาฟ้าจร มีเกณฑ์ได้พบผู้อุปถัมภ์ค้ำชูจากแดนไกลนำความก้าวหน้าและโอกาสใหม่มาให้",
+                "ดวงชีพจรลงเท้า มีทิศทางเปลี่ยนเกณฑ์ชีวิตขนานใหญ่ โดดเด่นเรื่องการเดินทาง โยกย้าย หรือทำมาค้าขายข้ามเขต",
+                "การเงินไหลเวียนคล่องมือ มีโอกาสได้รับเงินก้อนใหญ่หรือโชคลาภลอยจากการเสี่ยงทายในเงื่อนไขวันจรนี้"
             ],
             num7: [
-                "ฐานโชคลาภสัมพันธ์ดาวศุกร์จร ตกตำแหน่งอำนาจวาสนา ทำการสิ่งใดก็สำเร็จราบรื่นสมปรารถนาสูง",
-                "ดาวราหูจรแทรกเรือนพยายะชั่วคราว ให้ระวังการลงทุนที่มีความเสี่ยงสูง หรือระวังคนใกล้ตัวนำความเดือดร้อนมาให้",
-                "เกณฑ์ชะตามหาอุบาทว์เดิมคลายตัว ดาวดาวจรย้ายตำแหน่งเปลี่ยนเป็นเรือนมหาโภคทรัพย์หนุนส่งดวงชะตา"
+                "ฐานโชคลาภสัมพันธ์ดาวศุกร์จร ตกตำแหน่งอำนาจวาสนา ทำการสิ่งใดก็สำเร็จราบรื่นสมปรารถนาสูงเด่น",
+                "ดาวราหูจรแทรกเรือนพยายะชั่วคราว ให้ระวังการลงทุนที่มีความเสี่ยงสูง หรือระวังผู้อื่นนำความเดือดร้อนเล็กๆ มาให้",
+                "เกณฑ์ชะตามหาอุบาทว์เดิมคลายตัว ดวงดาวจรย้ายตำแหน่งเปลี่ยนเป็นเรือนมหาโภคทรัพย์หนุนส่งดวงชะตาร่มเย็น"
             ],
             uranian: [
-                "จุดสะท้อนดาวพฤหัสทิพย์ทำมุมฉาก บ่งบอกถึงจังหวะเวลาแห่งความสำเร็จและชื่อเสียงในระดับสาธารณะ",
-                "ดาวเนปจูนจรส่งผลต่อเรือนชะตาในจุดเปราะบาง ให้งดเว้นการค้ำประกันหรือการร่วมหุ้นลงทุนระยะยาวในวันนี้",
-                "ดาวโครนอสจรหนุนนำจุดเมษอย่างมีนัยสำคัญ มีเกณฑ์ได้รับเกียรติยศ ได้รับการยอมรับ หรือเลื่อนตำแหน่งใหญ่"
+                "จุดสะท้อนดาวพฤหัสทิพย์ทำมุมฉาก บ่งบอกถึงจังหวะเวลาแห่งความสำเร็จและชื่อเสียงในระดับสาธารณะที่เด่นชัด",
+                "ดาวเนปจูนจรส่งผลต่อเรือนชะตาในจุดเปราะบาง บ่งชี้ว่าควรงดเว้นการค้ำประกันหรือร่วมหุ้นระยาวในวันจรนี้",
+                "ดาวโครนอสจรหนุนนำจุดเมษอย่างมีนัยสำคัญ มีเกณฑ์ได้รับเกียรติยศ ได้รับการยอมรับ หรือได้รับการโปรโมทเลื่อนขั้น"
             ],
             western: [
-                "Sun ทรานสิตเรือนที่ 10 ทำมุมสัมพันธ์ดี การงานโดดเด่นสะดุดตา ผู้ใหญ่และผู้มีอำนาจเมตตาพร้อมผลักดัน",
-                "Moon ทรานสิตเล็งราศีกำเนิด ส่งผลให้อารมณ์เกิดความแปรปรวนได้ง่ายในช่วงนี้ ให้ใช้สติและความสงบคุมชะตา",
-                "Jupiter ขยับทำมุมตรีโกณกับดาวศุกร์กำเนิด เกณฑ์เปิดรับโชคใหญ่และโอกาสมหาศาลรอบ 12 ปี"
+                "Sun ทรานสิตเรือนที่ 10 ทำมุมสัมพันธ์ดี การงานโดดเด่นสะดุดตา ผู้ใหญ่และผู้มีอำนาจเมตตาพร้อมผลักดันสนับสนุน",
+                "Moon ทรานสิตเล็งราศีกำเนิด ส่งผลให้อารมณ์เกิดความแปรปรวนหรืออ่อนไหวง่ายในช่วงนี้ ให้ใช้ความสงบคุมชะตา",
+                "Jupiter ขยับทำมุมตรีโกณกับดาวศุกร์กำเนิด เกณฑ์เปิดรับโชคใหญ่และโอกาสมหาศาลที่วนมาบรรจบในรอบ 12 ปี"
             ],
             karmic: [
-                "วิบากกรรมเก่าจากวาจาและคำสาบานเริ่มคลี่คลาย แนะนำให้ทำบุญถวายน้ำปานะหรือปล่อยสัตว์ใหญ่เพื่อเสริมบารมี",
-                "เกณฑ์อโหสิกรรมจากเจ้ากรรมนายเวรเปิดทางในรอบวันจร ทำการสิ่งใดความติดขัดจะทุเลาเบาบางลงอย่างเห็นได้ชัด",
-                "อยู่ในช่วงทดสอบแห่งวงล้อกรรม ห้ามใช้อารมณ์หรือความหุนหันพลันแล่นในการตัดสินปัญหาเด็ดขาด"
+                "วิบากกรรมเก่าจากวาจาและคำสาบานเริ่มคลี่คลาย แนะนำให้ทำบุญถวายน้ำปานะหรือปล่อยสัตว์เพื่อเสริมบารมีวันจร",
+                "เกณฑ์อโหสิกรรมจากเจ้ากรรมนายเวรเปิดทางให้ในรอบวันจร ทำการสิ่งใดความติดขัดจะทุเลาเบาบางลงอย่างเห็นได้ชัด",
+                "อยู่ในช่วงทดสอบชะตากรรมแห่งวงล้อกรรม งดการใช้อารมณ์ตัดสินและหลีกเลี่ยงข้อพิพาทกับคนรอบตัว"
             ],
             life: [
                 "จังหวะชะตามหาพิชัยสงครามอยู่ในเกณฑ์รุ่งเรืองสูงสุด มุ่งไปข้างหน้ากล้าคิดกล้าทำจะพบความสำเร็จที่ยิ่งใหญ่",
-                "ดวงชะตาวันจรตกตำแหน่งตั้งรับและสะสมเสบียงบุญ ไม่ควรรีบร้อนลงทุนใหญ่ ให้เน้นการวางแผนระยะยาวแทน",
-                "ช่วงเวลาพลิกผันดวงจากร้ายกลายเป็นดี จะมีโอกาสทองหล่นทับแบบไม่คาดฝัน ชีวิตเปลี่ยนผ่านสู่ความมั่นคง"
+                "ดวงชะตาวันจรตกตำแหน่งตั้งรับและสะสมเสบียงบุญ ไม่ควรรีบร้อนลงทุนใหญ่ ให้เน้นการตรวจสอบระบบงานให้รัดกุม",
+                "ช่วงเวลาพลิกผันดวงจากร้ายกลายเป็นดี จะมีโอกาสทองหล่นทับแบบไม่คาดฝัน ชีวิตเปลี่ยนผ่านสู่ความมั่นคงขึ้น"
             ],
             soul: [
-                "สนามพลังงานออร่าเปิดรับพลังบวกได้ดีที่สุด แนะนำให้สวมใส่เสื้อผ้าหรือพกอัญมณีโทนสีเหลืองหรือสีทองเสริมธาตุ",
-                "พลังจิตวิญญาณค่อนข้างอ่อนล้าตามวงรอบดาวจร ควรจัดเวลาทำสมาธิหรือหลีกเลี่ยงสถานที่อโคจรเพื่อปรับสมดุล",
-                "ธาตุกายสิทธิ์เร่งพลังงานหนุนนำชะตา ความคิดสร้างสรรค์พุ่งทะยาน มีญาณหยั่งรู้สถานการณ์ล่วงหน้าได้ดี"
+                "สนามพลังงานออร่าเปิดรับพลังบวกได้ดีที่สุด แนะนำให้สวมใส่เสื้อผ้าหรือพกอัญมณีโทนสีเหลืองหรือสีทองเสริมพลัง",
+                "พลังจิตวิญญาณค่อนข้างอ่อนล้าตามวงรอบดาวจร ควรจัดเวลาทำสมาธิ พักผ่อน หรือหลีกเลี่ยงความวุ่นวายเพื่อปรับสมดุล",
+                "ธาตุกายสิทธิ์เร่งพลังงานหนุนนำชะตา ความคิดสร้างสรรค์พุ่งทะยาน มีญาณหยั่งรู้สถานการณ์รอบตัวได้ค่อนข้างแม่นยำ"
             ],
             wealth: [
-                "สายธารเงินเปิดคลังทรัพย์ใหญ่ตามวันจร มีเกณฑ์ได้ลาภลอยก้อนโต หรือปิดยอดขายทะลุเป้าหมายที่ตั้งไว้",
-                "คลังทรัพย์ปิดชั่วคราวตามแรงเหวี่ยงดวงดาว เงินไหลออกง่าย ควรควบคุมบัญชีรายจ่ายและงดการให้หยิบยืมทุกกรณี",
-                "ช่องทางรายได้เสริมซ่อนเร้นเริ่มทำงานอย่างทรงพลัง จะมีกัลยาณมิตรนำช่องทางสร้างผลกำไรมาให้ถึงที่"
+                "สายธารเงินเปิดคลังทรัพย์ใหญ่ตามวันจร มีเกณฑ์ได้ลาภลอยก้อนโต หรือปิดยอดขายทะลุเป้าหมายที่ตั้งใจไว้",
+                "คลังทรัพย์ปิดชั่วคราวตามแรงเหวี่ยงดวงดาว เงินไหลออกง่าย ควรควบคุมบัญชีรายจ่ายและงดการให้หยิบยืมเงินทอง",
+                "ช่องทางรายได้เสริมซ่อนเร้นเริ่มทำงานอย่างทรงพลัง จะมีกัลยาณมิตรนำช่องทางสร้างผลกำไรมาให้ถึงที่ในวันจรนี้"
             ]
         };
 
@@ -8653,29 +8656,33 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
             return arr[t.seed % arr.length]; 
         };
 
-        // --- 1. หวยมงคล VIP --- 
+        // --- 1. ฟีเจอร์คำนวณหวยมงคล VIP --- 
         var lottoVipContent = document.getElementById('lottoVipContent'); 
         if (lottoVipContent) { 
-            var l1 = (t.seed % 9) + 1; var l2 = ((t.seed * 3) % 8) + 1; var l3 = ((t.seed * 7) % 9) + 1;
-            lottoVipContent.innerHTML = "<p><b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (" + t.dateStr + ")</b></p><p>🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ " + t.dateStr + "</p><ul><li>เลขวิ่งเด่นประจำวันจร: <b>" + l3 + "</b></li><li>ชุดเลขท้าย 2 ตัวจร: <b>" + l1 + l2 + ", " + ((l2+2)%10) + l1 + "</b></li><li>ชุดเลขท้าย 3 ตัวจร: <b>" + l3 + l1 + l2 + "</b></li></ul>"; 
+            var l1 = (t.seed % 9) + 1; 
+            var l2 = ((t.seed * 3) % 8) + 1; 
+            var l3 = ((t.seed * 7) % 9) + 1; 
+            var l2D = "" + l1 + l2; 
+            var l3D = "" + l3 + l1 + l2; 
+            lottoVipContent.innerHTML = "<p><b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (" + t.dateStr + ")</b></p><p>🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ " + t.dateStr + "</p><ul><li>เลขวิ่งเด่นประจำวันจร: <b>" + l3 + "</b></li><li>ชุดเลขท้าย 2 ตัวจร: <b>" + l2D + ", " + ((l2+2)%10) + l1 + "</b></li><li>ชุดเลขท้าย 3 ตัวจร: <b>" + l3D + "</b></li></ul>"; 
         } 
 
-        // --- 2. กราฟชีวิต VIP --- 
+        // --- 2. ฟีเจอร์กราฟชีวิต VIP (ให้เลื่อนอายุตามปี พ.ศ. ของวันจร) --- 
         var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522; 
         var transitAge = t.yearBE - birthBE; 
         if (transitAge >= 1 && transitAge <= 80) { 
             var slider = document.getElementById('ageRangeSlider'); 
-            if (slider) { 
+            if (slider && typeof applyAgeChange === 'function') { 
                 slider.value = transitAge; 
-                if (typeof applyAgeChange === 'function') applyAgeChange(transitAge); 
+                applyAgeChange(transitAge); 
             } 
         } 
 
-        // --- 3 & 4. ปาจื่อ และ ซาจู VIP --- 
+        // --- 3 & 4. ฟีเจอร์ปาจื่อ (BaZi) และ ซาจู (Saju) VIP --- 
         var baziPredMap = { 'bazi-vip-result': predictions.bazi, 'sajuResultBox': predictions.saju };
         ['bazi-vip-result', 'sajuResultBox'].forEach(function(boxId) { 
             var box = document.getElementById(boxId); 
-            if (box) { 
+            if (box && box.style.display !== 'none') { 
                 var badge = box.querySelector('.transit-date-tag-custom'); 
                 if (!badge) { 
                     badge = document.createElement('div'); 
@@ -8687,9 +8694,10 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
             } 
         }); 
 
-        // --- 5. เลข 7 ตัว 4/9 ฐาน VIP --- 
+        // --- 5. ฟีเจอร์เลข 7 ตัว 4/9 ฐาน VIP --- 
         var num7Box = document.getElementById('num7AnalysisBox'); 
-        if (num7Box) { 
+        var num7Mode = (typeof AppState !== 'undefined') ? AppState.currentNum7Mode : 'free'; 
+        if (num7Box && num7Mode === 'vip') { 
             var badge = num7Box.querySelector('.transit-date-tag-custom'); 
             if (!badge) { 
                 badge = document.createElement('div'); 
@@ -8700,11 +8708,11 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
             badge.innerHTML = "<div>📌 การอ่านฐาน 9 ฐานอิงตามวันจร: " + t.dateStr + "</div><div style='font-weight: normal; color: #fff; margin-top: 5px;'>" + pickPred(predictions.num7) + "</div>"; 
         } 
 
-        // --- 6 & 7. ยูเรเนียน และ โหราศาสตร์สากล VIP --- 
+        // --- 6 & 7. ฟีเจอร์ยูเรเนียน และ โหราศาสตร์สากล VIP --- 
         var westernPredMap = { 'uranianVipBox': predictions.uranian, 'westernVipBox': predictions.western };
         ['uranianVipBox', 'westernVipBox'].forEach(function(boxId) { 
             var box = document.getElementById(boxId); 
-            if (box) { 
+            if (box && box.style.display !== 'none') { 
                 var badge = box.querySelector('.transit-date-tag-custom'); 
                 if (!badge) { 
                     badge = document.createElement('div'); 
@@ -8712,23 +8720,22 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
                     badge.style.cssText = "background: rgba(52,152,219,0.25); color: #5dade2; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #3498db;"; 
                     box.insertBefore(badge, box.firstChild); 
                 } 
-                badge.innerHTML = "<div>📌 มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: " + t.dateStr + "</div><div style='font-weight: normal; color: #fff; margin-top: 5px;'>" + pickPred(westernPredMap[boxId]) + "</div>"; 
-            } 
-        }); 
-
-        // --- 8, 9, 10, 11. ฟีเจอร์พรีเมียม 4 เมนู (รหัสกรรม, มหาพิชัยสงคราม, ถอดรหัสวิญญาณ, ขุมทรัพย์มหาเศรษฐี) --- 
-        var premiumPredMap = { 
-            'karmic_result': predictions.karmic, 
-            'life_result': predictions.life, 
-            'soul_result': predictions.soul, 
-            'wealth_result': predictions.wealth 
-        };
-        ['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) { 
-            var box = document.getElementById(boxId); 
-            if (box) { 
-                var badge = box.querySelector('.transit-date-tag-custom'); 
-                if (!badge) { 
-              badge = document.createElement('div');
+badge.innerHTML = "📌 มุมสัมพันธ์ดวงดาว (Transit Aspects) ณ วันที่: " + t.dateStr + "" + pickPred(westernPredMap[boxId]) + "";
+}
+});
+// --- 8, 9, 10, 11. ฟีเจอร์พรีเมียม 4 เมนู (รหัสกรรม, มหาพิชัยสงคราม, ถอดรหัสวิญญาณ, ขุมทรัพย์มหาเศรษฐี) ---
+var premiumPredMap = {
+'karmic_result': predictions.karmic,
+'life_result': predictions.life,
+'soul_result': predictions.soul,
+'wealth_result': predictions.wealth
+};
+['karmic_result', 'life_result', 'soul_result', 'wealth_result'].forEach(function(boxId) {
+var box = document.getElementById(boxId);
+if (box && box.style.display !== 'none') {
+var badge = box.querySelector('.transit-date-tag-custom');
+if (!badge) {
+badge = document.createElement('div');
 badge.className = 'transit-date-tag-custom';
 badge.style.cssText = "background: rgba(234,179,8,0.25); color: #ffd700; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px; font-weight: bold; text-align: left; line-height: 1.5; border-left: 4px solid #ffd700;";
 box.insertBefore(badge, box.firstChild);
@@ -8737,22 +8744,20 @@ badge.innerHTML = "📌 พยากรณ์พิเศษเจาะลึ�
 }
 });
 };
-// 3. ผูกดัก Event Listener การเปลี่ยนค่า
-function initTransit() {
+// 3. ผูก Event Listener ดักจับการเปลี่ยนค่าในช่องวันจรทั้งหมดอัตโนมัติ
+document.addEventListener('DOMContentLoaded', function() {
 ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
 var el = document.getElementById(id);
 if (el) {
-el.removeEventListener('change', window.applyTransitToAllVipFeatures);
-el.addEventListener('change', window.applyTransitToAllVipFeatures);
+el.addEventListener('change', function() {
+window.applyTransitToAllVipFeatures();
+});
 }
 });
+});
+// สำรองเรียกทำงานหลังโหลดหน้าเว็บเสร็จ
+setTimeout(function() {
 window.applyTransitToAllVipFeatures();
-}
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', initTransit);
-} else {
-initTransit();
-}
-setTimeout(initTransit, 600);
+}, 500);
 })();
 </script>  
