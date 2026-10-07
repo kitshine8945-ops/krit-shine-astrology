@@ -7738,4 +7738,77 @@ window.syncBirthDataToAllModules = function() {
 };
 </script>
 </body>
+/* ==========================================================
+   🌟 ระบบแทรกเสริม: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
+   ========================================================== */
+(function() {
+    window.getGlobalTransitParams = function() {
+        var dEl = document.getElementById('transitDay');
+        var mEl = document.getElementById('transitMonth');
+        var yEl = document.getElementById('transitYearBE');
+        var hEl = document.getElementById('transitHour24');
+        var minEl = document.getElementById('transitMinute24');
+
+        var day = dEl ? parseInt(dEl.value, 10) || 16 : 16;
+        var month = mEl ? parseInt(mEl.value, 10) || 10 : 10;
+        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
+        var hour = hEl ? parseInt(hEl.value, 10) || 6 : 6;
+        var minute = minEl ? parseInt(minEl.value, 10) || 0 : 0;
+
+        return {
+            day: day, month: month, yearBE: yearBE, yearCE: yearBE - 543,
+            hour: hour, minute: minute,
+            seed: (day * 13) + (month * 31) + yearBE + hour,
+            dateStr: `${day} / ${month} / ${yearBE}`
+        };
+    };
+
+    window.applyTransitToAllVipFeatures = function() {
+        var t = window.getGlobalTransitParams();
+        var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+        if (!isVip) return;
+
+        // อัปเดตหวย VIP ตามวันจร
+        var lottoVipContent = document.getElementById('lottoVipContent');
+        if (lottoVipContent) {
+            var l1 = (t.seed % 9) + 1;
+            var l2 = ((t.seed * 3) % 8) + 1;
+            var l3 = ((t.seed * 7) % 9) + 1;
+            lottoVipContent.innerHTML = `
+                <div style="background: rgba(14,20,38,0.95); padding: 16px; border-radius: 10px; border: 1px solid #ffd700; text-align: left;">
+                    <div style="font-size: 0.92rem; color: #ffd700; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,215,0,0.3); padding-bottom: 6px;">
+                        <i class="fa-solid fa-crown"></i> <b>เลขมงคลเฉพาะดวง & วันจรที่เลือก (${t.dateStr})</b>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>กระแสพลังงานดาวจร:</b> อิงผลลัพธ์ล่วงหน้า ณ วันที่ ${t.dateStr}</div>
+                    <div style="font-size: 0.88rem; color: #81c784; margin-bottom: 4px;">• เลขวิ่งเด่นประจำวันจร: <b style="font-size: 1.25rem; color: #fff;">${l3}</b></div>
+                    <div style="font-size: 0.88rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l1}${l2}, ${(l2+2)%10}${l1}</b></div>
+                    <div style="font-size: 0.88rem; color: #f48fb1; margin-bottom: 4px;">• ชุดเลขท้าย 3 ตัวจร: <b style="font-size: 1.35rem; color: #ffd700;">${l3}${l1}${l2}</b></div>
+                </div>
+            `;
+        }
+
+        // อัปเดตอายุตามปี พ.ศ. ของวันจรสำหรับกราฟชีวิต
+        var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
+        var transitAge = t.yearBE - birthBE;
+        if (transitAge >= 1 && transitAge <= 80) {
+            var slider = document.getElementById('ageRangeSlider');
+            if (slider && typeof applyAgeChange === 'function') {
+                slider.value = transitAge;
+                applyAgeChange(transitAge);
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', function() {
+                    window.applyTransitToAllVipFeatures();
+                });
+            }
+        });
+    });
+})();
+</script>    
 </html>
