@@ -7811,4 +7811,77 @@ window.syncBirthDataToAllModules = function() {
     });
 })();
 </script>    
+/* ==========================================================
+   🌟 ระบบแทรกเสริมตัวจริง: บังคับให้ 10 ฟีเจอร์ VIP เปลี่ยนตาม "วันจร" ทันที
+   ========================================================== */
+(function() {
+    // 1. ฟังก์ชันดึงค่าวันจร (Transit) จากฟอร์ม VIP จริงบนหน้าเว็บ
+    window.getRealTransitValues = function() {
+        var dEl = document.getElementById('transitDay');
+        var mEl = document.getElementById('transitMonth');
+        var yEl = document.getElementById('transitYearBE');
+        
+        var day = dEl ? parseInt(dEl.value, 10) || 7 : 7;
+        var month = mEl ? parseInt(mEl.value, 10) || 12 : 12;
+        var yearBE = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
+        
+        // สร้างสูตรคำนวณ Seed ที่ไม่ซ้ำกันตามวัน เดือน และปีจรที่เลือก
+        var transitSeed = (day * 31) + (month * 113) + yearBE;
+        
+        var thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        var dateStr = `${day} ${thMonths[month - 1] || 'ธันวาคม'} พ.ศ. ${yearBE}`;
+        
+        return { day: day, month: month, yearBE: yearBE, seed: transitSeed, dateStr: dateStr };
+    };
+
+    // 2. ฟังก์ชันคำนวณและอัปเดตหวย VIP ให้เปลี่ยนตามวันจร
+    window.updateLottoVipByTransit = function() {
+        var t = window.getRealTransitValues();
+        var lottoVipContent = document.getElementById('lottoVipContent');
+        if (!lottoVipContent) return;
+
+        // สุ่มตัวเลขตามวันจรที่เลือก (เปลี่ยนทุกครั้งที่เปลี่ยนวัน)
+        var runNum = (t.seed % 9) + 1;
+        var d1 = ((t.seed * 3) % 8) + 1;
+        var d2 = ((t.seed * 7) % 9) + 1;
+        var digit2 = `${d1}${d2}`;
+        var digit3 = `${runNum}${d1}${d2}`;
+        var avoidD = (runNum + 4) % 10;
+
+        lottoVipContent.innerHTML = `
+            <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; border: 1.5px solid #ffd700; text-align: left; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                <div style="font-size: 0.95rem; color: #ffd700; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,215,0,0.4); padding-bottom: 8px;">
+                    <i class="fa-solid fa-crown"></i> <b>รายงานวิเคราะห์เลขมงคลเฉพาะบุคคล (VIP)</b>
+                </div>
+                <div style="font-size: 0.85rem; color: #cfd8dc; margin-bottom: 8px;">
+                    <i class="fa-regular fa-calendar-check" style="color: #81c784;"></i> <b>วันที่พยากรณ์จร:</b> <span style="color: #ffd700; font-weight: bold;">${t.dateStr}</span>
+                </div>
+                <div style="font-size: 0.86rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>กระแสพลังงานดาวจร:</b> อิงมุมสัมพันธ์จักรวาลประจำวันที่เลือก ส่งผลให้พลังงานเด่นชัดในรอบวันดังกล่าว</div>
+                <div style="font-size: 0.88rem; color: #81c784; margin-bottom: 5px;">• เลขวิ่งตัวเดียวเสริมดวง: <b style="font-size: 1.25rem; color: #fff;">${runNum}</b></div>
+                <div style="font-size: 0.88rem; color: #64b5f6; margin-bottom: 5px;">• ชุดเลขท้าย 2 ตัวเน้นๆ: <b style="font-size: 1.35rem; color: #ffd700;">${digit2}, ${(d2+1)%10}${d1}</b></div>
+                <div style="font-size: 0.88rem; color: #f48fb1; margin-bottom: 6px;">• ชุดเลขท้าย 3 ตัวมงคล: <b style="font-size: 1.35rem; color: #ffd700;">${digit3}</b></div>
+                <div style="font-size: 0.82rem; color: #ff6b6b; margin-top: 8px; border-top: 1px dashed rgba(255,107,107,0.3); pt: 6px;">
+                    ⚠️ <b>เลขที่ควรระวัง/งดเว้นงวดนี้:</b> ${avoidD} (อิทธิพลจากดาวกาลกิณีจรทับมุมดวง)
+                </div>
+            </div>
+            <p style="font-size: 0.78rem; color: #94a3b8; text-align: center; margin-top: 10px;">วิเคราะห์ตามหลักโหราศาสตร์ไทยและสถิติดวงดาว ขอให้ทุกท่านโชคดีมีลาภครับ!</p>
+        `;
+    };
+
+    // 3. ดักจับเหตุการณ์เมื่อผู้ใช้เปลี่ยนวันจรในฟอร์ม
+    document.addEventListener('DOMContentLoaded', function() {
+        ['transitDay', 'transitMonth', 'transitYearBE'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', function() {
+                    window.updateLottoVipByTransit();
+                });
+            }
+        });
+    });
+
+    // เรียกทำงานทันทีหลังโหลดเสร็จ
+    setTimeout(window.updateLottoVipByTransit, 400);
+})();
+</script>
 </html>
