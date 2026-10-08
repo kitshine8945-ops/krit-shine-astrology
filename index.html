@@ -2901,11 +2901,10 @@ function switchUranianMode(mode) {
           </div>
         `;
       }
-    } else if (typeof renderUranianVip === 'function') {
+if (typeof renderUranianVip === 'function') {
       renderUranianVip();
     }
   }
-}
 
 function switchWesternMode(mode) {
   AppState.currentWesternMode = mode;
