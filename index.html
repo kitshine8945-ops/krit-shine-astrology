@@ -2898,11 +2898,11 @@ function switchUranianMode(mode) {
         const bMonthEl = document.getElementById('birthMonth');
         const bYearEl = document.getElementById('birthYearBE');
 
-        const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay;
-        const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth;
-        const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE;
+        const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
+        const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
+        const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-        // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร เพื่อให้คำทำนายเปลี่ยนตามวันจรแบบไดนามิก
+        // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร
         const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
         const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
         const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
@@ -2923,10 +2923,48 @@ function switchUranianMode(mode) {
           return;
         }
 
+        // --- คลังคำทำนายยูเรเนียน VIP แบบไดนามิก (เปลี่ยนตามวันเกิดและวันจร) ---
+        const URANIAN_VIP_POOLS = [
+          {
+            midpointDesc: `อิทธิพลวันจร ${tD} ${tMName} ${tY} (อิงพื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): ดวงชะตาขับเคลื่อนเข้าสู่แกนพลังงานหลัก ส่งผลให้การติดต่อเจรจาและการขยายงานในรอบปีนี้มีความโดดเด่นเป็นพิเศษ`,
+            sunJupiter: `สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูง โอกาสทองในการสร้างความมั่งคั่ง`,
+            meridApollo: `สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกัน ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวางเกินคาด`,
+            cupido: `โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุน`,
+            zeus: `พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้สำเร็จรวดเร็ว`,
+            kronos: `ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการและโครงสร้างใหญ่`,
+            apollon: `เกณฑ์การค้ารุ่งเรือง มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน`,
+            poseidon: `หยั่งรู้ลึกซึ้ง มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทาง เผยแพร่ความรู้ และเป็นที่พึ่งพาทางความคิดแก่ผู้คน`
+          },
+          {
+            midpointDesc: `อิงวันจร ${tD} ${tMName} ${tY} (อิงพื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): พลังงานดาวทิพย์และจุดสะท้อนส่งกระแสเกื้อหนุนโดยตรง เปิดทางให้คุณพบเจอช่องทางลงทุนใหม่ๆ และการเจรจาที่ให้ผลตอบแทนสูงสุด`,
+            sunJupiter: `จุดประกายความเจริญรุ่งเรืองรอบด้าน มีเกณฑ์ได้รับโชคลาภก้อนโต ผลงานเข้าตาผู้ใหญ่ ได้รับการสนับสนุนเต็มที่`,
+            meridApollo: `ทิศทางธุรกิจและการงานเติบโตแบบก้าวกระโดด การค้าขายหรือการลงทุนออกดอกออกผลคุ้มค่าการรอคอย`,
+            cupido: `มีเสน่ห์ดึงดูดผู้คนในแวดวงสังคม การร่วมทุนหรือการทำโปรเจกต์กลุ่มกับเพื่อนฝูงและพันธมิตรจะสร้างความสำเร็จอย่างงดงาม`,
+            zeus: `มีความเด็ดขาดและเฉียบคมในการตัดสินใจ บริหารจัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม ไร้อุปสรรคขัดขวาง`,
+            kronos: `ความก้าวหน้าในตำแหน่งหน้าที่การงาน ได้รับความไว้วางใจให้คุมอำนาจหรือโปรเจกต์สำคัญระดับองค์กร`,
+            apollon: `ขยายฐานลูกค้าและเครือข่ายการค้ากว้างไกล มีช่องทางสร้างรายได้เสริมเข้ามาหลายทางพร้อมกัน`,
+            poseidon: `มีสติปัญญาและลางสังหรณ์เป็นเลิศ เหมาะแก่การวางแผนกลยุทธ์ระยะยาวและการตัดสินใจเรื่องสำคัญในชีวิต`
+          },
+          {
+            midpointDesc: `อิงวันจร ${tD} ${tMName} ${tY} (อิงพื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): ดวงชะตาสอดรับกับพลังแห่งการเปลี่ยนแปลงเชิงบวก หนุนนำให้ภารกิจที่ยากลำบากกลับกลายเป็นความสำเร็จและสร้างชื่อเสียงขจรไกล`,
+            sunJupiter: `บารมีคุ้มครองดวงชะตา แคล้วคลาดจากปัญหาทั้งปวง และดึงดูดโอกาสทองทางการเงินเข้ามาอย่างต่อเนื่อง`,
+            meridApollo: `ความเชี่ยวชาญและความคิดสร้างสรรค์สร้างมูลค่ามหาศาล ชื่อเสียงและผลงานเป็นที่ประจักษ์ในวงกว้าง`,
+            cupido: `ประสบความสำเร็จในงานที่เกี่ยวข้องกับมหาชน ศิลปะ บันเทิง หรืองานบริการ มีผู้คนคอยช่วยเหลือสนับสนุนอยู่เบื้องหลัง`,
+            zeus: `พลังใจเข้มแข็งไม่ย่อท้อต่ออุปสรรค สามารถพลิกสถานการณ์วิกฤตให้เป็นโอกาสทองของชีวิตได้อย่างน่าทึ่ง`,
+            kronos: `ความมั่นคงระดับสูงในหน้าที่การงาน ได้รับการยอมรับจากผู้เชี่ยวชาญและผู้บริหารระดับสูง`,
+            apollon: `การค้าขายเจริญรุ่งเรือง มีกำไรสะพัด และมีโอกาสได้ขยายกิจการหรือต่อยอดธุรกิจให้เติบโตยิ่งขึ้น`,
+            poseidon: `จิตใจสงบเยือกเย็น มีมุมมองวิสัยทัศน์กว้างไกล เป็นที่ปรึกษาและที่พึ่งพาทางความคิดแก่ผู้คนรอบข้าง`
+          }
+        ];
+
+        // สูตรคำนวณดัชนีเลือกชุดคำทำนาย (ผูกร่วมทั้ง วันเกิด [bD, bM, bY] และ วันจร [tY, tD])
+        let poolIdx = (bD * 3 + bM * 7 + bY + tY + tD) % URANIAN_VIP_POOLS.length;
+        let selectedPool = URANIAN_VIP_POOLS[poolIdx];
+
         targetBox.innerHTML = `
           <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
             <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-satellite-dish"></i> โหราศาสตร์ยูเรเนียน VIP (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY} - อายุย่าง ${ageYang} ปี):</strong>
-            <p style="margin-top: 4px; font-size: 0.85rem; color: #fff;">ผลการพยากรณ์และศูนย์รังสีเฉพาะบุคคลได้รับการอัปเดตตามห้วงเวลาวันจร พ.ศ. ${tY} เรียบร้อยแล้ว</p>
+            <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">${selectedPool.midpointDesc}</p>
           </div>
 
           <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
@@ -2935,12 +2973,12 @@ function switchUranianMode(mode) {
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px;">
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล ปี ${tY}):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">อิทธิพลวันจร ${tD}/${tMVal}/${tY} ส่งผลให้รอบปีนี้เป็นจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคม</p>
+                <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.sunJupiter}</p>
               </div>
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน ปี ${tY}):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกันในรอบปี พ.ศ. ${tY} นี้ ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง</p>
+                <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.meridApollo}</p>
               </div>
             </div>
           </div>
@@ -2952,23 +2990,23 @@ function switchUranianMode(mode) {
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ในรอบปี พ.ศ. ${tY} นี้ โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้สนับสนุน</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.cupido}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">พลังขับเคลื่อนในปี ${tY} ในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ กำหนดทิศทางโปรเจกต์ให้บรรลุเป้าหมายได้อย่างรวดเร็ว</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.zeus}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ในช่วงปี พ.ศ. ${tY} นี้ ได้รับการยกย่องในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการ</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.kronos}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon) - การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เกณฑ์การค้ารุ่งเรืองในรอบปี ${tY} มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.apollon}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon) - จิตวิญญาณ ปัญญาญาณ & แสงสว่าง:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">หยั่งรู้ลึกซึ้งในปี พ.ศ. ${tY} มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทางและเผยแพร่ความรู้</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.poseidon}</p>
               </div>
             </div>
           </div>
