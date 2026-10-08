@@ -2696,8 +2696,10 @@ if (typeof applyAgeChange === 'function') {
 
 function switchNum7Mode(mode) {
       AppState.currentNum7Mode = mode;
-      document.getElementById('btn-num7-free').classList.toggle('active', mode === 'free');
-      document.getElementById('btn-num7-vip').classList.toggle('active', mode === 'vip');
+      const btnFree = document.getElementById('btn-num7-free');
+      const btnVip = document.getElementById('btn-num7-vip');
+      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
       calcNum7Base();
     }
 
@@ -2758,12 +2760,16 @@ function switchNum7Mode(mode) {
         html += `<tr style="font-weight:700; color:#ffd700; background:rgba(255,215,0,0.12);"><td>ฐาน ๙ (มหาโชค VIP)</td>${row9.map(v => `<td>${v}</td>`).join('')}</tr>`;
       }
       html += `</tbody></table>`;
-      document.getElementById('num7TableWrapper').innerHTML = html;
+      
+      const tableWrapper = document.getElementById('num7TableWrapper');
+      if (tableWrapper) tableWrapper.innerHTML = html;
 
-      // แยกส่วนคำทำนายระหว่าง 4 ฐาน (ฟรี) กับ 9 ฐาน (VIP + วันจร) อย่างชัดเจน
+      const analysisTitle = document.getElementById('num7AnalysisTitle');
+      const analysisBody = document.getElementById('num7AnalysisBody');
+
       if (!isVip) {
-        document.getElementById('num7AnalysisTitle').textContent = "บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี - พื้นดวงกำเนิด)";
-        document.getElementById('num7AnalysisBody').innerHTML = `
+        if (analysisTitle) analysisTitle.textContent = "บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี - พื้นดวงกำเนิด)";
+        if (analysisBody) analysisBody.innerHTML = `
           <div style="display:grid; grid-template-columns:1fr; gap:10px;">
             <div class="desc-block">
               <strong style="color:#ffd700;">• ฐานอัตตะ & กำลังรวม (ฐาน 1 และ 4):</strong>
@@ -2780,8 +2786,8 @@ function switchNum7Mode(mode) {
           </div>
         `;
       } else {
-        document.getElementById('num7AnalysisTitle').textContent = `บทวิเคราะห์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP) - อายุย่าง ${ageYang} ปี (วันจร: ${tD}/${tM}/${tY})`;
-        document.getElementById('num7AnalysisBody').innerHTML = `
+        if (analysisTitle) analysisTitle.textContent = `บทวิเคราะห์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP) - อายุย่าง ${ageYang} ปี (วันจร: ${tD}/${tM}/${tY})`;
+        if (analysisBody) analysisBody.innerHTML = `
           <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px; margin-bottom:12px;">
             <strong style="color:#ffd700;"><i class="fa-solid fa-satellite-dish"></i> ดวงจรรายปี & วันจร (Dynamic Transit Active):</strong>
             <p style="margin-top:6px; font-size:0.88rem; color:#fff; line-height:1.7;">
@@ -2802,7 +2808,6 @@ function switchNum7Mode(mode) {
           </div>
         `;
       }
-    }
 
   container.innerHTML = `
     <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
