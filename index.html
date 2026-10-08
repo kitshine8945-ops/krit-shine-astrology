@@ -5,6 +5,76 @@
 <!-- ========================================================== 🌟 ระบบแทรกเสริม: สั่งเปลี่ยนคำทำนาย VIP แท้ด้วยลัคนาจร & จัดระเบียบป้ายวันจรตามปฏิทิน ========================================================== -->
 <script>
 (function() {
+    function runGlobalTransitVipEngine() {
+        if (typeof ZODIAC_DATA === 'undefined' || typeof ZODIAC_START_DAYS === 'undefined' || typeof MONTH_NAMES === 'undefined') {
+            return;
+        }
+
+        var dEl = document.getElementById('transitDay');
+        var mEl = document.getElementById('transitMonth');
+        var yEl = document.getElementById('transitYearBE');
+        var hEl = document.getElementById('transitHour24');
+        var minEl = document.getElementById('transitMinute24');
+        
+        var tD = dEl ? parseInt(dEl.value, 10) || 1 : 1;
+        var tMVal = mEl ? parseInt(mEl.value, 10) || 1 : 1;
+        var tY = yEl ? parseInt(yEl.value, 10) || 2569 : 2569;
+        var tH = hEl ? parseInt(hEl.value, 10) || 6 : 6;
+        var tMin = minEl ? parseInt(minEl.value, 10) || 0 : 0;
+
+        // เช็กสถานะโหมดปัจจุบัน (ถ้าผู้ใช้เปิดโหมดฟรี ให้หยุดแทรกคำทำนาย VIP ทันที)
+        var isVipActive = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+        var isNum7Vip = (typeof AppState !== 'undefined' && AppState.currentNum7Mode === 'vip');
+
+        var transitSunIndex = 0;
+        for (var i = 0; i < 12; i++) {
+            var cur = ZODIAC_START_DAYS[i];
+            if (tMVal === cur.m) {
+                if (tD >= cur.d) transitSunIndex = i;
+                else transitSunIndex = (i + 11) % 12;
+                break;
+            }
+        }
+        var transitElapsed = (tH >= 6) ? (tH - 6) * 60 + tMin : (18 + tH) * 60 + tMin;
+        var transitAscIndex = (transitSunIndex + Math.floor(transitElapsed / 120)) % 12;
+        var transitInfo = ZODIAC_DATA[transitAscIndex];
+        if (!transitInfo) return;
+
+        // จัดการเฉพาะกล่องเลข 7 ตัว (แยกโหมด ฟรี / VIP ชัดเจน)
+        var num7Box = document.getElementById('num7AnalysisBox');
+        if (num7Box) {
+            var num7FreeArea = document.getElementById('num7TableWrapper');
+            if (!isNum7Vip) {
+                // ถ้าอยู่โหมดฟรี: ห้ามมีคำทำนาย VIP หรือป้ายวันจร VIP ในกล่องฟรีเด็ดขาด!
+                var freeBadges = num7Box.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"], .vip-tag-marker');
+                freeBadges.forEach(function(el) { el.style.setProperty('display', 'none', 'important'); });
+            } else {
+                // ถ้าอยู่โหมด VIP: อัปเดตคำทำนายตามปี พ.ศ. จร (tY) จริง
+                var num7Slot = document.getElementById('num7AnalysisBody');
+                if (num7Slot && !num7Slot.dataset.renderedTransit) {
+                    // เรียกฟังก์ชันคำนวณเลข 7 ตัวใหม่เพื่อให้สอดคล้องกับปี พ.ศ. จร
+                    if (typeof calcNum7Base === 'function') calcNum7Base();
+                }
+            }
+        }
+    }
+
+    window.applyTransitToAllVipFeatures = runGlobalTransitVipEngine;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputIds = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+        inputIds.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('change', runGlobalTransitVipEngine);
+        });
+    });
+
+    setInterval(runGlobalTransitVipEngine, 400);
+})();
+</script>    
+<!-- ========================================================== 🌟 ระบบแทรกเสริม: สั่งเปลี่ยนคำทำนาย VIP แท้ด้วยลัคนาจร & จัดระเบียบป้ายวันจรตามปฏิทิน ========================================================== -->
+<script>
+(function() {
     // ฟังก์ชันคำนวณลัคนาจรแล้วส่งกระจายข้อความ VIP แท้เข้าสู่ 10 ศาสตร์ด้านล่างแบบไร้ข้อจำกัด
     function runGlobalTransitVipEngine() {
         // 🚨 ป้องกันปัญหาตัวแปรโหลดช้า: รอให้คลังข้อมูลแผ่นดวงหลักในระบบของคุณพร้อมก่อนค่อยรัน
