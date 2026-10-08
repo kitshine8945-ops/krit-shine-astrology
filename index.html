@@ -3238,8 +3238,8 @@ const POEMS_DATABASE = {
     };
 
     let lifeChartInstance = null;
-function getLifeGraphBaseCycle() {
-      // ดึงค่าจาก AppState หรือจากฟอร์มหน้าเว็บ ถ้ายังไม่มีให้ใช้ค่ากลางกลาง (ไม่ใช่ข้อมูลส่วนตัว)
+// ฟังก์ชันคำนวณวัฏจักร 12 เรือนภพตามอายุจริง
+    function getLifeGraphBaseCycle() {
       const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
       const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
       const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
@@ -3257,8 +3257,9 @@ function getLifeGraphBaseCycle() {
     function initAgeSelectOptions() {
       const selectEl = document.getElementById('selectYearAgeDirect');
       if (!selectEl) return;
+      if (selectEl.options.length > 0) return; // ป้องกันการสร้างออปชันซ้ำ
+
       selectEl.innerHTML = '';
-      
       const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
 
       for (let age = 1; age <= 80; age++) {
@@ -3268,6 +3269,10 @@ function getLifeGraphBaseCycle() {
         opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
         selectEl.appendChild(opt);
       }
+
+      selectEl.onchange = function() {
+        applyAgeChange(parseInt(this.value, 10));
+      };
     }
 
     // ฟังก์ชันสลับโหมด ฟรี / VIP ของกราฟชีวิต
@@ -3294,6 +3299,7 @@ function getLifeGraphBaseCycle() {
       }
     }
 
+    // ฟังก์ชันหลักเมื่อเลือกอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
     function applyAgeChange(age) {
       age = parseInt(age, 10);
       if (isNaN(age)) age = 1;
@@ -3326,9 +3332,9 @@ function getLifeGraphBaseCycle() {
       `;
 
       document.getElementById('vip-graph-aspects-content').innerHTML = `
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]} (${cycle[0]>=9?'สวรรค์ภูมิ':(cycle[0]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง มักมีผู้อุปถัมภ์หรือผู้ร่วมงานคอยสนับสนุนไม่ให้โดดเดี่ยว</p></div>
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]} (${cycle[1]>=9?'สวรรค์ภูมิ':(cycle[1]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน ยิ่งมีความสุขและสร้างกุศล ยิ่งดึงดูดทรัพย์</p></div>
-        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]} (${cycle[2]>=9?'สวรรค์ภูมิ':(cycle[2]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ได้คู่ครองเป็นเสมือนกัลยาณมิตร คอยชี้แนะและพากันสร้างฐานะครอบครัวให้มั่นคง</p></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]} (${cycle[0]>=9?'สวรรค์ภูมิ':(cycle[0]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง ในช่วงอายุ ${age} ปีนี้</p></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]} (${cycle[1]>=9?'สวรรค์ภูมิ':(cycle[1]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน</p></div>
+        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]} (${cycle[2]>=9?'สวรรค์ภูมิ':(cycle[2]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ความสัมพันธ์รอบตัวราบรื่น ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ</p></div>
       `;
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
@@ -3346,6 +3352,7 @@ function getLifeGraphBaseCycle() {
       initMyHoraLifeChart(age);
     }
 
+    // ฟังก์ชันวาดกราฟเส้น Chart.js แบบนิ่งสนิท ไม่วิ่งไปมา
     function initMyHoraLifeChart(focusAge) {
       const ctx = document.getElementById('lifeChartCanvas');
       if (!ctx) return;
@@ -3373,6 +3380,7 @@ function getLifeGraphBaseCycle() {
         },
         options: {
           responsive: true,
+          animation: false, // ปิดแอนิเมชันเพื่อให้กราฟนิ่งทันที ไม่วิ่งไปมา
           scales: {
             y: { min: 1, max: 12, ticks: { stepSize: 1, color: '#ffd700' }, grid: { color: 'rgba(255,255,255,0.08)' } },
             x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.08)' } }
@@ -3382,8 +3390,12 @@ function getLifeGraphBaseCycle() {
       });
     }
 
-    function updateAgeFromSlider(age) { applyAgeChange(age); }
-    function updateAgeFromInput(age) { applyAgeChange(age); }
+    function updateAgeFromSlider(age) { applyAgeChange(parseInt(age, 10)); }
+    function updateAgeFromInput(age) { applyAgeChange(parseInt(age, 10)); }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initAgeSelectOptions();
+    });
 
     const STEMS = [{ name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", nature: "ต้นไม้ใหญ่ หนักแน่น มั่นคง" }, { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", nature: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง" }, { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", nature: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง" }, { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", nature: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน" }, { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", nature: "ภูผา หนักแน่น น่าเชื่อถือ อดทนสูง" }, { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", nature: "ดินเพาะปลูก เมตตา เอื้อเฟื้อเผื่อแผ่" }, { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", nature: "โลหะแกร่ง เด็ดขาด กล้าหาญ รักความยุติธรรม" }, { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", nature: "อัญมณี เปล่งประกาย มีรสนิยม รักศักดิ์ศรี" }, { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", nature: "มหาสมุทร มีพลังผลักดัน ไหวพริบกว้างไกล" }, { name: "癸 (กุ่ย)", elem: "น้ำ", pol: "หยิน", nature: "สายฝน ชุ่มเย็น ปัญญาเฉียบคม ลางสังหรณ์ดี" }];
     const BRANCHES = [{ name: "子 (จื่อ)", animal: "ชวด", elem: "น้ำ" }, { name: "丑 (โฉ่ว)", animal: "ฉลู", elem: "ดิน" }, { name: "寅 (อิ๋น)", animal: "ขาล", elem: "ไม้" }, { name: "卯 (เหม่า)", animal: "เถาะ", elem: "ไม้" }, { name: "辰 (เฉิน)", animal: "มะโรง", elem: "ดิน" }, { name: "巳 (ซื่อ)", animal: "มะเส็ง", elem: "ไฟ" }, { name: "午 (อู่)", animal: "มะเมีย", elem: "ไฟ" }, { name: "未 (เว่ย)", animal: "มะแม", elem: "ดิน" }, { name: "申 (เซิน)", animal: "วอก", elem: "ทอง" }, { name: "酉 (โหย่ว)", animal: "ระกา", elem: "ทอง" }, { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }];
