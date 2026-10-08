@@ -3310,8 +3310,13 @@ const POEMS_DATABASE = {
       }
     }
 
-    // ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
+// ตัวแปรกันชนไม่ให้เกิดลูปวนซ้ำ
+    let isChangingAge = false;
+
     function applyAgeChange(age) {
+      if (isChangingAge) return;
+      isChangingAge = true;
+
       age = parseInt(age, 10);
       if (isNaN(age)) age = 1;
       if (age < 1) age = 1;
@@ -3346,24 +3351,28 @@ const POEMS_DATABASE = {
       `;
 
       document.getElementById('vip-graph-aspects-content').innerHTML = `
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]} (${cycle[0]>=9?'สวรรค์ภูมิ':(cycle[0]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง ในช่วงอายุ ${age} ปีนี้</p></div>
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]} (${cycle[1]>=9?'สวรรค์ภูมิ':(cycle[1]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน</p></div>
-        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]} (${cycle[2]>=9?'สวรรค์ภูมิ':(cycle[2]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ความสัมพันธ์รอบตัวราบรื่น ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ</p></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]}</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง ในช่วงอายุ ${age} ปีนี้</p></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]}</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน</p></div>
+        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]}</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ความสัมพันธ์รอบตัวราบรื่น ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ</p></div>
       `;
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
         let sc = cycle[i];
         let realm = sc >= 9 ? 'สวรรค์ภูมิ' : (sc >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ');
+        let colorCode = sc >= 9 ? '#ffd700' : (sc >= 5 ? '#81c784' : '#ff7675');
         return `
           <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
-            <strong style="color:${sc >= 9 ? '#ffd700' : (sc >= 5 ? '#81c784' : '#ff7675')};">${name} เลข ${sc} (${realm})</strong>
+            <strong style="color:${colorCode};">${name} เลข ${sc} (${realm})</strong>
             <p style="font-size:0.78rem; color:#cfd8dc; margin-top:2px;">พลังเรือนภพประจำตัวส่งผลต่อการดำเนินชีวิตในด้าน${name}</p>
           </div>
         `;
       }).join('');
 
       initMyHoraLifeChart(age);
+
+      // ปลดล็อกสถานะหลังทำงานเสร็จ
+      setTimeout(() => { isChangingAge = false; }, 50);
     }
 
     // ฟังก์ชันวาดกราฟเส้น Chart.js แบบนิ่งสนิท ไม่วิ่งไปมา
