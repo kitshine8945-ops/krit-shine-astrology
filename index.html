@@ -8728,24 +8728,23 @@ function updateTransitForPremiumModal(elementId, t) {
 }
 
 // --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
-   document.addEventListener('DOMContentLoaded', function() {
-    ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', function() {
-                try {
-                    if (typeof updateAllVipFeaturesByTransit === 'function') {
-                        updateAllVipFeaturesByTransit();
-                    }
-                    if (typeof calcNum7Base === 'function') {
-                        calcNum7Base();
-                    }
-                } catch (err) {
-                    console.error("Transit Update Error: ", err);
+  // --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
+['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('change', function() {
+            try {
+                if (typeof updateAllVipFeaturesByTransit === 'function') {
+                    updateAllVipFeaturesByTransit();
                 }
-            });
-        }
-    });
+                if (typeof calcNum7Base === 'function') {
+                    calcNum7Base();
+                }
+            } catch (err) {
+                console.error("Transit Update Error: ", err);
+            }
+        });
+    }
 });
 // --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
 function getCleanTransitBadgeString() {
