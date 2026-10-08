@@ -3238,10 +3238,12 @@ const POEMS_DATABASE = {
     };
 
     let lifeChartInstance = null;
-    function getLifeGraphBaseCycle() {
-      const d = AppState.birthDay || 30;
-      const m = AppState.birthMonth || 4;
-      const y = AppState.birthBE || 2522;
+function getLifeGraphBaseCycle() {
+      // ดึงค่าจาก AppState หรือจากฟอร์มหน้าเว็บ ถ้ายังไม่มีให้ใช้ค่ากลางกลาง (ไม่ใช่ข้อมูลส่วนตัว)
+      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
+      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
+      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      
       const baseSeed = (d + m + (y % 12)) % 12 + 1;
       let cycle = [];
       for (let i = 0; i < 12; i++) {
@@ -3253,22 +3255,60 @@ const POEMS_DATABASE = {
     }
 
     function initAgeSelectOptions() {
-  const selectEl = document.getElementById('selectYearAgeDirect');
-  if (!selectEl) return;
-  selectEl.innerHTML = '';
-  for (let age = 1; age <= 80; age++) {
-    let calYear = AppState.birthBE + age;
-    let opt = document.createElement('option');
-    opt.value = age;
-    opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
-    selectEl.appendChild(opt);
-  }
-}
-  
+      const selectEl = document.getElementById('selectYearAgeDirect');
+      if (!selectEl) return;
+      selectEl.innerHTML = '';
+      
+      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+
+      for (let age = 1; age <= 80; age++) {
+        let calYear = birthYear + age;
+        let opt = document.createElement('option');
+        opt.value = age;
+        opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
+        selectEl.appendChild(opt);
+      }
+    }
+
+    // ฟังก์ชันสลับโหมด ฟรี / VIP ของกราฟชีวิต
+    function switchGraphMode(mode) {
+      AppState.currentGraphMode = mode;
+      const btnFree = document.getElementById('btn-graph-free');
+      const btnVip = document.getElementById('btn-graph-vip');
+      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+      const vipFullDetails = document.getElementById('vip-graph-full-details');
+      if (vipFullDetails) {
+        if (mode === 'vip') {
+          const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+          if (!isVip) {
+            alert('ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น กรุณาสมัครสมาชิก VIP ก่อนครับ');
+            switchGraphMode('free');
+            return;
+          }
+          vipFullDetails.style.display = 'block';
+        } else {
+          vipFullDetails.style.display = 'none';
+        }
+      }
+    }
 
     function applyAgeChange(age) {
       age = parseInt(age, 10);
-      let calBE = AppState.birthBE + age;
+      if (isNaN(age)) age = 1;
+      if (age < 1) age = 1;
+      if (age > 80) age = 80;
+
+      AppState.currentGraphAge = age;
+      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      let calBE = birthYear + age;
+
+      const slider = document.getElementById('ageRangeSlider');
+      const selectEl = document.getElementById('selectYearAgeDirect');
+      if (slider && parseInt(slider.value, 10) !== age) slider.value = age;
+      if (selectEl && parseInt(selectEl.value, 10) !== age) selectEl.value = age;
+
       const cycle = getLifeGraphBaseCycle();
       let score = cycle[(age - 1) % 12];
 
@@ -3278,7 +3318,6 @@ const POEMS_DATABASE = {
       document.getElementById('yearly-score-badge').textContent = `พลัง ${score}/12 คะแนน (${score >= 9 ? 'สวรรค์ภูมิ' : (score >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ')})`;
       document.getElementById('yearly-score-badge').style.color = score >= 9 ? '#ffd700' : (score >= 5 ? '#81c784' : '#ff7675');
 
-    // ดึงบทกลอนยาวตามตัวเลขคะแนน
       const poem = POEMS_DATABASE[score] || POEMS_DATABASE[3];
       document.getElementById('yearly-poem-box').innerHTML = `
         <div style="font-size: 0.95rem; line-height: 2; color: #fff; text-align: center; width: 100%;">
@@ -3311,19 +3350,21 @@ const POEMS_DATABASE = {
       const ctx = document.getElementById('lifeChartCanvas');
       if (!ctx) return;
       const cycle = getLifeGraphBaseCycle();
+      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      
       let startAge = Math.max(1, focusAge - 5);
       let endAge = Math.min(80, startAge + 11);
       let labels = [], data = [], colors = [], radiuses = [];
 
       for (let a = startAge; a <= endAge; a++) {
-        labels.push(`${AppState.birthBE + a} (${a}ปี)`);
+        labels.push(`${birthYear + a} (${a}ปี)`);
         let sc = cycle[(a - 1) % 12];
         data.push(sc);
         if (a === focusAge) { colors.push('#ff4757'); radiuses.push(9); }
         else { colors.push('#ffd700'); radiuses.push(5); }
       }
 
-      if (lifeChartInstance) lifeChartInstance.destroy();
+      if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance) lifeChartInstance.destroy();
       lifeChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -3341,8 +3382,8 @@ const POEMS_DATABASE = {
       });
     }
 
-    function updateAgeFromSlider(age) { document.getElementById('selectYearAgeDirect').value = age; applyAgeChange(age); }
-    function updateAgeFromInput(age) { document.getElementById('ageRangeSlider').value = age; applyAgeChange(age); }
+    function updateAgeFromSlider(age) { applyAgeChange(age); }
+    function updateAgeFromInput(age) { applyAgeChange(age); }
 
     const STEMS = [{ name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", nature: "ต้นไม้ใหญ่ หนักแน่น มั่นคง" }, { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", nature: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง" }, { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", nature: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง" }, { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", nature: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน" }, { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", nature: "ภูผา หนักแน่น น่าเชื่อถือ อดทนสูง" }, { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", nature: "ดินเพาะปลูก เมตตา เอื้อเฟื้อเผื่อแผ่" }, { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", nature: "โลหะแกร่ง เด็ดขาด กล้าหาญ รักความยุติธรรม" }, { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", nature: "อัญมณี เปล่งประกาย มีรสนิยม รักศักดิ์ศรี" }, { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", nature: "มหาสมุทร มีพลังผลักดัน ไหวพริบกว้างไกล" }, { name: "癸 (กุ่ย)", elem: "น้ำ", pol: "หยิน", nature: "สายฝน ชุ่มเย็น ปัญญาเฉียบคม ลางสังหรณ์ดี" }];
     const BRANCHES = [{ name: "子 (จื่อ)", animal: "ชวด", elem: "น้ำ" }, { name: "丑 (โฉ่ว)", animal: "ฉลู", elem: "ดิน" }, { name: "寅 (อิ๋น)", animal: "ขาล", elem: "ไม้" }, { name: "卯 (เหม่า)", animal: "เถาะ", elem: "ไม้" }, { name: "辰 (เฉิน)", animal: "มะโรง", elem: "ดิน" }, { name: "巳 (ซื่อ)", animal: "มะเส็ง", elem: "ไฟ" }, { name: "午 (อู่)", animal: "มะเมีย", elem: "ไฟ" }, { name: "未 (เว่ย)", animal: "มะแม", elem: "ดิน" }, { name: "申 (เซิน)", animal: "วอก", elem: "ทอง" }, { name: "酉 (โหย่ว)", animal: "ระกา", elem: "ทอง" }, { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }];
