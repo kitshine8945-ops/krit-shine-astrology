@@ -2722,13 +2722,13 @@ function switchNum7Mode(mode) {
         `;
       }
   
-  
-  document.addEventListener('DOMContentLoaded', function() {
-      // ดักจับการเปลี่ยนค่าทั้งวันเกิดและวันจร เพื่อให้เลข 7 ตัวอัปเดตตามทันที
-      const allInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
-      allInputs.forEach(id => {
+ // ตรวจสอบว่ามีตัวดักจับ (Event Listener) สำหรับฟอร์มวันจรชุดนี้หรือยัง
+    document.addEventListener('DOMContentLoaded', function() {
+      const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+      transitInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
+          // สั่งให้เมื่อมีการเปลี่ยนแปลงค่า (change) จะต้องเรียกคำนวณเลข 7 ตัวใหม่ทันที
           el.addEventListener('change', function() {
             if (typeof calcNum7Base === 'function') {
               calcNum7Base();
