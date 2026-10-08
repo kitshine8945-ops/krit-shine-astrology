@@ -2893,7 +2893,7 @@ function switchUranianMode(mode) {
         if (!container) return;
         const targetBox = document.getElementById('uranianVipContent') ? document.getElementById('uranianVipContent') : container;
 
-        // ดึงค่าจากฟอร์มหลักบนหน้าเว็บโดยตรง
+        // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก
         const bDayEl = document.getElementById('birthDay');
         const bMonthEl = document.getElementById('birthMonth');
         const bYearEl = document.getElementById('birthYearBE');
@@ -2901,6 +2901,16 @@ function switchUranianMode(mode) {
         const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay;
         const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth;
         const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE;
+
+        // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร เพื่อให้คำทำนายเปลี่ยนตามวันจรแบบไดนามิก
+        const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+        const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+        const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+        const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+
+        // คำนวณอายุย่างตามปี พ.ศ. จร
+        let ageYang = (tY - bY) + 1;
+        if (ageYang < 1) ageYang = 1;
 
         if (!bD || !bM || !bY) {
           targetBox.innerHTML = `
@@ -2914,46 +2924,51 @@ function switchUranianMode(mode) {
         }
 
         targetBox.innerHTML = `
+          <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+            <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-satellite-dish"></i> โหราศาสตร์ยูเรเนียน VIP (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY} - อายุย่าง ${ageYang} ปี):</strong>
+            <p style="margin-top: 4px; font-size: 0.85rem; color: #fff;">ผลการพยากรณ์และศูนย์รังสีเฉพาะบุคคลได้รับการอัปเดตตามห้วงเวลาวันจร พ.ศ. ${tY} เรียบร้อยแล้ว</p>
+          </div>
+
           <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนเฉพาะดวงชะตา (Midpoints)
+              <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนประจำปี พ.ศ. ${tY} (Midpoints)
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px;">
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูง</p>
+                <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล ปี ${tY}):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">อิทธิพลวันจร ${tD}/${tMVal}/${tY} ส่งผลให้รอบปีนี้เป็นจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคม</p>
               </div>
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกัน ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง</p>
+                <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน ปี ${tY}):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกันในรอบปี พ.ศ. ${tY} นี้ ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง</p>
               </div>
             </div>
           </div>
 
           <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (Transneptunian Planets)
+              <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (ประจำปี พ.ศ. ${tY})
             </h4>
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุนและร่วมสร้างผลงาน</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ในรอบปี พ.ศ. ${tY} นี้ โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้สนับสนุน</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมายได้อย่างรวดเร็ว</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">พลังขับเคลื่อนในปี ${tY} ในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ กำหนดทิศทางโปรเจกต์ให้บรรลุเป้าหมายได้อย่างรวดเร็ว</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือมีโอกาสเกี่ยวข้องกับงานระดับทางการและโครงสร้างขนาดใหญ่</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ในช่วงปี พ.ศ. ${tY} นี้ ได้รับการยกย่องในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการ</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon) - การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เกณฑ์การค้ารุ่งเรือง มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เกณฑ์การค้ารุ่งเรืองในรอบปี ${tY} มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
                 <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon) - จิตวิญญาณ ปัญญาญาณ & แสงสว่าง:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">หยั่งรู้ลึกซึ้ง มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทาง เผยแพร่ความรู้ และเป็นที่พึ่งพาทางความคิดแก่ผู้คน</p>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">หยั่งรู้ลึกซึ้งในปี พ.ศ. ${tY} มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทางและเผยแพร่ความรู้</p>
               </div>
             </div>
           </div>
