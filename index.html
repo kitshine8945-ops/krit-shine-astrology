@@ -2557,14 +2557,14 @@ function switchNum7Mode(mode) {
     }
 
     function calcNum7Base() {
-      // 1. วันเดือนปีเกิด (พื้นดวงกำเนิด)
-      const bD = parseInt(AppState.birthDay || document.getElementById('birthDay')?.value, 10) || 30;
-      const bM = parseInt(AppState.birthMonth || document.getElementById('birthMonth')?.value, 10) || 4;
-      const bY = parseInt(AppState.birthBE || document.getElementById('birthYearBE')?.value, 10) || 2522;
+      // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์มหลัก
+      const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+      const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
+      const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
 
-      // 2. วันเดือนปี "จร" ดึงจากฟอร์มวันจรด้านบนสุด เพื่อให้คำนวณตามปี พ.ศ. จร ที่เลือกจริง
-      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 8;
-      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
+      // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจรด้านบนสุด เพื่อให้คำนวณตามปี พ.ศ. จร ที่เลือกจริงแบบเรียลไทม์
+      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
       const isVip = (AppState.currentNum7Mode === 'vip');
@@ -2654,7 +2654,7 @@ function switchNum7Mode(mode) {
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div class="desc-block">
               <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> อัตตะ ตกกำลังรวม ${row4[0]} (ฐาน ๙ ได้ ${row9[0]}):</strong>
-              <p style="margin-top:4px;">วาสนาชะตาประจำปี พ.ศ. ${tY} (อายุ ${ageYang} ปี) เป็นคนมีบารมีในตนเอง ฐานรองรับแข็งแกร่ง จิตใจมั่นคงดั่งหินผา เป็นผู้นำที่พึ่งพาตนเองได้ดีเยี่ยม</p>
+              <p style="margin-top:4px;">วาสนาชะตาประจำปี พ.ศ. ${tY} (อายุย่าง ${ageYang} ปี) เป็นคนมีบารมีในตนเอง ฐานรองรับแข็งแกร่ง จิตใจมั่นคงดั่งหินผา เป็นผู้นำที่พึ่งพาตนเองได้ดีเยี่ยม</p>
             </div>
             <div class="desc-block">
               <strong style="color:#81c784;"><i class="fa-solid fa-coins"></i> ธนัง ตกกำลังรวม ${row4[2]} (ฐาน ๙ ได้ ${row9[2]}):</strong>
@@ -2675,6 +2675,20 @@ function switchNum7Mode(mode) {
           </div>
         `;
       }
+  document.addEventListener('DOMContentLoaded', function() {
+      // ดักจับการเปลี่ยนค่าทั้งวันเกิดและวันจร เพื่อให้เลข 7 ตัวอัปเดตตามทันที
+      const allInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+      allInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', function() {
+            if (typeof calcNum7Base === 'function') {
+              calcNum7Base();
+            }
+          });
+        }
+      });
+    });
 
     // วาง Event Listener ไว้ข้างนอกสุด ปิดปีกกาอย่างถูกต้อง
     document.addEventListener('DOMContentLoaded', function() {
