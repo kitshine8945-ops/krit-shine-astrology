@@ -3504,7 +3504,7 @@ const POEMS_DATABASE = {
     const STEMS = [{ name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", nature: "ต้นไม้ใหญ่ หนักแน่น มั่นคง" }, { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", nature: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง" }, { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", nature: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง" }, { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", nature: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน" }, { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", nature: "ภูผา หนักแน่น น่าเชื่อถือ อดทนสูง" }, { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", nature: "ดินเพาะปลูก เมตตา เอื้อเฟื้อเผื่อแผ่" }, { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", nature: "โลหะแกร่ง เด็ดขาด กล้าหาญ รักความยุติธรรม" }, { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", nature: "อัญมณี เปล่งประกาย มีรสนิยม รักศักดิ์ศรี" }, { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", nature: "มหาสมุทร มีพลังผลักดัน ไหวพริบกว้างไกล" }, { name: "癸 (กุ่ย)", elem: "น้ำ", pol: "หยิน", nature: "สายฝน ชุ่มเย็น ปัญญาเฉียบคม ลางสังหรณ์ดี" }];
     const BRANCHES = [{ name: "子 (จื่อ)", animal: "ชวด", elem: "น้ำ" }, { name: "丑 (โฉ่ว)", animal: "ฉลู", elem: "ดิน" }, { name: "寅 (อิ๋น)", animal: "ขาล", elem: "ไม้" }, { name: "卯 (เหม่า)", animal: "เถาะ", elem: "ไม้" }, { name: "辰 (เฉิน)", animal: "มะโรง", elem: "ดิน" }, { name: "巳 (ซื่อ)", animal: "มะเส็ง", elem: "ไฟ" }, { name: "午 (อู่)", animal: "มะเมีย", elem: "ไฟ" }, { name: "未 (เว่ย)", animal: "มะแม", elem: "ดิน" }, { name: "申 (เซิน)", animal: "วอก", elem: "ทอง" }, { name: "酉 (โหย่ว)", animal: "ระกา", elem: "ทอง" }, { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }];
 
-    function calculateDynamicBaZi(yearBE, month, day, hour) {
+function calculateDynamicBaZi(yearBE, month, day, hour) {
       let yearCE = yearBE - 543;
       let stemYearIdx = (yearCE - 4) % 10;
       let branchYearIdx = (yearCE - 4) % 12;
@@ -3568,26 +3568,18 @@ const POEMS_DATABASE = {
           <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> บทวิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis +100%):</h5>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์ (เจียไช่/เพียนไช่):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">กระแสเงินสดหมุนเวียนมาจากความเชี่ยวชาญเฉพาะทาง มีช่องทางรับทรัพย์ก้อนโตจากการลงทุนเสี่ยงโชคและสินทรัพย์ดิจิทัล</p>
+              <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์:</strong>
+              <p style="margin-top:3px; color:#cfd8dc;">กระแสเงินสดหมุนเวียนมาจากความเชี่ยวชาญเฉพาะทาง มีช่องทางรับทรัพย์ก้อนโตจากการลงทุน</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#64b5f6;">2. การงาน & บารมี (เจิ้งกวาน/ชีซา):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">มีพลังแห่งการเป็นผู้นำ งานด้านนวัตกรรม เทคโนโลยี สื่อสารมวลชน หรือเจ้าของกิจการจะสร้างชื่อเสียงอย่างเกรียงไกร</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#f48fb1;">3. ความรัก & คู่แท้ (เสาวัน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">คู่ครองมีลักษณะฉลาดหลักแหลม คอยเป็นที่ปรึกษาทางการเงิน ช่วยเสริมพลังธาตุให้แก่กัน พากันสร้างความมั่นคง</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#81c784;">4. ฮวงจุ้ย & ทิศทางมงคลเสริมชะตา:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">แนะนำให้ตั้งโต๊ะทำงานหันไปทางทิศมงคล (ทิศใต้/ทิศตะวันออก) ใช้โทนสีมงคลตามธาตุให้คุณ เสริมด้วยน้ำพุหินหมุนเพื่อกระตุ้นโชค</p>
+              <strong style="color:#64b5f6;">2. การงาน & บารมี:</strong>
+              <p style="margin-top:3px; color:#cfd8dc;">มีพลังแห่งการเป็นผู้นำ งานด้านนวัตกรรมหรือกิจการส่วนตัวสร้างชื่อเสียงเกรียงไกร</p>
             </div>
           </div>
         `;
 
         document.getElementById('bazi-vip-luckcycle').innerHTML = `
-          <strong><i class="fa-solid fa-chart-line"></i> มหาวัจร 10 ปี (Luck Pillars) & วงจรชะตา:</strong> วงจรชีวิตในทศวรรษนี้กำลังก้าวเข้าสู่รอบธาตุที่ให้คุณสูงสุด มีเกณฑ์พลิกผันจากจุดติดขัดสู่ความสำเร็จก้าวกระโดด ทั้งในแง่ยอดขาย การขยายเครือข่ายธุรกิจ และการได้รับการยอมรับในสังคมชั้นสูง
+          <strong><i class="fa-solid fa-chart-line"></i> มหาวัจร 10 ปี (Luck Pillars):</strong> วงจรชีวิตในทศวรรษนี้กำลังก้าวเข้าสู่รอบธาตุที่ให้คุณสูงสุด มีเกณฑ์พลิกผันจากจุดติดขัดสู่ความสำเร็จก้าวกระโดด
         `;
       }
     }
