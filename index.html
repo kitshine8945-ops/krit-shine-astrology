@@ -9104,13 +9104,11 @@ function switchWesternMode(mode) {
         if (ageYang < 1) ageYang = 1;
 
         if (!bD || !bM || !bY) {
-          targetBox.innerHTML = `
-            <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-              <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-              <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
-              <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบวิเคราะห์ Natal Chart Aspects & Houses เต็มรูปแบบ</p>
-            </div>
-          `;
+          targetBox.innerHTML = '<div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">' +
+            '<i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>' +
+            '<strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>' +
+            '<p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบวิเคราะห์ Natal Chart Aspects & Houses เต็มรูปแบบ</p>' +
+            '</div>';
           return;
         }
 
