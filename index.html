@@ -2675,7 +2675,22 @@ function switchNum7Mode(mode) {
           </div>
         `;
       }
+    }
 
+    // วาง Event Listener ไว้ข้างนอกสุด ปิดปีกกาอย่างถูกต้อง
+    document.addEventListener('DOMContentLoaded', function() {
+      const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+      transitInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', function() {
+            if (typeof calcNum7Base === 'function') {
+              calcNum7Base();
+            }
+          });
+        }
+      });
+    });
   container.innerHTML = `
     <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
       <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
