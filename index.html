@@ -2804,33 +2804,6 @@ function switchNum7Mode(mode) {
       }
     }
 
-  // 1. เช็กว่ากรอกวันเกิดและคำนวณแล้วหรือยัง
-  if (!AppState.birthDay || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
-    container.innerHTML = `
-      <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-        <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-        <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
-        <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบคำนวณศูนย์รังสี 8 ดาวทิพย์เฉพาะบุคคล</p>
-      </div>
-    `;
-    return;
-  }
-
-  // 2. เช็กสิทธิ์ VIP
-  if (!AppState.isVipUser) {
-    container.innerHTML = `
-      <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-        <i class="fa-solid fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #ffd700;"></i>
-        <strong style="font-size: 1.1rem;">ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น</strong>
-        <p style="font-size: 0.88rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 15px;">เข้าถึงการเจาะลึก 8 ดาวทิพย์และจุดสะท้อนศูนย์รังสีเฉพาะบุคคลได้อย่างแม่นยำ</p>
-        <button onclick="openVipModal && openVipModal()" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">
-          อัปเกรดเป็นสมาชิก VIP
-        </button>
-      </div>
-    `;
-    return;
-  }
-
   container.innerHTML = `
     <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
       <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
