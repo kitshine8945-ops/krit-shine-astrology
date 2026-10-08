@@ -78,28 +78,6 @@
             }
         });
 
-     // ----------------------------------------------------
-        // 🛠️ จัดระเบียบข้อ 3. กราฟชีวิต (เอาวันจรออกทั้งหมด + เลื่อน Slider อายุอัตโนมัติตามปีวันจร) -> [ลบท่อนนี้ออกทั้งหมดครับ]
-        // ----------------------------------------------------
-        var graphSlider = document.getElementById('ageRangeSlider') || document.getElementById('graphAgeSlider');
-        if (graphSlider) {
-            var birthBE = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-            var calculatedAge = tY - birthBE;
-            if (calculatedAge >= 1 && calculatedAge <= 80) {
-                graphSlider.value = calculatedAge;
-                if (typeof applyAgeChange === 'function') applyAgeChange(calculatedAge);
-                else if (typeof updateGraphForecast === 'function') updateGraphForecast(calculatedAge);
-            }
-        }
-        // สั่งระเบิดซ่อนป้ายวันจรออกจากบริเวณกล่องกราฟชีวิตทั้งหมดออกให้สะอาดตา
-        var graphBlocks = document.querySelectorAll('#graphResultBox, #lifeGraphContainer, .graph-forecast-area');
-        graphBlocks.forEach(function(block) {
-            if (block) {
-                var badBadges = block.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"], div:contains("วันจร")');
-                badBadges.forEach(function(el) { el.style.setProperty('display', 'none', 'important'); });
-            }
-        });
-
         // ----------------------------------------------------
         // 🛠️ จัดระเบียบข้อ 4. ปาจื่อ BaZi (ลดวันจรเหลือ 1 อัน + คำทำนาย VIP ด้านล่างสลับตามลัคนาจร)
         // ----------------------------------------------------
