@@ -3104,7 +3104,7 @@ function updateDailyHoroscopeView() {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const date = now.getDate();
+   const date = now.getDate() + 1;
     
     const daySeed = year * 10000 + month * 100 + date;
 
