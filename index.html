@@ -2557,12 +2557,12 @@ function switchNum7Mode(mode) {
     }
 
     function calcNum7Base() {
-      // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์มหลัก
+      // 1. วันเดือนปีเกิด (พื้นดวงกำเนิด)
       const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
       const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
       const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
 
-      // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจรด้านบนสุด เพื่อให้คำนวณตามปี พ.ศ. จร ที่เลือกจริงแบบเรียลไทม์
+      // 2. วันเดือนปี "จร" (หัวใจหลักที่ทำให้คำทำนายเปลี่ยนตามปี)
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -2600,6 +2600,35 @@ function switchNum7Mode(mode) {
 
       let transitHouseIndex = ((ageYang - 1) % 7);
       let activeVipNum = isVip ? (row9[transitHouseIndex] || row9[0]) : row4[0];
+
+      // คลังชุดคำทำนายที่หลากหลาย แปรผันตามตัวเลขผลลัพธ์และปี พ.ศ. จร เพื่อไม่ให้ซ้ำกัน
+      const PREDICTION_POOLS = [
+        {
+          transit: `อิงวันจร ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี): ดวงชะตาขับเคลื่อนเข้าสู่เรือนปะทะพลังบวก พลังงานดาวจรและฐาน ๙ (ได้เลข ${activeVipNum}) ส่งผลให้รอบปี พ.ศ. ${tY} นี้ โดดเด่นด้านการเจรจาและการลงทุนขยายกิจการ`,
+          atta: `วาสนาชะตาประจำปี พ.ศ. ${tY} มีความโดดเด่นด้านความเป็นผู้นำ กล้าตัดสินใจ ฐานชีวิตมั่นคงและพร้อมลุยงานใหญ่เพื่อสร้างความก้าวหน้า`,
+          dhana: `กระแสการเงินหมุนเวียนคล่องตัว มีโชคลาภจากการติดต่อค้าขาย ได้รับผลตอบแทนที่คุ้มค่าจากการลงทุนในโปรเจกต์ใหม่ๆ`,
+          pita: `ผู้ใหญ่และคนในครอบครัวให้การสนับสนุน เกื้อหนุนจุนเจือ ปัญหาอุปสรรคที่เคยมีจะคลี่คลายด้วยดี`,
+          bhoga: `โชคด้านอสังหาริมทรัพย์ ที่ดิน หรือยานพาหนะโดดเด่น ชีวิตมีความร่มเย็นเป็นสุขและมั่นคงขึ้นในรอบปีนี้`
+        },
+        {
+          transit: `อิงวันจร ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี): ดวงชะตาโคจรเข้าสู่เรือนแห่งความสำเร็จ ทิศทางลมหายใจแห่งโชคลาภเปิดกว้าง (เลขพลังงานจร ${activeVipNum}) เหมาะกับการต่อยอดธุรกิจและสร้างเครือข่ายใหม่ๆ`,
+          atta: `วาสนาชะตาในปี ${tY} นี้ เปี่ยมด้วยปัญญาและความสุขุมรอบคอบ สามารถแก้ไขปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม ได้รับความยำเกรงจากคนรอบข้าง`,
+          dhana: `การเงินเติบโตอย่างก้าวกระโดด มีช่องทางทำเงินจากหลายทาง ทั้งรายได้หลักและรายได้เสริม เก็บออมทรัพย์สินได้เป็นก้อนเป็นกำ`,
+          pita: `บารมีคุ้มครองดวงชะตา สิ่งศักดิ์สิทธิ์และผู้ใหญ่ใจดีคอยเปิดทางให้ความช่วยเหลือในยามคับขัน`,
+          bhoga: `มีความสุขความสมบูรณ์ในเคหสถาน มีเกณฑ์ปรับปรุง ต่อเติม หรือขยายทรัพย์สินถาวรให้เจริญรุ่งเรืองยิ่งขึ้น`
+        },
+        {
+          transit: `อิงวันจร ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี): พลังงานดาวจรและฐาน ๙ (ได้เลข ${activeVipNum}) บ่งบอกถึงจังหวะเวลาแห่งการเก็บเกี่ยวผลกำไรและความเจริญรุ่งเรืองสูงสุดในรอบปี`,
+          atta: `วาสนาชะตาในรอบปีนี้มีความมั่นคงเด็ดเดี่ยว จิตใจเข้มแข็งพร้อมเผชิญหน้ากับความท้าทายใหม่ๆ และพาองค์กรหรือธุรกิจสู่ชัยชนะ`,
+          dhana: `สภาพคล่องทางการเงินยอดเยี่ยม ได้รับผลกำไร เงินปันผล หรือลาภลอยก้อนโตจากการลงทุนระยะยาว`,
+          pita: `สายสัมพันธ์ในครอบครัวและผู้ร่วมงานแน่นแฟ้น ได้รับแรงสนับสนุนและกำลังใจที่ดีเยี่ยมในการขับเคลื่อนชีวิต`,
+          bhoga: `ความมั่นคงในบั้นปลายและทรัพย์สินเติบโต ชีวิตมีความสุขความร่มเย็น ปราศจากความกังวลเรื่องภาระหนี้สิน`
+        }
+      ];
+
+      // สลับชุดคำทำนายตามปี พ.ศ. จร (tY) และอายุย่าง เพื่อให้เปลี่ยนชุดคำทำนายตามจริง
+      let poolIndex = (tY + ageYang) % PREDICTION_POOLS.length;
+      let selectedPred = PREDICTION_POOLS[poolIndex];
 
       let html = `<table class="fortune-table"><thead><tr><th>เรือน/ฐาน</th><th>อัตตะ</th><th>หินะ</th><th>ธนัง</th><th>ปิตา</th><th>มาตา</th><th>โภคา</th><th>มัชฌิมา</th></tr></thead><tbody>`;
       html += `<tr><td>ฐาน ๑ (วันเกิดปี)</td>${row1.map(v => `<td>${v}</td>`).join('')}</tr>`;
@@ -2645,28 +2674,24 @@ function switchNum7Mode(mode) {
         if (analysisBody) analysisBody.innerHTML = `
           <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px; margin-bottom:12px;">
             <strong style="color:#ffd700;"><i class="fa-solid fa-satellite-dish"></i> ดวงจรรายปี & วันจร (Dynamic Transit Active):</strong>
-            <p style="margin-top:6px; font-size:0.88rem; color:#fff; line-height:1.7;">
-              อิงวันจร <strong>${tD} / ${tM} / ${tY}</strong> (อายุย่าง <strong>${ageYang} ปี</strong>): ดวงชะตาขับเคลื่อนเข้าสู่เรือนฐานที่ <strong>${transitHouseIndex + 1}</strong> 
-              อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข <strong>${activeVipNum}</strong>) ส่งผลให้รอบปี พ.ศ. ${tY} นี้ มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ 
-              และโอกาสรับทรัพย์ก้อนโตจากการลงทุน จงใช้ความเด็ดขาดและวิสัยทัศน์ในการขับเคลื่อนงานจะนำมาซึ่งความสำเร็จสูงสุด
-            </p>
+            <p style="margin-top:6px; font-size:0.88rem; color:#fff; line-height:1.7;">${selectedPred.transit}</p>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div class="desc-block">
               <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> อัตตะ ตกกำลังรวม ${row4[0]} (ฐาน ๙ ได้ ${row9[0]}):</strong>
-              <p style="margin-top:4px;">วาสนาชะตาประจำปี พ.ศ. ${tY} (อายุย่าง ${ageYang} ปี) เป็นคนมีบารมีในตนเอง ฐานรองรับแข็งแกร่ง จิตใจมั่นคงดั่งหินผา เป็นผู้นำที่พึ่งพาตนเองได้ดีเยี่ยม</p>
+              <p style="margin-top:4px;">${selectedPred.atta}</p>
             </div>
             <div class="desc-block">
               <strong style="color:#81c784;"><i class="fa-solid fa-coins"></i> ธนัง ตกกำลังรวม ${row4[2]} (ฐาน ๙ ได้ ${row9[2]}):</strong>
-              <p style="margin-top:4px;">ขุมทรัพย์และกระแสการเงินหมุนเวียนคล่องตัวในปี พ.ศ. ${tY} มีช่องทางรายได้เข้ามาหลายทาง ยิ่งใช้สติปัญญาและเทคโนโลยีในการต่อยอด ยิ่งทวีคูณความมั่งคั่ง</p>
+              <p style="margin-top:4px;">${selectedPred.dhana}</p>
             </div>
             <div class="desc-block">
               <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ปิตา - มาตา ตกกำลัง ${row4[3]} และ ${row4[4]}:</strong>
-              <p style="margin-top:4px;">ฐานบรรพบุรุษและตระกูลเกื้อหนุนในรอบปี ${tY} นี้ แม้ต้องฝ่าฟันอุปสรรค แต่บารมีสิ่งศักดิ์สิทธิ์จะคุ้มครองดวงชะตาให้แคล้วคลาด</p>
+              <p style="margin-top:4px;">${selectedPred.pita}</p>
             </div>
             <div class="desc-block">
               <strong style="color:#ffb74d;"><i class="fa-solid fa-building-columns"></i> โภคา & มัชฌิมา (ทรัพย์สิน & บั้นปลาย):</strong>
-              <p style="margin-top:4px;">โภคาตกกำลัง ${row4[5]} หนุนนำเรื่องที่ดิน บ้าน รถ และอสังหาริมทรัพย์ ชีวิตในรอบปี พ.ศ. ${tY} นี้จะมีความมั่นคงและร่มเย็นเป็นสุข</p>
+              <p style="margin-top:4px;">${selectedPred.bhoga}</p>
             </div>
           </div>
           <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:12px; margin-top:12px;">
