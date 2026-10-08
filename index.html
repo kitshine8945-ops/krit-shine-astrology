@@ -2898,18 +2898,17 @@ function switchUranianMode(mode) {
       const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
       const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-      // ดึงข้อมูลลัคนาหรือราศีจาก AppState ถ้ามี (เพื่อให้แสดงผลสอดคล้องกับหน้าเว็บ)
+      // ดึงข้อมูลลัคนาหรือราศีจาก AppState ถ้ามี
       const ascText = (typeof AppState !== 'undefined' && AppState.currentAscName) ? AppState.currentAscName : 'ราศีเมษ';
 
       // 2. ถ้าผู้ใช้อยู่ในโหมดฟรี (Free) - ทำนายเปลี่ยนตามวันเกิด
       if (mode === 'free') {
         const freeContainer = document.getElementById('uranianFreeBox') || document.getElementById('uranianFreeContent');
         if (freeContainer) {
-          // คลังคำทำนายโหมดฟรีแบบไดนามิก หลากหลายชุดตามวันเกิด
           const URANIAN_FREE_POOLS = [
             {
               pointName: `จุดเมษ (Aries Point) & จุดอาทิตย์/ลัคนา (${ascText})`,
-              desc: `การผสานพลังเชิงมุมสะท้อนสัมพันธ์กับ${ascText} บ่งบอกถึงความสามารถในการสื่อสาร วาจาสิดกโดดเด่น มีแรงขับเคลื่อนสร้างสรรค์งานสู่โลกภายนอกและดึงดูดผู้คนให้เข้ามาสนับสนุน`
+              desc: `การผสานพลังเชิงมุมสะท้อนสัมพันธ์กับ${ascText} บ่งบอกถึงความสามารถในการสื่อสาร วาทศิลป์โดดเด่น มีแรงขับเคลื่อนสร้างสรรค์งานสู่โลกภายนอกและดึงดูดผู้คนให้เข้ามาสนับสนุน`
             },
             {
               pointName: `จุดจันทร์/มิดปอยด์ & ลัคนา (${ascText})`,
@@ -2925,11 +2924,9 @@ function switchUranianMode(mode) {
             }
           ];
 
-          // สูตรคำนวณดัชนีเลือกชุดคำทำนายฟรีตามวันเกิด
           let freePoolIdx = (bD * 7 + bM * 13 + bY) % URANIAN_FREE_POOLS.length;
           let selectedFree = URANIAN_FREE_POOLS[freePoolIdx];
 
-          // ค้นหากล่องแสดงผลเนื้อหาฟรีภายใน freeBox (ถ้ามี container ย่อย) หรืออัปเดตที่ตัว freeBox
           let targetFreeBox = document.getElementById('uranianFreeContent') || freeBox;
           
           targetFreeBox.innerHTML = `
@@ -2943,7 +2940,7 @@ function switchUranianMode(mode) {
         }
       }
 
-      // 3. ถ้าผู้ใช้อยู่ในโหมด VIP - ทำนายเปลี่ยนตามวันจร (ตามที่เราทำสำเร็จไปก่อนหน้านี้)
+      // 3. ถ้าผู้ใช้อยู่ในโหมด VIP - ทำนายเปลี่ยนตามวันจร
       if (mode === 'vip') {
         const container = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
         if (!container) return;
@@ -2995,7 +2992,7 @@ function switchUranianMode(mode) {
             meridApollo: `ความคิดสร้างสรรค์และทักษะความสามารถเฉพาะตัวโดดเด่นสะดุดตา สร้างชื่อเสียงและรายได้ให้แก่คุณในวันนี้`,
             cupido: `มีเสน่ห์ดึงดูดใจผู้คน เหมาะกับการเจรจาพาที การตกลงทำสัญญา หรือการสร้างเครือข่ายคอนเนกชันใหม่ๆ`,
             zeus: `ความเด็ดเดี่ยวและกล้าตัดสินใจจะนำมาซึ่งชัยชนะ สามารถแก้ปัญหาและปลดล็อกความยุ่งยากในวันนี้ได้ราบรื่น`,
-            kronos: `ได้รับความยำเกรงและเกียรติยศ การติดต่อกับหน่วยงานทางการหรือผู้บริหารระดับสูงประสบความสำเร็จ`,
+            kronos: `ได้รับการยอมรับและเกียรติยศ การติดต่อกับหน่วยงานทางการหรือผู้บริหารระดับสูงประสบความสำเร็จ`,
             apollon: `โชคลาภจากการติดต่อสื่อสารและการค้าขายรุ่งเรือง หยิบจับสิ่งใดก็พัฒนาเป็นผลกำไรและผลงานที่น่าภาคภูมิใจ`,
             poseidon: `สติปัญญาแจ่มใส ลางสังหรณ์แม่นยำ ช่วยให้คุณมองเห็นช่องทางและทางออกที่ดีที่สุดสำหรับสถานการณ์ในวันนี้`
           }
