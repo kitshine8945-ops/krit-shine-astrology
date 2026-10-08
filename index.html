@@ -3257,21 +3257,27 @@ const POEMS_DATABASE = {
     function initAgeSelectOptions() {
       const selectEl = document.getElementById('selectYearAgeDirect');
       if (!selectEl) return;
-      if (selectEl.options.length > 0) return; // ป้องกันการสร้างออปชันซ้ำ
-
+      
+      // ล้างข้อมูลเก่าก่อนสร้างใหม่ เพื่อป้องกันออปชันซ้ำซ้อน
       selectEl.innerHTML = '';
       const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      const currentActiveAge = (typeof AppState !== 'undefined' && AppState.currentGraphAge) ? AppState.currentGraphAge : 47;
 
       for (let age = 1; age <= 80; age++) {
         let calYear = birthYear + age;
         let opt = document.createElement('option');
         opt.value = age;
         opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
+        if (age === currentActiveAge) {
+          opt.selected = true;
+        }
         selectEl.appendChild(opt);
       }
 
+      // ผูกอีเวนต์ดักจับการเปลี่ยนค่าจาก Dropdown โดยตรง
       selectEl.onchange = function() {
-        applyAgeChange(parseInt(this.value, 10));
+        let selectedAge = parseInt(this.value, 10);
+        applyAgeChange(selectedAge);
       };
     }
 
@@ -3299,7 +3305,7 @@ const POEMS_DATABASE = {
       }
     }
 
-    // ฟังก์ชันหลักเมื่อเลือกอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
+    // ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
     function applyAgeChange(age) {
       age = parseInt(age, 10);
       if (isNaN(age)) age = 1;
@@ -3312,6 +3318,7 @@ const POEMS_DATABASE = {
 
       const slider = document.getElementById('ageRangeSlider');
       const selectEl = document.getElementById('selectYearAgeDirect');
+      
       if (slider && parseInt(slider.value, 10) !== age) slider.value = age;
       if (selectEl && parseInt(selectEl.value, 10) !== age) selectEl.value = age;
 
