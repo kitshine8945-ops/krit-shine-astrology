@@ -2710,10 +2710,10 @@ function switchNum7Mode(mode) {
       const bY = parseInt(AppState.birthBE || document.getElementById('birthYearBE')?.value, 10) || 2522;
 
       // 2. ดึงข้อมูลวันจรจากฟอร์ม VIP เพื่อให้คำทำนายเปลี่ยนตามวันจร/อายุย่างจริง
-      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 8;
+      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-      const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+      const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 15;
 
       const isVip = (AppState.currentNum7Mode === 'vip');
 
@@ -2741,10 +2741,14 @@ function switchNum7Mode(mode) {
         }
       }
 
-      // คำนวณอายุย่างและตำแหน่งภพตกจรตามวันจรจริง
+      // คำนวณอายุย่างและตำแหน่งภพตกจรตามปี พ.ศ. จรจริง
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
+      
       let transitHouseIndex = ((ageYang - 1) % 7);
+      let seedDynamic = (tD + tM + tY + ageYang) % 7;
+      let activeNum = row4[seedDynamic] || row4[0];
+      let activeVipNum = isVip ? (row9[seedDynamic] || row9[0]) : activeNum;
 
       let html = `<table class="fortune-table"><thead><tr><th>เรือน/ฐาน</th><th>อัตตะ</th><th>หินะ</th><th>ธนัง</th><th>ปิตา</th><th>มาตา</th><th>โภคา</th><th>มัชฌิมา</th></tr></thead><tbody>`;
       html += `<tr><td>ฐาน ๑ (วันเกิดปี)</td>${row1.map(v => `<td>${v}</td>`).join('')}</tr>`;
@@ -2792,7 +2796,7 @@ function switchNum7Mode(mode) {
             <strong style="color:#ffd700;"><i class="fa-solid fa-satellite-dish"></i> ดวงจรรายปี & วันจร (Dynamic Transit Active):</strong>
             <p style="margin-top:6px; font-size:0.88rem; color:#fff; line-height:1.7;">
               อิงวันจร <strong>${tD} / ${tM} / ${tY}</strong> (อายุย่าง <strong>${ageYang} ปี</strong>): ดวงชะตาขับเคลื่อนเข้าสู่เรือนฐานที่ <strong>${transitHouseIndex + 1}</strong> 
-              อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข <strong>${row9[0]}</strong>) ส่งผลให้ช่วงเวลานี้มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ 
+              อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข <strong>${activeVipNum}</strong>) ส่งผลให้รอบปี พ.ศ. ${tY} นี้ มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ 
               และโอกาสรับทรัพย์ก้อนโตจากการลงทุน จงใช้ความเด็ดขาดและวิสัยทัศน์ในการขับเคลื่อนงานจะนำมาซึ่งความสำเร็จสูงสุด
             </p>
           </div>
@@ -2805,6 +2809,18 @@ function switchNum7Mode(mode) {
               <strong style="color:#81c784;"><i class="fa-solid fa-coins"></i> ธนัง ตกกำลังรวม ${row4[2]} (ฐาน ๙ ได้ ${row9[2]}):</strong>
               <p style="margin-top:4px;">ขุมทรัพย์และกระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เข้ามาหลายทาง ยิ่งใช้สติปัญญาและเทคโนโลยีในการต่อยอด ยิ่งทวีคูณความมั่งคั่ง</p>
             </div>
+            <div class="desc-block">
+              <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ปิตา - มาตา ตกกำลัง ${row4[3]} และ ${row4[4]}:</strong>
+              <p style="margin-top:4px;">ฐานบรรพบุรุษและตระกูลเกื้อหนุน แม้ต้องฝ่าฟันอุปสรรค แต่บารมีพ่อแม่และกตัญญูกตเวทิตาธรรมจะเป็นสะพานบุญคุ้มครองดวงชะตาให้แคล้วคลาด</p>
+            </div>
+            <div class="desc-block">
+              <strong style="color:#ffb74d;"><i class="fa-solid fa-building-columns"></i> โภคา & มัชฌิมา (ทรัพย์สิน & บั้นปลาย):</strong>
+              <p style="margin-top:4px;">โภคาตกกำลัง ${row4[5]} หนุนนำเรื่องที่ดิน บ้าน รถ และอสังหาริมทรัพย์ ชีวิตในบั้นปลายจะสุขสบาย ร่มเย็น ปราศจากความกังวลเรื่องการเงิน</p>
+            </div>
+          </div>
+          <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:12px; margin-top:12px;">
+            <strong style="color:#ffd700;"><i class="fa-solid fa-wand-magic-sparkles"></i> เคล็ดเสริมดวงแก้จุดอ่อนประจำฐาน (VIP Secret - ปี พ.ศ. ${tY}):</strong>
+            <p style="margin-top:4px; font-size:0.84rem; color:#fff;">ในรอบปีอายุย่าง ${ageYang} นี้ แนะนำให้หมั่นบริจาคค่าน้ำค่าไฟวัด และปล่อยสัตว์น้ำเพื่อตัดกรรมขัดลาภ จะส่งผลให้ฐาน ๙ มหาโชคทำงานเต็มกำลัง 100%</p>
           </div>
         `;
       }
