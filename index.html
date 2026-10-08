@@ -22,8 +22,7 @@
         var tH = hEl ? parseInt(hEl.value, 10) || 6 : 6;
         var tMin = minEl ? parseInt(minEl.value, 10) || 0 : 0;
 
-        // เช็กสถานะโหมดปัจจุบัน (ถ้าผู้ใช้เปิดโหมดฟรี ให้หยุดแทรกคำทำนาย VIP ทันที)
-        var isVipActive = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+        // เช็กสถานะโหมดปัจจุบันให้ชัดเจน
         var isNum7Vip = (typeof AppState !== 'undefined' && AppState.currentNum7Mode === 'vip');
 
         var transitSunIndex = 0;
@@ -40,20 +39,30 @@
         var transitInfo = ZODIAC_DATA[transitAscIndex];
         if (!transitInfo) return;
 
-        // จัดการเฉพาะกล่องเลข 7 ตัว (แยกโหมด ฟรี / VIP ชัดเจน)
+        // 🛠️ จัดระเบียบเฉพาะกล่องเลข 7 ตัว: ป้องกันไม่ให้ข้อความ VIP หลุดมาโผล่ในโหมดฟรี
         var num7Box = document.getElementById('num7AnalysisBox');
         if (num7Box) {
-            var num7FreeArea = document.getElementById('num7TableWrapper');
             if (!isNum7Vip) {
-                // ถ้าอยู่โหมดฟรี: ห้ามมีคำทำนาย VIP หรือป้ายวันจร VIP ในกล่องฟรีเด็ดขาด!
+                // ถ้าอยู่โหมดฟรี (เลข 7 ตัว 4 ฐาน): ซ่อนป้ายและข้อความ VIP ทันที ไม่ให้แสดงผล
                 var freeBadges = num7Box.querySelectorAll('.transit-date-tag-custom, [id^="transit-vip-tag-"], .vip-tag-marker');
                 freeBadges.forEach(function(el) { el.style.setProperty('display', 'none', 'important'); });
+                
+                // ตรวจสอบและลบข้อความ VIP ที่หลุดเข้ามาในโหมดฟรีออก
+                var vipTagsInFree = num7Box.querySelectorAll('p, div');
+                vipTagsInFree.forEach(function(el) {
+                    if (el.innerHTML && el.innerHTML.includes('วิเคราะห์ฐาน 9 ฉบับพิสดาร VIP')) {
+                        el.style.setProperty('display', 'none', 'important');
+                    }
+                });
             } else {
-                // ถ้าอยู่โหมด VIP: อัปเดตคำทำนายตามปี พ.ศ. จร (tY) จริง
+                // ถ้าอยู่โหมด VIP: อัปเดตและคำนวณใหม่ตามปี พ.ศ. จร (tY) จริง
                 var num7Slot = document.getElementById('num7AnalysisBody');
-                if (num7Slot && !num7Slot.dataset.renderedTransit) {
-                    // เรียกฟังก์ชันคำนวณเลข 7 ตัวใหม่เพื่อให้สอดคล้องกับปี พ.ศ. จร
-                    if (typeof calcNum7Base === 'function') calcNum7Base();
+                if (num7Slot && typeof calcNum7Base === 'function') {
+                    // ป้องกันการเรียกซ้ำไม่จำกัดด้วยธงเช็กปีจร
+                    if (num7Slot.dataset.lastTransitYear !== String(tY)) {
+                        num7Slot.dataset.lastTransitYear = String(tY);
+                        calcNum7Base();
+                    }
                 }
             }
         }
@@ -71,7 +80,7 @@
 
     setInterval(runGlobalTransitVipEngine, 400);
 })();
-</script>    
+</script>
 <!-- ========================================================== 🌟 ระบบแทรกเสริม: สั่งเปลี่ยนคำทำนาย VIP แท้ด้วยลัคนาจร & จัดระเบียบป้ายวันจรตามปฏิทิน ========================================================== -->
 <script>
 (function() {
