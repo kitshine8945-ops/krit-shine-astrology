@@ -2709,7 +2709,7 @@ function switchNum7Mode(mode) {
       const bM = parseInt(AppState.birthMonth || document.getElementById('birthMonth')?.value, 10) || 4;
       const bY = parseInt(AppState.birthBE || document.getElementById('birthYearBE')?.value, 10) || 2522;
 
-      // 2. ดึงข้อมูลวันเดือนปี "จร" จากฟอร์ม VIP แบบเรียลไทม์
+      // 2. ดึงข้อมูลวันเดือนปี "จร" จากฟอร์ม VIP แบบเรียลไทม์เพื่อเปลี่ยนตามปีจรจริง
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 8;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -2741,7 +2741,7 @@ function switchNum7Mode(mode) {
         }
       }
 
-      // คำนวณอายุย่างจากปี พ.ศ. จรจริงที่ผู้ใช้เลือก
+      // คำนวณอายุย่างและตำแหน่งภพตกจรตามปี พ.ศ. จรจริงที่ผู้ใช้เลือก
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
       
