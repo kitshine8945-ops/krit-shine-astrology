@@ -2705,11 +2705,11 @@ function switchNum7Mode(mode) {
 
     function calcNum7Base() {
       // 1. ดึงข้อมูลวันเดือนปีเกิดจากระบบ
-      const bD = parseInt(AppState.birthDay || document.getElementById('birthDay')?.value, 10) || 1;
-      const bM = parseInt(AppState.birthMonth || document.getElementById('birthMonth')?.value, 10) || 1;
+      const bD = parseInt(AppState.birthDay || document.getElementById('birthDay')?.value, 10) || 30;
+      const bM = parseInt(AppState.birthMonth || document.getElementById('birthMonth')?.value, 10) || 4;
       const bY = parseInt(AppState.birthBE || document.getElementById('birthYearBE')?.value, 10) || 2522;
 
-      // 2. ดึงข้อมูลวันจรจากฟอร์ม VIP เพื่อให้คำทำนายเปลี่ยนตามวันจร/อายุย่างจริง
+      // 2. ดึงข้อมูลวันเดือนปี "จร" จากฟอร์ม VIP แบบเรียลไทม์
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 8;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -2741,7 +2741,7 @@ function switchNum7Mode(mode) {
         }
       }
 
-      // คำนวณอายุย่างและตำแหน่งภพตกจรตามปี พ.ศ. จรจริง
+      // คำนวณอายุย่างจากปี พ.ศ. จรจริงที่ผู้ใช้เลือก
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
       
@@ -2824,6 +2824,7 @@ function switchNum7Mode(mode) {
           </div>
         `;
       }
+    }
 
   container.innerHTML = `
     <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
