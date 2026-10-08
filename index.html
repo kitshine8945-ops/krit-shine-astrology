@@ -8150,28 +8150,27 @@ function switchLottoMode(mode) {
     }
 }
 
-// ฟังก์ชันเรนเดอร์เลขฟรี (อิงวันเกิดเจ้าชะตา)
+// ฟังก์ชันเรนเดอร์เลขฟรี (อิงวันเวลาปัจจุบันตามจริง)
 function renderLottoFreeContent() {
     const container = document.getElementById('lottoFreeContent');
     if (!container) return;
 
-    // ตรวจสอบวันเกิดจากฟอร์มหน้าเว็บ
-    const bD = parseInt(document.getElementById('birthDay')?.value) || 15;
-    const bM = parseInt(document.getElementById('birthMonth')?.value) || 6;
+    // ใช้วันเวลาจริงของปัจจุบันสำหรับกล่องฟรี
+    const now = new Date();
+    const seed = now.getFullYear() * 10000 + now.getMonth() * 100 + now.getDate();
     
-    // คำนวณเลขเด่นจากวันเกิดแบบเข้าใจง่าย
-    const d1 = (bD % 9) || 9;
-    const d2 = ((bD + bM) % 8) + 1;
-    const d3 = ((bD * 2) % 9) + 1;
+    const d1 = (seed % 7) + 1;
+    const d2 = ((seed * 3) % 8);
+    const d3 = ((seed * 7) % 9) + 1;
 
     container.innerHTML = `
-        <h4 style="color:#ffd700; margin-bottom:8px;">เลขเด่นประจำวันเกิดและดวงชะตาคุณ</h4>
+        <h4 style="color:#ffd700; margin-bottom:8px;">สถิติเลขเด่นงวดนี้ (พลังงานดาวประจำวันจริง)</h4>
         <div style="font-size: 2rem; font-weight: bold; color: #81c784; margin: 12px 0;">${d1} - ${d2} - ${d3}</div>
-        <p style="font-size:0.86rem; color:#cfd8dc;">วิเคราะห์จากพื้นดวงวันเกิดเบื้องต้น เสริมโชคลาภงวดนี้</p>
+        <p style="font-size:0.86rem; color:#cfd8dc;">วิเคราะห์จากกระแสพลังงานดาวประจำวันและสถิติตามปฏิทินจริง</p>
     `;
 }
 
-// ฟังก์ชันเรนเดอร์เนื้อหา VIP แบบจัดเต็ม น่าเชื่อถือ
+// ฟังก์ชันเรนเดอร์เนื้อหา VIP (อิงจากวันจรที่ผู้ใช้เลือกด้านบน)
 function renderLottoVipContent() {
     const container = document.getElementById('lottoVipContent');
     if (!container) return;
@@ -8182,10 +8181,10 @@ function renderLottoVipContent() {
     if (!isVip) {
         container.innerHTML = `
             <div style="text-align:center; padding: 10px;">
-                <p style="font-size: 0.88rem; color: #ffd700; margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> ปล็อกชุดวิเคราะห์ลับระดับปรมาจารย์ (VIP EXCLUSIVE)</p>
+                <p style="font-size: 0.88rem; color: #ffd700; margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> ปลดล็อกชุดวิเคราะห์ลับระดับปรมาจารย์ (VIP EXCLUSIVE)</p>
                 <p style="font-size: 0.82rem; color: #cfd8dc; margin-bottom: 14px; line-height: 1.6;">
-                    • เจาะลึกกระแสพลังงานดาวจรวันหวยออก<br>
-                    • ถอดรหัสเลขมงคล 3 ตัว และ 2 ตัวตรง จากลัคนาเฉพาะบุคคล<br>
+                    • เลือกวันที่ต้องการตรวจหวยล่วงหน้าได้ตามใจชอบ (เช่น งวด 16)<br>
+                    • ถอดรหัสเลขมงคล 3 ตัว และ 2 ตัวตรง จากลัคนาและวันจรเฉพาะบุคคล<br>
                     • ตารางตัดเลขกาลกิณี และทิศมงคลรับโชค
                 </p>
                 <button class="btn-vip-gold" onclick="openVipCheckoutModal()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">
@@ -8194,30 +8193,36 @@ function renderLottoVipContent() {
             </div>
         `;
     } else {
-        // กรณีเป็น VIP แล้ว คำนวณเลขชุดใหญ่จัดเต็ม
-        const bD = parseInt(document.getElementById('birthDay')?.value) || 15;
-        const bM = parseInt(document.getElementById('birthMonth')?.value) || 6;
+        // กรณีเป็น VIP แล้ว: ดึงค่าจากฟอร์มวันจรด้านบน (Transit Date) มาคำนวณ
+        const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 16;
+        const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 6;
+        const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+        
         const asc = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 1;
         
-        const v1 = (bD % 9) || 7;
-        const v2 = (bM + asc) % 10;
-        const v3 = ((bD + bM + asc) % 9) + 1;
+        // สูตรคำนวณอิงจากวันที่เลือก (เช่น วันที่ 16) + ลัคนา
+        const vipSeed = tY * 10000 + tM * 100 + tD;
+        const v1 = (vipSeed % 8) + 1;
+        const v2 = ((vipSeed * 5 + asc) % 9);
+        const v3 = ((vipSeed * 9 + tD) % 8) + 2;
         const v2Digit = `${v1}${v2}`;
         const v3Digit = `${v3}${v1}${v2}`;
-        const avoidDigit = (v3 + 3) % 10; // เลขควรหลีกเลี่ยง
+        const avoidDigit = (v3 + 3) % 10;
+
+        const ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[asc]) ? ZODIAC_DATA[asc] : { name: "ราศีเมษ" };
 
         container.innerHTML = `
             <div style="background: rgba(14,20,38,0.9); padding: 16px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--gold-main); text-align: left;">
                 <div style="font-size: 0.9rem; color: #ffd700; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,215,0,0.3); padding-bottom: 6px;">
-                    <i class="fa-solid fa-star"></i> <b>รายงานวิเคราะห์เลขมงคลเฉพาะบุคคล (VIP)</b>
+                    <i class="fa-solid fa-star"></i> <b>รายงานวิเคราะห์เลขมงคลวันจร (VIP)</b>
                 </div>
-                <div style="font-size: 0.82rem; color: #cfd8dc; margin-bottom: 6px;">🔮 <b>เกณฑ์ดาวจรและพลังงานลัคนา:</b> ส่งผลให้งวดนี้เด่นธาตุลมและธาตุไฟ มีเกณฑ์รับโชคใหญ่จากทิศเหนือ</div>
-                <div style="font-size: 0.85rem; color: #81c784; margin-bottom: 4px;">• เลขวิ่งตัวเดียวเสริมดวง: <b style="font-size: 1.2rem; color: #fff;">${v3}</b></div>
+                <div style="font-size: 0.84rem; color: #81c784; margin-bottom: 6px;">📅 <b>งวดวันที่เลือกพยากรณ์:</b> <span style="color:#ffd700; font-weight:bold;">${tD} / ${tM} / ${tY}</span> (ลัคนา${ascInfo.name})</div>
+                <div style="font-size: 0.85rem; color: #81c784; margin-bottom: 4px;">• เลขเด่นวันจร: <b style="font-size: 1.2rem; color: #fff;">${v1} - ${v2} - ${v3}</b></div>
                 <div style="font-size: 0.85rem; color: #64b5f6; margin-bottom: 4px;">• ชุดเลขท้าย 2 ตัวเน้นๆ: <b style="font-size: 1.3rem; color: #ffd700;">${v2Digit}, ${(v2+1)%10}${v1}</b></div>
                 <div style="font-size: 0.85rem; color: #f48fb1; margin-bottom: 6px;">• ชุดเลขท้าย 3 ตัวมงคล: <b style="font-size: 1.3rem; color: #ffd700;">${v3Digit}</b></div>
                 <div style="font-size: 0.78rem; color: #ff6b6b; margin-top: 6px;">⚠️ <b>เลขที่ควรระวัง/งดเว้นงวดนี้:</b> ${avoidDigit} (ดาวกาลกิณีทับมุมดวงชะตา)</div>
             </div>
-            <p style="font-size: 0.76rem; color: var(--text-muted); text-align: center;">วิเคราะห์ตามหลักโหราศาสตร์ไทยและสถิติดวงดาว ขอให้ทุกท่านโชคดีมีลาภครับ!</p>
+            <p style="font-size: 0.76rem; color: var(--text-muted); text-align: center;">วิเคราะห์ตามวันจรและลัคนาเฉพาะบุคคล ขอให้ทุกท่านโชคดีมีลาภครับ!</p>
         `;
     }
 }
