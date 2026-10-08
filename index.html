@@ -3291,7 +3291,7 @@ const POEMS_DATABASE = {
 // ตัวแปรกันชนไม่ให้เกิดลูปวนซ้ำ
     let isChangingAge = false;
 
-    // ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนาย 12 เรือนภพจะเปลี่ยนตามแบบนิ่งสนิท
+    // ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
     function applyAgeChange(age) {
       if (isChangingAge) return;
       isChangingAge = true;
@@ -3316,16 +3316,35 @@ const POEMS_DATABASE = {
       const cycle = getLifeGraphBaseCycle();
       let score = cycle[(age - 1) % 12];
 
+      // 1. ดึงกลอนประจำปีและแปลความหมายจากตำแหน่งกราฟและบทกลอนมาเป็นคำทำนายสรุป
+      const poem = POEMS_DATABASE[score] || POEMS_DATABASE[3];
+      const realmName = score >= 9 ? 'สวรรค์ภูมิ (จุดสูงสุดแห่งความสำเร็จ วาสนาบารมีรุ่งโรจน์)' : (score >= 5 ? 'มนุษย์ภูมิ (ความมั่นคง ดำเนินชีวิตด้วยความปรกติสุข)' : 'นรกภูมิ (จุดทดสอบความอดทน ต้องใช้สติและระมัดระวังเป็นพิเศษ)');
+
+      let synthesizedInterpretation = "";
+      if (score >= 9) {
+        synthesizedInterpretation = `ในรอบปีนี้ กราฟชีวิตพุ่งทะยานสู่ <strong>${realmName}</strong> ได้คะแนน ${score}/12 คะแนน โดดเด่นด้วยพลังแห่งความสำเร็จ โชคลาภ และเกียรติยศตามบทกลอน <em>"เป็นจุดสูงสุดของวงล้อชะตา ปรารถนาสิ่งใดสัมฤทธิ์ผล"</em> ถือเป็นจังหวะทองคำในการขยายงาน ลงทุน หรือริเริ่มโปรเจกต์ใหญ่ คว้าโอกาสนี้ไว้ให้เต็มที่ครับ`;
+      } else if (score >= 5) {
+        synthesizedInterpretation = `ในรอบปีนี้ กราฟชีวิตอยู่ในเกณฑ์ <strong>${realmName}</strong> ได้คะแนน ${score}/12 คะแนน ชีวิตดำเนินไปด้วยความมั่นคงและร่มเย็นตามบทกลอน <em>"การงานราบรื่นไร้อุปสรรค ผู้คนรักใคร่สมัครสมานหนุน"</em> เหมาะแก่การสานต่อภารกิจเดิมให้ราบรื่น บริหารจัดการเงินทองและสร้างความสัมพันธ์อันดีรอบตัว`;
+      } else {
+        synthesizedInterpretation = `ในรอบปีนี้ กราฟชีวิตเคลื่อนเข้าสู่ <strong>${realmName}</strong> ได้คะแนน ${score}/12 คะแนน เป็นช่วงเวลาแห่งการฝึกฝนความอดทนและตั้งสติรับมือตามบทกลอน <em>"ระวังศัตรูปองต้องรอบคอบ ความอดทนจะนำพาพ้นภัย"</em> ควรชะลอการลงทุนที่มีความเสี่ยงสูง เน้นทำบุญสร้างกุศลและประคับประคองสติให้ผ่านพ้นอุปสรรค`;
+      }
+
       document.getElementById('slider-age-display').textContent = `อายุ ${age} ปี`;
       document.getElementById('slider-year-display').textContent = `(พ.ศ. ${calBE})`;
       document.getElementById('yearly-card-title').textContent = `คำทำนายประจำปี อายุ ${age} - ${age + 1} ปี (เลข ${score})`;
       document.getElementById('yearly-score-badge').textContent = `พลัง ${score}/12 คะแนน (${score >= 9 ? 'สวรรค์ภูมิ' : (score >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ')})`;
       document.getElementById('yearly-score-badge').style.color = score >= 9 ? '#ffd700' : (score >= 5 ? '#81c784' : '#ff7675');
 
-      const poem = POEMS_DATABASE[score] || POEMS_DATABASE[3];
+      // 2. แสดงผลคำทำนายที่แปลความหมายจากบทกลอนและตำแหน่งกราฟ
       document.getElementById('yearly-poem-box').innerHTML = `
-        <div style="font-size: 0.95rem; line-height: 2; color: #fff; text-align: center; width: 100%;">
-          ${poem}
+        <div style="font-size: 0.90rem; line-height: 1.8; color: #fff; text-align: left; width: 100%;">
+          <div style="margin-bottom: 10px; color: var(--gold-bright); font-weight: 600; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 6px;">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> ถอดรหัสคำทำนายจากกลอนและตำแหน่งกราฟ:
+          </div>
+          <p style="margin-bottom: 12px; color: #e2e8f0;">${synthesizedInterpretation}</p>
+          <div style="font-size: 0.85rem; color: #94a3b8; font-style: italic; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+            ${poem}
+          </div>
         </div>
       `;
 
