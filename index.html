@@ -8856,45 +8856,4 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 
     }, 120);
 });
-    // --- ฟังก์ชันเปิด 4 เมนูพรีเมียมและฝังคำทำนายวันจรโดยอัตโนมัติ ---
-function openKSpremFeature(modalId) {
-    // 1. เปิด Modal ของเมนูนั้นๆ ขึ้นมา
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        document.body.appendChild(modal);
-        modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important;";
-    }
-
-    // 2. ดึงค่าวันจรจากฟอร์มมาคำนวณและฝังคำทำนายลงกล่องผลลัพธ์
-    const tD_p = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-    const tM_p = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-    const tY_p = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-    const tH_p = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
-    const tMin_p = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
-    
-    let sunIdx_p = 0;
-    for (let i = 0; i < 12; i++) {
-      if (tM_p === ZODIAC_START_DAYS[i].m) {
-        sunIdx_p = tD_p >= ZODIAC_START_DAYS[i].d ? i : (i + 11) % 12;
-        break;
-      }
-    }
-    let ascIdx_p = (sunIdx_p + Math.floor(((tH_p >= 6 ? tH_p - 6 : 18 + tH_p) * 60 + tMin_p) / 120)) % 12;
-    let tInfo_p = ZODIAC_DATA[ascIdx_p];
-
-    if (tInfo_p) {
-      if (modalId === 'karmicModal' && document.getElementById('karmic_result')) {
-        document.getElementById('karmic_result').innerHTML = `<div class="transit-badge" style="color:#ffd700;font-weight:bold;margin-bottom:8px;">📌 วันจร: ${tD_p}/${tM_p}/${tY_p}</div><p style="color:#fff;">👑 <b>[VIP รหัสกรรมจร]</b> สัมพันธ์ตนุลัคน์กาลจร: ${tInfo_p.vipSummary}</p>`;
-      }
-      if (modalId === 'lifeTurningModal' && document.getElementById('life_result')) {
-        document.getElementById('life_result').innerHTML = `<div class="transit-badge" style="color:#ffd700;font-weight:bold;margin-bottom:8px;">📌 วันจร: ${tD_p}/${tM_p}/${tY_p}</div><p style="color:#fff;">👑 <b>[VIP มหาพิชัยสงครามจร]</b> เกณฑ์รับมือทิศทางงาน: ${tInfo_p.vipWork}</p>`;
-      }
-      if (modalId === 'soulElementModal' && document.getElementById('soul_result')) {
-        document.getElementById('soul_result').innerHTML = `<div class="transit-badge" style="color:#ffd700;font-weight:bold;margin-bottom:8px;">📌 วันจร: ${tD_p}/${tM_p}/${tY_p}</div><p style="color:#fff;">👑 <b>[VIP ถอดรหัสวิญญาณจร]</b> ปรับคลื่นพลังงานธาตุ: ${tInfo_p.vipHealth}</p>`;
-      }
-      if (modalId === 'wealthFlowModal' && document.getElementById('wealth_result')) {
-        document.getElementById('wealth_result').innerHTML = `<div class="transit-badge" style="color:#ffd700;font-weight:bold;margin-bottom:8px;">📌 วันจร: ${tD_p}/${tM_p}/${tY_p}</div><p style="color:#fff;">👑 <b>[VIP ขุมทรัพย์เศรษฐีจร]</b> สายธารเงินทองไหลเข้าคลัง: ${tInfo_p.vipMoney}</p>`;
-      }
-    }
-}
 </script>
