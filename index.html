@@ -8822,6 +8822,27 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 
     }, 120);
 });
+// ระบบผูกเหตุการณ์วันจรสำหรับเลข 7 ตัวโดยเฉพาะ (ปลอดภัย ไม่กระทบโค้ดส่วนอื่น)
+    document.addEventListener('DOMContentLoaded', function() {
+      const transitFields = ['transitDay', 'transitMonth', 'transitYearBE'];
+      
+      transitFields.forEach(function(fieldId) {
+        const inputElement = document.getElementById(fieldId);
+        if (inputElement) {
+          // ดักจับทั้งการพิมพ์ การเปลี่ยนค่า (change) และการกดคลิกเลือก (input)
+          inputElement.addEventListener('change', function() {
+            if (typeof calcNum7Base === 'function') {
+              calcNum7Base();
+            }
+          });
+          inputElement.addEventListener('input', function() {
+            if (typeof calcNum7Base === 'function') {
+              calcNum7Base();
+            }
+          });
+        }
+      });
+    });
 </script>
 </body>
 </html>
