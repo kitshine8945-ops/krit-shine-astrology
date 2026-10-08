@@ -3237,8 +3237,9 @@ const POEMS_DATABASE = {
 ดวงชะตาสว่างไสวดุจดวงจันทร์ ครองชีวิตอย่างผาสุกนิรันดร์`
     };
 
-    let lifeChartInstance = null;
-// ฟังก์ชันคำนวณวัฏจักร 12 เรือนภพตามอายุจริง
+// ตัวแปรล็อกอายุที่ผู้ใช้เลือกปัจจุบัน ป้องกันไม่ให้ฟังก์ชันอื่นมาสั่งรีเซ็ต
+    let lockedUserAge = null;
+
     function getLifeGraphBaseCycle() {
       const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
       const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
@@ -3258,27 +3259,31 @@ const POEMS_DATABASE = {
       const selectEl = document.getElementById('selectYearAgeDirect');
       if (!selectEl) return;
       
-      // ล้างข้อมูลเก่าก่อนสร้างใหม่ เพื่อป้องกันออปชันซ้ำซ้อน
-      selectEl.innerHTML = '';
-      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
-      const currentActiveAge = (typeof AppState !== 'undefined' && AppState.currentGraphAge) ? AppState.currentGraphAge : 47;
+      // สร้างรายการอายุ 1-80 ปีเฉพาะเมื่อยังไม่มีออปชัน
+      if (selectEl.options.length === 0) {
+        const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
 
-      for (let age = 1; age <= 80; age++) {
-        let calYear = birthYear + age;
-        let opt = document.createElement('option');
-        opt.value = age;
-        opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
-        if (age === currentActiveAge) {
-          opt.selected = true;
+        for (let age = 1; age <= 80; age++) {
+          let calYear = birthYear + age;
+          let opt = document.createElement('option');
+          opt.value = age;
+          opt.textContent = `อายุ ${age} ปี (พ.ศ. ${calYear})`;
+          selectEl.appendChild(opt);
         }
-        selectEl.appendChild(opt);
       }
 
-      // ผูกอีเวนต์ดักจับการเปลี่ยนค่าจาก Dropdown โดยตรง
-      selectEl.onchange = function() {
-        let selectedAge = parseInt(this.value, 10);
+      // ใช้ addEventListener เพื่อความเสถียรสูงสุดในการดักจับการเปลี่ยนค่า
+      selectEl.onchange = null; //เคลียร์ของเก่ากันชน
+      selectEl.removeEventListener('change', handleDropdownChange);
+      selectEl.addEventListener('change', handleDropdownChange);
+    }
+
+    function handleDropdownChange(e) {
+      let selectedAge = parseInt(e.target.value, 10);
+      if (!isNaN(selectedAge)) {
+        lockedUserAge = selectedAge;
         applyAgeChange(selectedAge);
-      };
+      }
     }
 
     // ฟังก์ชันสลับโหมด ฟรี / VIP ของกราฟชีวิต
@@ -3312,7 +3317,9 @@ const POEMS_DATABASE = {
       if (age < 1) age = 1;
       if (age > 80) age = 80;
 
+      lockedUserAge = age;
       AppState.currentGraphAge = age;
+      
       const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
       let calBE = birthYear + age;
 
@@ -3387,7 +3394,7 @@ const POEMS_DATABASE = {
         },
         options: {
           responsive: true,
-          animation: false, // ปิดแอนิเมชันเพื่อให้กราฟนิ่งทันที ไม่วิ่งไปมา
+          animation: false,
           scales: {
             y: { min: 1, max: 12, ticks: { stepSize: 1, color: '#ffd700' }, grid: { color: 'rgba(255,255,255,0.08)' } },
             x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.08)' } }
@@ -3397,8 +3404,17 @@ const POEMS_DATABASE = {
       });
     }
 
-    function updateAgeFromSlider(age) { applyAgeChange(parseInt(age, 10)); }
-    function updateAgeFromInput(age) { applyAgeChange(parseInt(age, 10)); }
+    function updateAgeFromSlider(age) { 
+      let a = parseInt(age, 10);
+      lockedUserAge = a;
+      applyAgeChange(a); 
+    }
+    
+    function updateAgeFromInput(age) { 
+      let a = parseInt(age, 10);
+      lockedUserAge = a;
+      applyAgeChange(a); 
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
       initAgeSelectOptions();
