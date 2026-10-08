@@ -2694,7 +2694,7 @@ if (typeof applyAgeChange === 'function') {
       document.getElementById('compResultBox').style.display = 'block';
     }
 
-    function switchNum7Mode(mode) {
+function switchNum7Mode(mode) {
       AppState.currentNum7Mode = mode;
       document.getElementById('btn-num7-free').classList.toggle('active', mode === 'free');
       document.getElementById('btn-num7-vip').classList.toggle('active', mode === 'vip');
@@ -2702,10 +2702,22 @@ if (typeof applyAgeChange === 'function') {
     }
 
     function calcNum7Base() {
-      const d = (AppState.birthDay % 7) || 7;
-      const m = (AppState.birthMonth % 7) || 7;
-      const y = (AppState.birthBE % 7) || 7;
+      // 1. ดึงข้อมูลวันเดือนปีเกิดจากระบบ
+      const bD = parseInt(AppState.birthDay || document.getElementById('birthDay')?.value, 10) || 1;
+      const bM = parseInt(AppState.birthMonth || document.getElementById('birthMonth')?.value, 10) || 1;
+      const bY = parseInt(AppState.birthBE || document.getElementById('birthYearBE')?.value, 10) || 2522;
+
+      // 2. ดึงข้อมูลวันจรจากฟอร์ม VIP เพื่อให้คำทำนายเปลี่ยนตามวันจร/อายุย่างจริง
+      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+      const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+      const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+
       const isVip = (AppState.currentNum7Mode === 'vip');
+
+      let d = (bD % 7) || 7;
+      let m = (bM % 7) || 7;
+      let y = (bY % 7) || 7;
 
       let row1 = [], row2 = [], row3 = [], row4 = [];
       let row5 = [], row6 = [], row7 = [], row8 = [], row9 = [];
@@ -2727,8 +2739,13 @@ if (typeof applyAgeChange === 'function') {
         }
       }
 
+      // คำนวณอายุย่างและตำแหน่งภพตกจรตามวันจรจริง
+      let ageYang = (tY - bY) + 1;
+      if (ageYang < 1) ageYang = 1;
+      let transitHouseIndex = ((ageYang - 1) % 7);
+
       let html = `<table class="fortune-table"><thead><tr><th>เรือน/ฐาน</th><th>อัตตะ</th><th>หินะ</th><th>ธนัง</th><th>ปิตา</th><th>มาตา</th><th>โภคา</th><th>มัชฌิมา</th></tr></thead><tbody>`;
-      html += `<tr><td>ฐาน ๑ (วันเกิด)</td>${row1.map(v => `<td>${v}</td>`).join('')}</tr>`;
+      html += `<tr><td>ฐาน ๑ (วันเกิดปี)</td>${row1.map(v => `<td>${v}</td>`).join('')}</tr>`;
       html += `<tr><td>ฐาน ๒ (เดือนเกิด)</td>${row2.map(v => `<td>${v}</td>`).join('')}</tr>`;
       html += `<tr><td>ฐาน ๓ (ปีเกิด)</td>${row3.map(v => `<td>${v}</td>`).join('')}</tr>`;
       html += `<tr style="font-weight:700; color:#ffd700;"><td>ฐาน ๔ (กำลังรวม)</td>${row4.map(v => `<td>${v}</td>`).join('')}</tr>`;
@@ -2743,52 +2760,49 @@ if (typeof applyAgeChange === 'function') {
       html += `</tbody></table>`;
       document.getElementById('num7TableWrapper').innerHTML = html;
 
-      document.getElementById('num7AnalysisTitle').textContent = isVip ? "บทวิเคราะห์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP Comprehensive Report +100%)" : "บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี)";
-      document.getElementById('num7AnalysisBody').innerHTML = isVip
-        ? `<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      // แยกส่วนคำทำนายระหว่าง 4 ฐาน (ฟรี) กับ 9 ฐาน (VIP + วันจร) อย่างชัดเจน
+      if (!isVip) {
+        document.getElementById('num7AnalysisTitle').textContent = "บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี - พื้นดวงกำเนิด)";
+        document.getElementById('num7AnalysisBody').innerHTML = `
+          <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+            <div class="desc-block">
+              <strong style="color:#ffd700;">• ฐานอัตตะ & กำลังรวม (ฐาน 1 และ 4):</strong>
+              <p style="margin-top:3px; color:#d1d9ec;">พื้นดวงอัตตะตกเลข <strong>${row1[0]}</strong> และกำลังรวมฐาน 4 ได้เลข <strong>${row4[0]}</strong> ชี้ว่าเจ้าชะตาเป็นคนมีความมุ่งมั่น ทรหดอดทน มีความเป็นผู้นำในตัวเองสูง สร้างฐานะด้วยลำแข้งและความเพียรพยายามของตนเอง</p>
+            </div>
+            <div class="desc-block">
+              <strong style="color:#81c784;">• ฐานธนัง (การเงิน & ทรัพย์สิน):</strong>
+              <p style="margin-top:3px; color:#d1d9ec;">กระแสเงินสดหมุนเวียนมาจากความรู้ความสามารถและการติดต่อเจรจา มีเกณฑ์รับทรัพย์และเก็บออมสร้างความมั่นคงได้ดีในระยะยาว</p>
+            </div>
+            <div class="desc-block">
+              <strong style="color:#64b5f6;">• ฐานปิตา - มาตา & โภคา:</strong>
+              <p style="margin-top:3px; color:#d1d9ec;">ครอบครัวและผู้ใหญ่ให้การสนับสนุนยามวิกฤต บั้นปลายชีวิตมีความร่มเย็นเป็นสุขในเคหสถาน บ้าน และทรัพย์สินที่สร้างมา</p>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('num7AnalysisTitle').textContent = `บทวิเคราะห์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP) - อายุย่าง ${ageYang} ปี (วันจร: ${tD}/${tM}/${tY})`;
+        document.getElementById('num7AnalysisBody').innerHTML = `
+          <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px; margin-bottom:12px;">
+            <strong style="color:#ffd700;"><i class="fa-solid fa-satellite-dish"></i> ดวงจรรายปี & วันจร (Dynamic Transit Active):</strong>
+            <p style="margin-top:6px; font-size:0.88rem; color:#fff; line-height:1.7;">
+              อิงวันจร <strong>${tD} / ${tM} / ${tY}</strong> (อายุย่าง <strong>${ageYang} ปี</strong>): ดวงชะตาขับเคลื่อนเข้าสู่เรือนฐานที่ <strong>${transitHouseIndex + 1}</strong> 
+              อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข <strong>${row9[0]}</strong>) ส่งผลให้ช่วงเวลานี้มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ 
+              และโอกาสรับทรัพย์ก้อนโตจากการลงทุน จงใช้ความเด็ดขาดและวิสัยทัศน์ในการขับเคลื่อนงานจะนำมาซึ่งความสำเร็จสูงสุด
+            </p>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div class="desc-block">
               <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> อัตตะ ตกกำลังรวม ${row4[0]} (ฐาน ๙ ได้ ${row9[0]}):</strong>
-              <p style="margin-top:4px;">วาสนาชะตาเป็นคนมีบารมีในตนเอง ฐานรองรับแข็งแกร่ง จิตใจมั่นคงดั่งหินผา เป็นผู้นำที่พึ่งพาตนเองได้ดีเยี่ยม ชะตานี้มักสร้างฐานะจากความเพียรของตนจนประสบความสำเร็จอย่างสูง</p>
+              <p style="margin-top:4px;">วาสนาชะตาเป็นคนมีบารมีในตนเอง ฐานรองรับแข็งแกร่ง จิตใจมั่นคงดั่งหินผา เป็นผู้นำที่พึ่งพาตนเองได้ดีเยี่ยม ชะตานี้มักสร้างฐานะจากความเพียรของตน</p>
             </div>
             <div class="desc-block">
               <strong style="color:#81c784;"><i class="fa-solid fa-coins"></i> ธนัง ตกกำลังรวม ${row4[2]} (ฐาน ๙ ได้ ${row9[2]}):</strong>
-              <p style="margin-top:4px;">ขุมทรัพย์และกระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เข้ามาหลายทาง ยิ่งใช้สติปัญญาและเทคโนโลยีในการต่อยอด ยิ่งทวีคูณความมั่งคั่ง ปลดเปลื้องหนี้สินได้อย่างหมดจด</p>
-            </div>
-            <div class="desc-block">
-              <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ปิตา - มาตา ตกกำลัง ${row4[3]} และ ${row4[4]}:</strong>
-              <p style="margin-top:4px;">ฐานบรรพบุรุษและตระกูลเกื้อหนุน แม้ต้องฝ่าฟันอุปสรรคในวัยเยาว์ แต่บารมีพ่อแม่และกตัญญูกตเวทิตาธรรมจะเป็นสะพานบุญสำคัญที่คอยคุ้มครองดวงชะตาให้แคล้วคลาดจากภัยพิบัติ</p>
-            </div>
-            <div class="desc-block">
-              <strong style="color:#ffb74d;"><i class="fa-solid fa-building-columns"></i> โภคา & มัชฌิมา (ทรัพย์สิน & บั้นปลาย):</strong>
-              <p style="margin-top:4px;">โภคาตกกำลัง ${row4[5]} หนุนนำเรื่องที่ดิน บ้าน รถ และอสังหาริมทรัพย์ มัชฌิมาบ่งบอกว่าชีวิตในบั้นปลายจะสุขสบาย ร่มเย็น ปราศจากความกังวลเรื่องการเงิน มีลูกหลานและมิตรสหายแวดล้อม</p>
+              <p style="margin-top:4px;">ขุมทรัพย์และกระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เข้ามาหลายทาง ยิ่งใช้สติปัญญาและเทคโนโลยีในการต่อยอด ยิ่งทวีคูณความมั่งคั่ง</p>
             </div>
           </div>
-          <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:12px; margin-top:10px;">
-            <strong style="color:#ffd700;"><i class="fa-solid fa-wand-magic-sparkles"></i> เคล็ดเสริมดวงแก้จุดอ่อนประจำฐาน (VIP Secret):</strong>
-            <p style="margin-top:4px; font-size:0.84rem; color:#fff;">เรือนหินะตกเลข ${row1[1]} แนะนำให้หมั่นบริจาคค่าน้ำค่าไฟวัด และปล่อยสัตว์น้ำเพื่อตัดกรรมขัดลาภ จะส่งผลให้ฐาน ๙ มหาโชคทำงานเต็มกำลัง 100%</p>
-          </div>`
-        : `<strong>พื้นดวงอัตตะ:</strong> ตกเลข ${row1[0]} ฐานกำลังรวม ${row4[0]} ชี้ว่าเจ้าชะตามีความตั้งใจจริง มีน้ำใจ มีผู้ใหญ่คอยเมตตาอุปถัมภ์`;
+        `;
+      }
     }
-
-    function calcMahataksa() {
-      const currentYearBE = 2569;
-      const age = currentYearBE - AppState.birthBE;
-      document.getElementById('taksaAgeDisp').textContent = `${age} ปี`;
-      document.getElementById('taksaMajorDisp').textContent = "พระราหู (๘) - เสวยอายุ";
-      document.getElementById('taksaMinorDisp').textContent = "พระพฤหัสบดี (๕) - แทรกให้คุณ";
-      document.getElementById('taksaEffect').innerHTML = `ช่วงอายุ ${age} ปี พระราหูเป็นดาวประธานเสวยอายุ ร่วมกับพระพฤหัสบดีแทรก ส่งผลให้เกิด <strong>"ปัญญาคู่กับโชคลาภที่ไม่คาดฝัน"</strong> กิจการด้านออนไลน์ เทคโนโลยี และการลงทุนจะได้รับผลตอบแทนงดงาม ควรระวังเพียงเอกสารสัญญาที่ต้องรอบคอบ`;
-      document.getElementById('taksaPray').innerHTML = `สวดพระคาถาจันทบัพพาและสุริยบัพพา บูชาพระราหูด้วยของดำ 8 อย่าง และสวดบทรัตนสูตรเพื่อปัดเป่าอุปสรรค`;
-    }
-
-    function calcChatraThreeLayers() {
-      document.getElementById('chatraTop').textContent = "ยอดฉัตรได้รับอิทธิพลจากดาวอาทิตย์และพฤหัสบดี ส่งผลให้มีเกียรติยศชื่อเสียง เป็นที่ยำเกรง ได้รับการยกย่องในแวดวงการทำงาน";
-      document.getElementById('chatraMid').textContent = "กลางฉัตรเป็นฐานโภคทรัพย์ ดาวศุกร์และพุธหนุนนำ ทำให้การสร้างฐานะมีช่องทางรายรับสม่ำเสมอ มิตรสหายและครอบครัวคอยเกื้อกูล";
-      document.getElementById('chatraBase').textContent = "ฐานฉัตรมั่นคงดั่งภูผา มีดาวเสาร์คุ้มครอง บั้นปลายชีวิตมีความมั่นคงในทรัพย์สิน ที่ดิน และมรดกตกทอดอย่างสมบูรณ์";
-    }
-
-    function renderUranianVip() {
-  const container = document.getElementById('uranianVipContent');
-  if (!container) return;
 
   // 1. เช็กว่ากรอกวันเกิดและคำนวณแล้วหรือยัง
   if (!AppState.birthDay || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
@@ -8713,17 +8727,20 @@ function updateTransitForPremiumModal(elementId, t) {
     transitBadge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลคำทำนายเจาะลึก ณ วันจร: ${t.string}`;
 }
 
-// --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด ---
-document.addEventListener('DOMContentLoaded', function() {
-    ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', function() {
-                updateAllVipFeaturesByTransit();
-            });
-        }
+// --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
+    document.addEventListener('DOMContentLoaded', function() {
+        ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', function() {
+                    updateAllVipFeaturesByTransit();
+                    if (typeof calcNum7Base === 'function') {
+                        calcNum7Base(); // สั่งคำนวณตารางเลข 7 ตัวใหม่ทันทีเมื่อเปลี่ยนวันจรหรือวันเกิด
+                    }
+                });
+            }
+        });
     });
-});
 // --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
 function getCleanTransitBadgeString() {
     var dEl = document.getElementById('transitDay');
@@ -8878,186 +8895,6 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         }
 
     }, 120);
-});
-</script>
-<script>
-/**
- * =========================================================================================
- * 🌟 KRIT SHINE ASTROLOGY: 7-Number 4/9 Bases Engine (Free & VIP Dynamic Transit)
- * =========================================================================================
- */
-
-// คลังข้อมูลความหมายฐาน 1 ถึง 7 ตามหลักเลข 7 ตัวโบราณ
-const NUM_7_MEANINGS = {
-    1: { name: "พระอาทิตย์ (๑)", desc: "ตัวตน เกียรติยศ ผู้นำ อำนาจ และภาระความรับผิดชอบ" },
-    2: { name: "พระจันทร์ (๒)", desc: "จิตใจ ความรู้สึก ความนุ่มนวล มารดา และทรัพย์หมุนเวียน" },
-    3: { name: "พระอังคาร (๓)", desc: "ความกล้าหาญ การต่อสู้ การกระทำ เรี่ยวแรง และการแข่งขัน" },
-    4: { name: "พระพุธ (๔)", desc: "การเจรจา การสื่อสาร การค้าขาย เอกสาร และสัญญา" },
-    5: { name: "พระพฤหัสบดี (๕)", desc: "ปัญญา คุณธรรม ผู้ใหญ่เมตตา วิชาการ และความสำเร็จ" },
-    6: { name: "พระศุกร์ (๖)", desc: "ความสุข ความบันเทิง เงินตรา ความรัก และเสน่ห์" },
-    7: { name: "พระเสาร์ (๗)", desc: "ความอดทน ภาระหนี้สิน อุปสรรค และอสังหาริมทรัพย์" }
-};
-
-/**
- * 1. ฟังก์ชันคำนวณอายุย่าง (Age Calculation Formula)
- * สูตรอายุย่างไทย: (ปีพ.ศ. ปัจจุบัน - ปีพ.ศ. เกิด) + 1
- */
-function calculateThaiPrabhuAge(birthYearBE, targetYearBE = 2569) {
-    let age = (targetYearBE - birthYearBE) + 1;
-    return age < 1 ? 1 : age;
-}
-
-/**
- * 2. ฟังก์ชันหลักคำนวณเลข 7 ตัว 4 ฐาน (Free Version) และ 9 ฐาน (VIP Version)
- */
-function calculateNum7System(birthDay, birthMonth, birthYearBE, isVip = false, transitDateObj = null) {
-    let d = (birthDay % 7) || 7;
-    let m = (birthMonth % 7) || 7;
-    let y = (birthYearBE % 7) || 7;
-
-    let row1 = [], row2 = [], row3 = [], row4 = [];
-    let row5 = [], row6 = [], row7 = [], row8 = [], row9 = [];
-
-    for (let i = 0; i < 7; i++) {
-        let v1 = ((d + i - 1) % 7) + 1;
-        let v2 = ((m + i - 1) % 7) + 1;
-        let v3 = ((y + i - 1) % 7) + 1;
-        let v4 = v1 + v2 + v3;
-        
-        row1.push(v1); 
-        row2.push(v2); 
-        row3.push(v3); 
-        row4.push(v4);
-
-        if (isVip) {
-            let v5 = (v1 + v2) % 21 || 21;
-            let v6 = (v2 + v3) % 21 || 21;
-            let v7 = (v1 + v3) % 21 || 21;
-            let v8 = (v4 + 7) % 21 || 21;
-            let v9 = (v4 * 2) % 21 || 21;
-            
-            row5.push(v5); row6.push(v6); row7.push(v7); row8.push(v8); row9.push(v9);
-        }
-    }
-
-    const currentYearBE = transitDateObj ? transitDateObj.y : 2569;
-    let ageYang = calculateThaiPrabhuAge(birthYearBE, currentYearBE);
-    let transitHouseIndex = ((ageYang - 1) % 7);
-
-    let transitDayText = "";
-    let transitSummaryAnalysis = "";
-
-    if (isVip && transitDateObj) {
-        let tD = transitDateObj.d;
-        let tM = transitDateObj.m;
-        let tY = transitDateObj.y;
-        let tH = transitDateObj.h;
-        
-        transitDayText = `${tD} / ${tM} / ${tY} (เวลา ${String(tH).padStart(2,'0')}:00 น.)`;
-        
-        let daySeed = (tD + tM + (tY % 7)) % 7;
-        let activeNum = row4[daySeed] % 7 || 7;
-        let starInfo = NUM_7_MEANINGS[activeNum] || NUM_7_MEANINGS[1];
-
-        transitSummaryAnalysis = `
-            ณ วันที่ <strong>${transitDayText}</strong> พลังงานดาวประจำวันจรคือ <strong>${starInfo.name}</strong> 
-            โคจรเข้าสู่เรือนฐาน ${transitHouseIndex + 1} ของดวงชะตา (อายุย่าง ${ageYang} ปี) 
-            ส่งผลให้กระแสพลังงานชีวิตในวันนี้เด่นชัดในเรื่อง: <em>${starInfo.desc}</em> 
-            การตัดสินใจทำธุรกรรม เซ็นสัญญา หรือเจรจาค้าขายในวันนี้จะได้รับแรงหนุนจากดวงดาวอย่างเต็มที่
-        `;
-    }
-
-    return {
-        isVip: isVip,
-        ageYang: ageYang,
-        transitHouseIndex: transitHouseIndex,
-        transitDayText: transitDayText,
-        transitSummaryAnalysis: transitSummaryAnalysis,
-        tables: {
-            row1: row1, row2: row2, row3: row3, row4: row4,
-            row5: row5, row6: row6, row7: row7, row8: row8, row9: row9
-        }
-    };
-}
-
-/**
- * 3. ฟังก์ชันเรนเดอร์ UI ตารางเลข 7 ตัวลงในหน้าเว็บแบบ Dynamic
- */
-function renderNum7UI(containerId, calculationResult) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    let html = `
-        <div style="overflow-x:auto;">
-            <table class="fortune-table" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.88rem; color:#fff;">
-                <thead>
-                    <tr style="background:rgba(234,179,8,0.2); border-bottom:1px solid #ffd700; color:#ffd700;">
-                        <th style="padding:8px;">ฐาน / เรือน</th>
-                        <th>อัตตะ</th><th>หินะ</th><th>ธนัง</th><th>ปิตา</th><th>มาตา</th><th>โภคา</th><th>มัชฌิมา</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td style="padding:6px; background:rgba(255,255,255,0.03);">ฐาน ๑ (วันเกิด)</td>${calculationResult.tables.row1.map(v => `<td>${v}</td>`).join('')}</tr>
-                    <tr><td style="padding:6px; background:rgba(255,255,255,0.03);">ฐาน ๒ (เดือนเกิด)</td>${calculationResult.tables.row2.map(v => `<td>${v}</td>`).join('')}</tr>
-                    <tr><td style="padding:6px; background:rgba(255,255,255,0.03);">ฐาน ๓ (ปีเกิด)</td>${calculationResult.tables.row3.map(v => `<td>${v}</td>`).join('')}</tr>
-                    <tr style="font-weight:700; color:#ffd700; background:rgba(234,179,8,0.1);"><td>ฐาน ๔ (กำลังรวม)</td>${calculationResult.tables.row4.map(v => `<td>${v}</td>`).join('')}</tr>
-    `;
-
-    if (calculationResult.isVip) {
-        html += `
-            <tr style="color:#64b5f6;"><td>ฐาน ๕ (อินทภาส)</td>${calculationResult.tables.row5.map(v => `<td>${v}</td>`).join('')}</tr>
-            <tr style="color:#81c784;"><td>ฐาน ๖ (บาทจันทร์)</td>${calculationResult.tables.row6.map(v => `<td>${v}</td>`).join('')}</tr>
-            <tr style="color:#f48fb1;"><td>ฐาน ๗ (จักขุญาณ)</td>${calculationResult.tables.row7.map(v => `<td>${v}</td>`).join('')}</tr>
-            <tr style="color:#ffb74d;"><td>ฐาน ๘ (กำลังเทวา)</td>${calculationResult.tables.row8.map(v => `<td>${v}</td>`).join('')}</tr>
-            <tr style="font-weight:700; color:#ffd700; background:rgba(255,215,0,0.2);"><td>ฐาน ๙ (มหาโชค VIP)</td>${calculationResult.tables.row9.map(v => `<td>${v}</td>`).join('')}</tr>
-        `;
-    }
-
-    html += `</tbody></table></div>`;
-
-    if (calculationResult.isVip) {
-        html += `
-            <div style="margin-top:15px; background:rgba(14,20,38,0.95); border:1.5px solid #ffd700; border-radius:12px; padding:18px;">
-                <h4 style="color:#ffd700; margin-bottom:8px; font-size:1rem;"><i class="fa-solid fa-satellite-dish"></i> รายงานดวงวันจรและอายุย่าง VIP (Dynamic Transit)</h4>
-                <div style="font-size:0.86rem; color:#cfd8dc; line-height:1.7; margin-bottom:10px;">
-                    อายุย่างปัจจุบัน: <strong style="color:#ffd700;">${calculationResult.ageYang} ปี</strong> | 
-                    วันที่กำหนดจร: <strong style="color:#81c784;">${calculationResult.transitDayText}</strong>
-                </div>
-                <p style="font-size:0.88rem; color:#fff; line-height:1.8;">${calculationResult.transitSummaryAnalysis}</p>
-            </div>
-        `;
-    }
-
-    container.innerHTML = html;
-}
-
-/**
- * 4. ระบบ Event Listener ดักจับการเปลี่ยนแปลงวันที่เพื่อทำ Dynamic Transit แบบเรียลไทม์
- */
-document.addEventListener('DOMContentLoaded', function() {
-    const triggerRecalculate = () => {
-        const bDay = parseInt(document.getElementById('birthDay')?.value, 10) || 1;
-        const bMonth = parseInt(document.getElementById('birthMonth')?.value, 10) || 1;
-        const bYear = parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522;
-        
-        const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-        const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-        const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-        const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
-
-        const isVipMode = (typeof AppState !== 'undefined' && AppState.currentNum7Mode === 'vip') || localStorage.getItem('ks_vip_active') === 'true';
-        const transitObj = { d: tD, m: tM, y: tY, h: tH };
-        
-        const result = calculateNum7System(bDay, bMonth, bYear, isVipMode, transitObj);
-        renderNum7UI('num7TableWrapper', result);
-    };
-
-    ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', triggerRecalculate);
-        }
-    });
 });
 </script>
 </body>
