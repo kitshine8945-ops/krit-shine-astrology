@@ -3023,6 +3023,7 @@ function switchWesternMode(mode) {
 // ==========================================
 // ระบบดวงรายวันอัตโนมัติ (เปลี่ยนตามวันที่จริงแบบไดนามิก)
 // ==========================================
+// เพิ่มชุดคำทำนายให้หลากหลายและครอบคลุมมากขึ้น
 const DAILY_PREDICTIONS_POOL = [
     {
         summary: "กระแสพลังงานดาวประจำวันโคจรหนุนมุมลัคนา ส่งผลให้ทิศทางชีวิตมีความราบรื่นและคล่องตัวเป็นพิเศษ เป็นจังหวะดีในการเริ่มต้นงานใหญ่",
@@ -3031,8 +3032,8 @@ const DAILY_PREDICTIONS_POOL = [
         love: "คนโสดมีเกณฑ์พบมิตรภาพใหม่ที่พูดคุยถูกคอ คนมีคู่ความสัมพันธ์อบอุ่น คอยช่วยเหลือและเป็นที่ปรึกษาให้กันดีเยี่ยม",
         health: "สุขภาพแข็งแรงดี แต่อาจมีอาการล้าเล็กน้อยจากการใช้งานสายตาหรือสมอง ควรพักผ่อนให้เพียงพอ",
         num: "3, 6, 9",
-        color: "สีสว่างสดใส (สีทอง, สีส้ม, สีเขียวมรกต)",
-        dir: "ทิศตะวันออก และ ทิศเหนือ"
+        color: "สีทองอำพัน, สีส้มสว่าง",
+        dir: "ทิศตะวันออก"
     },
     {
         summary: "พลังงานจักรวาลเปิดรับโอกาสใหม่ๆ ความตั้งใจและความพยายามที่ผ่านมาเริ่มส่งผลเด่นชัด ความสำเร็จอยู่ใกล้แค่เอื้อม",
@@ -3042,7 +3043,7 @@ const DAILY_PREDICTIONS_POOL = [
         health: "ระวังอาการตึงเมื่อยกล้ามเนื้อบริเวณบ่า ไหล่ และหลัง ควรยืดเส้นยืดสายระหว่างวัน",
         num: "1, 5, 8",
         color: "สีฟ้าพาสเทล, สีน้ำเงินกรมท่า",
-        dir: "ทิศใต้ และ ทิศตะวันตก"
+        dir: "ทิศใต้"
     },
     {
         summary: "สัญชาตญาณและความรู้สึกเฉียบคมเป็นพิเศษ เป็นวันที่เหมาะกับการตัดสินใจเรื่องสำคัญหรือเคลียร์ภาระงานที่ค้างคาให้จบสิ้น",
@@ -3053,21 +3054,60 @@ const DAILY_PREDICTIONS_POOL = [
         num: "2, 4, 7",
         color: "สีขาวบริสุทธิ์, สีเงินควันบุหรี่",
         dir: "ทิศตะวันออกเฉียงเหนือ"
+    },
+    {
+        summary: "ดาวประจำตัวส่งกระแสพลังแห่งความสำเร็จ โชคลาภและการเจรจาค้าขายอยู่ในเกณฑ์โดดเด่น หยิบจับสิ่งใดก็เป็นเงินเป็นทอง",
+        work: "การเซ็นสัญญา การตกลงธุรกิจ หรือการเจรจาต่อรองประสบความสำเร็จเกินคาด ผู้ใหญ่ให้การสนับสนุนเต็มที่",
+        money: "มีเกณฑ์ได้รับเงินก้อนจากผลงานหรือคอมมิชชั่น การลงทุนมีความงอกเงยและได้ผลตอบแทนที่คุ้มค่า",
+        love: "คนโสดมีเกณฑ์เจอคนโปรไฟล์ดีเข้ามาพูดคุย คนมีคู่มีความเข้าใจและสนับสนุนเส้นทางชีวิตของกันและกันดีมาก",
+        health: "ร่างกายกระปรี้กระเปร่า สุขภาพแข็งแรงดีเยี่ยม ความเครียดลดลง",
+        num: "4, 6, 9",
+        color: "สีเขียวมรกต, สีชมพูกลีบบัว",
+        dir: "ทิศตะวันตก"
+    },
+    {
+        summary: "เป็นช่วงเวลาที่ต้องใช้ความสุขุมและรอบคอบในการจัดการปัญหาเฉพาะหน้า การตั้งสติจะช่วยให้ผ่านพ้นอุปสรรคไปได้อย่างราบรื่น",
+        work: "ควรตรวจสอบเอกสาร ตัวเลข และบัญชีให้ละเอียดรอบคอบเพื่อป้องกันความผิดพลาดจากความเร่งรีบ",
+        money: "การเงินยังคงหมุนเวียนได้ดี แต่อาจมีรายจ่ายจุกจิกเกี่ยวกับการซ่อมแซมหรือสุขภาพ ควรวางแผนการใช้จ่ายให้รัดกุม",
+        love: "คนโสดควรใช้เวลาศึกษากันให้รอบคอบ คนมีคู่ควรหาเวลาพูดคุยเปิดใจรับฟังกันเพื่อความสัมพันธ์ที่ยั่งยืน",
+        health: "ระวังอาการปวดเมื่อยกล้ามเนื้อจากการนั่งทำงานนานเกินไป ควรหาเวลาขยับร่างกาย",
+        num: "2, 5, 7",
+        color: "สีเหลืองมัสตาร์ด, สีม่วงลาเวนเดอร์",
+        dir: "ทิศเหนือ"
+    },
+    {
+        summary: "ความคิดสร้างสรรค์และไอเดียใหม่ๆ พรั่งพรู เป็นวันที่เหมาะกับการนำเสนอผลงาน การทำคอนเทนต์ หรือการเริ่มต้นโปรเจกต์ใหม่",
+        work: "ได้รับความไว้วางใจให้รับผิดชอบงานสำคัญ ผลงานโดดเด่นเข้าตาผู้บริหารหรือเจ้านาย",
+        money: "มีเกณฑ์ได้รับทรัพย์จากช่องทางออนไลน์ การค้าขายคล่องตัว ลูกค้าให้การตอบรับดีเยี่ยม",
+        love: "คนโสดมีเสน่ห์ดึงดูดใจ มีคนเข้ามาแอบมองหรือทักทาย คนมีคู่บรรยากาศรักอบอุ่น มีโมเมนต์หวานๆ ร่วมกัน",
+        health: "ระวังอาการล้าดวงตาจากการจ้องจอนานเกินไป ควรพักสายตาเป็นระยะ",
+        num: "1, 3, 5",
+        color: "สีส้มอิฐ, สีฟ้าใส",
+        dir: "ทิศตะวันออกเฉียงใต้"
+    },
+    {
+        summary: "พลังแห่งความมั่นใจและบารมีโดดเด่น เป็นจังหวะที่ดีในการแสดงศักยภาพของตนเองให้ผู้คนรอบข้างได้ประจักษ์",
+        work: "การบริหารจัดการทีมหรือการคุมงานโปรเจกต์ใหญ่เดินหน้าไปได้ด้วยดี ได้รับความยำเกรงและร่วมมือจากบริวาร",
+        money: "การเงินมั่นคง มีรายรับเข้ามาอย่างต่อเนื่อง เหมาะแก่การวางแผนเก็บออมเพื่ออนาคตระยะยาว",
+        love: "คนโสดมีเกณฑ์พบเจอคนที่มีความเป็นผู้ใหญ่และพึ่งพาได้ คนมีคู่คอยช่วยเหลือเกื้อกูลกันสร้างฐานะ",
+        health: "สุขภาพโดยรวมแข็งแรงดี แต่อย่าหักโหมงานหนักจนเกินไป ควรนอนหลับพักผ่อนให้เต็มที่",
+        num: "1, 8, 9",
+        color: "สีทองคำ, สีแดงทับทิม",
+        dir: "ทิศตะวันตกเฉียงเหนือ"
     }
 ];
 
 function updateDailyHoroscopeView() {
     const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
     const ascIndex = AppState.currentCalculatedAscIndex;
-// คำนวณรหัสเปลี่ยนใหม่ทุกๆ เที่ยงคืน (00:00 น.) ของแต่ละวัน
-const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth();
-const date = now.getDate();
-const daySeed = year * 10000 + month * 100 + date;
+    
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const date = now.getDate();
+    
+    const daySeed = year * 10000 + month * 100 + date;
 
-    const dateEl = document.getElementById('daily-current-date-str');
-    const ascEl = document.getElementById('daily-ascendant-label');
     const sumEl = document.getElementById('dailySummaryText');
     const workEl = document.getElementById('dailyWorkText');
     const moneyEl = document.getElementById('dailyMoneyText');
@@ -3077,10 +3117,7 @@ const daySeed = year * 10000 + month * 100 + date;
     const luckyColorEl = document.getElementById('dailyLuckyColor');
     const luckyDirEl = document.getElementById('dailyLuckyDirection');
 
-    // ตรวจสอบว่ากรอกวันเกิดหรือยัง
     if (!bDayVal || ascIndex === null || ascIndex === undefined) {
-        if (dateEl) dateEl.textContent = '-';
-        if (ascEl) ascEl.textContent = '-';
         if (sumEl) sumEl.textContent = '⚠️ กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรก แล้วกด "ดูดวงลัคนาเลย" ก่อนเปิดดูดวงรายวันเฉพาะบุคคลครับ';
         if (workEl) workEl.textContent = '-';
         if (moneyEl) moneyEl.textContent = '-';
@@ -3092,27 +3129,27 @@ const daySeed = year * 10000 + month * 100 + date;
         return;
     }
 
-// สลับชุดคำทำนายประจำวันจาก Pool โดยอิงตามรหัสวันใหม่และลัคนา
     const poolIndex = (daySeed + ascIndex) % DAILY_PREDICTIONS_POOL.length;
     const todayPred = DAILY_PREDICTIONS_POOL[poolIndex];
+    const ascInfo = ZODIAC_DATA[ascIndex] || { name: "ราศีกุมภ์" };
 
     if (sumEl) sumEl.textContent = `${ascInfo.name} : ${todayPred.summary}`;
     if (workEl) workEl.textContent = todayPred.work;
-    if (moneyEl) workEl.textContent = todayPred.money;
-    if (loveEl) workEl.textContent = todayPred.love;
-    if (healthEl) workEl.textContent = todayPred.health;
+    if (moneyEl) moneyEl.textContent = todayPred.money;
+    if (loveEl) loveEl.textContent = todayPred.love;
+    if (healthEl) healthEl.textContent = todayPred.health;
     if (luckyNumEl) luckyNumEl.textContent = todayPred.num;
     if (luckyColorEl) luckyColorEl.textContent = todayPred.color;
     if (luckyDirEl) luckyDirEl.textContent = todayPred.dir;
 }
 
 window.renderDailyHoroscope = updateDailyHoroscopeView;
-// ฟังก์ชันเปิด Modal ดวงรายวัน
 window.openDailyHoroscopeModal = function() {
     updateDailyHoroscopeView();
     const m = document.getElementById('modal-daily');
     if (m) m.style.display = 'flex';
 };
+      
 const POEMS_DATABASE = {
       1: `ได้เลขหนึ่งพึงระวังอย่าพลั้งพลาด ศัตรูร้ายหมายมาดจะบั่นทอน<br>
 แม้เหนื่อยล้าจงอดทนอย่าท้อแท้ ถึงย่ำแย่ยังมีหวังในวันหน้า<br>
