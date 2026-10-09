@@ -9743,7 +9743,81 @@ function setDefaultTransitValues() {
 // หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่า Options ใน Dropdown ถูกสร้างครบแล้ว
 window.addEventListener('DOMContentLoaded', function() {
   setTimeout(setDefaultTransitValues, 500);
-});  
+});
+  // ฟังก์ชันสร้างรายการตัวเลือก (Options) และกำหนดค่าวันจรปัจจุบันให้อัตโนมัติ
+function initTransitDropdownsAndValues() {
+  const dayEl = document.getElementById('transitDay');
+  const monthEl = document.getElementById('transitMonth');
+  const yearEl = document.getElementById('transitYearBE');
+  const hourEl = document.getElementById('transitHour24');
+  const minEl = document.getElementById('transitMinute24');
+
+  // 1. สร้างตัวเลือกวัน (1 - 31)
+  if (dayEl && dayEl.options.length <= 1) {
+    dayEl.innerHTML = '';
+    for (let i = 1; i <= 31; i++) {
+      let opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = i;
+      if (i === 10) opt.selected = true; // ตั้งค่าเริ่มต้นวันที่ 10
+      dayEl.appendChild(opt);
+    }
+  }
+
+  // 2. สร้างตัวเลือกเดือน (มกราคม - ธันวาคม)
+  if (monthEl && monthEl.options.length <= 1) {
+    monthEl.innerHTML = '';
+    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    months.forEach((mName, index) => {
+      let opt = document.createElement('option');
+      opt.value = index + 1;
+      opt.textContent = mName;
+      if (index + 1 === 10) opt.selected = true; // เดือนตุลาคม
+      monthEl.appendChild(opt);
+    });
+  }
+
+  // 3. สร้างตัวเลือกปี พ.ศ. (2565 - 2575)
+  if (yearEl && yearEl.options.length <= 1) {
+    yearEl.innerHTML = '';
+    for (let y = 2565; y <= 2575; y++) {
+      let opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      if (y === 2569) opt.selected = true; // ปี พ.ศ. 2569
+      yearEl.appendChild(opt);
+    }
+  }
+
+  // 4. สร้างตัวเลือกชั่วโมง (0 - 23)
+  if (hourEl && hourEl.options.length <= 1) {
+    hourEl.innerHTML = '';
+    for (let h = 0; h < 24; h++) {
+      let opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = String(h).padStart(2, '0') + ' น.';
+      if (h === 12) opt.selected = true; // 12 นาฬิกา
+      hourEl.appendChild(opt);
+    }
+  }
+
+  // 5. สร้างตัวเลือกนาที (0 - 59)
+  if (minEl && minEl.options.length <= 1) {
+    minEl.innerHTML = '';
+    for (let m = 0; m < 60; m += 5) {
+      let opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = String(m).padStart(2, '0') + ' นาที';
+      if (m === 0) opt.selected = true;
+      minEl.appendChild(opt);
+    }
+  }
+}
+
+// สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บเสร็จ
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(initTransitDropdownsAndValues, 600);
+});
 </script>
 </body>
 </html>
