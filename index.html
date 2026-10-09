@@ -2789,16 +2789,15 @@ function switchNum7Mode(mode) {
         `;
       }
   
- // ตรวจสอบว่ามีตัวดักจับ (Event Listener) สำหรับฟอร์มวันจรชุดนี้หรือยัง
-    document.addEventListener('DOMContentLoaded', function() {
-      const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
-      transitInputs.forEach(id => {
+document.addEventListener('DOMContentLoaded', function() {
+      // ดักจับการเปลี่ยนค่าในฟอร์มวันเกิดและวันจรทุุกช่อง
+      const targetInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE'];
+      targetInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-          // สั่งให้เมื่อมีการเปลี่ยนแปลงค่า (change) จะต้องเรียกคำนวณเลข 7 ตัวใหม่ทันที
           el.addEventListener('change', function() {
-            if (typeof calcNum7Base === 'function') {
-              calcNum7Base();
+            if (typeof calcBaziEngine === 'function') {
+              calcBaziEngine();
             }
           });
         }
@@ -9290,6 +9289,31 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         `;
       }
     }
+ document.addEventListener('DOMContentLoaded', function() {
+      // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
+      const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
+      birthInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', function() {
+            if (typeof calcBaziEngine === 'function') {
+              calcBaziEngine();
+            }
+          });
+        }
+      });
+
+      // 2. ดักจับทุกครั้งที่มีการคลิกเปิดหน้าต่างปาจื่อจากทุกปุ่มในเว็บไซต์
+      document.querySelectorAll('[onclick*="bazi"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          setTimeout(function() {
+            if (typeof calcBaziEngine === 'function') {
+              calcBaziEngine();
+            }
+          }, 100);
+        });
+      });
+    }); 
 </script>
 </body>
 </html>
