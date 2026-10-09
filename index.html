@@ -3614,7 +3614,7 @@ const POEMS_DATABASE = {
       };
     }
 
-    function calcBaziEngine() {
+function calcBaziEngine() {
       // ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหน้าแรกแบบสดๆ
       const dayEl = document.getElementById('birthDay');
       const monthEl = document.getElementById('birthMonth');
@@ -3641,12 +3641,12 @@ const POEMS_DATABASE = {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // แสดงผลดิถีธาตุและคำทำนายโหมดฟรีที่เปลี่ยนตามวันเกิดจริงทันที
+        // สร้างชุดคำทำนายที่เจาะลึกและเปลี่ยนแปลงตามดิถีธาตุและวันเกิดจริงโดยตรง
         document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
         document.getElementById('bazi-free-desc').innerHTML = `
           <strong>ลักษณะตัวตนและจิตวิญญาณ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ${bazi.dayMaster.desc}<br><br>
-          <div style="background:rgba(255,215,0,0.08); padding:10px; border-radius:8px; border-left:3px solid #ffd700;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ ${bazi.dayMaster.nature} เหมาะกับการเสริมสร้างสมดุลด้วยการบริหารจัดการพลังงาน ${bazi.yongShen} หลีกเลี่ยงพลังงานจาก ${bazi.jiShen} และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+          <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> เจ้าชะตาดิถี ${bazi.dayMaster.name} สภาพดวงมีความโดดเด่นเฉพาะตัวในเรื่องการขับเคลื่อนชีวิตและการปรับตัวเข้ากับสถานการณ์รอบข้าง แนะนำให้เสริมสร้างความสมดุลด้วยธาตุให้คุณ ได้แก่ <strong>${bazi.yongShen}</strong> และระมัดระวังพลังงานจากธาตุให้โทษ (${bazi.jiShen}) เพื่อเปิดรับกระแสโชคลาภและความมั่นคงระยะยาวครับ
           </div>
         `;
       } else {
@@ -3675,15 +3675,15 @@ const POEMS_DATABASE = {
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์ (ไฉ่เช็ง/เพียรไฉ่):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">อิงจากพื้นดวงเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและสินทรัพย์ระยะยาว</p>
+              <p style="margin-top:3px; color:#cfd8dc;">อิงจากพื้นดวงเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวของดิถี ${bazi.dayMaster.name} มีจังหวะรับทรัพย์ก้อนโตจากการลงทุนและการเจรจาคู่ค้า</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#64b5f6;">2. การงาน & บารมี (เจิ้งกวาน/ซื่อกวาน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ประจำรอบวันจร ${tD} ${tMName} ${tY} นี้ ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง</p>
+              <p style="margin-top:3px; color:#cfd8dc;">โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานเฉพาะทาง ประจำรอบวันจร ${tD} ${tMName} ${tY} นี้ ยิ่งใช้จุดเด่นของธาตุ ${bazi.dayMaster.elem} ยิ่งได้รับการยอมรับในวงกว้าง</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">คู่ครองมีสติปัญญาเฉียบคม คอยเป็นผู้คิดช่วยวางแผนการเงิน เกื้อหนุนชะตาให้มั่นคงและเป็นปึกแผ่น</p>
+              <p style="margin-top:3px; color:#cfd8dc;">คู่ครองมีสติปัญญาเฉียบคม เกื้อหนุนชะตาดิถี ${bazi.dayMaster.name} ให้มั่นคงและเป็นปึกแผ่นร่วมกัน</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
@@ -3694,7 +3694,7 @@ const POEMS_DATABASE = {
 
         document.getElementById('bazi-vip-luckcycle').innerHTML = `
           <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
-          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น
+          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${bazi.dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น
         `;
       }
     }
