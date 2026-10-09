@@ -4645,26 +4645,15 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรแบบเรียลไทม์)
+// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรและคงเนื้อหาเต็มรูปแบบไว้ครบถ้วน)
 function switchSajuMode(mode) {
-  const btnFree = document.getElementById('btn-saju-free');
-  const btnVip = document.getElementById('btn-saju-vip');
-  const resultBox = document.getElementById('sajuResultBox');
-  if (!resultBox) return;
-
-  // ดึงค่าวันเดือนปี "จร" ตามตัวแปรมาตรฐานที่ใช้ในระบบลัคนาพยากรณ์
-  const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-  const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-  const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-  const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
-  const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
-  
-  const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
-
   if (typeof AppState !== 'undefined') {
     AppState.currentSajuMode = mode;
   }
 
+  const btnFree = document.getElementById('btn-saju-free');
+  const btnVip = document.getElementById('btn-saju-vip');
+  
   if (btnFree) {
     btnFree.classList.toggle('active', mode === 'free');
     btnFree.style.background = (mode === 'free') ? 'rgba(56,189,248,0.25)' : 'transparent';
@@ -4678,88 +4667,155 @@ function switchSajuMode(mode) {
     btnVip.style.color = (mode === 'vip') ? '#000' : '#eab308';
   }
 
-  // โหมดฟรี (แสดงผลตามปกติ)
-  if (mode === 'free') {
+  calcSajuEngine(mode);
+}
+
+// ฟังก์ชันคำนวณและแสดงผล ซาจู (VIP เปลี่ยนตามวันจร, ฟรีเปลี่ยนตามวันเกิด)
+function calcSajuEngine(mode) {
+  const resultBox = document.getElementById('sajuResultBox');
+  if (!resultBox) return;
+
+  const currentMode = mode || (typeof AppState !== 'undefined' && AppState.currentSajuMode ? AppState.currentSajuMode : 'free');
+
+  // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์มหลัก (สำหรับโหมดฟรี)
+  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
+  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
+  const birthText = `${bD}/${bM}/${bY}`;
+
+  // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจร (สำหรับโหมด VIP - ทำให้คำทำนายเปลี่ยนตามวันจร)
+  const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+  const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+  const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+  const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+  const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
+  const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+  const transitDateStr = `${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
+
+  // ชุดข้อมูลธาตุซาจู
+  const elements = [
+    {
+      name: "ธาตุไม้หยาง (갑목 - คับมก / ไม้ใหญ่หยั่งรากลึก)",
+      nature: "เปรียบเสมือนต้นไม้ใหญ่ตระหง่านกลางพงไพร จิตใจหนักแน่น มีอุดมการณ์สูง ตรงไปตรงมา รักความยุติธรรมและเกียรติยศ มีภาวะผู้นำโดยกำเนิด แม้ภายนอกจะดูสุขุมเข้มแข็ง แต่ภายในอ่อนโยนและห่วงใยบริวาร ไม่ชอบการประจบสอพลอ",
+      wealth: "วาสนาการเงินจะเติบโตมั่นคงดั่งรากไม้ที่หยั่งลึก เงินทองมาจากวิสัยทัศน์ ความเป็นผู้นำ และงานที่ต้องบริหารจัดการคน ยิ่งอายุมาก ยิ่งสั่งสมทรัพย์สินได้เป็นกอบเป็นกำ มีเกณฑ์ร่ำรวยจากที่ดิน อสังหาริมทรัพย์ หรือโครงการระยะยาว",
+      partner: "ดวงชะตาสมพงษ์กับคู่ครองธาตุน้ำหยิน หรือผู้ที่มีอุปนิสัยใจเย็น นุ่มนวล คอยให้คำปรึกษาและซัพพอร์ตเบื้องหลัง เปรียบเสมือนสายน้ำที่คอยรดน้ำหล่อเลี้ยงรากไม้ใหญ่ให้เจริญงอกงาม",
+      daeun: "มหาวัฏจักรโชคชะตาช่วงนี้อยู่ในช่วงแตกกิ่งก้านสาขา สิ่งที่ทุ่มเทลงแรงมาเป็นเวลาหลายปีจะเริ่มผลิดอกออกผล มีเกณฑ์เลื่อนขั้น ปรับตำแหน่ง หรือขยายกิจการ มีโอกาสได้รับการสนับสนุนจากผู้หลักผู้ใหญ่ในวงการ",
+      biz: "สายงานด้านการบริหารจัดการ, องค์กรขนาดใหญ่, อสังหาริมทรัพย์, การศึกษา, การแพทย์/สุขภาพ, สื่อสารมวลชน หรืองานเชิงสร้างสรรค์ที่ต้องใช้ความคิดริเริ่ม",
+      color: "เขียวพฤกษา, เขียวมรกต, น้ำเงินเข้ม",
+      direct: "ทิศตะวันออก และ ทิศตะวันออกเฉียงใต้",
+      stone: "หยกเขียว (Jade), มาลาไคต์ (Malachite), มรกต"
+    },
+    {
+      name: "ธาตุไฟหยาง (병화 - ปิ่งฮวา / สุริยันเจิดจ้า)",
+      nature: "เปรียบเสมือนดวงอาทิตย์บนท้องฟ้า ให้แสงสว่างและความอบอุ่นแก่ผู้คน มีความกระตือรือร้นสูง กล้าคิดกล้าทำ รักความก้าวหน้า และมีความจริงใจ เปิดเผย",
+      wealth: "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เข้ามาจากชื่อเสียง เครือข่ายสังคม และการติดต่อสื่อสาร การลงทุนมีความโดดเด่นและให้ผลตอบแทนรวดเร็ว",
+      partner: "คู่ครองเป็นผู้ที่มีความสุขุม รอบคอบ มีเหตุผล และช่วยเบรกความร้อนรน เป็นที่ปรึกษาที่ยอดเยี่ยมในยามตัดสินใจเรื่องใหญ่",
+      daeun: "มหาวัฏจักรโชคชะตาเปิดรับแสงสว่างแห่งความสำเร็จ ภารกิจที่รับผิดชอบจะโดดเด่นเป็นที่ยอมรับของผู้คนในสังคม มีเกณฑ์รับทรัพย์ก้อนโต",
+      biz: "งานด้านการตลาด, สื่อออนไลน์, การบันเทิง, การต่างประเทศ, ธุรกิจพลังงาน, หรืองานที่ต้องพบปะผู้คนจำนวนมาก",
+      color: "แดงทับทิม, ส้มสว่าง, ทองคำ",
+      direct: "ทิศใต้ และ ทิศตะวันออก",
+      stone: "ทับทิม (Ruby), อำพัน (Amber), เพชร"
+    },
+    {
+      name: "ธาตุดินหยิน (기토 - กีโท / ดินสวนหย่อมมีความอุดมสมบูรณ์)",
+      nature: "เปรียบเสมือนแผ่นดินอุดมสมบูรณ์พร้อมเพาะปลูก มีความโอบอ้อมอารี ละเอียดอ่อน หนักแน่น รักครอบครัว และมีความสามารถในการดูแลจัดการบริหารสูง",
+      wealth: "การเงินมั่นคงจากทรัพย์สินถาวร ที่ดิน อสังหาริมทรัพย์ หรือการเก็บออมอย่างเป็นระบบ มีเกณฑ์ได้รับผลกำไรจากการลงทุนระยะยาว",
+      partner: "คู่ครองเป็นคนขยันขันแข็ง มีความรับผิดชอบสูง ช่วยกันทำมาหากินสร้างฐานะครอบครัวให้มั่นคงเป็นปึกแผ่น",
+      daeun: "วัฏจักรชีวิตมีความร่มเย็นเป็นสุข ได้รับความเมตตาจากผู้ใหญ่ มีโอกาสได้ครอบครองทรัพย์สินชิ้นใหญ่หรือขยายฐานะครอบครัว",
+      biz: "การเกษตร, อสังหาริมทรัพย์, ธนาคาร, การบัญชี, งานบริการ, หรืองานที่เกี่ยวข้องกับอาคารสถานที่",
+      color: "เหลืองมัสตาร์ด, น้ำตาลอ่อน, ครีม",
+      direct: "ทิศตะวันออกเฉียงเหนือ และ ทิศตะวันตกเฉียงใต้",
+      stone: "บุษราคัม (Topaz), หยกเหลือง, ไข่มุก"
+    },
+    {
+      name: "ธาตุทองหยาง (경금 - คย็องกึม / ทองคำแท่งแข็งแกร่ง)",
+      nature: "เปรียบเสมือนโลหะมีค่าหรืออาวุธกล้า มีความเด็ดเดี่ยว เด็ดขาด รักความยุติธรรม มุ่งมั่น ทรหดอดทน และมีวินัยในตนเองสูงมาก",
+      wealth: "เงินทองได้มาจากความเชี่ยวชาญเฉพาะทาง อำนาจหน้าที่ หรือการบริหารจัดการองค์กรขนาดใหญ่ มีเกณฑ์ปลดหนี้สินและสร้างความมั่งคั่งถาวร",
+      partner: "คู่ครองมีความฉลาด เฉียบคม และสนับสนุนส่งเสริมเกียรติยศชื่อเสียงซึ่งกันและกันอย่างสมศักดิ์ศรี",
+      daeun: "ช่วงเวลาแห่งการสร้างอำนาจและเกียรติยศ ผลงานเป็นที่ประจักษ์ ชนะอุปสรรคและการแข่งขันทั้งปวง ก้าวสู่ตำแหน่งผู้บริหาร",
+      biz: "กฎหมาย, วิศวกรรม, เทคโนโลยี, อุตสาหกรรมเหล็ก/ยานยนต์, งานราชการ, หรืองานบริหารองค์กร",
+      color: "ขาวบริสุทธิ์, เงินควันบุหรี่, เทาเมทัลลิก",
+      direct: "ทิศตะวันตก และ ทิศเหนือ",
+      stone: "เพชร (Diamond), แพลตตินัม, ซิทริน"
+    },
+    {
+      name: "ธาตุน้ำหยิน (계수 - คเยซู / น้ำค้างบริสุทธิ์ยามเช้า)",
+      nature: "เปรียบเสมือนสายฝนหรือหยาดน้ำค้าง มีความอ่อนโยน ปรับตัวเก่ง มีสัญชาตญาณและลางสังหรณ์แม่นยำสูง รักการเรียนรู้และมีความคิดสร้างสรรค์",
+      wealth: "การเงินได้มาจากปัญญา ความรู้ และการเดินทางติดต่อสื่อสาร มีโชคลาภแบบไม่คาดฝันจากลางสังหรณ์หรือสิ่งศักดิ์สิทธิ์",
+      partner: "คู่ครองเป็นคนอบอุ่น มีความเข้าใจทางจิตวิญญาณสูง คอยดูแลเอาใจใส่ความรู้สึกและเติมเต็มความสุขให้แก่กัน",
+      daeun: "มหาวัฏจักรโชคชะตาเปิดรับปัญญาญาณและความเจริญรุ่งเรือง งานด้านวิชาการ งานต่างประเทศ หรือการให้คำปรึกษารุ่งโรจน์",
+      biz: "การต่างประเทศ, ท่องเที่ยว, ศิลปะ, จิตวิทยา, ศาสนา/โหราศาสตร์, งานบริการ, หรืองานสื่อสารดิจิทัล",
+      color: "ฟ้าพาสเทล, น้ำเงินกรมท่า, ดำเงามัน",
+      direct: "ทิศเหนือ และ ทิศตะวันตก",
+      stone: "ไพลิน (Sapphire), นิลกาฬ, มุกดาหาร"
+    }
+  ];
+
+  // โหมดฟรี: คำนวณธาตุจากวันเกิด
+  if (currentMode === 'free') {
+    const elemIndex = (bD + bM + (bY % 5)) % 5;
+    const u = elements[elemIndex];
+    resultBox.style.display = 'block';
     resultBox.innerHTML = `
-      <div style="background: rgba(14,20,38,0.9); padding: 18px; border-radius: 12px; border: 1px solid var(--border-soft);">
-        <h4 style="color: #38bdf8; margin-bottom: 8px;"><i class="fa-solid fa-user"></i> บทวิเคราะห์ดิถีธาตุพื้นดวง (โหมดฟรี)</h4>
-        <p style="font-size: 0.88rem; color: #d1d9ec; line-height: 1.7;">ดิถีธาตุประจำตัวมีความสมดุล โดดเด่นด้านการสร้างฐานะด้วยความมุ่งมั่นและอดทน มีเกณฑ์รับทรัพย์และสร้างความมั่นคงในชีวิตจากน้ำพักน้ำแรงตนเอง</p>
+      <div style="background:rgba(14,20,38,0.9); border:1px solid var(--border-soft); border-radius:12px; padding:18px;">
+        <h4 style="color:#38bdf8; margin-bottom:8px;"><i class="fa-solid fa-user"></i> บทวิเคราะห์ดิถีธาตุพื้นดวง (โหมดฟรี - อิงวันเกิด ${birthText})</h4>
+        <p style="font-size:0.88rem; color:#d1d9ec; line-height:1.7;">ธาตุประจำตัวของคุณคือ <strong>${u.name}</strong> ${u.nature}</p>
       </div>
     `;
   } 
-  // โหมด VIP: คำทำนายเปลี่ยนตามวันจรแบบเรียลไทม์โดยอิงจากตัวแปร tD, tMVal, tY
+  // โหมด VIP: คำนวณธาตุและเปลี่ยนคำทำนายตาม "วันจร" ที่เลือก
   else {
-    const vipTransitPools = [
-      {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
-        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: ธาตุพลังงานจรส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภและการเจรจา การเซ็นสัญญา การทำธุรกิจ หรือการลงทุนจะให้ผลลัพธ์ที่งดงามเกินคาด`
-      },
-      {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
-        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: พลังงานดาวจรในวันนี้โดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
-      },
-      {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
-        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
-      },
-      {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
-        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: จังหวะชะตาเปิดรับพลังแห่งความสำเร็จ ผู้ใหญ่ให้การสนับสนุน โครงการหรือภารกิจที่ติดขัดจะได้รับการปลดล็อกอย่างราบรื่น`
-      }
-    ];
-
-    let tIdx = (tY * 31 * 12 + tMVal * 31 + tD + tH) % vipTransitPools.length;
-    let tRes = vipTransitPools[tIdx];
-
+    const transitElemIndex = (tD + tMVal + (tY % 5)) % 5;
+    const u = elements[transitElemIndex];
+    resultBox.style.display = 'block';
     resultBox.innerHTML = `
-      <div style="background: rgba(255,215,0,0.08); padding: 18px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
-        <h4 style="color: #ffd700; margin-bottom: 8px;"><i class="fa-solid fa-satellite-dish"></i> ${tRes.transitTitle}</h4>
-        <p style="font-size: 0.88rem; color: #fff; margin-top: 1rem; line-height: 1.7;">${tRes.desc}</p>
+      <div style="background:linear-gradient(145deg, rgba(234,179,8,0.12), rgba(15,23,42,0.85)); border:1.5px solid #eab308; border-radius:12px; padding:16px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:8px; margin-bottom:14px;">
+          <h4 style="color:#facc15; margin:0; font-size:1.08rem;">👑 คัมภีร์ซาจูฉบับสมบูรณ์ VIP</h4>
+          <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
+        </div>
+
+        <div style="background:rgba(234,179,8,0.08); padding:10px 12px; border-radius:8px; border-left:3px solid #eab308; margin-bottom:14px;">
+          <strong style="color:#facc15; font-size:0.95rem;">🌟 ธาตุประจำตัววันจร: ${u.name}</strong>
+          <p style="margin:4px 0 0; color:#e2e8f0; font-size:0.85rem; line-height:1.6;">พลังงานจรวันที่ ${transitDateStr} ส่งผลให้ ${u.nature}</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.86rem; line-height:1.7;">
+          <div style="background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:8px;">
+            <strong style="color:#38bdf8;">1. แทอุน (대운 - มหาวัฏจักรโชคชะตา 10 ปี ณ วันจร ${transitDateStr})</strong><br>
+            <span style="color:#cbd5e1;">${u.daeun}</span>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:8px;">
+            <strong style="color:#4ade80;">2. วาสนาการเงิน & เส้นทางสร้างความมั่งคั่ง (แจอุน)</strong><br>
+            <span style="color:#cbd5e1;">${u.wealth}</span>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:8px;">
+            <strong style="color:#f472b6;">3. กุงฮับ (궁합 - เกณฑ์คู่ครอง & หุ้นส่วนคู่บุญ)</strong><br>
+            <span style="color:#cbd5e1;">${u.partner}</span>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:8px;">
+            <strong style="color:#fb923c;">4. ควานอุน (관운 - สายงานและธุรกิจหนุนดวงชะตา)</strong><br>
+            <span style="color:#cbd5e1;">ธุรกิจหรือสายงานที่ทำแล้วเจริญรุ่งเรืองสูงสุดในรอบวันจรนี้ ได้แก่ <strong>${u.biz}</strong> จะช่วยดึงดูดพลังความสำเร็จได้รวดเร็วขึ้นเป็นทวีคูณ</span>
+          </div>
+
+          <div style="background:rgba(234,179,8,0.12); padding:12px; border-radius:8px; border-left:3px dashed #eab308;">
+            <strong style="color:#fef08a; display:block; margin-bottom:6px;">🔮 เคล็ดลับเสริมพลังชี่ประจำวันจร (Korean Bibo Feng Shui):</strong>
+            <div style="color:#fef9c3; font-size:0.82rem; line-height:1.6;">
+              • <strong>สีมงคลดึงดูดทรัพย์:</strong> ${u.color}<br>
+              • <strong>ทิศเปิดประตูรับโชค:</strong> ${u.direct}<br>
+              • <strong>อัญมณีหนุนบารมี:</strong> ${u.stone}
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
+
+  resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
-// ฟังก์ชันเปิด Modal ซาจู (เวอร์ชันเดียว ไม่ซ้ำซ้อน)
-function openSajuModal() {
-  const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
-  const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
-
-  const content = `
-    <div style="text-align:center; margin-bottom:14px;">
-      <img src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800&auto=format&fit=crop" style="width:100%; max-height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(234,179,8,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-      <h3 style="color:#facc15; margin:10px 0 4px; font-size:1.15rem;">🇰🇷 ผูกดวงชะตาเกาหลี 4 เสาหลัก (사주 - Saju)</h3>
-      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต</p>
-    </div>
-
-    <!-- ปุ่มสลับโหมด Free / VIP -->
-    <div class="tier-switcher" style="margin-bottom:14px; display:flex; gap:8px;">
-      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #38bdf8; background:rgba(56,189,248,0.25); color:#38bdf8; font-weight:bold; cursor:pointer;">
-        คำนวณฟรี
-      </button>
-      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #64748b; background:transparent; color:#94a3b8; font-weight:bold; cursor:pointer;">
-        👑 ทำนายเต็มรูปแบบ (VIP)
-      </button>
-    </div>
-
-    <!-- กล่องแสดงผลคำทำนาย -->
-    <div id="sajuResultBox" style="margin-top:10px;"></div>
-  `;
-
-  if (modalTitle) modalTitle.textContent = "🇰🇷 การพยากรณ์แบบเกาหลี (Saju)";
-  if (modalBody) modalBody.innerHTML = content;
-
-  // เริ่มต้นแสดงผลแบบ Free ทันทีเมื่อเปิด Modal
-  switchSajuMode('free');
-
-  if (typeof openFeatureModal === 'function') {
-    openFeatureModal('articles');
-  } else {
-    const m = document.getElementById('modal-articles') || document.getElementById('articlesModal') || document.getElementById('artModal');
-    if (m) m.style.display = 'flex';
-  }
-}
-
 // ฟังก์ชันคำนวณและแสดงผล ซาจู (ทำงานตามมาตรฐานเดียวกับ BaZi และ LifeGraph)
 function calcSajuEngine(mode) {
   const currentMode = mode || (typeof AppState !== 'undefined' && AppState.currentSajuMode ? AppState.currentSajuMode : 'free');
