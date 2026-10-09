@@ -9744,8 +9744,8 @@ function setDefaultTransitValues() {
 window.addEventListener('DOMContentLoaded', function() {
   setTimeout(setDefaultTransitValues, 500);
 });
-  // ฟังก์ชันสร้างรายการตัวเลือก (Options) และกำหนดค่าวันจรปัจจุบันให้อัตโนมัติ
-function initTransitDropdownsAndValues() {
+// ฟังก์ชันสร้างตัวเลือกและดึงวัน-เวลาปัจจุบันมาเติมในช่องวันจรอัตโนมัติ
+function initAndSetRealtimeTransitValues() {
   const dayEl = document.getElementById('transitDay');
   const monthEl = document.getElementById('transitMonth');
   const yearEl = document.getElementById('transitYearBE');
@@ -9759,7 +9759,6 @@ function initTransitDropdownsAndValues() {
       let opt = document.createElement('option');
       opt.value = i;
       opt.textContent = i;
-      if (i === 10) opt.selected = true; // ตั้งค่าเริ่มต้นวันที่ 10
       dayEl.appendChild(opt);
     }
   }
@@ -9772,7 +9771,6 @@ function initTransitDropdownsAndValues() {
       let opt = document.createElement('option');
       opt.value = index + 1;
       opt.textContent = mName;
-      if (index + 1 === 10) opt.selected = true; // เดือนตุลาคม
       monthEl.appendChild(opt);
     });
   }
@@ -9784,7 +9782,6 @@ function initTransitDropdownsAndValues() {
       let opt = document.createElement('option');
       opt.value = y;
       opt.textContent = y;
-      if (y === 2569) opt.selected = true; // ปี พ.ศ. 2569
       yearEl.appendChild(opt);
     }
   }
@@ -9796,27 +9793,40 @@ function initTransitDropdownsAndValues() {
       let opt = document.createElement('option');
       opt.value = h;
       opt.textContent = String(h).padStart(2, '0') + ' น.';
-      if (h === 12) opt.selected = true; // 12 นาฬิกา
       hourEl.appendChild(opt);
     }
   }
 
-  // 5. สร้างตัวเลือกนาที (0 - 59)
+  // 5. สร้างตัวเลือกนาที (0 - 59 ทีละ 1 นาที เพื่อความละเอียดตามเวลาจริง)
   if (minEl && minEl.options.length <= 1) {
     minEl.innerHTML = '';
-    for (let m = 0; m < 60; m += 5) {
+    for (let m = 0; m < 60; m++) {
       let opt = document.createElement('option');
       opt.value = m;
       opt.textContent = String(m).padStart(2, '0') + ' นาที';
-      if (m === 0) opt.selected = true;
       minEl.appendChild(opt);
     }
   }
+
+  // ดึงค่าวัน เดือน ปี และเวลาปัจจุบันแบบ Real-time
+  const now = new Date();
+  const currentDay = now.getDate();
+  const currentMonth = now.getMonth() + 1; // 1-12
+  const currentYearBE = now.getFullYear() + 543; // แปลง ค.ศ. เป็น พ.ศ.
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // กำหนดค่าปัจจุบันลงใน Dropdown
+  if (dayEl) dayEl.value = currentDay;
+  if (monthEl) monthEl.value = currentMonth;
+  if (yearEl) yearEl.value = currentYearBE;
+  if (hourEl) hourEl.value = currentHour;
+  if (minEl) minEl.value = currentMinute;
 }
 
-// สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บเสร็จ
+// สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บ
 window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(initTransitDropdownsAndValues, 600);
+  setTimeout(initAndSetRealtimeTransitValues, 500);
 });
 </script>
 </body>
