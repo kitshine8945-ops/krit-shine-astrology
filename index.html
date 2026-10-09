@@ -9317,27 +9317,18 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-    // 1. ดึงวัน เดือน ปีเกิด จากฟอร์มหน้าเว็บ
+    // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
+    const hourEl = document.getElementById('birthHour24');
 
-    const dVal = dayEl ? dayEl.value : '';
-    const mVal = monthEl ? monthEl.value : '';
-    const yVal = yearEl ? yearEl.value : '';
+    const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : AppState.birthDay || 30;
+    const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : AppState.birthMonth || 4;
+    const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2522;
+    const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
 
-    if (!dVal || !mVal || !yVal) {
-      alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
-      scrollToForm();
-      return;
-    }
-
-    const d = parseInt(dVal, 10);
-    const m = parseInt(mVal, 10);
-    const yBE = parseInt(yVal, 10);
-    const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
-
-    // 2. ดึงวัน เดือน ปีจรแบบสดๆ สำหรับโหมด VIP
+    // 2. ดึงวัน เดือน ปีจรแบบสดๆ
     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
     const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -9357,6 +9348,7 @@ function calcBaziEngine() {
       { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
     ];
 
+    // คำนวณ Index ของดิถีธาตุตามวันเกิดจริง
     let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
     let stemIdx = seed % stemsList.length;
     let dayMaster = stemsList[stemIdx];
@@ -9369,7 +9361,7 @@ function calcBaziEngine() {
     let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุดิน' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน / ธาตุน้ำ' : 'ธาตุน้ำ / ธาตุไม้')));
     let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุทอง')));
 
-    // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
+    // --- คลังคำทำนายโหมดฟรี ---
     const FREE_BAZI_POOLS = [
       `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
       `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
@@ -9377,7 +9369,7 @@ function calcBaziEngine() {
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-    // คลังคำทำนาย 5 มิติ VIP (ผูกตัวแปรวันจร tY, tD, tM อย่างอิสระ)
+    // --- คลังคำทำนาย 5 มิติ VIP ---
     const VIP_5D_POOLS = [
       {
         fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
