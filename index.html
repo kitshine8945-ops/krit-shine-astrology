@@ -2420,13 +2420,18 @@ if (typeof applyAgeChange === 'function') {
   applyAgeChange(calculatedAge);
 }
 
-    calcNum7Base();
+   calcNum7Base();
     calcChatraThreeLayers();
     calcAuspiciousDates();
     if (typeof calcBaziEngine === 'function') {
       calcBaziEngine();
     }
-  }
+    // เพิ่มคำสั่งเรียกฟังก์ชันอัปเดตวันจรตรงนี้ เพื่อให้ช่องวันที่/เวลาไม่ว่างเปล่า
+    if (typeof updateTransitDateDropdowns === 'function') {
+      updateTransitDateDropdowns();
+    } else if (typeof setDefaultTransitDate === 'function') {
+      setDefaultTransitDate();
+    }
 function calcChatraThreeLayers() {
   const cTop = document.getElementById('chatraTop');
   const cMid = document.getElementById('chatraMid');
