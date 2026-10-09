@@ -9828,71 +9828,76 @@ function initAndSetRealtimeTransitValues() {
 window.addEventListener('DOMContentLoaded', function() {
   setTimeout(initAndSetRealtimeTransitValues, 500);
 });
-  // ฟังก์ชันสร้างตัวเลือกและดึงวัน-เวลาปัจจุบันมาเติมในช่องวันจรอัตโนมัติ (โดยไม่กระทบข้อมูลวันเกิด)
-function initAndSetRealtimeTransitValues() {
+// ฟังก์ชันสร้างตัวเลือก (Options) ให้ช่องวันเกิดและวันจรแบบครบถ้วนอัตโนมัติ
+function initAllAstrologyDropdowns() {
+  // 1. สร้างตัวเลือกให้ฟอร์มวันเกิด (ปล่อยว่างให้ผู้ใช้เลือกเอง ไม่มีค่าล็อกแข็ง)
+  const bDayEl = document.getElementById('birthDay');
+  const bMonthEl = document.getElementById('birthMonth');
+  const bYearEl = document.getElementById('birthYearBE');
+  const bHourEl = document.getElementById('birthHour24');
+  const bMinEl = document.getElementById('birthMinute24');
+
+  if (bDayEl && bDayEl.options.length <= 1) {
+    bDayEl.innerHTML = '<option value="" disabled selected>วัน</option>';
+    for (let i = 1; i <= 31; i++) {
+      let opt = document.createElement('option'); opt.value = i; opt.textContent = i; bDayEl.appendChild(opt);
+    }
+  }
+  if (bMonthEl && bMonthEl.options.length <= 1) {
+    bMonthEl.innerHTML = '<option value="" disabled selected>เดือน</option>';
+    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    months.forEach((mName, index) => {
+      let opt = document.createElement('option'); opt.value = index + 1; opt.textContent = mName; bMonthEl.appendChild(opt);
+    });
+  }
+  if (bYearEl && bYearEl.options.length <= 1) {
+    bYearEl.innerHTML = '<option value="" disabled selected>ปี พ.ศ.</option>';
+    for (let y = 2470; y <= 2535; y++) { // ช่วงปี พ.ศ. เกิด
+      let opt = document.createElement('option'); opt.value = y; opt.textContent = y; bYearEl.appendChild(opt);
+    }
+  }
+  if (bHourEl && bHourEl.options.length <= 1) {
+    bHourEl.innerHTML = '<option value="" disabled selected>ชม.</option>';
+    for (let h = 0; h < 24; h++) {
+      let opt = document.createElement('option'); opt.value = h; opt.textContent = String(h).padStart(2, '0') + ' น.'; bHourEl.appendChild(opt);
+    }
+  }
+  if (bMinEl && bMinEl.options.length <= 1) {
+    bMinEl.innerHTML = '<option value="" disabled selected>นาที</option>';
+    for (let m = 0; m < 60; m++) {
+      let opt = document.createElement('option'); opt.value = m; opt.textContent = String(m).padStart(2, '0') + ' นาที'; bMinEl.appendChild(opt);
+    }
+  }
+
+  // 2. สร้างตัวเลือกและกำหนดค่าปัจจุบันให้ช่องวันจร (Transit) แบบ Real-time
   const dayEl = document.getElementById('transitDay');
   const monthEl = document.getElementById('transitMonth');
   const yearEl = document.getElementById('transitYearBE');
   const hourEl = document.getElementById('transitHour24');
   const minEl = document.getElementById('transitMinute24');
 
-  // 1. สร้างตัวเลือกวันจร (1 - 31)
   if (dayEl && dayEl.options.length <= 1) {
     dayEl.innerHTML = '';
-    for (let i = 1; i <= 31; i++) {
-      let opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = i;
-      dayEl.appendChild(opt);
-    }
+    for (let i = 1; i <= 31; i++) { let opt = document.createElement('option'); opt.value = i; opt.textContent = i; dayEl.appendChild(opt); }
   }
-
-  // 2. สร้างตัวเลือกเดือนจร
   if (monthEl && monthEl.options.length <= 1) {
     monthEl.innerHTML = '';
     const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-    months.forEach((mName, index) => {
-      let opt = document.createElement('option');
-      opt.value = index + 1;
-      opt.textContent = mName;
-      monthEl.appendChild(opt);
-    });
+    months.forEach((mName, index) => { let opt = document.createElement('option'); opt.value = index + 1; opt.textContent = mName; monthEl.appendChild(opt); });
   }
-
-  // 3. สร้างตัวเลือกปี พ.ศ. จร
   if (yearEl && yearEl.options.length <= 1) {
     yearEl.innerHTML = '';
-    for (let y = 2565; y <= 2575; y++) {
-      let opt = document.createElement('option');
-      opt.value = y;
-      opt.textContent = y;
-      yearEl.appendChild(opt);
-    }
+    for (let y = 2565; y <= 2575; y++) { let opt = document.createElement('option'); opt.value = y; opt.textContent = y; yearEl.appendChild(opt); }
   }
-
-  // 4. สร้างตัวเลือกชั่วโมงจร
   if (hourEl && hourEl.options.length <= 1) {
     hourEl.innerHTML = '';
-    for (let h = 0; h < 24; h++) {
-      let opt = document.createElement('option');
-      opt.value = h;
-      opt.textContent = String(h).padStart(2, '0') + ' น.';
-      hourEl.appendChild(opt);
-    }
+    for (let h = 0; h < 24; h++) { let opt = document.createElement('option'); opt.value = h; opt.textContent = String(h).padStart(2, '0') + ' น.'; hourEl.appendChild(opt); }
   }
-
-  // 5. สร้างตัวเลือกนาทีจร
   if (minEl && minEl.options.length <= 1) {
     minEl.innerHTML = '';
-    for (let m = 0; m < 60; m++) {
-      let opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = String(m).padStart(2, '0') + ' นาที';
-      minEl.appendChild(opt);
-    }
+    for (let m = 0; m < 60; m++) { let opt = document.createElement('option'); opt.value = m; opt.textContent = String(m).padStart(2, '0') + ' นาที'; minEl.appendChild(opt); }
   }
 
-  // ดึงเวลาปัจจุบันมาใส่เฉพาะช่องวันจร (ปล่อยช่องวันเกิดให้ว่างตามปกติ)
   const now = new Date();
   if (dayEl) dayEl.value = now.getDate();
   if (monthEl) monthEl.value = now.getMonth() + 1;
@@ -9903,7 +9908,7 @@ function initAndSetRealtimeTransitValues() {
 
 // สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บ
 window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(initAndSetRealtimeTransitValues, 500);
+  setTimeout(initAllAstrologyDropdowns, 500);
 });
 </script>
 </body>
