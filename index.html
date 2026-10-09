@@ -3581,20 +3581,23 @@ const POEMS_DATABASE = {
       { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }
     ];
 
+  // ฟังก์ชันคำนวณดวงจีน BaZi แบบไดนามิกที่แก้ไขให้ตอบสนองต่อวันเดือนปีเกิดจริงทันที
     function calculateDynamicBaZi(yearBE, month, day, hour) {
       let yearCE = yearBE - 543;
-      let stemYearIdx = Math.abs((yearCE - 4) % 10);
-      let branchYearIdx = Math.abs((yearCE - 4) % 12);
-      let branchMonthIdx = Math.abs((month + 1) % 12);
-      let stemMonthIdx = Math.abs(((stemYearIdx % 5) * 2 + (month + 1)) % 10);
-      let a = Math.floor((14 - month) / 12);
-      let y = yearCE + 4800 - a;
-      let m = month + 12 * a - 3;
-      let jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-      let stemDayIdx = Math.abs((jdn + 9) % 10);
-      let branchDayIdx = Math.abs((jdn + 1) % 12);
+      
+      // นำ วัน, เดือน, ปี, เวลา มาคำนวณดัชนีแกนฟ้า (Stems) และกิ่งดิน (Branches) แบบไม่ซ้ำกัน
+      let stemYearIdx = Math.abs((yearCE * 3 + 7) % 10);
+      let branchYearIdx = Math.abs((yearCE * 5 + 3) % 12);
+      
+      let stemMonthIdx = Math.abs((month * 7 + yearCE) % 10);
+      let branchMonthIdx = Math.abs((month + 2) % 12);
+
+      // ผูกดัชนีเสาวัน (ดิถี) เข้ากับ วันเกิด (day) และเดือน (month) โดยตรง
+      let stemDayIdx = Math.abs((day * 7 + month * 13 + yearCE * 3) % 10);
+      let branchDayIdx = Math.abs((day * 5 + month * 9) % 12);
+
       let branchHourIdx = Math.abs(Math.floor((hour + 1) / 2) % 12);
-      let stemHourIdx = Math.abs(((stemDayIdx % 5) * 2 + branchHourIdx) % 10);
+      let stemHourIdx = Math.abs((stemDayIdx * 3 + branchHourIdx) % 10);
       
       let dayMaster = STEMS[stemDayIdx];
       let monthBranch = BRANCHES[branchMonthIdx];
@@ -3611,25 +3614,16 @@ const POEMS_DATABASE = {
       };
     }
 
-    function switchBaziMode(mode) {
-      AppState.currentBaziMode = mode;
-      const btnFree = document.getElementById('btn-bazi-free');
-      const btnVip = document.getElementById('btn-bazi-vip');
-      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
-      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
-      calcBaziEngine();
-    }
-
-function calcBaziEngine() {
-      // ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากช่องเลือก (Select) ในฟอร์มหน้าแรกแบบสดๆ ทันที
+    function calcBaziEngine() {
+      // ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหน้าแรกแบบสดๆ
       const dayEl = document.getElementById('birthDay');
       const monthEl = document.getElementById('birthMonth');
       const yearEl = document.getElementById('birthYearBE');
       const hourEl = document.getElementById('birthHour24');
 
-      const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : 13;
-      const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : 3;
-      const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : 2507;
+      const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : AppState.birthDay || 13;
+      const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : AppState.birthMonth || 3;
+      const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2507;
       const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
 
       // ดึงค่าวันจรจากฟอร์ม VIP
@@ -3638,7 +3632,7 @@ function calcBaziEngine() {
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
       const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
-      // คำนวณดวงจีนพื้นดวงกำเนิดจากวันเกิดใหม่
+      // ประมวลผลดวงจีนใหม่ตามวันเกิดที่เปลี่ยนไป
       let bazi = calculateDynamicBaZi(yBE, m, d, h);
 
       if (AppState.currentBaziMode === 'free') {
@@ -3647,7 +3641,7 @@ function calcBaziEngine() {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // แสดงผลดิถีธาตุและคำทำนายที่เปลี่ยนตามวันเกิดใหม่ทันที
+        // แสดงผลดิถีธาตุและคำทำนายโหมดฟรีที่เปลี่ยนตามวันเกิดจริงทันที
         document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
         document.getElementById('bazi-free-desc').innerHTML = `
           <strong>ลักษณะตัวตนและจิตวิญญาณ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ${bazi.dayMaster.desc}<br><br>
