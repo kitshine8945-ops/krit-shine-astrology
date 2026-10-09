@@ -9493,6 +9493,96 @@ function calcBaziEngine() {
       `;
     }
 }
+  // --- ระบบ ซาจู (Saju) 4 เสาชะตาเกาหลี (เชื่อมโยงวันจร) ---
+function openSajuModal() {
+    // 1. ตรวจสอบว่าผู้ใช้กรอกวันเกิดที่หน้าแรกหรือยัง
+    if (!AppState.birthDay || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
+        alert('กรุณากรอก วัน/เดือน/ปีเกิด และข้อมูลที่หน้าแรกก่อนครับ');
+        scrollToForm();
+        return;
+    }
+
+    // 2. ดึงค่าวันจรจากฟอร์มวันจร (หรือใช้วันที่ปัจจุบันถ้าไม่ได้กรอก)
+    const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+    const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+    const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+    const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+
+    const bD = AppState.birthDay;
+    const bM = AppState.birthMonth;
+    const bY = AppState.birthBE;
+
+    // เลือกเสาธาตุตามวันเกิด
+    let stemIndex = (bD + bM + bY) % STEMS.length;
+    let mainStem = STEMS[stemIndex];
+
+    // คำนวณคำทำนายที่เปลี่ยนไปตามวันจร (Day Transit) อย่างเดียว
+    const SAJU_TRANSIT_POOLS = [
+        {
+            transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+            energy: "ธาตุพลังงานจรวันนี้ส่งเสริมด้านการเจรจาและการเริ่มต้นโปรเจกต์ใหม่",
+            work: "การติดต่อสื่อสารและการประสานงานคล่องตัว มีเกณฑ์ได้รับความร่วมมือจากเพื่อนร่วมงานหรือคู่ค้าเป็นอย่างดี",
+            money: "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เสริมเข้ามาจากความตั้งใจ",
+            love: "ความสัมพันธ์ราบรื่น พูดคุยเข้าใจกันดี มีโมเมนต์ที่ดีร่วมกัน",
+            advice: "เป็นจังหวะที่ดีในการเคลียร์งานค้างและตัดสินใจเรื่องสำคัญ"
+        },
+        {
+            transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+            energy: "ธาตุพลังงานจรวันนี้โดดเด่นเรื่องการบริหารจัดการและความรอบคอบ",
+            work: "งานเอกสาร ตัวเลข หรือการวางแผนระยะยาวทำได้อย่างแม่นยำ ได้รับคำชมจากผู้ใหญ่",
+            money: "การเงินนิ่งและมั่นคง เหมาะแก่การวางแผนเก็บออมและการลงทุนระยะยาว",
+            love: "คนโสดค่อยๆ ศึกษาดูใจ คนมีคู่อยู่เคียงข้างเป็นกำลังใจให้กันดี",
+            advice: "ควรใช้ความสุขุมรอบคอบในการตัดสินใจเพื่อผลลัพธ์ที่ดีที่สุด"
+        },
+        {
+            transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+            energy: "ธาตุพลังงานจรวันนี้เปิดรับโชคลาภและความคิดสร้างสรรค์ใหม่ๆ",
+            work: "ไอเดียพรั่งพรู การนำเสนอผลงานหรือการคิดค้นสิ่งใหม่ได้รับการตอบรับที่ยอดเยี่ยม",
+            money: "มีเกณฑ์รับทรัพย์หรือมีโชคลาภเล็กๆ น้อยๆ จากการติดต่อสื่อสาร",
+            love: "เสน่ห์โดดเด่น มีคนเข้ามาพูดคุยทักทาย หัวใจกระปรี้กระเปร่า",
+            advice: "เปิดใจรับโอกาสใหม่ๆ ที่เข้ามาในวันนี้แล้วจะเกิดผลดี"
+        }
+    ];
+
+    let transitPoolIdx = (tY * 7 + tMVal * 13 + tD + bD) % SAJU_TRANSIT_POOLS.length;
+    let currentTransit = SAJU_TRANSIT_POOLS[transitPoolIdx];
+
+    // สร้าง Modal แสดงผลซาจู
+    let modal = document.getElementById('modal-saju-dynamic');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-saju-dynamic';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-close-btn" onclick="document.getElementById('modal-saju-dynamic').style.display='none'"><i class="fa-solid fa-xmark"></i></div>
+            <h3 style="color: var(--gold-bright); text-align: center; margin-bottom: 14px;"><i class="fa-solid fa-compass"></i> ซาจู (Saju) - 4 เสาชะตาเกาหลี</h3>
+            
+            <div style="background: rgba(14,20,38,0.9); padding: 16px; border-radius: 12px; border: 1px solid var(--border-soft); margin-bottom: 14px;">
+                <strong style="color: #ffd700; font-size: 0.95rem;">ดิถีธาตุประจำตัว (Day Master):</strong>
+                <div style="font-size: 1.1rem; color: #81c784; font-weight: bold; margin-top: 4px;">${mainStem.name} (${mainStem.elem} - ${mainStem.pol})</div>
+                <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 4px;">${mainStem.desc}</p>
+            </div>
+
+            <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
+                <strong style="color: #ffd700; font-size: 1rem;"><i class="fa-solid fa-satellite-dish"></i> ${currentTransit.transitTitle}</strong>
+                <p style="font-size: 0.88rem; color: #fff; margin-top: 6px; line-height: 1.7;">${currentTransit.energy}</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+                    <div class="desc-block"><strong style="color: #64b5f6;">การงาน:</strong><p style="font-size: 0.82rem; color: #d1d9ec; margin-top: 2px;">${currentTransit.work}</p></div>
+                    <div class="desc-block"><strong style="color: #ffd54f;">การเงิน:</strong><p style="font-size: 0.82rem; color: #d1d9ec; margin-top: 2px;">${currentTransit.money}</p></div>
+                    <div class="desc-block"><strong style="color: #f48fb1;">ความรัก:</strong><p style="font-size: 0.82rem; color: #d1d9ec; margin-top: 2px;">${currentTransit.love}</p></div>
+                    <div class="desc-block"><strong style="color: #81c784;">คำแนะนำ:</strong><p style="font-size: 0.82rem; color: #d1d9ec; margin-top: 2px;">${currentTransit.advice}</p></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+}
 </script>
 </body>
 </html>
