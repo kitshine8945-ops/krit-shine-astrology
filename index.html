@@ -3696,8 +3696,8 @@ const POEMS_DATABASE = {
       }
     }
 
-    // ดักจับการเปลี่ยนแปลงค่าวันเกิดและวันจรเพื่ออัปเดตปาจื่อทันที
-    document.addEventListener('DOMContentLoaded', function() {
+   document.addEventListener('DOMContentLoaded', function() {
+      // ดักจับการเปลี่ยนค่าวันเกิดและวันจร เพื่ออัปเดตฟีเจอร์ปาจื่อทันที
       const baziInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE'];
       baziInputs.forEach(id => {
         const el = document.getElementById(id);
