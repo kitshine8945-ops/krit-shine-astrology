@@ -2840,36 +2840,38 @@ const container = document.getElementById('uranianFreeBox');
       `;
     }
 
-    <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-      <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (Transneptunian Planets)
-      </h4>
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-          <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
-          <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุนและร่วมสร้างผลงาน</p>
+   const uranVipContainer = document.getElementById('uranianVipBox');
+    if (uranVipContainer) {
+      uranVipContainer.innerHTML = `
+        <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+          <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (Transneptunian Planets)
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+              <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุนและร่วมสร้างผลงาน</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+              <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมายได้อย่างรวดเร็ว</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+              <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือมีโอกาสเกี่ยวข้องกับงานระดับทางการและโครงสร้างขนาดใหญ่</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+              <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon) - การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา:</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เกณฑ์การค้ารุ่งเรือง มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+              <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon) - จิตวิญญาณ ปัญญาญาณ & แสงสว่าง:</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">หยั่งรู้ลึกซึ้ง มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทาง เผยแพร่ความรู้ และเป็นที่พึ่งพาทางความคิดแก่ผู้คน</p>
+            </div>
+          </div>
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-          <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
-          <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมายได้อย่างรวดเร็ว</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-          <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
-          <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือมีโอกาสเกี่ยวข้องกับงานระดับทางการและโครงสร้างขนาดใหญ่</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-          <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon) - การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา:</strong>
-          <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เกณฑ์การค้ารุ่งเรือง มีความสามารถรอบด้าน จับอะไรก็พัฒนาเป็นเม็ดเงินและชื่อเสียงได้มากกว่าหนึ่งอย่างพร้อมกัน</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-          <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon) - จิตวิญญาณ ปัญญาญาณ & แสงสว่าง:</strong>
-          <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">หยั่งรู้ลึกซึ้ง มีสัจจะวาจาและลางสังหรณ์แม่นยำ เหมาะกับการใช้ปัญญาชี้นำทาง เผยแพร่ความรู้ และเป็นที่พึ่งพาทางความคิดแก่ผู้คน</p>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
+      `;
+    }
 function renderWesternVip() {
   const container = document.getElementById('westernVipContent') || document.getElementById('westernVipBox');
   if (!container) return;
