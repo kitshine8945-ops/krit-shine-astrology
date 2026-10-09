@@ -2532,7 +2532,25 @@ function calculateAscendantAndTransit(e) {
 
       updateDailyHoroscopeView();
     }
+// ฟังก์ชันกำหนดค่าเริ่มต้นวันจรอัตโนมัติ
+function setDefaultTransitValues() {
+  const dayEl = document.getElementById('transitDay');
+  const monthEl = document.getElementById('transitMonth');
+  const yearEl = document.getElementById('transitYearBE');
+  const hourEl = document.getElementById('transitHour24');
+  const minEl = document.getElementById('transitMinute24');
 
+  if (dayEl) dayEl.value = "10";
+  if (monthEl) monthEl.value = "10"; // ตุลาคม
+  if (yearEl) yearEl.value = "2569";
+  if (hourEl) hourEl.value = "12";
+  if (minEl) minEl.value = "0";
+}
+
+// สั่งให้ทำงานเมื่อโหลดหน้าเว็บ
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(setDefaultTransitValues, 500);
+});
     const AUSPICIOUS_CATALOG = {
       business: [
         { d: "วันพฤหัสบดีที่ 8 ตุลาคม 2569", time: "09:19 - 10:39 น.", name: "มหัทธโนฤกษ์ (มหาเศรษฐี รับทรัพย์)", desc: "เปิดร้านค้า กิจการออนไลน์ หรือเริ่มลงทุนใหม่ ดึงดูดลูกค้าและเงินหมุนเวียนคล่องตัว ปลอดวันกาลกิณี" },
