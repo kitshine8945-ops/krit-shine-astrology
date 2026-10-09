@@ -8961,7 +8961,30 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         }
       });
     });
-function switchWesternMode(mode) {
+// ฟังก์ชันเปิด Modal กลางของระบบ
+    function openFeatureModal(name) {
+      const modal = document.getElementById('modal-' + name);
+      if (modal) {
+        document.body.appendChild(modal);
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('z-index', '999999', 'important');
+      } else {
+        console.warn('ไม่พบ Modal: modal-' + name);
+      }
+    }
+
+    // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และอัปเดตตามวันจร)
+    function switchWesternMode(mode) {
+      const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+      
+      if (mode === 'vip' && !isVip) {
+        alert('ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น กรุณาสมัครสมาชิก VIP ครับ');
+        if (typeof openFeatureModal === 'function') {
+          openFeatureModal('member');
+        }
+        return;
+      }
+
       AppState.currentWesternMode = mode;
       const btnFree = document.getElementById('btn-western-free');
       const btnVip = document.getElementById('btn-western-vip');
@@ -8990,7 +9013,7 @@ function switchWesternMode(mode) {
         // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร
         const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
         const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-        const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+        const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
         const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
         let ageYang = (tY - bY) + 1;
@@ -9048,41 +9071,9 @@ function switchWesternMode(mode) {
               </div>
             </div>
           </div>
-    }
-// ฟังก์ชันเปิด Modal กลางของระบบ
-    function openFeatureModal(name) {
-      const modal = document.getElementById('modal-' + name);
-      if (modal) {
-        document.body.appendChild(modal);
-        modal.style.setProperty('display', 'flex', 'important');
-        modal.style.setProperty('z-index', '999999', 'important');
-      } else {
-        console.warn('ไม่พบ Modal: modal-' + name);
+        `;
       }
     }
-   // ฟังก์ชันสลับโหมดโหราศาสตร์สากล
-function switchWesternMode(mode) {
-  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  
-  if (mode === 'vip' && !isVip) {
-    alert('ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น กรุณาสมัครสมาชิก VIP ครับ');
-    if (typeof openFeatureModal === 'function') {
-      openFeatureModal('member');
-    }
-    return;
-  }
-
-  AppState.currentWesternMode = mode;
-  const btnFree = document.getElementById('btn-western-free');
-  const btnVip = document.getElementById('btn-western-vip');
-  if (btnFree) btnFree.classList.toggle('active', mode === 'free');
-  if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
-
-  const freeBox = document.getElementById('westernFreeBox');
-  const vipBox = document.getElementById('westernVipBox');
-  if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
-  if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
-}
 </script>
 </body>
 </html>
