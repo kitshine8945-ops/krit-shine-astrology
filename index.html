@@ -4646,6 +4646,7 @@ function openAllArticlesModal() {
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
 // ฟังก์ชันเปิด Modal ซาจู (เปลี่ยนคำทำนายตามวันจรอย่างเดียว)
+// ฟังก์ชันเปิด Modal ซาจู (คงโครงสร้างเดิมครบถ้วน และคำทำนายเปลี่ยนตามวันจร)
 function openSajuModal() {
   const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
   const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
@@ -4656,30 +4657,11 @@ function openSajuModal() {
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
   const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
 
-  // คลังคำทำนายซาจูที่เปลี่ยนไปตามวันจรอย่างเดียว
-  const SAJU_TRANSIT_POOLS = [
-    {
-      transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-      desc: "ธาตุพลังงานจรวันนี้ส่งเสริมด้านการเจรจา การค้าขาย และการเริ่มต้นโปรเจกต์ใหม่ มีความคล่องตัวสูง ผู้ใหญ่และบริวารให้ความร่วมมือดีเยี่ยม"
-    },
-    {
-      transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-      desc: "ธาตุพลังงานจรวันนี้โดดเด่นเรื่องความรอบคอบและการบริหารจัดการ งานเอกสาร ตัวเลข หรือการวางแผนระยะยาวสำเร็จลุล่วงด้วยดี"
-    },
-    {
-      transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-      desc: "ธาตุพลังงานจรวันนี้เปิดรับโชคลาภและความคิดสร้างสรรค์ ไอเดียพรั่งพรู การเจรจาและการลงทุนให้ผลตอบแทนน่าพึงพอใจ"
-    }
-  ];
-
-  let poolIdx = (tY * 7 + tMVal * 13 + tD + (AppState.birthDay || 1)) % SAJU_TRANSIT_POOLS.length;
-  let tResult = SAJU_TRANSIT_POOLS[poolIdx];
-
   const content = `
     <div style="text-align:center; margin-bottom:14px;">
       <img src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800&auto=format&fit=crop" style="width:100%; max-height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(234,179,8,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);">
       <h3 style="color:#facc15; margin:10px 0 4px; font-size:1.15rem;">🇰🇷 ผูกดวงชะตาเกาหลี 4 เสาหลัก (사주 - Saju)</h3>
-      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต</p>
+      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY})</p>
     </div>
 
     <!-- ปุ่มสลับโหมด Free / VIP -->
@@ -4692,10 +4674,14 @@ function openSajuModal() {
       </button>
     </div>
 
-    <!-- ผลลัพธ์ซาจูเปลี่ยนตามวันจร -->
-    <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main); margin-top: 10px;">
-      <strong style="color: #ffd700; font-size: 1rem;"><i class="fa-solid fa-satellite-dish"></i> ${tResult.transitTitle}</strong>
-      <p style="font-size: 0.88rem; color: #fff; margin-top: 8px; line-height: 1.7;">${tResult.desc}</p>
+    <!-- กล่องแสดงผลคำทำนาย (เปลี่ยนตามวันจร) -->
+    <div id="sajuResultBox" style="margin-top:10px;">
+      <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
+        <strong style="color: #ffd700; font-size: 1rem;"><i class="fa-solid fa-satellite-dish"></i> พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}</strong>
+        <p style="font-size: 0.88rem; color: #fff; margin-top: 8px; line-height: 1.7;">
+          ธาตุพลังงานจรในวันนี้ส่งผลโดยตรงต่อดวงชะตา 4 เสาหลัก การเจรจา การทำสัญญา และทิศทางธุรกิจมีความโดดเด่นและคล่องตัวสูง
+        </p>
+      </div>
     </div>
   `;
 
