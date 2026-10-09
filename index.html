@@ -3581,20 +3581,19 @@ const POEMS_DATABASE = {
       { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }
     ];
 
-  // ฟังก์ชันคำนวณดวงจีน BaZi แบบไดนามิกที่แก้ไขให้ตอบสนองต่อวันเดือนปีเกิดจริงทันที
+  // ฟังก์ชันคำนวณดวงจีน BaZi แบบไดนามิกที่ปรับปรุงใหม่ให้กระจายค่าตามวันเดือนปีเกิดและวันจรจริง
     function calculateDynamicBaZi(yearBE, month, day, hour) {
       let yearCE = yearBE - 543;
       
-      // นำ วัน, เดือน, ปี, เวลา มาคำนวณดัชนีแกนฟ้า (Stems) และกิ่งดิน (Branches) แบบไม่ซ้ำกัน
       let stemYearIdx = Math.abs((yearCE * 3 + 7) % 10);
       let branchYearIdx = Math.abs((yearCE * 5 + 3) % 12);
       
       let stemMonthIdx = Math.abs((month * 7 + yearCE) % 10);
       let branchMonthIdx = Math.abs((month + 2) % 12);
 
-      // ผูกดัชนีเสาวัน (ดิถี) เข้ากับ วันเกิด (day) และเดือน (month) โดยตรง
-      let stemDayIdx = Math.abs((day * 7 + month * 13 + yearCE * 3) % 10);
-      let branchDayIdx = Math.abs((day * 5 + month * 9) % 12);
+      // คำนวณดัชนีเสาวัน (ดิถี) ให้อิงจาก วันเกิด (day), เดือน (month) และปี (yearCE) โดยตรงแบบไม่ซ้ำ
+      let stemDayIdx = Math.abs((day * 17 + month * 23 + yearCE * 7) % 10);
+      let branchDayIdx = Math.abs((day * 11 + month * 13) % 12);
 
       let branchHourIdx = Math.abs(Math.floor((hour + 1) / 2) % 12);
       let stemHourIdx = Math.abs((stemDayIdx * 3 + branchHourIdx) % 10);
@@ -3614,7 +3613,7 @@ const POEMS_DATABASE = {
       };
     }
 
-function calcBaziEngine() {
+    function calcBaziEngine() {
       // ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหน้าแรกแบบสดๆ
       const dayEl = document.getElementById('birthDay');
       const monthEl = document.getElementById('birthMonth');
@@ -3626,13 +3625,13 @@ function calcBaziEngine() {
       const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2507;
       const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
 
-      // ดึงค่าวันจรจากฟอร์ม VIP
+      // ดึงค่าวัน เดือน ปีจร จากฟอร์ม VIP แบบสดๆ
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
       const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
-      // ประมวลผลดวงจีนใหม่ตามวันเกิดที่เปลี่ยนไป
+      // คำนวณดวงจีนพื้นดวงกำเนิดจากวันเกิดใหม่
       let bazi = calculateDynamicBaZi(yBE, m, d, h);
 
       if (AppState.currentBaziMode === 'free') {
@@ -3641,12 +3640,12 @@ function calcBaziEngine() {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // สร้างชุดคำทำนายที่เจาะลึกและเปลี่ยนแปลงตามดิถีธาตุและวันเกิดจริงโดยตรง
+        // กล่องฟรี: เปลี่ยนดิถีธาตุและคำทำนายตามวันเกิดจริงทันที
         document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
         document.getElementById('bazi-free-desc').innerHTML = `
           <strong>ลักษณะตัวตนและจิตวิญญาณ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ${bazi.dayMaster.desc}<br><br>
           <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> เจ้าชะตาดิถี ${bazi.dayMaster.name} สภาพดวงมีความโดดเด่นเฉพาะตัวในเรื่องการขับเคลื่อนชีวิตและการปรับตัวเข้ากับสถานการณ์รอบข้าง แนะนำให้เสริมสร้างความสมดุลด้วยธาตุให้คุณ ได้แก่ <strong>${bazi.yongShen}</strong> และระมัดระวังพลังงานจากธาตุให้โทษ (${bazi.jiShen}) เพื่อเปิดรับกระแสโชคลาภและความมั่นคงระยะยาวครับ
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ (อิงพื้นดวงเกิด):</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ ${bazi.dayMaster.nature} เหมาะกับการเสริมสร้างสมดุลด้วยการบริหารจัดการพลังงาน ${bazi.yongShen} หลีกเลี่ยงพลังงานจาก ${bazi.jiShen} และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
           </div>
         `;
       } else {
@@ -3655,7 +3654,7 @@ function calcBaziEngine() {
         if (freeRes) freeRes.style.display = 'none';
         if (vipRes) vipRes.style.display = 'block';
 
-        // แสดงผล 4 เสาหลัก (ปี, เดือน, วัน, เวลา) ตามวันเกิดใหม่
+        // VIP: แสดงผล 4 เสาหลักตามวันเกิดใหม่
         document.getElementById('bazi-pillars-grid').innerHTML = `
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.year.stem.name}<br>${bazi.year.branch.name}</div></div>
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.month.stem.name}<br>${bazi.month.branch.name}</div></div>
@@ -3670,6 +3669,7 @@ function calcBaziEngine() {
           <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${bazi.jiShen}</span>
         `;
         
+        // VIP: คำทำนาย 5 มิติ เปลี่ยนแปลงตามวันเกิด และ วันจร
         document.getElementById('bazi-vip-extended-analysis').innerHTML = `
           <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis):</h5>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
@@ -3698,8 +3698,9 @@ function calcBaziEngine() {
         `;
       }
     }
-   document.addEventListener('DOMContentLoaded', function() {
-      // ดักจับการเปลี่ยนค่าวันเกิดและวันจร เพื่ออัปเดตฟีเจอร์ปาจื่อทันที
+
+    // ดักจับการเปลี่ยนแปลงทั้งวันเกิดและวันจร เพื่ออัปเดตปาจื่อทันทีแบบเรียลไทม์
+    document.addEventListener('DOMContentLoaded', function() {
       const baziInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE'];
       baziInputs.forEach(id => {
         const el = document.getElementById(id);
