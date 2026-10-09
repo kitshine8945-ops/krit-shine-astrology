@@ -2442,6 +2442,13 @@ if (typeof applyAgeChange === 'function') {
       document.getElementById('dispAscLord').textContent = `ตนุลัคน์: ${ascInfo.lord}`;
       document.getElementById('dispSunSign').textContent = sunInfo.name;
       document.getElementById('dispSunDegree').textContent = `ธาตุกำเนิด: ${sunInfo.elem}`;
+      // แสดงผลวันเกิดสากลและไทย
+  const birthDateStr = `${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}`;
+  const dispTypeEl = document.getElementById('dispBirthDayType');
+  if (dispTypeEl) dispTypeEl.textContent = birthDateStr;
+
+  const dispLunarEl = document.getElementById('dispBirthDayLunar');
+  if (dispLunarEl) dispLunarEl.textContent = `พ.ศ. ${AppState.birthBE} (ระบบไทยจันทรคติ)`;
 
       const freeContent = document.getElementById('free-result-content');
       const vipContent = document.getElementById('vip-result-content');
