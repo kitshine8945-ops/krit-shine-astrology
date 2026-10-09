@@ -9317,180 +9317,173 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-      // 1. ตรวจสอบวันเกิดจากฟอร์มหลัก ถ้ายังไม่กรอก ให้เด้ง Alert แจ้งเตือนแบบมาตรฐานทันที
-      const dayEl = document.getElementById('birthDay');
-      const monthEl = document.getElementById('birthMonth');
-      const yearEl = document.getElementById('birthYearBE');
+    // 1. ตรวจสอบว่าผู้กรอกวันเดือนปีเกิดที่หน้าแรกหรือยัง
+    const dayEl = document.getElementById('birthDay');
+    const monthEl = document.getElementById('birthMonth');
+    const yearEl = document.getElementById('birthYearBE');
 
-      const dVal = dayEl ? dayEl.value : '';
-      const mVal = monthEl ? monthEl.value : '';
-      const yVal = yearEl ? yearEl.value : '';
+    const dVal = dayEl ? dayEl.value : '';
+    const mVal = monthEl ? monthEl.value : '';
+    const yVal = yearEl ? yearEl.value : '';
 
-      if (!dVal || !mVal || !yVal) {
-        alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
-        if (typeof closeModal === 'function') {
-          closeModal('modal-bazi');
-        } else {
-          const m = document.getElementById('modal-bazi');
-          if (m) m.style.display = 'none';
-        }
-        if (typeof scrollToForm === 'function') {
-          scrollToForm();
-        }
-        return;
-      }
-
-      const d = parseInt(dVal, 10);
-      const m = parseInt(mVal, 10);
-      const yBE = parseInt(yVal, 10);
-      const h = parseInt(document.getElementById('birthHour24')?.value, 10) || 0;
-
-      // 2. ดึงวัน เดือน ปีจรแบบสดๆ
-      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
-      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
-      const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-      const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
-
-      // 3. คลังดิถีธาตุ 10 แบบ
-      const stemsList = [
-        { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
-        { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
-        { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", desc: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง ร่าเริง มีพลังขับเคลื่อนสร้างแรงบันดาลใจ" },
-        { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", desc: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน มีสัญชาตญาณและความคิดลึกซึ้ง" },
-        { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", desc: "ภูผา หนักแน่น น่าเชื่อถือ มีความรับผิดชอบสูงและเป็นที่พึ่งพาให้ผู้อื่น" },
-        { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", desc: "ดินสวนหย่อม อ่อนโยน ละเอียดรอบคอบ มีความเข้าอกเข้าใจผู้อื่นสูง" },
-        { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
-        { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
-        { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
-        { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
-      ];
-
-      // คำนวณ Index ของดิถีธาตุตามวันเกิดจริง
-      let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
-      let stemIdx = seed % stemsList.length;
-      let dayMaster = stemsList[stemIdx];
-
-      let yearStem = stemsList[(seed + 1) % stemsList.length].name;
-      let monthStem = stemsList[(seed + 3) % stemsList.length].name;
-      let dayStem = dayMaster.name;
-      let hourStem = stemsList[(seed + 5) % stemsList.length].name;
-
-      let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุน้ำ' : (dayMaster.elem === 'ทอง' ? 'ธาตุน้ำ / ธาตุไม้' : 'ธาตุไม้ / ธาตุไฟ')));
-      let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุดิน')));
-
-      // --- คลังคำทำนายโหมดฟรี ---
-      const FREE_BAZI_POOLS = [
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
-      ];
-      let freePoolIndex = seed % FREE_BAZI_POOLS.length;
-
-      // --- คลังคำทำนาย 5 มิติ VIP (ผูกกับวันจร tD, tM, tY เป็นหลักเพื่อให้เปลี่ยนทันทีเมื่อเปลี่ยนวันจร) ---
-      const VIP_5D_POOLS = [
-        {
-          fin: `อิงวันจร ${tD} ${tMName} ${tY} (พื้นดวง ${d}/${m}/${yBE}): กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
-          work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
-          love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกันในรอบวันจร ${tD} ${tMName} ${tY}`,
-          fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
-        },
-        {
-          fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
-          work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
-          love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่ในวันจร ${tD} ${tMName} ${tY}`,
-          fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
-        },
-        {
-          fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
-          work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
-          love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยมในวันจร ${tD} ${tMName} ${tY}`,
-          fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
-        },
-        {
-          fin: `วิเคราะห์จากพื้นดวง ${d}/${m}/${yBE} ปะทะพลังงานวันจร ${tD} ${tMName} ${tY}: มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา`,
-          work: `พลังงานดาวจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ`,
-          love: `ความรักความสัมพันธ์ในวันจร ${tD} ${tMName} ${tY} สดใส เข้าอกเข้าใจกันดี มีเกณฑ์เดินทางท่องเที่ยวหรือทำกิจกรรมร่วมกัน`,
-          fengshui: `กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี ${tY}`
-        }
-      ];
-
-      // สูตรคำนวณ Index VIP ให้น้ำหนักกับวันจร (tY, tM, tD) เพื่อให้เปลี่ยนทันทีเมื่อเปลี่ยนวันที่
-      let transitSeed = (tY * 17) + (tM * 31) + (tD * 23);
-      let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
-      let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
-
-      // คลังมหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงตามวันจร
-      const LUCK_CYCLE_POOLS = [
-        `วงจรชีวิตในทศวรรษนี้ (อิงวันจร ${tD} ${tMName} ${tY}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`,
-        `ทศวรรษชะตานี้ (อิงวันจร ${tD} ${tMName} ${tY}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ในรอบวันจรนี้ประสบความสำเร็จอย่างงดงาม`,
-        `วัฏจักรชีวิตรอบนี้ (อิงวันจร ${tD} ${tMName} ${tY}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดในวันนี้`
-      ];
-      let luckCycleIndex = (transitSeed + 7) % LUCK_CYCLE_POOLS.length;
-      let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
-
-      const freeRes = document.getElementById('bazi-free-result');
-      const vipRes = document.getElementById('bazi-vip-result');
-
-      if (AppState.currentBaziMode === 'free') {
-        if (freeRes) freeRes.style.display = 'block';
-        if (vipRes) vipRes.style.display = 'none';
-
-        document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
-        document.getElementById('bazi-free-desc').innerHTML = `
-          <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
-          <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
-          </div>
-        `;
-      } else {
-        if (freeRes) freeRes.style.display = 'none';
-        if (vipRes) vipRes.style.display = 'block';
-
-        const pillarsGrid = document.getElementById('bazi-pillars-grid');
-        if (pillarsGrid) {
-          pillarsGrid.innerHTML = `
-            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${yearStem}</div></div>
-            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${monthStem}</div></div>
-            <div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">${dayStem}</div></div>
-            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${hourStem}</div></div>
-          `;
-        }
-
-        document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
-        document.getElementById('bazi-vip-element-analysis').innerHTML = `
-          <strong>พลังงานแก่นแท้:</strong> ${dayMaster.desc}<br>
-          <strong>ธาตุให้คุณเกื้อหนุน (Yong Shen):</strong> <span style="color:#81c784; font-weight:700;">${yongShen}</span> | 
-          <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${jiShen}</span>
-        `;
-        
-        document.getElementById('bazi-vip-extended-analysis').innerHTML = `
-          <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis):</h5>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fin}</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#64b5f6;">2. การงาน & บารมี:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.work}</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.love}</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fengshui}</p>
-            </div>
-          </div>
-        `;
-
-        document.getElementById('bazi-vip-luckcycle').innerHTML = `
-          <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
-          ${selectedLuckCycle}
-        `;
-      }
+    if (!dVal || !mVal || !yVal || !AppState.birthDay) {
+      alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
+      scrollToForm();
+      return;
     }
+
+    // 2. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ (ส่วนคำนวณวันเกิด คงเดิมไม่ให้กระทบ)
+    const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
+
+    const d = parseInt(dVal, 10);
+    const m = parseInt(mVal, 10);
+    const yBE = parseInt(yVal, 10);
+
+    // 3. ดึงวัน เดือน ปีจรแบบสดๆ (แก้ไขให้ดึงค่าจากฟอร์มวันจร VIP จริง เพื่อให้คำทำนายเปลี่ยนตามวันจร)
+    const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
+    const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
+    const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+    const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
+
+    // 4. คลังดิถีธาตุ 10 แบบ
+    const stemsList = [
+      { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
+      { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
+      { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", desc: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง ร่าเริง มีพลังขับเคลื่อนสร้างแรงบันดาลใจ" },
+      { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", desc: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน มีสัญชาตญาณและความคิดลึกซึ้ง" },
+      { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", desc: "ภูผา หนักแน่น น่าเชื่อถือ มีความรับผิดชอบสูงและเป็นที่พึ่งพาให้ผู้อื่น" },
+      { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", desc: "ดินสวนหย่อม อ่อนโยน ละเอียดรอบคอบ มีความเข้าอกเข้าใจผู้อื่นสูง" },
+      { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
+      { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
+      { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
+      { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
+    ];
+
+    // คำนวณ Index ของดิถีธาตุตามวันเกิดจริง (ส่วนนี้คงเดิม)
+    let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
+    let stemIdx = seed % stemsList.length;
+    let dayMaster = stemsList[stemIdx];
+
+    let yearStem = stemsList[(seed + 1) % stemsList.length].name;
+    let monthStem = stemsList[(seed + 3) % stemsList.length].name;
+    let dayStem = dayMaster.name;
+    let hourStem = stemsList[(seed + 5) % stemsList.length].name;
+
+    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุน้ำ' : (dayMaster.elem === 'ทอง' ? 'ธาตุน้ำ / ธาตุไม้' : 'ธาตุไม้ / ธาตุไฟ')));
+    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุดิน')));
+
+    // --- คลังคำทำนายโหมดฟรี (อิงวันเกิด คงเดิม) ---
+    const FREE_BAZI_POOLS = [
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
+    ];
+    let freePoolIndex = seed % FREE_BAZI_POOLS.length;
+
+    // --- คลังคำทำนาย 5 มิติ VIP (ผูกตัวแปรวันจร tY, tD, tM อย่างอิสระเพื่อให้คำทำนายเปลี่ยนตามวันจร) ---
+    const VIP_5D_POOLS = [
+      {
+        fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
+        work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
+        love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน`,
+        fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
+      },
+      {
+        fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
+        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
+        love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่`,
+        fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
+      },
+      {
+        fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
+        work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
+        love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
+        fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
+      },
+      {
+        fin: `วิเคราะห์จากพื้นดวง ${d}/${m}/${yBE} ปะทะพลังงานวันจร ${tD} ${tMName} ${tY}: มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา`,
+        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ`,
+        love: `ความรักความสัมพันธ์มีความเข้าอกเข้าใจกันดี คนโสดมีเกณฑ์พบรักผ่านการเดินทางหรือสังคมการทำงาน`,
+        fengshui: `กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี ${tY}`
+      }
+    ];
+
+    // คำนวณ Index แยกตามวันเกิดและวันจรอย่างอิสระสำหรับ VIP
+    let vipPoolIndex = (seed + (tY * 7) + (tD * 13) + (tM * 11)) % VIP_5D_POOLS.length;
+    let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+
+    // คลังมหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) แยกตามวันเกิดและวันจร
+    const LUCK_CYCLE_POOLS = [
+      `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
+      `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ในรอบวันจร ${tD} ${tMName} ${tY} ประสบความสำเร็จอย่างงดงาม`,
+      `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดในรอบวันจร ${tD} ${tMName} ${tY} นี้`
+    ];
+    let luckCycleIndex = (seed + (tY * 3) + (tD * 7)) % LUCK_CYCLE_POOLS.length;
+    let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
+
+    const freeRes = document.getElementById('bazi-free-result');
+    const vipRes = document.getElementById('bazi-vip-result');
+
+    if (AppState.currentBaziMode === 'free') {
+      if (freeRes) freeRes.style.display = 'block';
+      if (vipRes) vipRes.style.display = 'none';
+
+      document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
+      document.getElementById('bazi-free-desc').innerHTML = `
+        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+        <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
+        </div>
+      `;
+    } else {
+      if (freeRes) freeRes.style.display = 'none';
+      if (vipRes) vipRes.style.display = 'block';
+
+      const pillarsGrid = document.getElementById('bazi-pillars-grid');
+      if (pillarsGrid) {
+        pillarsGrid.innerHTML = `
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${yearStem}</div></div>
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${monthStem}</div></div>
+          <div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">${dayStem}</div></div>
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${hourStem}</div></div>
+        `;
+      }
+
+      document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
+      document.getElementById('bazi-vip-element-analysis').innerHTML = `
+        <strong>พลังงานแก่นแท้:</strong> ${dayMaster.desc}<br>
+        <strong>ธาตุให้คุณเกื้อหนุน (Yong Shen):</strong> <span style="color:#81c784; font-weight:700;">${yongShen}</span> | 
+        <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${jiShen}</span>
+      `;
+      
+      document.getElementById('bazi-vip-extended-analysis').innerHTML = `
+        <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis - วันจร ${tD} ${tMName} ${tY}):</h5>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
+          <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+            <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์:</strong>
+            <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fin}</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+            <strong style="color:#64b5f6;">2. การงาน & บารมี:</strong>
+            <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.work}</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+            <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา:</strong>
+            <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.love}</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
+            <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
+            <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fengshui}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('bazi-vip-luckcycle').innerHTML = `
+        <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
+        ${selectedLuckCycle}
+      `;
+    }
+}
 </script>
 </body>
 </html>
