@@ -2442,13 +2442,29 @@ if (typeof applyAgeChange === 'function') {
       document.getElementById('dispAscLord').textContent = `ตนุลัคน์: ${ascInfo.lord}`;
       document.getElementById('dispSunSign').textContent = sunInfo.name;
       document.getElementById('dispSunDegree').textContent = `ธาตุกำเนิด: ${sunInfo.elem}`;
-      // แสดงผลวันเกิดสากลและไทย
-  const birthDateStr = `${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}`;
-  const dispTypeEl = document.getElementById('dispBirthDayType');
-  if (dispTypeEl) dispTypeEl.textContent = birthDateStr;
+// 1. วันเกิดสากล
+      const birthDateStr = `${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}`;
+      const dispTypeEl = document.getElementById('dispBirthDayType');
+      if (dispTypeEl) dispTypeEl.textContent = birthDateStr;
 
-  const dispLunarEl = document.getElementById('dispBirthDayLunar');
-  if (dispLunarEl) dispLunarEl.textContent = `พ.ศ. ${AppState.birthBE} (ระบบไทยจันทรคติ)`;
+      // 2. คำนวณวันทางสากลและวันทางไทย (จันทรคติ/โหราศาสตร์)
+      const targetYearCE = AppState.birthBE - 543;
+      const targetDate = new Date(targetYearCE, AppState.birthMonth - 1, AppState.birthDay);
+      
+      const thaiDays = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+      let universalDayName = thaiDays[targetDate.getDay()]; // เช่น วันจันทร์
+
+      // ตามหลักโหราศาสตร์ไทย หากเกิดก่อนเวลาเปลี่ยนวัน (เช่น ก่อนรุ่งอรุณ 06:00 น.) จะนับเป็นวันก่อนหน้า
+      let astrologicalDayName = universalDayName;
+      if (AppState.birthHour < 6) {
+        let prevDayIndex = (targetDate.getDay() - 1 + 7) % 7;
+        astrologicalDayName = thaiDays[prevDayIndex];
+      }
+
+      const dispLunarEl = document.getElementById('dispBirthDayLunar');
+      if (dispLunarEl) {
+        dispLunarEl.textContent = `สากล (${universalDayName}) / ไทย (${astrologicalDayName})`;
+      }
 
       const freeContent = document.getElementById('free-result-content');
       const vipContent = document.getElementById('vip-result-content');
