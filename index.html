@@ -715,7 +715,7 @@ footer {
     <div class="cat-name">กราฟชีวิต</div>
     <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
 </div>
-   <div class="cat-item" onclick="if(!AppState.birthDay){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('bazi'); calcBaziEngine();}">
+ <div class="cat-item" onclick="calcBaziEngine()">
   <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
   <div class="cat-name">ปาจื่อ (BaZi)</div>
   <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
@@ -9321,7 +9321,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-    // 1. ดึงวัน เดือน ปีเกิด จากฟอร์มหน้าเว็บ
+    // 1. ตรวจสอบว่าผู้ใช้กรอกวันเดือนปีเกิดที่หน้าแรกหรือยัง
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
@@ -9330,10 +9330,16 @@ function calcBaziEngine() {
     const mVal = monthEl ? monthEl.value : '';
     const yVal = yearEl ? yearEl.value : '';
 
-    if (!dVal || !mVal || !yVal) {
+    // หากยังไม่กรอก ให้เด้งแจ้งเตือนครั้งเดียวและเลื่อนไปที่ฟอร์มทันที โดยไม่เปิด Modal
+    if (!dVal || !mVal || !yVal || !AppState.birthDay) {
       alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
       scrollToForm();
       return;
+    }
+
+    // หากกรอกแล้ว ให้เปิดหน้าต่าง Modal ของปาจื่อขึ้นมาตามปกติ
+    if (typeof openFeatureModal === 'function') {
+      openFeatureModal('bazi');
     }
 
     const d = parseInt(dVal, 10);
@@ -9341,7 +9347,7 @@ function calcBaziEngine() {
     const yBE = parseInt(yVal, 10);
     const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
 
-    // ดึงวัน เดือน ปีจรสำหรับส่วน 5 มิติ VIP (ไม่กระทบ 2 ส่วนที่ขอกล่าวถึง)
+    // ดึงวัน เดือน ปีจรสำหรับส่วน 5 มิติ VIP
     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
     const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -9412,7 +9418,7 @@ function calcBaziEngine() {
     let vipPoolIndex = (seed + (tY * 7) + (tD * 13) + (tM * 11)) % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
-    // --- ส่วน "มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars)" อิงตามวันเกิดดั้งเดิม ไม่เปลี่ยนตามวันจร ---
+    // มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงตามวันเกิดดั้งเดิม ไม่เปลี่ยนตามวันจร
     const LUCK_CYCLE_POOLS = [
       `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`,
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
@@ -9449,7 +9455,7 @@ function calcBaziEngine() {
         `;
       }
 
-      // --- ส่วน "สภาพดวงชะตา" อิงตามวันเกิดดั้งเดิม ไม่เปลี่ยนตามวันจร ---
+      // สภาพดวงชะตา อิงวันเกิด ไม่เปลี่ยนตามวันจร
       document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
       document.getElementById('bazi-vip-element-analysis').innerHTML = `
         <strong>พลังงานแก่นแท้:</strong> ${dayMaster.desc}<br>
@@ -9479,7 +9485,7 @@ function calcBaziEngine() {
         </div>
       `;
 
-      // --- ส่วน "มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars)" อิงตามวันเกิดดั้งเดิม ไม่เปลี่ยนตามวันจร ---
+      // มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด ไม่เปลี่ยนตามวันจร
       document.getElementById('bazi-vip-luckcycle').innerHTML = `
         <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด ${d}/${m}/${yBE}:</strong><br>
         ${selectedLuckCycle}
