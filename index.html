@@ -2243,7 +2243,7 @@ const password = document.getElementById('authPassword').value;
       const compZ1 = document.getElementById('compZodiac1');
       if (compZ1) compZ1.value = ascIndex;
 
-   // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว (คำนวณและอัปเดตคำทำนายของ Sun, Moon, Rising ตามวันเกิดจริงแบบไดนามิก)
+ // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว (แยกคำนวณ Sun, Moon, Rising และแก้ไขคำสะกด "เป็นดั่ง" ให้ถูกต้องสมบูรณ์)
       const westFree = document.getElementById('westernFreeBox');
       if (westFree) {
         let sIdx = AppState.currentCalculatedSunIndex;
@@ -2252,7 +2252,7 @@ const password = document.getElementById('authPassword').value;
         let sInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[sIdx]) ? ZODIAC_DATA[sIdx] : { name: "ราศีเมษ", elem: "ธาตุไฟ" };
         let aInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[aIdx]) ? ZODIAC_DATA[aIdx] : { name: "ราศีกุมภ์", elem: "ธาตุลม" };
 
-        // สร้างคำทำนายย่อยสำหรับ Sun Sign (ตัวตนจริงตามธาตุ)
+        // 1. คำทำนาย Sun Sign (ตัวตนจริงตามราศีอาทิตย์สถิต)
         let sunSub = "ความมั่นคง หนักแน่น";
         let sunDesc = "มีความสุขุม หนักแน่น รอบคอบ และสร้างความมั่นคงในชีวิตได้อย่างยอดเยี่ยม";
         if (sInfo.elem === 'ธาตุไฟ') {
@@ -2266,21 +2266,23 @@ const password = document.getElementById('authPassword').value;
           sunDesc = "มีสัญชาตญาณและความรู้สึกที่ลึกซึ้ง มีความเมตตาเอื้อเฟื้อ และลางสังหรณ์ที่แม่นยำสูง";
         }
 
-        // สร้างคำทำนายย่อยสำหรับ Moon Sign (อารมณ์ภายในตามราศีเกิด)
+        // 2. คำทำนาย Moon Sign (อารมณ์ภายใน - คำนวณจากเดือน/วันเกิดจริงเพื่อให้เปลี่ยนตามวันเกิด)
+        let moonSignName = ZODIAC_DATA[(sIdx + 2) % 12].name; // คำนวณราศีของ Moon Sign ตามรอบจักรวาล
+        let moonElem = ZODIAC_DATA[(sIdx + 2) % 12].elem;
         let moonSub = "คิดไว เรียนรู้เร็ว";
         let moonDesc = "จิตใจมีความยืดหยุ่น ปรับตัวเก่ง ชอบการสื่อสารและการเรียนรู้สิ่งใหม่ๆ อยู่เสมอ";
-        if (sInfo.name.includes('เมษ') || sInfo.name.includes('สิงห์') || sInfo.name.includes('ธนู')) {
+        if (moonElem === 'ธาตุไฟ') {
           moonSub = "รักอิสระ ใจนักสู้";
           moonDesc = "อารมณ์ภายในมีความมุ่งมั่น กล้าได้กล้าเสีย รักอิสระเสรี และมีความกระตือรือร้นสูงในยามเผชิญความท้าทาย";
-        } else if (sInfo.name.includes('พฤษภ') || sInfo.name.includes('กันย์') || sInfo.name.includes('มังกร')) {
+        } else if (moonElem === 'ธาตุดิน') {
           moonSub = "สุขุม รอบคอบ มั่นคง";
           moonDesc = "จิตใจมีความนิ่งและรอบคอบสูง ให้ความสำคัญกับความมั่นคงในชีวิตและความปลอดภัยทางจิตใจ";
-        } else if (sInfo.name.includes('กรกฎ') || sInfo.name.includes('พิจิก') || sInfo.name.includes('มีน')) {
+        } else if (moonElem === 'ธาตุน้ำ') {
           moonSub = "อ่อนโยน สัมผัสไว";
           moonDesc = "อารมณ์มีความอ่อนโยนและเซนซิทีฟต่อบรรยากาศรอบข้างสูง มีความเห็นอกเห็นใจและเข้าใจผู้อื่นอย่างลึกซึ้ง";
         }
 
-        // สร้างคำทำนายย่อยสำหรับ Rising/Asc (หน้ากากสังคมตามลัคนา)
+        // 3. คำทำนาย Rising/Asc (หน้ากากสังคมตามลัคนาที่คำนวณได้)
         let risingSub = "ล้ำสมัย รักอิสระ";
         let risingDesc = "บุคลิกภาพภายนอกมีความโดดเด่น น่าเชื่อถือ และเข้ากับผู้คนได้กว้างขวาง";
         if (aInfo.elem === 'ธาตุไฟ') {
@@ -2300,13 +2302,12 @@ const password = document.getElementById('authPassword').value;
         westFree.innerHTML = `
           <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px; text-align:center;">
             <div class="res-metric"><strong style="color:#ffd700;">Sun Sign (ตัวตนจริง)</strong><div style="font-size:1.05rem; font-weight:700;">${sInfo.name}</div><span style="font-size:0.75rem; color:#aaa;">${sunSub}</span></div>
-            <div class="res-metric"><strong style="color:#64b5f6;">Moon Sign (อารมณ์ภายใน)</strong><div style="font-size:1.05rem; font-weight:700;">${sInfo.name}</div><span style="font-size:0.75rem; color:#aaa;">${moonSub}</span></div>
+            <div class="res-metric"><strong style="color:#64b5f6;">Moon Sign (อารมณ์ภายใน)</strong><div style="font-size:1.05rem; font-weight:700;">${moonSignName}</div><span style="font-size:0.75rem; color:#aaa;">${moonSub}</span></div>
             <div class="res-metric"><strong style="color:#81c784;">Rising/Asc (หน้ากากสังคม)</strong><div style="font-size:1.05rem; font-weight:700;">${aInfo.name}</div><span style="font-size:0.75rem; color:#aaa;">${risingSub}</span></div>
           </div>
-          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล (อิงจากวันเกิด ${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}) ชี้ว่าท่านมีตัวตนจริงเปดั่ง${sInfo.name} (${sunDesc}) อารมณ์ภายในลึกซึ้งแบบ${moonDesc} และแสดงออกต่อสังคมภายนอกด้วยบุคลิกของ${aInfo.name} (${risingDesc})</p>
+          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล (อิงจากวันเกิด ${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}) ชี้ว่าท่านมีตัวตนจริงเป็นดั่ง${sInfo.name} (${sunDesc}) อารมณ์ภายในลึกซึ้งแบบ${moonSignName} (${moonDesc}) และแสดงออกต่อสังคมภายนอกด้วยบุคลิกของ${aInfo.name} (${risingDesc})</p>
         `;
       }
-
       // แสดงผลยูเรเนียนเมื่อกรอกวันเกิดแล้ว
       const uranFree = document.getElementById('uranianFreeBox');
       if (uranFree) {
