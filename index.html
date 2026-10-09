@@ -1763,18 +1763,29 @@ footer {
   <div class="modal-content" style="max-width: 890px;">
     <div class="modal-close-btn" onclick="closeModal('modal-karmic')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
+    
     <div class="tier-switcher" style="margin-bottom:14px;">
       <button type="button" class="tier-btn active" id="btn-karmic-free" onclick="switchKarmicMode('free')">รหัสกรรมพื้นฐาน (ดูฟรี)</button>
       <button type="button" class="tier-btn" id="btn-karmic-vip" onclick="switchKarmicMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสกรรมข้ามภพ & บทสวดตัดวิบาก (VIP)</button>
     </div>
-    <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-scroll"></i> รหัสกรรมข้ามภพ & วาสนาตั้งต้น</h3>
-    <div id="karmic-free-result" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft);">
-      <h4 style="color:#ffd700; margin-bottom:8px;">พื้นดวงกรรมและบททดสอบชีวิต</h4>
-      <p id="karmic-free-desc" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-scroll"></i> รหัสกรรมข้ามภพ & วาสนาตั้งต้น</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">ถอดรหัสพันธะกรรมดั้งเดิม บททดสอบชีวิต และหนทางตัดวิบากกรรมตามวันเดือนปีเกิด</p>
     </div>
-    <div id="karmic-vip-result" style="display:none; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
-      <h4 style="color:#ffd700; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP)</h4>
-      <div id="karmic-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      <!-- โหมดฟรี -->
+      <div id="karmic-free-result" style="background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 style="color:#ffd700; margin-bottom:6px;">ผลวิเคราะห์รหัสกรรมพื้นฐาน:</h4>
+        <p id="karmic-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">ปมกรรมตั้งต้นและบททดสอบชีวิตตามพื้นดวงกำเนิด...</p>
+      </div>
+
+      <!-- โหมด VIP -->
+      <div id="karmic-vip-result" style="display:none; margin-top: 10px; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
+        <h4 style="color:#ffd700; margin-bottom:8px;"><i class="fa-solid fa-crown"></i> คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE)</h4>
+        <div id="karmic-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1784,18 +1795,29 @@ footer {
   <div class="modal-content" style="max-width: 890px;">
     <div class="modal-close-btn" onclick="closeModal('modal-lifeturturning')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
+    
     <div class="tier-switcher" style="margin-bottom:14px;">
       <button type="button" class="tier-btn active" id="btn-lifeturn-free" onclick="switchLifeTurnMode('free')">วัฏจักรพลิกชีวิต (ดูฟรี)</button>
       <button type="button" class="tier-btn" id="btn-lifeturn-vip" onclick="switchLifeTurnMode('vip')"><i class="fa-solid fa-crown"></i> มหาพิชัยสงคราม 12 ฤดูกาล (VIP)</button>
     </div>
-    <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-shield-halved"></i> มหาพิชัยสงครามชีวิต</h3>
-    <div id="lifeturn-free-result" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft);">
-      <h4 style="color:#ffd700; margin-bottom:8px;">จังหวะชีวิตและทิศทางรอบปีนี้</h4>
-      <p id="lifeturn-free-desc" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-shield-halved"></i> มหาพิชัยสงครามชีวิต</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์จังหวะรุก จังหวะรับ และช่วงเวลาพลิกชะตาชีวิต 12 ฤดูกาล</p>
     </div>
-    <div id="lifeturn-vip-result" style="display:none; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
-      <h4 style="color:#ffd700; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> กลยุทธ์มหาพิชัยสงคราม 12 ฤดูกาล (VIP)</h4>
-      <div id="lifeturn-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      <!-- โหมดฟรี -->
+      <div id="lifeturn-free-result" style="background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 style="color:#ffd700; margin-bottom:6px;">จังหวะชีวิตและทิศทางรอบปีนี้:</h4>
+        <p id="lifeturn-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">วิเคราะห์กระแสพลังงานดาวประจำตัวและแนวโน้มความก้าวหน้าเบื้องต้น...</p>
+      </div>
+
+      <!-- โหมด VIP -->
+      <div id="lifeturn-vip-result" style="display:none; margin-top: 10px; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
+        <h4 style="color:#ffd700; margin-bottom:8px;"><i class="fa-solid fa-crown"></i> กลยุทธ์มหาพิชัยสงคราม 12 ฤดูกาล (VIP EXCLUSIVE)</h4>
+        <div id="lifeturn-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1805,18 +1827,29 @@ footer {
   <div class="modal-content" style="max-width: 890px;">
     <div class="modal-close-btn" onclick="closeModal('modal-soulelement')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
+    
     <div class="tier-switcher" style="margin-bottom:14px;">
       <button type="button" class="tier-btn active" id="btn-soul-free" onclick="switchSoulMode('free')">ธาตุกายสิทธิ์พื้นฐาน (ดูฟรี)</button>
       <button type="button" class="tier-btn" id="btn-soul-vip" onclick="switchSoulMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสจิตวิญญาณ & หินมงคล (VIP)</button>
     </div>
-    <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-gem"></i> ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์</h3>
-    <div id="soul-free-result" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft);">
-      <h4 style="color:#ffd700; margin-bottom:8px;">ธาตุแท้และลักษณะจิตวิญญาณ</h4>
-      <p id="soul-free-desc" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-gem"></i> ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์ธาตุแท้แห่งดวงจิตและเครื่องรางหินมงคลที่ช่วยยกระดับพลังออร่า</p>
     </div>
-    <div id="soul-vip-result" style="display:none; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
-      <h4 style="color:#ffd700; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> พิธีเสริมพลังออร่า & รหัสหินมงคล (VIP)</h4>
-      <div id="soul-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      <!-- โหมดฟรี -->
+      <div id="soul-free-result" style="background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 style="color:#ffd700; margin-bottom:6px;">ธาตุแท้และลักษณะจิตวิญญาณ:</h4>
+        <p id="soul-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">วิเคราะห์พลังงานธาตุประจำตัวและจุดเด่นทางจิตวิญญาณ...</p>
+      </div>
+
+      <!-- โหมด VIP -->
+      <div id="soul-vip-result" style="display:none; margin-top: 10px; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
+        <h4 style="color:#ffd700; margin-bottom:8px;"><i class="fa-solid fa-crown"></i> พิธีเสริมพลังออร่า & รหัสหินมงคล (VIP EXCLUSIVE)</h4>
+        <div id="soul-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1826,18 +1859,29 @@ footer {
   <div class="modal-content" style="max-width: 890px;">
     <div class="modal-close-btn" onclick="closeModal('modal-wealthflow')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
+    
     <div class="tier-switcher" style="margin-bottom:14px;">
       <button type="button" class="tier-btn active" id="btn-wealth-free" onclick="switchWealthMode('free')">รหัสเงินทองพื้นฐาน (ดูฟรี)</button>
       <button type="button" class="tier-btn" id="btn-wealth-vip" onclick="switchWealthMode('vip')"><i class="fa-solid fa-crown"></i> ขุมทรัพย์มหาเศรษฐี & สายธารเงินล้าน (VIP)</button>
     </div>
-    <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-coins"></i> ขุมทรัพย์มหาเศรษฐี</h3>
-    <div id="wealth-free-result" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft);">
-      <h4 style="color:#ffd700; margin-bottom:8px;">ทิศทางการเงินและช่องทางรับทรัพย์</h4>
-      <p id="wealth-free-desc" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-coins"></i> ขุมทรัพย์มหาเศรษฐี</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">เปิดสายธารแห่งความมั่งคั่งและถอดรหัสกระเป๋าสตางค์เรียกทรัพย์</p>
     </div>
-    <div id="wealth-vip-result" style="display:none; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
-      <h4 style="color:#ffd700; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> แผนผังขุมทรัพย์มหาเศรษฐี & รหัสเงินล้าน (VIP)</h4>
-      <div id="wealth-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      <!-- โหมดฟรี -->
+      <div id="wealth-free-result" style="background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 style="color:#ffd700; margin-bottom:6px;">ทิศทางการเงินและช่องทางรับทรัพย์:</h4>
+        <p id="wealth-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">วิเคราะห์กระแสเงินสดและทักษะทำเงินเด่นประจำตัว...</p>
+      </div>
+
+      <!-- โหมด VIP -->
+      <div id="wealth-vip-result" style="display:none; margin-top: 10px; background:rgba(255,215,0,0.08); padding:18px; border-radius:12px; border:1.5px solid var(--gold-main);">
+        <h4 style="color:#ffd700; margin-bottom:8px;"><i class="fa-solid fa-crown"></i> แผนผังขุมทรัพย์มหาเศรษฐี & รหัสเงินล้าน (VIP EXCLUSIVE)</h4>
+        <div id="wealth-vip-content" style="font-size:0.88rem; color:#fff; line-height:1.8;"></div>
+      </div>
     </div>
   </div>
 </div>
