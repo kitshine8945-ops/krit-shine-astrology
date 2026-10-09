@@ -9616,6 +9616,28 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
+// --- ฟังก์ชันป้องกัน Error เมื่อหา Modal ไม่พบ ---
+const originalOpenModal = window.openNewPremModal;
+window.openNewPremModal = function(type) {
+  let modalId = '';
+  if (type === 'karmic') modalId = 'modal-karmic';
+  else if (type === 'lifeturn') modalId = 'modal-lifeturturning';
+  else if (type === 'soul') modalId = 'modal-soulelement';
+  else if (type === 'wealth') modalId = 'modal-wealthflow';
+
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box;";
+    
+    if (typeof switchKarmicMode === 'function' && type === 'karmic') switchKarmicMode('free');
+    if (typeof switchLifeTurnMode === 'function' && type === 'lifeturn') switchLifeTurnMode('free');
+    if (typeof switchSoulMode === 'function' && type === 'soul') switchSoulMode('free');
+    if (typeof switchWealthMode === 'function' && type === 'wealth') switchWealthMode('free');
+  } else {
+    console.warn("ไม่พบ Modal ID:", modalId);
+  }
+};  
 </script>
 </body>
 </html>
