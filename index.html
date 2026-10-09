@@ -640,7 +640,7 @@ footer {
     <div class="nav-actions">
       <span class="vip-active-badge" id="nav-vip-badge" style="display: none;"><i class="fa-solid fa-crown"></i> สมาชิก VIP</span>
       <button class="btn-user-login" id="main-auth-btn" type="button" onclick="openAuthModal()">
-        <i class="fa-solid fa-user"></i> เข้าสู่ระบบ / สมัครสมาชิก
+        <i class="fa-solid fa-user"></i> เข้าสู่ระบบ
       </button>
       <button class="btn-user-login" id="logout-btn" type="button" onclick="handleLogout()" style="display: none; background: #333; margin-left: 6px;">
         <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
@@ -2420,39 +2420,28 @@ if (typeof applyAgeChange === 'function') {
   applyAgeChange(calculatedAge);
 }
 
-  calcNum7Base();
-    calcChatraThreeLayers();
-    calcAuspiciousDates();
-    if (typeof calcBaziEngine === 'function') {
-      calcBaziEngine();
+      updateDailyHoroscopeView();
+      calcNum7Base();
+      calcAuspiciousDates();
+      if (typeof calcBaziEngine === 'function') {
+        calcBaziEngine();
+      }
     }
-    // เพิ่มคำสั่งเรียกฟังก์ชันอัปเดตวันจรตรงนี้ เพื่อให้ช่องวันที่/เวลาไม่ว่างเปล่า
-    if (typeof updateTransitDateDropdowns === 'function') {
-      updateTransitDateDropdowns();
-    } else if (typeof setDefaultTransitDate === 'function') {
-      setDefaultTransitDate();
-    }
-  }
-function calcChatraThreeLayers() {
-  const cTop = document.getElementById('chatraTop');
-  const cMid = document.getElementById('chatraMid');
-  const cBase = document.getElementById('chatraBase');
-  
-  if (cTop) cTop.textContent = "ยอดฉัตรสถิตในเกณฑ์เจริญรุ่งเรือง เกียรติยศและชื่อเสียงโดดเด่น";
-  if (cMid) cMid.textContent = "กลางฉัตรหนุนนำเรื่องการสร้างฐานะ ครอบครัวมั่นคง และมิตรสหายเกื้อหนุน";
-  if (cBase) cBase.textContent = "ฐานฉัตรมั่นคงถาวร บั้นปลายชีวิตมีความร่มเย็นเป็นสุขและมีทรัพย์สินรองรับ";
-}
 
-function calculateAscendantAndTransit(e) {
-  if (e && e.preventDefault) e.preventDefault();
-  syncBirthDataToAllModules();
+    function calculateAscendantAndTransit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      syncBirthDataToAllModules();
 
-  const ascIndex = AppState.currentCalculatedAscIndex;
-  const sunSignIndex = AppState.currentCalculatedSunIndex;
-  const ascInfo = ZODIAC_DATA[ascIndex];
-  const sunInfo = ZODIAC_DATA[sunSignIndex];
+      const ascIndex = AppState.currentCalculatedAscIndex;
+      const sunSignIndex = AppState.currentCalculatedSunIndex;
+      const ascInfo = ZODIAC_DATA[ascIndex];
+      const sunInfo = ZODIAC_DATA[sunSignIndex];
 
-  document.getElementById('resAscendantTitle').textContent = `คุณ ${AppState.userName || 'เจ้าชะตา'} : ลัคนาสถิต${ascInfo.name} (${ascInfo.elem})`;
+      document.getElementById('resAscendantTitle').textContent = `คุณ ${AppState.userName || 'เจ้าชะตา'} : ลัคนาสถิต${ascInfo.name} (${ascInfo.elem})`;
+      document.getElementById('dispAscendant').textContent = ascInfo.name;
+      document.getElementById('dispAscLord').textContent = `ตนุลัคน์: ${ascInfo.lord}`;
+      document.getElementById('dispSunSign').textContent = sunInfo.name;
+      document.getElementById('dispSunDegree').textContent = `ธาตุกำเนิด: ${sunInfo.elem}`;
 
       const freeContent = document.getElementById('free-result-content');
       const vipContent = document.getElementById('vip-result-content');
@@ -2532,25 +2521,7 @@ function calculateAscendantAndTransit(e) {
 
       updateDailyHoroscopeView();
     }
-// ฟังก์ชันกำหนดค่าเริ่มต้นวันจรอัตโนมัติ
-function setDefaultTransitValues() {
-  const dayEl = document.getElementById('transitDay');
-  const monthEl = document.getElementById('transitMonth');
-  const yearEl = document.getElementById('transitYearBE');
-  const hourEl = document.getElementById('transitHour24');
-  const minEl = document.getElementById('transitMinute24');
 
-  if (dayEl) dayEl.value = "10";
-  if (monthEl) monthEl.value = "10"; // ตุลาคม
-  if (yearEl) yearEl.value = "2569";
-  if (hourEl) hourEl.value = "12";
-  if (minEl) minEl.value = "0";
-}
-
-// สั่งให้ทำงานเมื่อโหลดหน้าเว็บ
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(setDefaultTransitValues, 500);
-});
     const AUSPICIOUS_CATALOG = {
       business: [
         { d: "วันพฤหัสบดีที่ 8 ตุลาคม 2569", time: "09:19 - 10:39 น.", name: "มหัทธโนฤกษ์ (มหาเศรษฐี รับทรัพย์)", desc: "เปิดร้านค้า กิจการออนไลน์ หรือเริ่มลงทุนใหม่ ดึงดูดลูกค้าและเงินหมุนเวียนคล่องตัว ปลอดวันกาลกิณี" },
@@ -7220,87 +7191,6 @@ window.askCosmicBall = function() {
     }, 1100);
 };
 </script>
-<!-- ==================== กล่องป๊อปอัป 4 ศาสตร์ & สคริปต์ทำงาน ==================== -->
-<style>
-.ksprem-modal {
-    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.88); z-index: 99999999; align-items: center; justify-content: center;
-    backdrop-filter: blur(8px); padding: 15px; box-sizing: border-box;
-}
-.ksprem-box {
-    background: radial-gradient(circle at 50% 10%, #1e2538, #0d111a);
-    border-radius: 20px; max-width: 520px; width: 100%; max-height: 88vh;
-    overflow-y: auto; color: #fff; padding: 25px 20px; position: relative;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-}
-.ksprem-btn-close {
-    position: absolute; top: 12px; right: 18px; font-size: 28px; cursor: pointer; color: #aaa; line-height: 1;
-}
-.ksprem-btn-close:hover { color: #fff; }
-.ksprem-result-area {
-    margin-top: 15px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 16px;
-    font-size: 13.5px; line-height: 1.75; color: #e2e8f0; text-align: left;
-}
-.ksprem-vip-lock-card {
-    margin-top: 15px; background: linear-gradient(135deg, rgba(234,179,8,0.12), rgba(0,0,0,0.5));
-    border: 1px dashed #eab308; border-radius: 12px; padding: 16px; text-align: center;
-}
-.ksprem-vip-unlock-btn {
-    padding: 10px 24px; background: linear-gradient(90deg, #eab308, #ca8a04);
-    color: #000; border: none; border-radius: 8px; font-weight: bold; font-size: 0.95rem;
-    cursor: pointer; box-shadow: 0 4px 15px rgba(234,179,8,0.4); margin-top: 10px;
-}
-</style>
-
-<div id="karmicModal" class="ksprem-modal">
-    <div class="ksprem-box" style="border: 2px solid #d4af37;">
-        <span onclick="document.getElementById('karmicModal').style.display='none'" class="ksprem-btn-close">&times;</span>
-        <h2 style="color: #f1c40f; margin-top: 0; text-align: center;">📜 รหัสกรรม & วาสนาข้ามภพ</h2>
-        <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">ถอดรหัสพันธะกรรมดั้งเดิม บททดสอบชีวิต และหนทางตัดวิบากกรรม</p>
-        <div style="text-align: center;">
-            <button onclick="calcKarmic()" style="background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; font-weight: bold; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer;">ถอดรหัสชะตากรรม</button>
-        </div>
-        <div id="karmic_result" class="ksprem-result-area" style="display: none; border: 1px solid #d4af37;"></div>
-    </div>
-</div>
-
-<div id="lifeTurningModal" class="ksprem-modal">
-    <div class="ksprem-box" style="border: 2px solid #3498db;">
-        <span onclick="document.getElementById('lifeTurningModal').style.display='none'" class="ksprem-btn-close">&times;</span>
-        <h2 style="color: #5dade2; margin-top: 0; text-align: center;">⚔️ มหาพิชัยสงคราม: จังหวะพลิกชีวิต</h2>
-        <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">ถอดรหัสฤดูกาลชะตา 4 ไตรมาส จังหวะบุก จังหวะถอย และจุดเปลี่ยนพลิกฐานะ</p>
-        <div style="text-align: center;">
-            <button onclick="calcLifeTurning()" style="background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; font-weight: bold; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer;">ตรวจจังหวะรุก-รับ</button>
-        </div>
-        <div id="life_result" class="ksprem-result-area" style="display: none; border: 1px solid #3498db;"></div>
-    </div>
-</div>
-
-<div id="soulElementModal" class="ksprem-modal">
-    <div class="ksprem-box" style="border: 2px solid #9b59b6;">
-        <span onclick="document.getElementById('soulElementModal').style.display='none'" class="ksprem-btn-close">&times;</span>
-        <h2 style="color: #c39bd3; margin-top: 0; text-align: center;">💎 ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์</h2>
-        <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">วิเคราะห์ธาตุแก่นแท้ ปรับสนามพลังออร่า และอัญมณีกู้ดวง</p>
-        <div style="text-align: center;">
-            <button onclick="calcSoulElement()" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; font-weight: bold; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer;">สแกนคลื่นจิตวิญญาณ</button>
-        </div>
-        <div id="soul_result" class="ksprem-result-area" style="display: none; border: 1px solid #9b59b6;"></div>
-    </div>
-</div>
-
-<div id="wealthFlowModal" class="ksprem-modal">
-    <div class="ksprem-box" style="border: 2px solid #2ecc71;">
-        <span onclick="document.getElementById('wealthFlowModal').style.display='none'" class="ksprem-btn-close">&times;</span>
-        <h2 style="color: #2ecc71; margin-top: 0; text-align: center;">💰 เปิดขุมทรัพย์มหาเศรษฐี & สายธารเงิน</h2>
-        <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">ถอดรหัสกระแสเงินรั่วไหล แหล่งรายได้ซ่อนเร้น และเลขเปิดคลังทรัพย์</p>
-        <div style="text-align: center;">
-            <button onclick="calcWealthFlow()" style="background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; font-weight: bold; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer;">เปิดคลังทรัพย์มหาศาล</button>
-        </div>
-        <div id="wealth_result" class="ksprem-result-area" style="display: none; border: 1px solid #2ecc71;"></div>
-    </div>
-</div>
-
-<script>
 // ฟังก์ชันเปิดป๊อปอัป และผูกปุ่มถาวร
 window.openKsPremFeature = function(modalId) {
     if (!modalId) return;
@@ -8386,13 +8276,13 @@ function updateDualBirthDayDisplay() {
         var isLunarPrev = (bH < 6);
         var lunarDay = isLunarPrev ? dayNames[(dt.getDay() + 6) % 7] : solarDay;
 
-    if (boxSolar) {
-      boxSolar.textContent = "";
-      boxSolar.textContent = "เกิด " + solarDay;
-    }
-    if (boxLunar) {
-      boxLunar.textContent = "";
-      boxLunar.textContent = isLunarPrev ? `(เกิดวัน${lunarDay} ตามจันทรคติ)` : `(วัน${solarDay} ตรงกับจันทรคติ)`;
+        if (boxSolar) boxSolar.textContent = "เกิด" + solarDay;
+        if (boxLunar) {
+            boxLunar.textContent = isLunarPrev ? "(เกิด" + lunarDay + "ตามจันทรคติ)" : "(ตรงกับจันทรคติ)";
+        }
+    } else {
+        if (boxSolar) boxSolar.textContent = "-";
+        if (boxLunar) boxLunar.textContent = "-";
     }
 }
 
@@ -9725,191 +9615,132 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
-// ฟังก์ชันกำหนดค่าเริ่มต้นวันจรอัตโนมัติ (แบบรอให้ Dropdown โหลดเสร็จ)
-function setDefaultTransitValues() {
-  const dayEl = document.getElementById('transitDay');
-  const monthEl = document.getElementById('transitMonth');
-  const yearEl = document.getElementById('transitYearBE');
-  const hourEl = document.getElementById('transitHour24');
-  const minEl = document.getElementById('transitMinute24');
+// --- ฟังก์ชันป้องกัน Error เมื่อหา Modal ไม่พบ ---
+const originalOpenModal = window.openNewPremModal;
+window.openNewPremModal = function(type) {
+  let modalId = '';
+  if (type === 'karmic') modalId = 'modal-karmic';
+  else if (type === 'lifeturn') modalId = 'modal-lifeturturning';
+  else if (type === 'soul') modalId = 'modal-soulelement';
+  else if (type === 'wealth') modalId = 'modal-wealthflow';
 
-  if (dayEl) dayEl.value = "10";
-  if (monthEl) monthEl.value = "10"; // ตุลาคม
-  if (yearEl) yearEl.value = "2569";
-  if (hourEl) hourEl.value = "12";
-  if (minEl) minEl.value = "0";
-}
-
-// หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่า Options ใน Dropdown ถูกสร้างครบแล้ว
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(setDefaultTransitValues, 500);
-});
-// ฟังก์ชันสร้างตัวเลือกและดึงวัน-เวลาปัจจุบันมาเติมในช่องวันจรอัตโนมัติ
-function initAndSetRealtimeTransitValues() {
-  const dayEl = document.getElementById('transitDay');
-  const monthEl = document.getElementById('transitMonth');
-  const yearEl = document.getElementById('transitYearBE');
-  const hourEl = document.getElementById('transitHour24');
-  const minEl = document.getElementById('transitMinute24');
-
-  // 1. สร้างตัวเลือกวัน (1 - 31)
-  if (dayEl && dayEl.options.length <= 1) {
-    dayEl.innerHTML = '';
-    for (let i = 1; i <= 31; i++) {
-      let opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = i;
-      dayEl.appendChild(opt);
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box;";
+    
+    if (typeof switchKarmicMode === 'function' && type === 'karmic') switchKarmicMode('free');
+    if (typeof switchLifeTurnMode === 'function' && type === 'lifeturn') switchLifeTurnMode('free');
+    if (typeof switchSoulMode === 'function' && type === 'soul') switchSoulMode('free');
+    if (typeof switchWealthMode === 'function' && type === 'wealth') switchWealthMode('free');
+  } else {
+    console.warn("ไม่พบ Modal ID:", modalId);
+  }
+};
+// --- ฟังก์ชันป้องกันและสร้างตัวเลือกดรอปดาวน์อัตโนมัติไม่ให้เกิดค่า null ---
+document.addEventListener('DOMContentLoaded', function() {
+  // สร้างตัวเลือกวัน 1-31
+  const daySelects = ['birthDay', 'transitDay'];
+  daySelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>วัน</option>';
+      for(let i=1; i<=31; i++) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.textContent = i;
+        el.appendChild(opt);
+      }
     }
-  }
+  });
 
-  // 2. สร้างตัวเลือกเดือน (มกราคม - ธันวาคม)
-  if (monthEl && monthEl.options.length <= 1) {
-    monthEl.innerHTML = '';
-    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-    months.forEach((mName, index) => {
-      let opt = document.createElement('option');
-      opt.value = index + 1;
-      opt.textContent = mName;
-      monthEl.appendChild(opt);
-    });
-  }
-
-  // 3. สร้างตัวเลือกปี พ.ศ. (2565 - 2575)
-  if (yearEl && yearEl.options.length <= 1) {
-    yearEl.innerHTML = '';
-    for (let y = 2565; y <= 2575; y++) {
-      let opt = document.createElement('option');
-      opt.value = y;
-      opt.textContent = y;
-      yearEl.appendChild(opt);
+  // สร้างตัวเลือกเดือน 1-12
+  const monthSelects = ['birthMonth', 'transitMonth'];
+  const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+  monthSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>เดือน</option>';
+      months.forEach((m, idx) => {
+        let opt = document.createElement('option');
+        opt.value = idx + 1; opt.textContent = m;
+        el.appendChild(opt);
+      });
     }
-  }
+  });
 
-  // 4. สร้างตัวเลือกชั่วโมง (0 - 23)
-  if (hourEl && hourEl.options.length <= 1) {
-    hourEl.innerHTML = '';
-    for (let h = 0; h < 24; h++) {
-      let opt = document.createElement('option');
-      opt.value = h;
-      opt.textContent = String(h).padStart(2, '0') + ' น.';
-      hourEl.appendChild(opt);
+  // สร้างตัวเลือกปี พ.ศ. (2460 - 2575)
+  const yearSelects = ['birthYearBE', 'transitYearBE'];
+  yearSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>พ.ศ.</option>';
+      for(let y=2575; y>=2460; y--) {
+        let opt = document.createElement('option');
+        opt.value = y; opt.textContent = y;
+        el.appendChild(opt);
+      }
     }
-  }
+  });
 
-  // 5. สร้างตัวเลือกนาที (0 - 59 ทีละ 1 นาที เพื่อความละเอียดตามเวลาจริง)
-  if (minEl && minEl.options.length <= 1) {
-    minEl.innerHTML = '';
-    for (let m = 0; m < 60; m++) {
-      let opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = String(m).padStart(2, '0') + ' นาที';
-      minEl.appendChild(opt);
+  // สร้างตัวเลือกเวลา 24 ชั่วโมง (00 - 23)
+  const hourSelects = ['birthHour24', 'transitHour24'];
+  hourSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>ชม.</option>';
+      for(let h=0; h<24; h++) {
+        let opt = document.createElement('option');
+        opt.value = h; opt.textContent = String(h).padStart(2, '0');
+        el.appendChild(opt);
+      }
     }
-  }
+  });
 
-  // ดึงค่าวัน เดือน ปี และเวลาปัจจุบันแบบ Real-time
+  // สร้างตัวเลือกนาที (00 - 59)
+  const minSelects = ['birthMinute24', 'transitMinute24'];
+  minSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>นาที</option>';
+      for(let m=0; m<60; m+=5) {
+        let opt = document.createElement('option');
+        opt.value = m; opt.textContent = String(m).padStart(2, '0');
+        el.appendChild(opt);
+      }
+    }
+  });
+}); 
+// --- กำหนดค่าวันและเวลาปัจจุบันให้ช่อง "วันจร / วันที่ทำนาย" เป็นค่าตั้งต้นอัตโนมัติ ---
+document.addEventListener('DOMContentLoaded', function() {
   const now = new Date();
-  const currentDay = now.getDate();
+  
+  // แปลง ค.ศ. เป็น พ.ศ. (ปี 2026 คือ พ.ศ. 2569)
+  const currentBE = now.getFullYear() + 543;
   const currentMonth = now.getMonth() + 1; // 1-12
-  const currentYearBE = now.getFullYear() + 543; // แปลง ค.ศ. เป็น พ.ศ.
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
+  const currentDate = now.getDate();       // 1-31
+  const currentHour = now.getHours();      // 0-23
+  const currentMinute = now.getMinutes();  // 0-59
 
-  // กำหนดค่าปัจจุบันลงใน Dropdown
-  if (dayEl) dayEl.value = currentDay;
-  if (monthEl) monthEl.value = currentMonth;
-  if (yearEl) yearEl.value = currentYearBE;
-  if (hourEl) hourEl.value = currentHour;
-  if (minEl) minEl.value = currentMinute;
-}
+  // เซ็ตค่าลงใน select ของวันจร
+  setTimeout(() => {
+    const tDay = document.getElementById('transitDay');
+    const tMonth = document.getElementById('transitMonth');
+    const tYear = document.getElementById('transitYearBE');
+    const tHour = document.getElementById('transitHour24');
+    const tMin = document.getElementById('transitMinute24');
 
-// สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บ
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(initAndSetRealtimeTransitValues, 500);
-});
-// ฟังก์ชันสร้างตัวเลือก (Options) ให้ช่องวันเกิดและวันจรแบบครบถ้วนอัตโนมัติ
-function initAllAstrologyDropdowns() {
-  // 1. สร้างตัวเลือกให้ฟอร์มวันเกิด (ปล่อยว่างให้ผู้ใช้เลือกเอง ไม่มีค่าล็อกแข็ง)
-  const bDayEl = document.getElementById('birthDay');
-  const bMonthEl = document.getElementById('birthMonth');
-  const bYearEl = document.getElementById('birthYearBE');
-  const bHourEl = document.getElementById('birthHour24');
-  const bMinEl = document.getElementById('birthMinute24');
-
-  if (bDayEl && bDayEl.options.length <= 1) {
-    bDayEl.innerHTML = '<option value="" disabled selected>วัน</option>';
-    for (let i = 1; i <= 31; i++) {
-      let opt = document.createElement('option'); opt.value = i; opt.textContent = i; bDayEl.appendChild(opt);
+    if (tDay) tDay.value = currentDate;
+    if (tMonth) tMonth.value = currentMonth;
+    if (tYear) tYear.value = currentBE;
+    if (tHour) tHour.value = currentHour;
+    
+    // ปรับนาทีให้ปัดลงเป็นช่วงละ 5 นาทีเพื่อให้ตรงกับตัวเลือกในดรอปดาวน์
+    if (tMin) {
+      const roundedMin = Math.round(currentMinute / 5) * 5;
+      tMin.value = roundedMin >= 60 ? 55 : roundedMin;
     }
-  }
-  if (bMonthEl && bMonthEl.options.length <= 1) {
-    bMonthEl.innerHTML = '<option value="" disabled selected>เดือน</option>';
-    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-    months.forEach((mName, index) => {
-      let opt = document.createElement('option'); opt.value = index + 1; opt.textContent = mName; bMonthEl.appendChild(opt);
-    });
-  }
-  if (bYearEl && bYearEl.options.length <= 1) {
-    bYearEl.innerHTML = '<option value="" disabled selected>ปี พ.ศ.</option>';
-    for (let y = 2470; y <= 2535; y++) { // ช่วงปี พ.ศ. เกิด
-      let opt = document.createElement('option'); opt.value = y; opt.textContent = y; bYearEl.appendChild(opt);
-    }
-  }
-  if (bHourEl && bHourEl.options.length <= 1) {
-    bHourEl.innerHTML = '<option value="" disabled selected>ชม.</option>';
-    for (let h = 0; h < 24; h++) {
-      let opt = document.createElement('option'); opt.value = h; opt.textContent = String(h).padStart(2, '0') + ' น.'; bHourEl.appendChild(opt);
-    }
-  }
-  if (bMinEl && bMinEl.options.length <= 1) {
-    bMinEl.innerHTML = '<option value="" disabled selected>นาที</option>';
-    for (let m = 0; m < 60; m++) {
-      let opt = document.createElement('option'); opt.value = m; opt.textContent = String(m).padStart(2, '0') + ' นาที'; bMinEl.appendChild(opt);
-    }
-  }
-
-  // 2. สร้างตัวเลือกและกำหนดค่าปัจจุบันให้ช่องวันจร (Transit) แบบ Real-time
-  const dayEl = document.getElementById('transitDay');
-  const monthEl = document.getElementById('transitMonth');
-  const yearEl = document.getElementById('transitYearBE');
-  const hourEl = document.getElementById('transitHour24');
-  const minEl = document.getElementById('transitMinute24');
-
-  if (dayEl && dayEl.options.length <= 1) {
-    dayEl.innerHTML = '';
-    for (let i = 1; i <= 31; i++) { let opt = document.createElement('option'); opt.value = i; opt.textContent = i; dayEl.appendChild(opt); }
-  }
-  if (monthEl && monthEl.options.length <= 1) {
-    monthEl.innerHTML = '';
-    const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-    months.forEach((mName, index) => { let opt = document.createElement('option'); opt.value = index + 1; opt.textContent = mName; monthEl.appendChild(opt); });
-  }
-  if (yearEl && yearEl.options.length <= 1) {
-    yearEl.innerHTML = '';
-    for (let y = 2565; y <= 2575; y++) { let opt = document.createElement('option'); opt.value = y; opt.textContent = y; yearEl.appendChild(opt); }
-  }
-  if (hourEl && hourEl.options.length <= 1) {
-    hourEl.innerHTML = '';
-    for (let h = 0; h < 24; h++) { let opt = document.createElement('option'); opt.value = h; opt.textContent = String(h).padStart(2, '0') + ' น.'; hourEl.appendChild(opt); }
-  }
-  if (minEl && minEl.options.length <= 1) {
-    minEl.innerHTML = '';
-    for (let m = 0; m < 60; m++) { let opt = document.createElement('option'); opt.value = m; opt.textContent = String(m).padStart(2, '0') + ' นาที'; minEl.appendChild(opt); }
-  }
-
-  const now = new Date();
-  if (dayEl) dayEl.value = now.getDate();
-  if (monthEl) monthEl.value = now.getMonth() + 1;
-  if (yearEl) yearEl.value = now.getFullYear() + 543;
-  if (hourEl) hourEl.value = now.getHours();
-  if (minEl) minEl.value = now.getMinutes();
-}
-
-// สั่งให้ทำงานอัตโนมัติเมื่อโหลดหน้าเว็บ
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(initAllAstrologyDropdowns, 500);
-});
+  }, 300); // หน่วงเวลาเล็กน้อยเพื่อให้ตัวเลือกในดรอปดาวน์ถูกสร้างเสร็จก่อน
+});  
 </script>
 </body>
 </html>
