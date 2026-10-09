@@ -3634,14 +3634,37 @@ function calcBaziEngine() {
       // คำนวณดวงจีนจากวันเกิดใหม่
       let bazi = calculateDynamicBaZi(yBE, m, d, h);
 
-      // สร้างตัวแปรแปรผันตามวันจรเพื่อให้ข้อความ VIP เปลี่ยนตามวันจรจริง
-      const transitSeed = (tD * 3 + tM * 7 + tY) % 3;
-      const transitAdvisories = [
-        `ในรอบวันจร ${tD} ${tMName} ${tY}นี้ พลังงานดาวจรส่งผลกระตุ้นเรือนทรัพย์สินโดยตรง มีเกณฑ์ได้เจรจาปิดดีลธุรกิจ ทำสัญญา หรือลงทุนในสินทรัพย์ระยะยาวที่ให้ผลตอบแทนงอกเงย`,
-        `อิทธิพลวันจร ${tD} ${tMName} ${tY} หนุนนำให้เกิดความก้าวหน้าในสายงานและการติดต่อประสานงาน โดดเด่นเป็นพิเศษในการแก้ปัญหาเฉพาะหน้าและการบริหารจัดการทีมงาน`,
-        `รอบวันจร ${tD} ${tMName} ${tY} นี้ พลังงานชี่เปิดรับโชคลาภจากการเดินทางและการพบปะผู้คน มีเกณฑ์ได้รับข่าวดีจากแดนไกลหรือผู้ใหญ่ให้การสนับสนุนเต็มที่`
+      // --- สร้างคลังคำทำนายกล่องฟรีให้เปลี่ยนตามวันเกิดจริง ---
+      const FREE_BAZI_POOLS = [
+        `ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล มีความสามารถในการปรับตัวเข้ากับสถานการณ์รอบตัวได้ยอดเยี่ยม เสริมความสำเร็จด้วยธาตุ <strong>${bazi.yongShen}</strong>`,
+        `ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ และเปี่ยมด้วยความคิดสร้างสรรค์ นำพาชีวิตก้าวหน้าด้วยการเสริมพลังงาน <strong>${bazi.yongShen}</strong> และระวังธาตุให้โทษ (${bazi.jiShen})`,
+        `ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}) พื้นดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีความโดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${bazi.yongShen}</strong>`
       ];
-      let selectedTransitText = transitAdvisories[transitSeed];
+      let freePoolIndex = (d * 3 + m * 7 + yBE) % FREE_BAZI_POOLS.length;
+
+      // --- สร้างคลังคำทำนาย 5 มิติ VIP ให้เปลี่ยนตามวันเกิดและวันจร ---
+      const VIP_5D_POOLS = [
+        {
+          fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
+          work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${bazi.dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
+          love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน`,
+          fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${bazi.yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
+        },
+        {
+          fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
+          work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${bazi.dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
+          love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่`,
+          fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
+        },
+        {
+          fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี ${bazi.dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
+          work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
+          love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
+          fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${bazi.yongShen})`
+        }
+      ];
+      let vipPoolIndex = (d + m + tY + tD) % VIP_5D_POOLS.length;
+      let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
       if (AppState.currentBaziMode === 'free') {
         const freeRes = document.getElementById('bazi-free-result');
@@ -3649,12 +3672,11 @@ function calcBaziEngine() {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // กล่องฟรี: เปลี่ยนหัวข้อ ลักษณะตัวตน และคำแนะนำตามดิถีธาตุและวันเกิดจริงแบบ 100%
         document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
         document.getElementById('bazi-free-desc').innerHTML = `
-          <strong>ลักษณะตัวตนและจิตวิญญาณ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ${bazi.dayMaster.desc}<br><br>
+          <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${bazi.dayMaster.desc}<br><br>
           <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุเฉพาะบุคคล:</strong> เนื่องจากท่านเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} ${yBE} มีแก่นแท้พลังงานแบบ <em>${bazi.dayMaster.nature}</em> ดวงชะตาจึงควรเน้นเสริมธาตุให้คุณ ได้แก่ <strong>${bazi.yongShen}</strong> และระมัดระวังพลังงานจาก ${bazi.jiShen} เพื่อส่งเสริมความสำเร็จในชีวิตอย่างยั่งยืนครับ
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
           </div>
         `;
       } else {
@@ -3663,7 +3685,6 @@ function calcBaziEngine() {
         if (freeRes) freeRes.style.display = 'none';
         if (vipRes) vipRes.style.display = 'block';
 
-        // แสดงผล 4 เสาหลักตามวันเกิดใหม่
         document.getElementById('bazi-pillars-grid').innerHTML = `
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.year.stem.name}<br>${bazi.year.branch.name}</div></div>
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.month.stem.name}<br>${bazi.month.branch.name}</div></div>
@@ -3678,32 +3699,31 @@ function calcBaziEngine() {
           <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${bazi.jiShen}</span>
         `;
         
-        // VIP: 5 มิติวิเคราะห์ที่เปลี่ยนแปลงตามทั้งวันเกิดและวันจรอย่างแท้จริง
         document.getElementById('bazi-vip-extended-analysis').innerHTML = `
           <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis):</h5>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์ (ไฉ่เช็ง/เพียรไฉ่):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedTransitText}</p>
+              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fin}</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#64b5f6;">2. การงาน & บารมี (เจิ้งกวาน/ซื่อกวาน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">ดิถี ${bazi.dayMaster.name} ประจำรอบวันจร ${tD} ${tMName} ${tY}: โดดเด่นในสายงานบริหาร การคุมคน และงานเฉพาะทาง ยิ่งใช้จุดเด่นของธาตุ ${bazi.dayMaster.elem} ยิ่งสร้างผลงานเป็นที่ยอมรับ</p>
+              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.work}</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">พื้นดวงเกิด (${d}/${m}/${yBE}) ชี้ว่าคู่ครองหรือพาร์ทเนอร์มีส่วนสำคัญอย่างยิ่งในการช่วยวางแผนและเกื้อหนุนชะตาชีวิตให้มั่นคง</p>
+              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.love}</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${bazi.yongShen}) เพื่อดึงดูดกระแสโชคลาภตลอดปี ${tY}</p>
+              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fengshui}</p>
             </div>
           </div>
         `;
 
         document.getElementById('bazi-vip-luckcycle').innerHTML = `
           <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
-          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${bazi.dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจรนี้
+          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${bazi.dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY} นี้
         `;
       }
     }
@@ -9106,8 +9126,12 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       } else {
         console.warn('ไม่พบ Modal: modal-' + name);
       }
-    }
 
+      // เพิ่มบรรทัดนี้เพื่อบังคับให้ปาจื่อคำนวณและอัปเดตใหม่ทันทีที่เปิดหน้าต่าง
+      if (name === 'bazi' && typeof calcBaziEngine === 'function') {
+        calcBaziEngine();
+      }
+    }
     // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และคำทำนายเปลี่ยนตามวันจรแบบไดนามิก 100%)
    function switchWesternMode(mode) {
       const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
