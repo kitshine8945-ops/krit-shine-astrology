@@ -3623,24 +3623,26 @@ const POEMS_DATABASE = {
     }
 
 function calcBaziEngine() {
-      // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
+      // 1. ดึงข้อมูลวัน เดือน ปีเกิด และเวลาเกิดแบบละเอียด
       const dayEl = document.getElementById('birthDay');
       const monthEl = document.getElementById('birthMonth');
       const yearEl = document.getElementById('birthYearBE');
       const hourEl = document.getElementById('birthHour24');
+      const minEl = document.getElementById('birthMinute24');
 
       const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : AppState.birthDay || 30;
       const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : AppState.birthMonth || 4;
       const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2522;
-      const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
+      const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 1;
+      const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 52;
 
-      // 2. ดึงวัน เดือน ปีจรแบบสดๆ
+      // 2. ดึงข้อมูลวันจร
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
       const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
-      // 3. ระบบคำนวณดิถีธาตุ 10 แบบ หมุนเวียนตามวันเกิดจริง
+      // 3. คลังดิถีธาตุ 10 แบบ
       const stemsList = [
         { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
         { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
@@ -3654,23 +3656,24 @@ function calcBaziEngine() {
         { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
       ];
 
-      // คำนวณดัชนีดิถีจาก วัน, เดือน, ปีเกิด เพื่อให้เปลี่ยนตามบุคคลจริง
-      let stemIdx = (d * 7 + m * 13 + yBE) % stemsList.length;
+      // ใช้สูตรแฮช (Hash) รวมวัน เดือน ปี และเวลา เพื่อให้การกระจายตัวไม่ซ้ำซาก
+      let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17) + (min * 3);
+      let stemIdx = seed % stemsList.length;
       let dayMaster = stemsList[stemIdx];
+
       let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุน้ำ' : (dayMaster.elem === 'ทอง' ? 'ธาตุน้ำ / ธาตุไม้' : 'ธาตุไม้ / ธาตุไฟ')));
       let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุดิน')));
 
-      // --- สร้างคลังคำทำนายกล่องฟรีหลายชุด เพื่อให้เปลี่ยนตามวันเกิดจริง ---
+      // --- คลังคำทำนายโหมดฟรี (กระจายตัวด้วย seed) ---
       const FREE_BAZI_POOLS = [
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล มีความสามารถในการปรับตัวเข้ากับสถานการณ์รอบตัวได้ยอดเยี่ยม เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ และเปี่ยมด้วยความคิดสร้างสรรค์ นำพาชีวิตก้าวหน้าด้วยการเสริมพลังงาน <strong>${yongShen}</strong> และระวังธาตุให้โทษ (${jiShen})`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีความโดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยการใช้ธาตุหนุนนำ <strong>${yongShen}</strong>`
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} (${h} นาฬิกา) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยธาตุหนุน <strong>${yongShen}</strong>`
       ];
-      // ใช้สูตรคำนวณดัชนีจากวันเกิดเพื่อให้ข้อความเปลี่ยนไปตามบุคคล
-      let freePoolIndex = (d * 5 + m * 11 + yBE) % FREE_BAZI_POOLS.length;
+      let freePoolIndex = (seed + 7) % FREE_BAZI_POOLS.length;
 
-      // --- สร้างคลังคำทำนาย 5 มิติ VIP ให้เปลี่ยนตามวันเกิดและวันจร ---
+      // --- คลังคำทำนาย VIP (แปรผันตามวันเกิด + วันจร tY tD) ---
       const VIP_5D_POOLS = [
         {
           fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
@@ -3691,7 +3694,7 @@ function calcBaziEngine() {
           fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
         }
       ];
-      let vipPoolIndex = (d + m + tY + tD) % VIP_5D_POOLS.length;
+      let vipPoolIndex = (seed + tY + tD) % VIP_5D_POOLS.length;
       let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
       const freeRes = document.getElementById('bazi-free-result');
@@ -3757,7 +3760,6 @@ function calcBaziEngine() {
         `;
       }
     }
-
     function switchBaziMode(mode) {
       AppState.currentBaziMode = mode;
       const btnFree = document.getElementById('btn-bazi-free');
