@@ -9316,6 +9316,91 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         });
       });
     }); 
+  function calcBaziEngine() {
+      // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
+      const dayEl = document.getElementById('birthDay');
+      const monthEl = document.getElementById('birthMonth');
+      const yearEl = document.getElementById('birthYearBE');
+      const hourEl = document.getElementById('birthHour24');
+
+      const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : AppState.birthDay || 30;
+      const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : AppState.birthMonth || 4;
+      const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2522;
+      const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
+
+      // 2. คลังดิถีธาตุ 10 แบบ
+      const stemsList = [
+        { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
+        { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
+        { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", desc: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง ร่าเริง มีพลังขับเคลื่อนสร้างแรงบันดาลใจ" },
+        { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", desc: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน มีสัญชาตญาณและความคิดลึกซึ้ง" },
+        { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", desc: "ภูผา หนักแน่น น่าเชื่อถือ มีความรับผิดชอบสูงและเป็นที่พึ่งพาให้ผู้อื่น" },
+        { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", desc: "ดินสวนหย่อม อ่อนโยน ละเอียดรอบคอบ มีความเข้าอกเข้าใจผู้อื่นสูง" },
+        { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
+        { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
+        { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
+        { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
+      ];
+
+      // คำนวณดัชนีดิถีจาก วัน, เดือน, ปีเกิด เพื่อให้เปลี่ยนตามบุคคลจริง
+      let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
+      let stemIdx = seed % stemsList.length;
+      let dayMaster = stemsList[stemIdx];
+      let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุน้ำ' : (dayMaster.elem === 'ทอง' ? 'ธาตุน้ำ / ธาตุไม้' : 'ธาตุไม้ / ธาตุไฟ')));
+      let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุดิน')));
+
+      const FREE_BAZI_POOLS = [
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
+      ];
+      let freePoolIndex = seed % FREE_BAZI_POOLS.length;
+
+      const freeRes = document.getElementById('bazi-free-result');
+      const vipRes = document.getElementById('bazi-vip-result');
+
+      if (AppState.currentBaziMode === 'free') {
+        if (freeRes) freeRes.style.display = 'block';
+        if (vipRes) vipRes.style.display = 'none';
+
+        document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
+        document.getElementById('bazi-free-desc').innerHTML = `
+          <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+          <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
+          </div>
+        `;
+      } else {
+        if (freeRes) freeRes.style.display = 'none';
+        if (vipRes) vipRes.style.display = 'block';
+
+        const pillarsGrid = document.getElementById('bazi-pillars-grid');
+        if (pillarsGrid) {
+          pillarsGrid.innerHTML = `
+            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี</div><div style="font-size:1.1rem; font-weight:700;">${dayMaster.name}</div></div>
+            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน</div><div style="font-size:1.1rem; font-weight:700;">${dayMaster.name}</div></div>
+            <div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี)</div><div style="font-size:1.1rem; font-weight:700; color:#ffd700;">${dayMaster.name}</div></div>
+            <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม</div><div style="font-size:1.1rem; font-weight:700;">${dayMaster.name}</div></div>
+          `;
+        }
+
+        document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
+        document.getElementById('bazi-vip-element-analysis').innerHTML = `
+          <strong>พลังงานแก่นแท้:</strong> ${dayMaster.desc}<br>
+          <strong>ธาตุให้คุณเกื้อหนุน (Yong Shen):</strong> <span style="color:#81c784; font-weight:700;">${yongShen}</span> | 
+          <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${jiShen}</span>
+        `;
+      }
+    }
+
+    function switchBaziMode(mode) {
+      AppState.currentBaziMode = mode;
+      const btnFree = document.getElementById('btn-bazi-free');
+      const btnVip = document.getElementById('btn-bazi-vip');
+      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+      calcBaziEngine();
+    }
 </script>
 </body>
 </html>
