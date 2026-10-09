@@ -9353,7 +9353,6 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       let stemIdx = seed % stemsList.length;
       let dayMaster = stemsList[stemIdx];
 
-      // คำนวณเสาชะตาจำลองให้แต่ละเสามีความแตกต่างกันตามวันเกิด
       let yearStem = stemsList[(seed + 1) % stemsList.length].name;
       let monthStem = stemsList[(seed + 3) % stemsList.length].name;
       let dayStem = dayMaster.name;
@@ -9370,7 +9369,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       ];
       let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-      // --- คลังคำทำนาย 5 มิติ VIP ---
+      // --- คลังคำทำนาย 5 มิติ VIP (กระจายตัวด้วย seed และวันจร tY, tD) ---
       const VIP_5D_POOLS = [
         {
           fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
@@ -9389,10 +9388,27 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
           work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
           love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
           fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
+        },
+        {
+          fin: `วิเคราะห์จากพื้นดวง ${d}/${m}/${yBE} ปะทะพลังงานวันจร ${tD} ${tMName} ${tY}: มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา`,
+          work: `พลังงานดาวจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ`,
+          love: `ความรักความสัมพันธ์มีความเข้าอกเข้าใจกันดี คนโสดมีเกณฑ์พบรักผ่านการเดินทางหรือสังคมการทำงาน`,
+          fengshui: `กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี ${tY}`
         }
       ];
-      let vipPoolIndex = (seed + tY + tD) % VIP_5D_POOLS.length;
+
+      // คำนวณ Index แยกตามวันเกิดและวันจรอย่างอิสระ
+      let vipPoolIndex = (seed + tY * 3 + tD * 7) % VIP_5D_POOLS.length;
       let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+
+      // คลังมหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) แยกตามวันเกิดและวันจร
+      const LUCK_CYCLE_POOLS = [
+        `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
+        `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ในรอบวันจร ${tD} ${tMName} ${tY} ประสบความสำเร็จอย่างงดงาม`,
+        `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดในรอบวันจร ${tD} ${tMName} ${tY} นี้`
+      ];
+      let luckCycleIndex = (seed + tY + tD * 5) % LUCK_CYCLE_POOLS.length;
+      let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
 
       const freeRes = document.getElementById('bazi-free-result');
       const vipRes = document.getElementById('bazi-vip-result');
@@ -9453,7 +9469,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 
         document.getElementById('bazi-vip-luckcycle').innerHTML = `
           <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
-          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจรนี้
+          ${selectedLuckCycle}
         `;
       }
     }
