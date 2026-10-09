@@ -4645,7 +4645,7 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรและคงเนื้อหาเต็มรูปแบบไว้ครบถ้วน)
+// 1. ฟังก์ชันสลับโหมด Free / VIP ของซาจู
 function switchSajuMode(mode) {
   if (typeof AppState !== 'undefined') {
     AppState.currentSajuMode = mode;
@@ -4663,36 +4663,37 @@ function switchSajuMode(mode) {
   if (btnVip) {
     btnVip.classList.toggle('active', mode === 'vip');
     btnVip.style.background = (mode === 'vip') ? 'linear-gradient(90deg, #eab308, #ca8a04)' : 'transparent';
-    btnVip.style.borderColor = mode === 'vip' ? '#eab308' : '#64748b';
+    btnVip.style.borderColor = (mode === 'vip') ? '#eab308' : '#64748b';
     btnVip.style.color = (mode === 'vip') ? '#000' : '#eab308';
   }
 
   calcSajuEngine(mode);
 }
 
-// ฟังก์ชันคำนวณและแสดงผล ซาจู (VIP เปลี่ยนตามวันจร, ฟรีเปลี่ยนตามวันเกิด)
+// 2. ฟังก์ชันคำนวณและแสดงผล ซาจู (VIP เปลี่ยนตามวันจร, ฟรีอิงวันเกิด)
 function calcSajuEngine(mode) {
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
 
   const currentMode = mode || (typeof AppState !== 'undefined' && AppState.currentSajuMode ? AppState.currentSajuMode : 'free');
 
-  // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์มหลัก (สำหรับโหมดฟรี)
-  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
-  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
-  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
+  // วันเดือนปีเกิดจริง (สำหรับโหมดฟรี)
+  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 30) || 30;
+  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 4) || 4;
+  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
   const birthText = `${bD}/${bM}/${bY}`;
 
-  // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจร (สำหรับโหมด VIP - ทำให้คำทำนายเปลี่ยนตามวันจร)
+  // วันเดือนปี "จร" (สำหรับโหมด VIP - ดึงจากฟอร์มวันจรเพื่อให้เปลี่ยนตามวันจรทันที)
   const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
   const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
   const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
   const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
+  const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
   const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
   const transitDateStr = `${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
 
-  // ชุดข้อมูลธาตุซาจู
+  // ชุดข้อมูลธาตุซาจูฉบับเต็ม
   const elements = [
     {
       name: "ธาตุไม้หยาง (갑목 - คับมก / ไม้ใหญ่หยั่งรากลึก)",
@@ -4751,7 +4752,6 @@ function calcSajuEngine(mode) {
     }
   ];
 
-  // โหมดฟรี: คำนวณธาตุจากวันเกิด
   if (currentMode === 'free') {
     const elemIndex = (bD + bM + (bY % 5)) % 5;
     const u = elements[elemIndex];
@@ -4762,9 +4762,7 @@ function calcSajuEngine(mode) {
         <p style="font-size:0.88rem; color:#d1d9ec; line-height:1.7;">ธาตุประจำตัวของคุณคือ <strong>${u.name}</strong> ${u.nature}</p>
       </div>
     `;
-  } 
-  // โหมด VIP: คำนวณธาตุและเปลี่ยนคำทำนายตาม "วันจร" ที่เลือก
-  else {
+  } else {
     const transitElemIndex = (tD + tMVal + (tY % 5)) % 5;
     const u = elements[transitElemIndex];
     resultBox.style.display = 'block';
