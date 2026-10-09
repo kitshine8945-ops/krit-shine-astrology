@@ -2243,23 +2243,28 @@ const password = document.getElementById('authPassword').value;
       const compZ1 = document.getElementById('compZodiac1');
       if (compZ1) compZ1.value = ascIndex;
 
-     // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว (อัปเดตตามวันเกิดจริงที่เปลี่ยนแบบไดนามิก 100%)
+   // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว (คำนวณและอัปเดตตามวันเกิดจริงแบบปลอดภัย 100%)
       const westFree = document.getElementById('westernFreeBox');
       if (westFree) {
-        // คำนวณคำบรรยายจิตวิทยาตามธาตุและราศีเกิดที่เปลี่ยน
-        let signElementDesc = "มีความมุ่งมั่นตั้งใจจริง มีความคิดสร้างสรรค์ยืดหยุ่น และมีบุคลิกภายนอกที่โดดเด่นน่าเชื่อถือ";
-        if (sunInfo.elem === 'ธาตุไฟ') signElementDesc = "มีพลังขับเคลื่อนสูง กล้าคิดกล้าทำ เปี่ยมด้วยความกระตือรือร้นและภาวะผู้นำ";
-        if (sunInfo.elem === 'ธาตุดิน') signElementDesc = "มีความสุขุม หนักแน่น รอบคอบ และสร้างความมั่นคงในชีวิตได้อย่างยอดเยี่ยม";
-        if (sunInfo.elem === 'ธาตุลม') signElementDesc = "มีวาทศิลป์ ปฏิภาณไหวพริบยอดเยี่ยม รักอิสระ และเรียนรู้ปรับตัวเข้ากับผู้คนได้รวดเร็ว";
-        if (sunInfo.elem === 'ธาตุน้ำ') signElementDesc = "มีสัญชาตญาณและความรู้สึกที่ลึกซึ้ง มีความเมตตา และลางสังหรณ์แม่นยำ";
+        let sIdx = AppState.currentCalculatedSunIndex;
+        let aIdx = AppState.currentCalculatedAscIndex;
+        
+        let sInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[sIdx]) ? ZODIAC_DATA[sIdx] : { name: "ราศีเมษ", elem: "ธาตุไฟ" };
+        let aInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[aIdx]) ? ZODIAC_DATA[aIdx] : { name: "ราศีกุมภ์", elem: "ธาตุลม" };
+
+        let signDesc = "มีความมุ่งมั่นตั้งใจจริง มีความคิดสร้างสรรค์ยืดหยุ่น และมีบุคลิกภายนอกที่โดดเด่นน่าเชื่อถือ";
+        if (sInfo.elem === 'ธาตุไฟ') signDesc = "มีพลังขับเคลื่อนสูง กล้าคิดกล้าทำ เปี่ยมด้วยความกระตือรือร้นและภาวะผู้นำ";
+        if (sInfo.elem === 'ธาตุดิน') signDesc = "มีความสุขุม หนักแน่น รอบคอบ และสร้างความมั่นคงในชีวิตได้อย่างยอดเยี่ยม";
+        if (sInfo.elem === 'ธาตุลม') signDesc = "มีวาทศิลป์ ปฏิภาณไหวพริบยอดเยี่ยม รักอิสระ และเรียนรู้ปรับตัวเข้ากับผู้คนได้รวดเร็ว";
+        if (sInfo.elem === 'ธาตุน้ำ') signDesc = "มีสัญชาตญาณและความรู้สึกที่ลึกซึ้ง มีความเมตตา และลางสังหรณ์แม่นยำ";
 
         westFree.innerHTML = `
           <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px; text-align:center;">
-            <div class="res-metric"><strong style="color:#ffd700;">Sun Sign (ตัวตนจริง)</strong><div style="font-size:1.05rem; font-weight:700;">${sunSignName}</div><span style="font-size:0.75rem; color:#aaa;">${sunInfo.elem}</span></div>
+            <div class="res-metric"><strong style="color:#ffd700;">Sun Sign (ตัวตนจริง)</strong><div style="font-size:1.05rem; font-weight:700;">${sInfo.name}</div><span style="font-size:0.75rem; color:#aaa;">${sInfo.elem}</span></div>
             <div class="res-metric"><strong style="color:#64b5f6;">Moon Sign (อารมณ์ภายใน)</strong><div style="font-size:1.05rem; font-weight:700;">Gemini (เมถุน)</div><span style="font-size:0.75rem; color:#aaa;">คิดไว เรียนรู้เร็ว</span></div>
-            <div class="res-metric"><strong style="color:#81c784;">Rising/Asc (หน้ากากสังคม)</strong><div style="font-size:1.05rem; font-weight:700;">${ascSignName}</div><span style="font-size:0.75rem; color:#aaa;">ล้ำสมัย รักอิสระ</span></div>
+            <div class="res-metric"><strong style="color:#81c784;">Rising/Asc (หน้ากากสังคม)</strong><div style="font-size:1.05rem; font-weight:700;">${aInfo.name}</div><span style="font-size:0.75rem; color:#aaa;">ล้ำสมัย รักอิสระ</span></div>
           </div>
-          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล (อิงจากวันเกิด ${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}) ชี้ว่าท่านเป็นคนที่มี${signElementDesc}</p>
+          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล (อิงจากวันเกิด ${AppState.birthDay} ${MONTH_NAMES[AppState.birthMonth - 1]} พ.ศ. ${AppState.birthBE}) ชี้ว่าท่านเป็นคนที่มี${signDesc}</p>
         `;
       }
 
