@@ -2429,10 +2429,30 @@ if (typeof applyAgeChange === 'function') {
         calcBaziEngine();
       }
     }
+if (typeof calcBaziEngine === 'function') {
+      calcBaziEngine();
+    }
+  }
+}
 
-    function calculateAscendantAndTransit(e) {
-      if (e && e.preventDefault) e.preventDefault();
-      syncBirthDataToAllModules();
+function calcChatraThreeLayers() {
+  const cTop = document.getElementById('chatraTop');
+  const cMid = document.getElementById('chatraMid');
+  const cBase = document.getElementById('chatraBase');
+  
+  if (cTop) cTop.textContent = "ยอดฉัตรสถิตในเกณฑ์เจริญรุ่งเรือง เกียรติยศและชื่อเสียงโดดเด่น";
+  if (cMid) cMid.textContent = "กลางฉัตรหนุนนำเรื่องการสร้างฐานะ ครอบครัวมั่นคง และมิตรสหายเกื้อหนุน";
+  if (cBase) cBase.textContent = "ฐานฉัตรมั่นคงถาวร บั้นปลายชีวิตมีความร่มเย็นเป็นสุขและมีทรัพย์สินรองรับ";
+}
+
+function calculateAscendantAndTransit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  syncBirthDataToAllModules();
+
+  const ascIndex = AppState.currentCalculatedAscIndex;
+  const sunSignIndex = AppState.currentCalculatedSunIndex;
+  const ascInfo = ZODIAC_DATA[ascIndex];
+  const sunInfo = ZODIAC_DATA[sunSignIndex];
 
       const ascIndex = AppState.currentCalculatedAscIndex;
       const sunSignIndex = AppState.currentCalculatedSunIndex;
