@@ -9733,18 +9733,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 }); 
-// --- กำหนดค่าวันและเวลาปัจจุบันให้ช่อง "วันจร / วันที่ทำนาย" เป็นค่าตั้งต้นอัตโนมัติ ---
+// --- กำหนดค่าวันและเวลาปัจจุบันแบบนาทีจริง (Real-time minute) ---
 document.addEventListener('DOMContentLoaded', function() {
   const now = new Date();
   
-  // แปลง ค.ศ. เป็น พ.ศ. (ปี 2026 คือ พ.ศ. 2569)
   const currentBE = now.getFullYear() + 543;
-  const currentMonth = now.getMonth() + 1; // 1-12
-  const currentDate = now.getDate();       // 1-31
-  const currentHour = now.getHours();      // 0-23
-  const currentMinute = now.getMinutes();  // 0-59
+  const currentMonth = now.getMonth() + 1;
+  const currentDate = now.getDate();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes(); // นาทีจริงปัจจุบัน
 
-  // เซ็ตค่าลงใน select ของวันจร
   setTimeout(() => {
     const tDay = document.getElementById('transitDay');
     const tMonth = document.getElementById('transitMonth');
@@ -9757,13 +9755,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tYear) tYear.value = currentBE;
     if (tHour) tHour.value = currentHour;
     
-    // ปรับนาทีให้ปัดลงเป็นช่วงละ 5 นาทีเพื่อให้ตรงกับตัวเลือกในดรอปดาวน์
+    // ตรวจสอบและสร้าง option ของนาทีจริงหากยังไม่มีในลิสต์ แล้วเซ็ตค่าทันที
     if (tMin) {
-      const roundedMin = Math.round(currentMinute / 5) * 5;
-      tMin.value = roundedMin >= 60 ? 55 : roundedMin;
+      let optionExists = Array.from(tMin.options).some(opt => opt.value == currentMinute);
+      if (!optionExists) {
+        let opt = document.createElement('option');
+        opt.value = currentMinute;
+        opt.textContent = String(currentMinute).padStart(2, '0');
+        tMin.appendChild(opt);
+      }
+      tMin.value = currentMinute;
     }
-  }, 300); // หน่วงเวลาเล็กน้อยเพื่อให้ตัวเลือกในดรอปดาวน์ถูกสร้างเสร็จก่อน
-});  
+  }, 300);
+});
 </script>
 </body>
 </html>
