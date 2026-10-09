@@ -1628,10 +1628,9 @@ footer {
       </div>
       <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
         <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-bottom: 10px;">
-               <div id="bazi-free-result" style="display:none; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
-    <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4>
-    <p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
-</div>
+                <div id="bazi-free-result" style="display:none; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4><p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
+      </div>
       <div id="bazi-vip-result" style="display:none; margin-top: 18px;">
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="bazi-pillars-grid"></div>
         <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-soft);">
@@ -5052,14 +5051,12 @@ if (bHourSelect) {
     }
 }
 
-const bMinSelect = document.getElementById('baziMinute24');
-if (bMinSelect) { // เพิ่มเงื่อนไขเช็คว่ามีตัวตนอยู่จริงไหมก่อนทำต่อ
-  for (let m = 0; m < 60; m++) {
-    let opt = document.createElement('option');
-    opt.value = m; opt.textContent = `${String(m).padStart(2, '0')} นาที`;
-    bMinSelect.appendChild(opt);
-  }
-}
+      const bMinSelect = document.getElementById('baziMinute24');
+      for (let m = 0; m < 60; m++) {
+        let opt = document.createElement('option');
+        opt.value = m; opt.textContent = `${String(m).padStart(2, '0')} นาที`;
+        bMinSelect.appendChild(opt);
+      }
 
       // ดึงวันและเวลาปัจจุบันจริงแบบอัตโนมัติ
       const nowTransit = new Date();
@@ -8003,24 +8000,36 @@ function checkUserHasEnteredBirth() {
 window.calcBaziEngine = function() {
     var freeResBox = document.getElementById('bazi-free-result');
     var vipResBox = document.getElementById('bazi-vip-result');
-    var freeTitleEl = document.getElementById('bazi-free-title');
-    var freeDescEl = document.getElementById('bazi-free-desc');
-
+    
+    // คลายตัวครอบแม่ให้เต็มจอ
+    if (freeResBox && freeResBox.parentElement) {
+        freeResBox.parentElement.style.display = "block";
+        freeResBox.parentElement.style.width = "100%";
+    }
+    
     if (!checkUserHasEnteredBirth()) {
         var warnHtml = `
-            <div style="padding: 12px; text-align: center; color: #ffeb3b;">
-                <strong>⚠️ ยังไม่ได้ระบุวันเดือนปีเกิด</strong><br>
-                <span style="font-size: 0.8rem; color: #aaa;">กรุณากรอก วัน / เดือน / ปีเกิด และเวลาเกิด ที่หน้าแรกก่อนครับ</span>
+            <div style="background: rgba(234, 179, 8, 0.08); border: 1.5px dashed #ffd700; border-radius: 14px; padding: 30px 20px; text-align: center; color: #ffd700; width: 100%; box-sizing: border-box;">
+                <i class="fa-solid fa-calendar-xmark" style="font-size: 2.2rem; margin-bottom: 12px; display: block;"></i>
+                <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: #fff;">ยังไม่ได้ระบุวันเดือนปีเกิด</h4>
+                <p style="font-size: 0.88rem; color: #cbd5e1; margin: 0 0 16px; line-height: 1.6;">กรุณากรอก วัน / เดือน / ปีเกิด และเวลาเกิด ที่หน้าแรก เพื่อถอดรหัส 4 เสาหลักดวงจีนปาจื่อเฉพาะบุคคล</p>
+                <button type="button" onclick="closeModal('modal-bazi'); scrollToForm();" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
+                    <i class="fa-solid fa-pen-to-square"></i> ไปกรอกวันเกิดที่หน้าแรก
+                </button>
             </div>
         `;
-        if (AppState.currentBaziMode === 'free' && freeResBox) {
-            freeResBox.style.display = 'block';
-            freeResBox.innerHTML = warnHtml;
+        if (AppState.currentBaziMode === 'free') {
+            if (freeResBox) {
+                freeResBox.innerHTML = warnHtml;
+                freeResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important;";
+            }
             if (vipResBox) vipResBox.style.display = 'none';
-        } else if (vipResBox) {
-            vipResBox.style.display = 'block';
-            vipResBox.innerHTML = warnHtml;
+        } else {
             if (freeResBox) freeResBox.style.display = 'none';
+            if (vipResBox) {
+                vipResBox.innerHTML = warnHtml;
+                vipResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important;";
+            }
         }
         return;
     }
@@ -8034,52 +8043,47 @@ window.calcBaziEngine = function() {
     var bazi = calculateDynamicBaZi(yBE, m, d, h);
 
     if (AppState.currentBaziMode === 'free') {
-        if (vipResBox) vipResBox.style.display = 'none';
         if (freeResBox) {
-            freeResBox.style.display = 'block';
-            if (freeTitleEl && freeDescEl) {
-                // เชื่อมต่อข้อความ Title เพื่อดึงค่าชื่อดิถีและธาตุ
-                freeTitleEl.textContent = "ดิถีธาตุกำเนิดของคุณ: " + bazi.dayMaster.name + " (ธาตุ" + bazi.dayMaster.elem + bazi.dayMaster.pol + ")";
-                
-                // เชื่อมต่อข้อความคำทำนายโดยดึงค่าลักษณะธาตุธรรมชาติ (Nature) ออกมาทำงานจริง
-                freeDescEl.innerHTML = "เปรียบประดุจ <strong>" + bazi.dayMaster.nature + "</strong> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ" +
-                "<br><br>✨ <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง";
-            } else {
-                freeResBox.innerHTML = `
-                    <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})</h4>
-                    <p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">
-                        เปรียบประดุจ <strong>${bazi.dayMaster.nature}</strong> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ
-                        <br><br>
-                        ✨ <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+            freeResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important; margin-top: 14px;";
+            freeResBox.innerHTML = `
+                <div style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(234, 179, 8, 0.55); border-radius: 14px; padding: 24px; width: 100%; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    <h4 style="color:#ffd700; margin-bottom: 14px; font-size: 1.25rem; border-bottom: 1px solid rgba(234,179,8,0.3); padding-bottom: 10px;">
+                        ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})
+                    </h4>
+                    <p style="font-size: 0.95rem; color: #f8fafc; line-height: 1.85; margin-bottom: 16px;">
+                        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> เปรียบประดุจ <b>${bazi.dayMaster.nature}</b> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ
                     </p>
-                `;
-            }
+                    <div style="background: rgba(255,255,255,0.04); border-left: 3px solid #ffd700; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.75;">
+                        ✨ <b>คำแนะนำสมดุล 5 ธาตุ:</b> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+                    </div>
+                </div>
+            `;
         }
+        if (vipResBox) vipResBox.style.display = 'none';
     } else {
         if (freeResBox) freeResBox.style.display = 'none';
         if (vipResBox) {
-            vipResBox.style.display = 'block';
+            vipResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important; margin-top: 14px;";
             vipResBox.innerHTML = `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center;">
-                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาปี (รากฐาน)</small><br><b>${bazi.year.stem.name}</b><br><span>${bazi.year.branch.name}</span></div>
-                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเดือน (งาน/พ่อแม่)</small><br><b>${bazi.month.stem.name}</b><br><span>${bazi.month.branch.name}</span></div>
-                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาวัน (ดิถี/คู่ครอง)</small><br><b>${bazi.day.stem.name}</b><br><span>${bazi.day.branch.name}</span></div>
-                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเวลา (บริวาร/ปลาย)</small><br><b>${bazi.hour.stem.name}</b><br><span>${bazi.hour.branch.name}</span></div>
+                <!-- 4 เสาหลัก เต็มแถว 100% -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%; text-align: center; margin-bottom: 18px; box-sizing: border-box;">
+                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(234,179,8,0.35); padding: 16px 10px; border-radius: 12px;">
+                        <div style="font-size:0.85rem; color:#f5c469; margin-bottom:6px;">เสาปี (รากฐาน)</div>
+                        <div style="font-size:1.25rem; font-weight:700; color:#fff; line-height:1.4;">${bazi.year.stem.name}<br>${bazi.year.branch.name}</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(234,179,8,0.35); padding: 16px 10px; border-radius: 12px;">
+                        <div style="font-size:0.85rem; color:#f5c469; margin-bottom:6px;">เสาเดือน (งาน/พ่อแม่)</div>
+                        <div style="font-size:1.25rem; font-weight:700; color:#fff; line-height:1.4;">${bazi.month.stem.name}<br>${bazi.month.branch.name}</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(234,179,8,0.25), rgba(212,175,55,0.1)); border: 2px solid #ffd700; padding: 16px 10px; border-radius: 12px; box-shadow: 0 0 20px rgba(255,215,0,0.25);">
+                        <div style="font-size:0.85rem; color:#ffd700; font-weight:700; margin-bottom:6px;">เสาวัน (ดิถี/คู่ครอง)</div>
+                        <div style="font-size:1.25rem; font-weight:700; color:#ffd700; line-height:1.4;">${bazi.day.stem.name}<br>${bazi.day.branch.name}</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(234,179,8,0.35); padding: 16px 10px; border-radius: 12px;">
+                        <div style="font-size:0.85rem; color:#f5c469; margin-bottom:6px;">เสาเวลา (บริวาร/ปลาย)</div>
+                        <div style="font-size:1.25rem; font-weight:700; color:#fff; line-height:1.4;">${bazi.hour.stem.name}<br>${bazi.hour.branch.name}</div>
+                    </div>
                 </div>
-                <h4 style="color: #ffd700;">ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}${bazi.dayMaster.pol}) - สภาพดวง: ${bazi.isStrong ? 'เข้มแข็ง (Strong Day Master)' : 'อ่อนแรง (Weak Day Master)'}</h4>
-                <p><b>พลังงานแก่นแท้:</b> ${bazi.dayMaster.nature}</p>
-                <p><span style="color: #00ff00;"><b>ธาตุให้คุณเกื้อหนุน (Yong Shen):</b></span> ${bazi.yongShen} | <span style="color: #ff0000;"><b>ธาตุให้โทษต้องระวัง (Ji Shen):</b></span> ${bazi.jiShen}</p>
-                
-                <h4 style="color: #ffd700; margin-top: 15px; border-bottom: 1px dashed #444; padding-bottom: 5px;">คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis)</h4>
-                <p><b>1. วาสนาการเงิน & ขุมทรัพย์ (เจียไช่/เพียนไช่):</b> กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและสินทรัพย์ระยะยาว</p>
-                <p><b>2. การงาน & บารมี (เจิ้งกวาน/ชีซา):</b> โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง</p>
-                <p><b>3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</b> คู่ครองมีสติปัญญาเฉียบคม คอยเป็นคู่คิดช่วยวางแผนการเงิน เกื้อหนุนธาตุชะตาให้มั่นคงและเป็นปึกแผ่น</p>
-                <p><b>4. ฮวงจุ้ยเสริมพลังชี่ประจำตัว:</b> จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภตลอดทั้งปี</p>
-                <p><b>มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</b> วงจรชีวิตในทศวรรษนี้กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณเริ่มส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น</p>
-            `;
-        }
-    }
-};
 
                 <!-- สภาพดวงและธาตุปรับดวง -->
                 <div style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(234,179,8,0.6); padding: 22px; border-radius: 16px; margin-bottom: 16px; width: 100%; box-sizing: border-box;">
@@ -9729,16 +9733,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 }); 
-// --- กำหนดค่าวันและเวลาปัจจุบันแบบนาทีจริง (Real-time minute) ---
+// --- กำหนดค่าวันและเวลาปัจจุบันให้ช่อง "วันจร / วันที่ทำนาย" เป็นค่าตั้งต้นอัตโนมัติ ---
 document.addEventListener('DOMContentLoaded', function() {
   const now = new Date();
   
+  // แปลง ค.ศ. เป็น พ.ศ. (ปี 2026 คือ พ.ศ. 2569)
   const currentBE = now.getFullYear() + 543;
-  const currentMonth = now.getMonth() + 1;
-  const currentDate = now.getDate();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes(); // นาทีจริงปัจจุบัน
+  const currentMonth = now.getMonth() + 1; // 1-12
+  const currentDate = now.getDate();       // 1-31
+  const currentHour = now.getHours();      // 0-23
+  const currentMinute = now.getMinutes();  // 0-59
 
+  // เซ็ตค่าลงใน select ของวันจร
   setTimeout(() => {
     const tDay = document.getElementById('transitDay');
     const tMonth = document.getElementById('transitMonth');
@@ -9751,19 +9757,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tYear) tYear.value = currentBE;
     if (tHour) tHour.value = currentHour;
     
-    // ตรวจสอบและสร้าง option ของนาทีจริงหากยังไม่มีในลิสต์ แล้วเซ็ตค่าทันที
+    // ปรับนาทีให้ปัดลงเป็นช่วงละ 5 นาทีเพื่อให้ตรงกับตัวเลือกในดรอปดาวน์
     if (tMin) {
-      let optionExists = Array.from(tMin.options).some(opt => opt.value == currentMinute);
-      if (!optionExists) {
-        let opt = document.createElement('option');
-        opt.value = currentMinute;
-        opt.textContent = String(currentMinute).padStart(2, '0');
-        tMin.appendChild(opt);
-      }
-      tMin.value = currentMinute;
+      const roundedMin = Math.round(currentMinute / 5) * 5;
+      tMin.value = roundedMin >= 60 ? 55 : roundedMin;
     }
-  }, 300);
-});
+  }, 300); // หน่วงเวลาเล็กน้อยเพื่อให้ตัวเลือกในดรอปดาวน์ถูกสร้างเสร็จก่อน
+});  
 </script>
 </body>
 </html>
