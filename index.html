@@ -5036,30 +5036,34 @@ if (bHourSelect) {
         bHourSelect.appendChild(opt);
     }
 }
+const bMinSelect = document.getElementById('baziMinute24');
+if (bMinSelect) {
+  for (let m = 0; m < 60; m++) {
+      let opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = `${String(m).padStart(2, '0')} นาที`;
+      bMinSelect.appendChild(opt);
+  }
+}
 
-      const bMinSelect = document.getElementById('baziMinute24');
-      for (let m = 0; m < 60; m++) {
-        let opt = document.createElement('option');
-        opt.value = m; opt.textContent = `${String(m).padStart(2, '0')} นาที`;
-        bMinSelect.appendChild(opt);
-      }
+// ดึงวันและเวลาปัจจุบันจริงแบบอัตโนมัติ
+const nowTransit = new Date();
+const curTDay = nowTransit.getDate();
+const curTMonth = nowTransit.getMonth() + 1;
+const curTYearBE = nowTransit.getFullYear() + 543;
+const curTHour = nowTransit.getHours();
+const curTMin = nowTransit.getMinutes();
 
-      // ดึงวันและเวลาปัจจุบันจริงแบบอัตโนมัติ
-      const nowTransit = new Date();
-      const curTDay = nowTransit.getDate();
-      const curTMonth = nowTransit.getMonth() + 1;
-      const curTYearBE = nowTransit.getFullYear() + 543;
-      const curTHour = nowTransit.getHours();
-      const curTMin = nowTransit.getMinutes();
-
-      const tDaySelect = document.getElementById('transitDay');
-      for (let i = 1; i <= 31; i++) {
-        let opt = document.createElement('option');
-        opt.value = i; opt.textContent = `วันที่ ${i}`;
-        if (i === curTDay) opt.selected = true;
-        tDaySelect.appendChild(opt);
-      }
-
+const tDaySelect = document.getElementById('transitDay');
+if (tDaySelect) {
+  for (let i = 1; i <= 31; i++) {
+      let opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `วันที่ ${i}`;
+      if (i === curTDay) opt.selected = true;
+      tDaySelect.appendChild(opt);
+  }
+}
       const tMonthSelect = document.getElementById('transitMonth');
       MONTH_NAMES.forEach((m, idx) => {
         let opt = document.createElement('option');
