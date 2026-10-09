@@ -2425,13 +2425,11 @@ if (typeof applyAgeChange === 'function') {
       calcMahataksa();
       calcChatraThreeLayers();
       calcAuspiciousDates();
-      if (typeof calcBaziEngine === 'function') {
-        calcBaziEngine();
-      }
-    }
-if (typeof calcBaziEngine === 'function') {
+    if (typeof calcBaziEngine === 'function') {
       calcBaziEngine();
     }
+  }
+}
 
 function calcChatraThreeLayers() {
   const cTop = document.getElementById('chatraTop');
@@ -2451,11 +2449,6 @@ function calculateAscendantAndTransit(e) {
   const sunSignIndex = AppState.currentCalculatedSunIndex;
   const ascInfo = ZODIAC_DATA[ascIndex];
   const sunInfo = ZODIAC_DATA[sunSignIndex];
-
-      const ascIndex = AppState.currentCalculatedAscIndex;
-      const sunSignIndex = AppState.currentCalculatedSunIndex;
-      const ascInfo = ZODIAC_DATA[ascIndex];
-      const sunInfo = ZODIAC_DATA[sunSignIndex];
 
       document.getElementById('resAscendantTitle').textContent = `คุณ ${AppState.userName || 'เจ้าชะตา'} : ลัคนาสถิต${ascInfo.name} (${ascInfo.elem})`;
       document.getElementById('dispAscendant').textContent = ascInfo.name;
