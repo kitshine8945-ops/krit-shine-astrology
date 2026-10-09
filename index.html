@@ -8364,13 +8364,13 @@ function updateDualBirthDayDisplay() {
         var isLunarPrev = (bH < 6);
         var lunarDay = isLunarPrev ? dayNames[(dt.getDay() + 6) % 7] : solarDay;
 
-        if (boxSolar) boxSolar.textContent = "เกิด" + solarDay;
-        if (boxLunar) {
-            boxLunar.textContent = isLunarPrev ? "(เกิด" + lunarDay + "ตามจันทรคติ)" : "(ตรงกับจันทรคติ)";
-        }
-    } else {
-        if (boxSolar) boxSolar.textContent = "-";
-        if (boxLunar) boxLunar.textContent = "-";
+    if (boxSolar) {
+      boxSolar.textContent = "";
+      boxSolar.textContent = "เกิด " + solarDay;
+    }
+    if (boxLunar) {
+      boxLunar.textContent = "";
+      boxLunar.textContent = isLunarPrev ? `(เกิดวัน${lunarDay} ตามจันทรคติ)` : `(วัน${solarDay} ตรงกับจันทรคติ)`;
     }
 }
 
