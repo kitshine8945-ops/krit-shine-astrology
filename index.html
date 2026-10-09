@@ -3613,8 +3613,8 @@ const POEMS_DATABASE = {
       };
     }
 
-    function calcBaziEngine() {
-      // ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหน้าแรกแบบสดๆ
+function calcBaziEngine() {
+      // 1. ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหน้าแรกแบบสดๆ
       const dayEl = document.getElementById('birthDay');
       const monthEl = document.getElementById('birthMonth');
       const yearEl = document.getElementById('birthYearBE');
@@ -3625,13 +3625,13 @@ const POEMS_DATABASE = {
       const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2507;
       const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
 
-      // ดึงค่าวัน เดือน ปีจร จากฟอร์ม VIP แบบสดๆ
+      // 2. ดึงค่าวัน เดือน ปีจรจากฟอร์ม VIP แบบสดๆ (แก้ปัญหาข้อ 3 ให้เปลี่ยนตามวันจร)
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
       const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
       const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
-      // คำนวณดวงจีนพื้นดวงกำเนิดจากวันเกิดใหม่
+      // ประมวลผลดวงจีนใหม่ตามวันเกิดที่เปลี่ยนไป
       let bazi = calculateDynamicBaZi(yBE, m, d, h);
 
       if (AppState.currentBaziMode === 'free') {
@@ -3640,12 +3640,12 @@ const POEMS_DATABASE = {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // กล่องฟรี: เปลี่ยนดิถีธาตุและคำทำนายตามวันเกิดจริงทันที
+        // (แก้ปัญหาข้อ 1) กล่องฟรี: ดึงคำอธิบายธรรมชาติเฉพาะของดิถีธาตุ (bazi.dayMaster.desc) มาแสดงผลแบบไดนามิก
         document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
         document.getElementById('bazi-free-desc').innerHTML = `
           <strong>ลักษณะตัวตนและจิตวิญญาณ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ${bazi.dayMaster.desc}<br><br>
           <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ (อิงพื้นดวงเกิด):</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ ${bazi.dayMaster.nature} เหมาะกับการเสริมสร้างสมดุลด้วยการบริหารจัดการพลังงาน ${bazi.yongShen} หลีกเลี่ยงพลังงานจาก ${bazi.jiShen} และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุประจำวันเกิด:</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ <strong>${bazi.dayMaster.nature}</strong> แนะนำให้เสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานเกื้อหนุน ได้แก่ <strong>${bazi.yongShen}</strong> และหลีกเลี่ยงพลังงานจากธาตุให้โทษ (${bazi.jiShen}) เพื่อเปิดรับโชคลาภและความมั่นคงระยะยาวครับ
           </div>
         `;
       } else {
@@ -3654,7 +3654,7 @@ const POEMS_DATABASE = {
         if (freeRes) freeRes.style.display = 'none';
         if (vipRes) vipRes.style.display = 'block';
 
-        // VIP: แสดงผล 4 เสาหลักตามวันเกิดใหม่
+        // แสดงผล 4 เสาหลัก (ปี, เดือน, วัน, เวลา) ตามวันเกิดใหม่
         document.getElementById('bazi-pillars-grid').innerHTML = `
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.year.stem.name}<br>${bazi.year.branch.name}</div></div>
           <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1.1rem; font-weight:700;">${bazi.month.stem.name}<br>${bazi.month.branch.name}</div></div>
@@ -3669,39 +3669,39 @@ const POEMS_DATABASE = {
           <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${bazi.jiShen}</span>
         `;
         
-        // VIP: คำทำนาย 5 มิติ เปลี่ยนแปลงตามวันเกิด และ วันจร
+        // (แก้ปัญหาข้อ 2) VIP: ปรับข้อความ 5 มิติให้ดึงชื่อดิถี (${bazi.dayMaster.name}) และวันจร (${tD} ${tMName}${tY}) มาทำนายแบบเจาะลึกไม่ซ้ำกัน
         document.getElementById('bazi-vip-extended-analysis').innerHTML = `
           <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis):</h5>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์ (ไฉ่เช็ง/เพียรไฉ่):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">อิงจากพื้นดวงเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวของดิถี ${bazi.dayMaster.name} มีจังหวะรับทรัพย์ก้อนโตจากการลงทุนและการเจรจาคู่ค้า</p>
+              <p style="margin-top:3px; color:#cfd8dc;">อิงพื้นดวงเกิด (${d}/${m}/${yBE}) และวันจรพยากรณ์ <strong>${tD} ${tMName} ${tY}</strong>: ดิถี ${bazi.dayMaster.name} มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการเจรจาค้าขายในรอบวันจรนี้</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#64b5f6;">2. การงาน & บารมี (เจิ้งกวาน/ซื่อกวาน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานเฉพาะทาง ประจำรอบวันจร ${tD} ${tMName} ${tY} นี้ ยิ่งใช้จุดเด่นของธาตุ ${bazi.dayMaster.elem} ยิ่งได้รับการยอมรับในวงกว้าง</p>
+              <p style="margin-top:3px; color:#cfd8dc;">โดดเด่นในสายงานบริหาร การคุมคน และธุรกิจส่วนตัว อิทธิพลวันจร ${tD} ${tMName} ${tY} หนุนนำให้ใช้จุดเด่นธาตุ ${bazi.dayMaster.elem} สร้างผลงานโดดเด่น</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">คู่ครองมีสติปัญญาเฉียบคม เกื้อหนุนชะตาดิถี ${bazi.dayMaster.name} ให้มั่นคงและเป็นปึกแผ่นร่วมกัน</p>
+              <p style="margin-top:3px; color:#cfd8dc;">คู่ครองมีสติปัญญาเฉียบคม คอยช่วยเหลือวางแผนการเงิน เกื้อหนุนชะตาดิถี ${bazi.dayMaster.name} ให้มั่นคงและเป็นปึกแผ่น</p>
             </div>
             <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
               <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${bazi.yongShen}) ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภตลอดปี ${tY}</p>
+              <p style="margin-top:3px; color:#cfd8dc;">จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${bazi.yongShen}) ช่วยดึงดูดกระแสโชคลาภตลอดปีจร ${tY}</p>
             </div>
           </div>
         `;
 
         document.getElementById('bazi-vip-luckcycle').innerHTML = `
           <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร ${tD} ${tMName} ${tY}:</strong><br>
-          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${bazi.dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น
+          วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${bazi.dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${bazi.yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจรนี้
         `;
       }
     }
 
-    // ดักจับการเปลี่ยนแปลงทั้งวันเกิดและวันจร เพื่ออัปเดตปาจื่อทันทีแบบเรียลไทม์
+    // (แก้ปัญหาข้อ 3) ดักจับการเปลี่ยนแปลงทั้งช่องวันเกิดและช่องวันจร เพื่ออัปเดตปาจื่อแบบเรียลไทม์ทันที
     document.addEventListener('DOMContentLoaded', function() {
-      const baziInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE'];
+      const baziInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
       baziInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
