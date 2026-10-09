@@ -4645,20 +4645,82 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันคำนวณและแสดงผล ซาจู (อัปเดตให้เปลี่ยนตามวันจรและอายุจรแบบแม่นยำ)
+// 1. ฟังก์ชันเปิด Modal ซาจู (กู้คืนตัวเปิดให้กดใช้งานได้ปกติ)
+function openSajuModal() {
+  const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
+  const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
+
+  const content = `
+    <div style="text-align:center; margin-bottom:14px;">
+      <img src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800&auto=format&fit=crop" style="width:100%; max-height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(234,179,8,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+      <h3 style="color:#facc15; margin:10px 0 4px; font-size:1.15rem;">🇰🇷 ผูกดวงชะตาเกาหลี 4 เสาหลัก (사주 - Saju)</h3>
+      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต</p>
+    </div>
+
+    <!-- ปุ่มสลับโหมด Free / VIP -->
+    <div class="tier-switcher" style="margin-bottom:14px; display:flex; gap:8px;">
+      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #38bdf8; background:rgba(56,189,248,0.25); color:#38bdf8; font-weight:bold; cursor:pointer;">
+        คำนวณฟรี
+      </button>
+      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #64748b; background:transparent; color:#94a3b8; font-weight:bold; cursor:pointer;">
+        👑 ทำนายเต็มรูปแบบ (VIP)
+      </button>
+    </div>
+
+    <!-- กล่องแสดงผลคำทำนาย -->
+    <div id="sajuResultBox" style="margin-top:10px;"></div>
+  `;
+
+  if (modalTitle) modalTitle.textContent = "🇰🇷 การพยากรณ์แบบเกาหลี (Saju)";
+  if (modalBody) modalBody.innerHTML = content;
+
+  if (typeof openFeatureModal === 'function') {
+    openFeatureModal('articles');
+  } else {
+    const m = document.getElementById('modal-articles') || document.getElementById('articlesModal') || document.getElementById('artModal');
+    if (m) m.style.display = 'flex';
+  }
+
+  switchSajuMode('free');
+}
+
+// 2. ฟังก์ชันสลับโหมด Free / VIP
+function switchSajuMode(mode) {
+  if (typeof AppState !== 'undefined') {
+    AppState.currentSajuMode = mode;
+  }
+
+  const btnFree = document.getElementById('btn-saju-free');
+  const btnVip = document.getElementById('btn-saju-vip');
+  
+  if (btnFree) {
+    btnFree.classList.toggle('active', mode === 'free');
+    btnFree.style.background = (mode === 'free') ? 'rgba(56,189,248,0.25)' : 'transparent';
+    btnFree.style.borderColor = mode === 'free' ? '#38bdf8' : '#64748b';
+    btnFree.style.color = '#38bdf8';
+  }
+  if (btnVip) {
+    btnVip.classList.toggle('active', mode === 'vip');
+    btnVip.style.background = (mode === 'vip') ? 'linear-gradient(90deg, #eab308, #ca8a04)' : 'transparent';
+    btnVip.style.borderColor = (mode === 'vip') ? '#eab308' : '#64748b';
+    btnVip.style.color = (mode === 'vip') ? '#000' : '#eab308';
+  }
+
+  calcSajuEngine(mode);
+}
+
+// 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (VIP เปลี่ยนตามวันจรและอายุย่างจริง)
 function calcSajuEngine(mode) {
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
 
   const currentMode = mode || (typeof AppState !== 'undefined' && AppState.currentSajuMode ? AppState.currentSajuMode : 'free');
 
-  // 1. วันเดือนปีเกิดจริง (สำหรับโหมดฟรี)
   const bD = parseInt(document.getElementById('birthDay')?.value, 10) || 30;
   const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || 4;
   const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522;
   const birthText = `${bD}/${bM}/${bY}`;
 
-  // 2. ดึงค่าวันเดือนปี "จร" ตามตัวแปรที่คุณต้องการ
   const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
   const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -4669,10 +4731,8 @@ function calcSajuEngine(mode) {
   const tMName = MONTH_NAMES[tM - 1] || 'มกราคม';
   const transitDateStr = `${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
 
-  // คำนวณอายุย่างตามหลักเกณฑ์
   let ageYang = (tY - bY) + 1;
 
-  // ชุดข้อมูลธาตุซาจูฉบับสมบูรณ์
   const elements = [
     {
       name: "ธาตุไม้หยาง (갑목 - คับมก / ไม้ใหญ่หยั่งรากลึก)",
@@ -4697,7 +4757,7 @@ function calcSajuEngine(mode) {
       stone: "ทับทิม (Ruby), อำพัน (Amber), เพชร"
     },
     {
-      name: "ธาตุดินหยิน (기토 - กีโท / ดินสวนหย่อมมีความอุดมสมบูรณ์)",
+      name: "ธาตุดินหยิน (기토 - 기토 / ดินสวนหย่อมมีความอุดมสมบูรณ์)",
       nature: "เปรียบเสมือนแผ่นดินอุดมสมบูรณ์พร้อมเพาะปลูก มีความโอบอ้อมอารี ละเอียดอ่อน หนักแน่น รักครอบครัว",
       wealth: "การเงินมั่นคงจากทรัพย์สินถาวร ที่ดิน อสังหาริมทรัพย์ หรือการเก็บออมอย่างเป็นระบบ",
       partner: "คู่ครองเป็นคนขยันขันแข็ง มีความรับผิดชอบสูง ช่วยกันทำมาหากินสร้างฐานะครอบครัว",
@@ -4742,7 +4802,6 @@ function calcSajuEngine(mode) {
       </div>
     `;
   } else {
-    // นำค่า tD, tM, tY และ ageYang มาคำนวณดัชนีเพื่อให้เปลี่ยนตามวันจรจริงๆ 100%
     const transitElemIndex = (tD + tM + tY + ageYang) % elements.length;
     const u = elements[transitElemIndex];
 
