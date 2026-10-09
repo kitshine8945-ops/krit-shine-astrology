@@ -4645,21 +4645,20 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรแบบเรียลไทม์)
+// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรด้วยตัวแปรวันจรที่ถูกต้อง)
 function switchSajuMode(mode) {
   const btnFree = document.getElementById('btn-saju-free');
   const btnVip = document.getElementById('btn-saju-vip');
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
 
-  // ดึงค่าวันเดือนปี "จร" จากฟอร์มวันจรโดยตรง
-  const tDayEl = document.getElementById('transitDay');
-  const tMonthEl = document.getElementById('transitMonth');
-  const tYearEl = document.getElementById('transitYearBE');
-
-  const tD = tDayEl && tDayEl.value ? parseInt(tDayEl.value, 10) : new Date().getDate();
-  const tMVal = tMonthEl && tMonthEl.value ? parseInt(tMonthEl.value, 10) : (new Date().getMonth() + 1);
-  const tY = tYearEl && tYearEl.value ? parseInt(tYearEl.value, 10) : (new Date().getFullYear() + 543);
+  // ดึงค่าวันเดือนปี "จร" ตามตัวแปรมาตรฐานที่ใช้ในระบบลัคนาพยากรณ์
+  const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+  const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+  const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+  const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+  const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
+  
   const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
 
   if (btnFree) {
@@ -4675,7 +4674,7 @@ function switchSajuMode(mode) {
     btnVip.style.color = mode === 'vip' ? '#eab308' : '#94a3b8';
   }
 
-  // โหมดฟรี (แสดงผลปกติ)
+  // โหมดฟรี (แสดงผลตามปกติ)
   if (mode === 'free') {
     resultBox.innerHTML = `
       <div style="background: rgba(14,20,38,0.9); padding: 18px; border-radius: 12px; border: 1px solid var(--border-soft);">
@@ -4684,35 +4683,35 @@ function switchSajuMode(mode) {
       </div>
     `;
   } 
-  // โหมด VIP: คำทำนายเปลี่ยนตามวันจรโดยอิงจากวันที่จร (tD, tMVal, tY)
+  // โหมด VIP: คำทำนายเปลี่ยนตามวันจรแบบเรียลไทม์โดยอิงจากตัวแปร tD, tMVal, tY
   else {
     const vipTransitPools = [
       {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `ในวันที่ ${tD} ${tMName} พ.ศ. ${tY} นี้ ธาตุพลังงานจรส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภและการเจรจา การเซ็นสัญญา การทำธุรกิจ หรือการลงทุนจะให้ผลลัพธ์ที่งดงามเกินคาด`
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
+        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: ธาตุพลังงานจรส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภและการเจรจา การเซ็นสัญญา การทำธุรกิจ หรือการลงทุนจะให้ผลลัพธ์ที่งดงามเกินคาด`
       },
       {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `ในวันที่ ${tD} ${tMName} พ.ศ. ${tY} นี้ พลังงานดาวจรโดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
+        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: พลังงานดาวจรในวันนี้โดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
       },
       {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `ในวันที่ ${tD} ${tMName} พ.ศ. ${tY} นี้ ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
+        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
       },
       {
-        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `ในวันที่ ${tD} ${tMName} พ.ศ. ${tY} นี้ จังหวะชะตาเปิดรับพลังแห่งความสำเร็จ ผู้ใหญ่ให้การสนับสนุน โครงการหรือภารกิจที่ติดขัดจะได้รับการปลดล็อกอย่างราบรื่น`
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`,
+        desc: `ณ ช่วงเวลาวันจร ${tD} ${tMName} พ.ศ. ${tY}: จังหวะชะตาเปิดรับพลังแห่งความสำเร็จ ผู้ใหญ่ให้การสนับสนุน โครงการหรือภารกิจที่ติดขัดจะได้รับการปลดล็อกอย่างราบรื่น`
       }
     ];
 
-    // คำนวณดัชนีคำทำนายจาก วัน, เดือน, ปีจร โดยตรง
-    let tIdx = (tY * 31 * 12 + tMVal * 31 + tD) % vipTransitPools.length;
+    // คำนวณดัชนีคำทำนายจากค่าวันจรจริง
+    let tIdx = (tY * 31 * 12 + tMVal * 31 + tD + tH) % vipTransitPools.length;
     let tRes = vipTransitPools[tIdx];
 
     resultBox.innerHTML = `
       <div style="background: rgba(255,215,0,0.08); padding: 18px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
         <h4 style="color: #ffd700; margin-bottom: 8px;"><i class="fa-solid fa-satellite-dish"></i> ${tRes.transitTitle}</h4>
-        <p style="font-size: 0.88rem; color: #fff; margin-top: 1.7rem; line-height: 1.7;">${tRes.desc}</p>
+        <p style="font-size: 0.88rem; color: #fff; margin-top: 1rem; line-height: 1.7;">${tRes.desc}</p>
       </div>
     `;
   }
