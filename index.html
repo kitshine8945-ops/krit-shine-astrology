@@ -9321,7 +9321,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-    // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
+    // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ (อัปเดตทันทีเมื่อเปลี่ยนวันเกิด)
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
@@ -9377,7 +9377,7 @@ function calcBaziEngine() {
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-    // --- คลังคำทำนายวันจร VIP สำหรับ 5 มิติชะตาชีวิต ---
+    // --- คลังคำทำนายวันจร VIP สำหรับ 5 มิติชะตาชีวิต (เปลี่ยนตามวันจร tD, tM, tY) ---
     const VIP_5D_POOLS = [
       {
         fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
@@ -9409,16 +9409,16 @@ function calcBaziEngine() {
     let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
-    // --- ส่วน "สภาพดวงชะตา" (ให้เปลี่ยนตามวันจร tD, tM, tY ด้วย เพราะมีการปะทะพลังงานดาวจร) ---
+    // --- สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY) ---
     const STRENGTH_TRANSIT_POOLS = [
       `พลังงานแก่นแท้: ${dayMaster.desc} | ปะทะพลังงานดาวจรวันที่ ${tD} ${tMName} ${tY} ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่`,
-      `พลังงานแก่นแท้: ${dayMaster.desc} | อิทธิพลการโคจรในวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้สถานะดวงชะตาเกิดความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม`,
+      `พลังงานแก่นแท้: ${dayMaster.desc} | อิทธิพลการโคจรในวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม`,
       `พลังงานแก่นแท้: ${dayMaster.desc} | กระแสพลังงานปะทะวันจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ`
     ];
     let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
     let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
 
-    // --- ส่วน "มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars)" (ล็อกไว้ 10 ปีเปลี่ยนครั้ง ไม่เปลี่ยนตามวันจรรายวัน) ---
+    // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่มาจากวันเกิด ทำให้เมื่อเปลี่ยนวันเกิด คำทำนายจะเปลี่ยนตามทันที และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
     const LUCK_CYCLE_POOLS = [
       `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`,
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
@@ -9455,7 +9455,7 @@ function calcBaziEngine() {
         `;
       }
 
-      // --- 1. สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY ด้วย ตามที่ต้องการ) ---
+      // --- 1. สภาพดวงชะตา (เปลี่ยนตามวันจร และเปลี่ยนตามวันเกิดใหม่) ---
       document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
       document.getElementById('bazi-vip-element-analysis').innerHTML = `
         <strong>${selectedStrengthText}</strong><br>
@@ -9463,7 +9463,7 @@ function calcBaziEngine() {
         <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${jiShen}</span>
       `;
       
-      // --- 2. คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (เปลี่ยนตามวันจร tD, tM, tY) ---
+      // --- 2. คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (เปลี่ยนตามวันจร และเปลี่ยนตามวันเกิดใหม่) ---
       document.getElementById('bazi-vip-extended-analysis').innerHTML = `
         <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis - วันจร ${tD} ${tMName} ${tY}):</h5>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
@@ -9486,7 +9486,7 @@ function calcBaziEngine() {
         </div>
       `;
 
-      // --- 3. มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (ล็อกไว้ 10 ปีเปลี่ยนครั้ง ไม่เปลี่ยนตามวันจรรายวัน) ---
+      // --- 3. มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่เปลี่ยนตามวันเกิดใหม่ และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
       document.getElementById('bazi-vip-luckcycle').innerHTML = `
         <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด ${d}/${m}/${yBE}:</strong><br>
         ${selectedLuckCycle}
