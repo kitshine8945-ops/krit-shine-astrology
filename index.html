@@ -716,7 +716,7 @@ footer {
     <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
 </div>
       <div class="cat-item" onclick="openFeatureModal('tarot')"><div class="cat-icon-circle"><i class="fa-solid fa-clone"></i></div><div class="cat-name">ไพ่ทาโรต์</div><div class="cat-sub">เปิดไพ่สื่อจิตจักรวาล</div></div>
-      <div class="cat-item" onclick="openFeatureModal('bazi')"><div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div><div class="cat-name">ปาจื่อ (BaZi)</div><div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div></div>
+<div class="cat-item" onclick="openFeatureModal('bazi'); calcBaziEngine();"><div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div><div class="cat-name">ปาจื่อ (BaZi)</div><div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div></div>
 <div class="cat-item" onclick="openSajuModal()">
         <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
         <div class="cat-name">ซาจู (Saju)</div>
@@ -1182,7 +1182,7 @@ footer {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
-      <div class="popular-card" onclick="openFeatureModal('bazi')">
+    <div class="popular-card" onclick="openFeatureModal('bazi'); calcBaziEngine();">
         <img class="popular-card-img" src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?q=80&w=800&auto=format&fit=crop" alt="ปาจื่อ BaZi">
         <div class="popular-card-body">
           <h4 class="popular-card-title">ปาจื่อ (BaZi)</h4>
@@ -2340,6 +2340,9 @@ if (typeof applyAgeChange === 'function') {
       calcMahataksa();
       calcChatraThreeLayers();
       calcAuspiciousDates();
+      if (typeof calcBaziEngine === 'function') {
+        calcBaziEngine();
+      }
     }
 
     function calculateAscendantAndTransit(e) {
