@@ -9317,7 +9317,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-    // 1. ตรวจสอบว่าผู้กรอกวันเดือนปีเกิดที่หน้าแรกหรือยัง
+    // 1. ดึงวัน เดือน ปีเกิด จากฟอร์มหน้าเว็บ
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
@@ -9326,26 +9326,24 @@ function calcBaziEngine() {
     const mVal = monthEl ? monthEl.value : '';
     const yVal = yearEl ? yearEl.value : '';
 
-    if (!dVal || !mVal || !yVal || !AppState.birthDay) {
+    if (!dVal || !mVal || !yVal) {
       alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
       scrollToForm();
       return;
     }
 
-    // 2. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ (ส่วนคำนวณวันเกิด คงเดิมไม่ให้กระทบ)
-    const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
-
     const d = parseInt(dVal, 10);
     const m = parseInt(mVal, 10);
     const yBE = parseInt(yVal, 10);
+    const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
 
-    // 3. ดึงวัน เดือน ปีจรแบบสดๆ (แก้ไขให้ดึงค่าจากฟอร์มวันจร VIP จริง เพื่อให้คำทำนายเปลี่ยนตามวันจร)
+    // 2. ดึงวัน เดือน ปีจรแบบสดๆ สำหรับโหมด VIP
     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
     const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
     const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
-    // 4. คลังดิถีธาตุ 10 แบบ
+    // 3. คลังดิถีธาตุ 10 แบบ
     const stemsList = [
       { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
       { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
@@ -9359,7 +9357,6 @@ function calcBaziEngine() {
       { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
     ];
 
-    // คำนวณ Index ของดิถีธาตุตามวันเกิดจริง (ส่วนนี้คงเดิม)
     let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
     let stemIdx = seed % stemsList.length;
     let dayMaster = stemsList[stemIdx];
@@ -9369,10 +9366,10 @@ function calcBaziEngine() {
     let dayStem = dayMaster.name;
     let hourStem = stemsList[(seed + 5) % stemsList.length].name;
 
-    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุน้ำ' : (dayMaster.elem === 'ทอง' ? 'ธาตุน้ำ / ธาตุไม้' : 'ธาตุไม้ / ธาตุไฟ')));
-    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุดิน')));
+    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุดิน' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน / ธาตุน้ำ' : 'ธาตุน้ำ / ธาตุไม้')));
+    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุทอง')));
 
-    // --- คลังคำทำนายโหมดฟรี (อิงวันเกิด คงเดิม) ---
+    // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
     const FREE_BAZI_POOLS = [
       `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
       `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
@@ -9380,7 +9377,7 @@ function calcBaziEngine() {
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-    // --- คลังคำทำนาย 5 มิติ VIP (ผูกตัวแปรวันจร tY, tD, tM อย่างอิสระเพื่อให้คำทำนายเปลี่ยนตามวันจร) ---
+    // คลังคำทำนาย 5 มิติ VIP (ผูกตัวแปรวันจร tY, tD, tM อย่างอิสระ)
     const VIP_5D_POOLS = [
       {
         fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
@@ -9408,11 +9405,9 @@ function calcBaziEngine() {
       }
     ];
 
-    // คำนวณ Index แยกตามวันเกิดและวันจรอย่างอิสระสำหรับ VIP
     let vipPoolIndex = (seed + (tY * 7) + (tD * 13) + (tM * 11)) % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
-    // คลังมหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) แยกตามวันเกิดและวันจร
     const LUCK_CYCLE_POOLS = [
       `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ในรอบวันจร ${tD} ${tMName} ${tY} ประสบความสำเร็จอย่างงดงาม`,
