@@ -3617,7 +3617,7 @@ const POEMS_DATABASE = {
       calcBaziEngine();
     }
 
-  function calcBaziEngine() {
+function calcBaziEngine() {
       // 1. ดึงค่าวัน เดือน ปีเกิด และเวลาเกิดจากฟอร์มหลักแบบเรียลไทม์
       const d = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 13;
       const m = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 3;
@@ -3639,29 +3639,14 @@ const POEMS_DATABASE = {
         if (freeRes) freeRes.style.display = 'block';
         if (vipRes) vipRes.style.display = 'none';
 
-        // ชุดคำทำนายโหมดฟรีที่ผูกกับตัวแปรวันเกิดโดยตรง
-        const FREE_POOLS_DYNAMIC = [
-          {
-            title: `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`,
-            desc: `<strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${bazi.dayMaster.desc}<br><br>
-                   <div style="background:rgba(255,215,0,0.08); padding:10px; border-radius:8px; border-left:3px solid #ffd700;">
-                     <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ (อิงวันเกิด ${d}/${m}/${yBE}):</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ ${bazi.dayMaster.nature} ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงาน ${bazi.yongShen} หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
-                   </div>`
-          },
-          {
-            title: `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`,
-            desc: `<strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> เจ้าชะตาเกิดวันที่ ${d} เดือน ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} ${bazi.dayMaster.desc}<br><br>
-                   <div style="background:rgba(255,215,0,0.08); padding:10px; border-radius:8px; border-left:3px solid #ffd700;">
-                     <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> พื้นดวงของคุณเด่นเรื่องการปรับตัวและวิสัยทัศน์ แนะนำให้เน้นการลงทุนหรือทำกิจการที่สอดคล้องกับธาตุให้คุณ (${bazi.yongShen}) จะช่วยหนุนนำความก้าวหน้าอย่างมั่นคง
-                   </div>`
-          }
-        ];
-
-        let dynamicFreeIdx = (d * 5 + m * 11 + yBE) % FREE_POOLS_DYNAMIC.length;
-        let selectedFree = FREE_POOLS_DYNAMIC[dynamicFreeIdx];
-
-        document.getElementById('bazi-free-title').textContent = selectedFree.title;
-        document.getElementById('bazi-free-desc').innerHTML = selectedFree.desc;
+        // ปรับให้ดึงข้อมูลธรรมชาติ (nature) และรายละเอียดเฉพาะตัว (desc) ของดิถีธาตุกำเนิดตามวันเกิดจริงโดยตรง
+        document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
+        document.getElementById('bazi-free-desc').innerHTML = `
+          <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${bazi.dayMaster.desc}<br><br>
+          <div style="background:rgba(255,215,0,0.08); padding:10px; border-radius:8px; border-left:3px solid #ffd700;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>คำแนะนำสมดุล 5 ธาตุ (อิงวันเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE}):</strong> ดิถีของคุณมีพลังงานแก่นแท้แบบ ${bazi.dayMaster.nature} เหมาะกับการเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงาน ${bazi.yongShen} หลีกเลี่ยงพลังงานจาก ${bazi.jiShen} และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+          </div>
+        `;
 
       } else {
         const freeRes = document.getElementById('bazi-free-result');
@@ -3684,7 +3669,6 @@ const POEMS_DATABASE = {
           <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${bazi.jiShen}</span>
         `;
         
-        // ชุดคำทำนาย VIP ที่ดึงทั้งวันเกิดและวันจรมาคำนวณและอัปเดตเปลี่ยนตามทันที
         document.getElementById('bazi-vip-extended-analysis').innerHTML = `
           <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis):</h5>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
