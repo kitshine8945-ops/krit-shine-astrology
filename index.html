@@ -677,29 +677,26 @@ footer {
   <section class="category-section" id="category-bar">
     <h3 class="category-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> ศูนย์รวมศาสตร์พยากรณ์ชั้นสูง (ศาสตร์ครบวงจร)</h3>
     <div class="category-grid">
-  <!-- 1. รหัสกรรมข้ามภพ -->
-<div class="cat-item" onclick="var m=document.getElementById('modal-karmic'); if(m){document.body.appendChild(m); m.style.cssText='display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';}">
+ <!-- 4 เมนูพยากรณ์พรีเมียม -->
+<div class="cat-item" onclick="openKSpremFeature('karmicModal')">
     <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
     <div class="cat-name">รหัสกรรมข้ามภพ</div>
     <div class="cat-sub">ถอดบทเรียนชีวิต & วาสนา</div>
 </div>
 
-<!-- 2. มหาพิชัยสงคราม -->
-<div class="cat-item" onclick="var m=document.getElementById('modal-lifeturturning'); if(m){document.body.appendChild(m); m.style.cssText='display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';}">
+<div class="cat-item" onclick="openKSpremFeature('lifeTurningModal')">
     <div class="cat-icon-circle" style="background: rgba(52,152,219,0.2); border: 1px solid #3498db;"><i class="fa-solid fa-shield-halved" style="color: #5dade2;"></i></div>
     <div class="cat-name">มหาพิชัยสงคราม</div>
     <div class="cat-sub">จังหวะพลิกชีวิต 12 ฤดูกาล</div>
 </div>
 
-<!-- 3. ถอดรหัสจิตวิญญาณ -->
-<div class="cat-item" onclick="var m=document.getElementById('modal-soulelement'); if(m){document.body.appendChild(m); m.style.cssText='display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';}">
+<div class="cat-item" onclick="openKSpremFeature('soulElementModal')">
     <div class="cat-icon-circle" style="background: rgba(155,89,182,0.2); border: 1px solid #9b59b6;"><i class="fa-solid fa-gem" style="color: #c39bd3;"></i></div>
     <div class="cat-name">ถอดรหัสจิตวิญญาณ</div>
     <div class="cat-sub">ธาตุกายสิทธิ์เสริมออร่า</div>
 </div>
 
-<!-- 4. ขุมทรัพย์มหาเศรษฐี -->
-<div class="cat-item" onclick="var m=document.getElementById('modal-wealthflow'); if(m){document.body.appendChild(m); m.style.cssText='display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';}">
+<div class="cat-item" onclick="openKSpremFeature('wealthFlowModal')">
     <div class="cat-icon-circle" style="background: rgba(46,204,113,0.2); border: 1px solid #2ecc71;"><i class="fa-solid fa-coins" style="color: #2ecc71;"></i></div>
     <div class="cat-name">ขุมทรัพย์มหาเศรษฐี</div>
     <div class="cat-sub">เปิดสายธารเงิน & รหัสรวย</div>
@@ -1766,30 +1763,18 @@ footer {
   <div class="modal-content" style="max-width: 900px;">
     <div class="modal-close-btn" onclick="closeModal('modal-karmic')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
-    
     <div class="tier-switcher">
-      <button type="button" class="tier-btn active" id="btn-karmic-free" onclick="switchKarmicMode('free')">
-        <i class="fa-regular fa-circle-check"></i> รหัสกรรมพื้นฐาน (ฟรี)
-      </button>
-      <button type="button" class="tier-btn" id="btn-karmic-vip" onclick="switchKarmicMode('vip')">
-        <i class="fa-solid fa-crown"></i> ถอดรหัสกรรมข้ามภพ & บทสวดตัดวิบาก (VIP)
-      </button>
+      <button type="button" class="tier-btn active" id="btn-karmic-free" onclick="switchKarmicMode('free')"><i class="fa-regular fa-circle-check"></i> รหัสกรรมพื้นฐาน (ฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-karmic-vip" onclick="switchKarmicMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสกรรมข้ามภพ & บทสวดตัดวิบาก (VIP)</button>
     </div>
-
     <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:8px;"><i class="fa-solid fa-scroll"></i> รหัสกรรมข้ามภพ & วาสนาตั้งต้น</h3>
-    
-    <!-- โหมดฟรี -->
     <div id="karmic-free-box">
       <div class="desc-block">
         <strong style="color:#ffd700;"><i class="fa-solid fa-book-open"></i> ปมกรรมตั้งต้นและบททดสอบชีวิต (Karmic Debt):</strong>
         <p id="karmicFreeText" style="font-size:0.86rem; color:#cfd8dc; margin-top:6px; line-height:1.7;">กำลังวิเคราะห์พันธะกรรมดั้งเดิมจากวันเดือนปีเกิดและลัคนาของท่าน...</p>
       </div>
     </div>
-
-    <!-- โหมด VIP -->
-    <div id="karmic-vip-box" style="display:none; margin-top:10px;">
-      <div id="karmicVipContent" style="padding: 15px 0;"></div>
-    </div>
+    <div id="karmic-vip-box" style="display:none; margin-top:10px;"><div id="karmicVipContent" style="padding: 15px 0;"></div></div>
   </div>
 </div>
 
@@ -1798,30 +1783,18 @@ footer {
   <div class="modal-content" style="max-width: 900px;">
     <div class="modal-close-btn" onclick="closeModal('modal-lifeturturning')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
-    
     <div class="tier-switcher">
-      <button type="button" class="tier-btn active" id="btn-lifeturn-free" onclick="switchLifeTurnMode('free')">
-        <i class="fa-regular fa-circle-check"></i> วัฏจักรพลิกชีวิต (ฟรี)
-      </button>
-      <button type="button" class="tier-btn" id="btn-lifeturn-vip" onclick="switchLifeTurnMode('vip')">
-        <i class="fa-solid fa-crown"></i> มหาพิชัยสงคราม 12 ฤดูกาล (VIP)
-      </button>
+      <button type="button" class="tier-btn active" id="btn-lifeturn-free" onclick="switchLifeTurnMode('free')"><i class="fa-regular fa-circle-check"></i> วัฏจักรพลิกชีวิต (ฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-lifeturn-vip" onclick="switchLifeTurnMode('vip')"><i class="fa-solid fa-crown"></i> มหาพิชัยสงคราม 12 ฤดูกาล (VIP)</button>
     </div>
-
     <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:8px;"><i class="fa-solid fa-shield-halved"></i> มหาพิชัยสงครามชีวิต</h3>
-    
-    <!-- โหมดฟรี -->
     <div id="lifeturn-free-box">
       <div class="desc-block">
         <strong style="color:#ffd700;"><i class="fa-solid fa-compass"></i> จังหวะชีวิตและทิศทางรอบปีนี้:</strong>
         <p id="lifeturnFreeText" style="font-size:0.86rem; color:#cfd8dc; margin-top:6px; line-height:1.7;">กำลังวิเคราะห์กระแสพลังงานดาวประจำตัวและแนวโน้มความก้าวหน้าเบื้องต้น...</p>
       </div>
     </div>
-
-    <!-- โหมด VIP -->
-    <div id="lifeturn-vip-box" style="display:none; margin-top:10px;">
-      <div id="lifeturnVipContent" style="padding: 15px 0;"></div>
-    </div>
+    <div id="lifeturn-vip-box" style="display:none; margin-top:10px;"><div id="lifeturnVipContent" style="padding: 15px 0;"></div></div>
   </div>
 </div>
 
@@ -1830,30 +1803,18 @@ footer {
   <div class="modal-content" style="max-width: 900px;">
     <div class="modal-close-btn" onclick="closeModal('modal-soulelement')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
-    
     <div class="tier-switcher">
-      <button type="button" class="tier-btn active" id="btn-soul-free" onclick="switchSoulMode('free')">
-        <i class="fa-regular fa-circle-check"></i> ธาตุกายสิทธิ์พื้นฐาน (ฟรี)
-      </button>
-      <button type="button" class="tier-btn" id="btn-soul-vip" onclick="switchSoulMode('vip')">
-        <i class="fa-solid fa-crown"></i> ถอดรหัสจิตวิญญาณ & หินมงคล (VIP)
-      </button>
+      <button type="button" class="tier-btn active" id="btn-soul-free" onclick="switchSoulMode('free')"><i class="fa-regular fa-circle-check"></i> ธาตุกายสิทธิ์พื้นฐาน (ฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-soul-vip" onclick="switchSoulMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสจิตวิญญาณ & หินมงคล (VIP)</button>
     </div>
-
     <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:8px;"><i class="fa-solid fa-gem"></i> ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์</h3>
-    
-    <!-- โหมดฟรี -->
     <div id="soul-free-box">
       <div class="desc-block">
         <strong style="color:#ffd700;"><i class="fa-solid fa-yin-yang"></i> ธาตุแท้และลักษณะจิตวิญญาณ:</strong>
         <p id="soulFreeText" style="font-size:0.86rem; color:#cfd8dc; margin-top:6px; line-height:1.7;">กำลังวิเคราะห์พลังงานธาตุประจำตัวและจุดเด่นทางจิตวิญญาณ...</p>
       </div>
     </div>
-
-    <!-- โหมด VIP -->
-    <div id="soul-vip-box" style="display:none; margin-top:10px;">
-      <div id="soulVipContent" style="padding: 15px 0;"></div>
-    </div>
+    <div id="soul-vip-box" style="display:none; margin-top:10px;"><div id="soulVipContent" style="padding: 15px 0;"></div></div>
   </div>
 </div>
 
@@ -1862,30 +1823,18 @@ footer {
   <div class="modal-content" style="max-width: 900px;">
     <div class="modal-close-btn" onclick="closeModal('modal-wealthflow')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
-    
     <div class="tier-switcher">
-      <button type="button" class="tier-btn active" id="btn-wealth-free" onclick="switchWealthMode('free')">
-        <i class="fa-regular fa-circle-check"></i> รหัสเงินทองพื้นฐาน (ฟรี)
-      </button>
-      <button type="button" class="tier-btn" id="btn-wealth-vip" onclick="switchWealthMode('vip')">
-        <i class="fa-solid fa-crown"></i> ขุมทรัพย์มหาเศรษฐี & สายธารเงินล้าน (VIP)
-      </button>
+      <button type="button" class="tier-btn active" id="btn-wealth-free" onclick="switchWealthMode('free')"><i class="fa-regular fa-circle-check"></i> รหัสเงินทองพื้นฐาน (ฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-wealth-vip" onclick="switchWealthMode('vip')"><i class="fa-solid fa-crown"></i> ขุมทรัพย์มหาเศรษฐี & สายธารเงินล้าน (VIP)</button>
     </div>
-
     <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:8px;"><i class="fa-solid fa-coins"></i> ขุมทรัพย์มหาเศรษฐี</h3>
-    
-    <!-- โหมดฟรี -->
     <div id="wealth-free-box">
       <div class="desc-block">
         <strong style="color:#ffd700;"><i class="fa-solid fa-wallet"></i> ทิศทางการเงินและช่องทางรับทรัพย์:</strong>
         <p id="wealthFreeText" style="font-size:0.86rem; color:#cfd8dc; margin-top:6px; line-height:1.7;">กำลังวิเคราะห์กระแสเงินสดและทักษะทำเงินเด่นประจำตัว...</p>
       </div>
     </div>
-
-    <!-- โหมด VIP -->
-    <div id="wealth-vip-box" style="display:none; margin-top:10px;">
-      <div id="wealthVipContent" style="padding: 15px 0;"></div>
-    </div>
+    <div id="wealth-vip-box" style="display:none; margin-top:10px;"><div id="wealthVipContent" style="padding: 15px 0;"></div></div>
   </div>
 </div>
   <!-- JAVASCRIPT LOGIC & ENGINES -->
@@ -9641,6 +9590,90 @@ function switchWealthMode(mode) {
           <h4 style="color: var(--gold-bright); margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-crown"></i> แผนผังขุมทรัพย์มหาเศรษฐี & รหัสเงินล้าน (VIP EXCLUSIVE)</h4>
           <p>ใช้กระเป๋าสตางค์โทนสีเขียวหรือสีทอง จัดระเบียบธนบัตรให้หันหัวไปทางเดียวกัน และพกแบงค์ขวัญถุงเลขมงคลเพื่อเปิดสายธารเงินล้าน</p>
         </div>`;
+    }
+  }
+}
+  function openKSpremFeature(featureKey) {
+  let modalId = '';
+  if (featureKey === 'karmicModal') modalId = 'modal-karmic';
+  else if (featureKey === 'lifeTurningModal') modalId = 'modal-lifeturturning';
+  else if (featureKey === 'soulElementModal') modalId = 'modal-soulelement';
+  else if (featureKey === 'wealthFlowModal') modalId = 'modal-wealthflow';
+
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box;";
+    
+    // อัปเดตข้อความเริ่มต้นเมื่อเปิด
+    const uName = AppState.userName || 'เจ้าชะตา';
+    document.getElementById('karmicFreeText').innerHTML = `คุณ <strong>${uName}</strong> จากพื้นดวงกำเนิดมีปมกรรมตั้งต้นเกี่ยวกับความเด็ดเดี่ยวและการเชื่อใจคนใกล้ตัว บททดสอบชีวิตคือการเรียนรู้ที่จะพึ่งพาตนเอง`;
+    document.getElementById('lifeturnFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสพลังงานดาวประจำตัวกำลังเคลื่อนเข้าสู่จังหวะปรับเปลี่ยนโครงสร้างชีวิต รอบปีนี้ควรเน้นการตั้งรับอย่างมีสติ`;
+    document.getElementById('soulFreeText').innerHTML = `คุณ <strong>${uName}</strong> พลังงานธาตุแท้ประจำดวงจิตมีความละเอียดอ่อนและเปิดรับคลื่นความถี่เชิงบวกได้ไว`;
+    document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
+  }
+}
+
+function switchKarmicMode(mode) {
+  document.getElementById('btn-karmic-free').classList.toggle('active', mode === 'free');
+  document.getElementById('btn-karmic-vip').classList.toggle('active', mode === 'vip');
+  document.getElementById('karmic-free-box').style.display = (mode === 'free') ? 'block' : 'none';
+  document.getElementById('karmic-vip-box').style.display = (mode === 'vip') ? 'block' : 'none';
+  if (mode === 'vip') {
+    const isVip = AppState.isVipUser || localStorage.getItem('ks_vip_active') === 'true';
+    const vipBox = document.getElementById('karmicVipContent');
+    if (!isVip) {
+      vipBox.innerHTML = `<div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright);"><i class="fa-solid fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #ffd700;"></i><strong style="font-size: 1.1rem;">ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น</strong><p style="font-size: 0.88rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 15px;">ปลดล็อกรหัสกรรมชั้นที่ 7 และพิธีขอขมาตัดสัญญากรรมเฉพาะดวงชะตา</p><button onclick="closeModal('modal-karmic'); openFeatureModal('member');" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">อัปเกรดเป็นสมาชิก VIP</button></div>`;
+    } else {
+      vipBox.innerHTML = `<div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"><h4 style="color: var(--gold-bright); margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-crown"></i> คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE)</h4><p><strong>1. เจ้ากรรมนายเวรประจำรหัสชะตา:</strong> ไว้ใจใครมักถูกแวงกัด เจ็บปวดเพราะคนที่รักและไว้ใจที่สุด</p><p style="margin-top: 8px;"><strong>2. พิธีขอขมาและตัดสัญญากรรมเฉพาะตัว:</strong> จุดธูป 16 ดอกกลางแจ้งในวันพระ ขึ้นต้นด้วย นะโม 3 จบ แล้วกล่าวคาถาถอนพันธะสัญญา</p></div>`;
+    }
+  }
+}
+
+function switchLifeTurnMode(mode) {
+  document.getElementById('btn-lifeturn-free').classList.toggle('active', mode === 'free');
+  document.getElementById('btn-lifeturn-vip').classList.toggle('active', mode === 'vip');
+  document.getElementById('lifeturn-free-box').style.display = (mode === 'free') ? 'block' : 'none';
+  document.getElementById('lifeturn-vip-box').style.display = (mode === 'vip') ? 'block' : 'none';
+  if (mode === 'vip') {
+    const isVip = AppState.isVipUser || localStorage.getItem('ks_vip_active') === 'true';
+    const vipBox = document.getElementById('lifeturnVipContent');
+    if (!isVip) {
+      vipBox.innerHTML = `<div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright);"><i class="fa-solid fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #ffd700;"></i><strong style="font-size: 1.1rem;">ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น</strong><p style="font-size: 0.88rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 15px;">เข้าถึงกลยุทธ์มหาพิชัยสงคราม 12 ฤดูกาลและจังหวะพลิกชีวิตขั้นสูงสุด</p><button onclick="closeModal('modal-lifeturturning'); openFeatureModal('member');" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">อัปเกรดเป็นสมาชิก VIP</button></div>`;
+    } else {
+      vipBox.innerHTML = `<div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"><h4 style="color: var(--gold-bright); margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-crown"></i> กลยุทธ์มหาพิชัยสงคราม 12 ฤดูกาล (VIP EXCLUSIVE)</h4><p>ช่วงเวลานี้ดาวประจำตัวทำมุมตรีโกณ เปิดทางให้คุณสามารถขยายขอบเขตธุรกิจและเจรจาปิดดีลสำคัญได้อย่างราบรื่น</p></div>`;
+    }
+  }
+}
+
+function switchSoulMode(mode) {
+  document.getElementById('btn-soul-free').classList.toggle('active', mode === 'free');
+  document.getElementById('btn-soul-vip').classList.toggle('active', mode === 'vip');
+  document.getElementById('soul-free-box').style.display = (mode === 'free') ? 'block' : 'none';
+  document.getElementById('soul-vip-box').style.display = (mode === 'vip') ? 'block' : 'none';
+  if (mode === 'vip') {
+    const isVip = AppState.isVipUser || localStorage.getItem('ks_vip_active') === 'true';
+    const vipBox = document.getElementById('soulVipContent');
+    if (!isVip) {
+      vipBox.innerHTML = `<div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright);"><i class="fa-solid fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #ffd700;"></i><strong style="font-size: 1.1rem;">ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น</strong><p style="font-size: 0.88rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 15px;">ปลดล็อกรหัสหินมงคลประจำตัวและพิธีเสริมพลังออร่าธาตุกายสิทธิ์</p><button onclick="closeModal('modal-soulelement'); openFeatureModal('member');" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">อัปเกรดเป็นสมาชิก VIP</button></div>`;
+    } else {
+      vipBox.innerHTML = `<div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"><h4 style="color: var(--gold-bright); margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-crown"></i> รหัสหินมงคล & พิธีเสริมพลังออร่า (VIP EXCLUSIVE)</h4><p>แนะนำให้พกหินไหมทอง (Gold Rutilated Quartz) หรือหยกเขียว เพื่อกระตุ้นพลังงานธาตุกายสิทธิ์และดึงดูดความสำเร็จ</p></div>`;
+    }
+  }
+}
+
+function switchWealthMode(mode) {
+  document.getElementById('btn-wealth-free').classList.toggle('active', mode === 'free');
+  document.getElementById('btn-wealth-vip').classList.toggle('active', mode === 'vip');
+  document.getElementById('wealth-free-box').style.display = (mode === 'free') ? 'block' : 'none';
+  document.getElementById('wealth-vip-box').style.display = (mode === 'vip') ? 'block' : 'none';
+  if (mode === 'vip') {
+    const isVip = AppState.isVipUser || localStorage.getItem('ks_vip_active') === 'true';
+    const vipBox = document.getElementById('wealthVipContent');
+    if (!isVip) {
+      vipBox.innerHTML = `<div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright);"><i class="fa-solid fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: #ffd700;"></i><strong style="font-size: 1.1rem;">ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น</strong><p style="font-size: 0.88rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 15px;">ปลดล็อกแผนผังขุมทรัพย์มหาเศรษฐีและรหัสลับกระเป๋าสตางค์เรียกทรัพย์</p><button onclick="closeModal('modal-wealthflow'); openFeatureModal('member');" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">อัปเกรดเป็นสมาชิก VIP</button></div>`;
+    } else {
+      vipBox.innerHTML = `<div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"><h4 style="color: var(--gold-bright); margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-crown"></i> แผนผังขุมทรัพย์มหาเศรษฐี & รหัสเงินล้าน (VIP EXCLUSIVE)</h4><p>ใช้กระเป๋าสตางค์โทนสีเขียวหรือสีทอง จัดระเบียบธนบัตรให้หันหัวไปทางเดียวกัน และพกแบงค์ขวัญถุงเลขมงคลเพื่อเปิดสายธารเงินล้าน</p></div>`;
     }
   }
 }
