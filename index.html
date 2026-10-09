@@ -9637,7 +9637,80 @@ window.openNewPremModal = function(type) {
   } else {
     console.warn("ไม่พบ Modal ID:", modalId);
   }
-};  
+};
+// --- ฟังก์ชันป้องกันและสร้างตัวเลือกดรอปดาวน์อัตโนมัติไม่ให้เกิดค่า null ---
+document.addEventListener('DOMContentLoaded', function() {
+  // สร้างตัวเลือกวัน 1-31
+  const daySelects = ['birthDay', 'transitDay'];
+  daySelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>วัน</option>';
+      for(let i=1; i<=31; i++) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.textContent = i;
+        el.appendChild(opt);
+      }
+    }
+  });
+
+  // สร้างตัวเลือกเดือน 1-12
+  const monthSelects = ['birthMonth', 'transitMonth'];
+  const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+  monthSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>เดือน</option>';
+      months.forEach((m, idx) => {
+        let opt = document.createElement('option');
+        opt.value = idx + 1; opt.textContent = m;
+        el.appendChild(opt);
+      });
+    }
+  });
+
+  // สร้างตัวเลือกปี พ.ศ. (2460 - 2575)
+  const yearSelects = ['birthYearBE', 'transitYearBE'];
+  yearSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>พ.ศ.</option>';
+      for(let y=2575; y>=2460; y--) {
+        let opt = document.createElement('option');
+        opt.value = y; opt.textContent = y;
+        el.appendChild(opt);
+      }
+    }
+  });
+
+  // สร้างตัวเลือกเวลา 24 ชั่วโมง (00 - 23)
+  const hourSelects = ['birthHour24', 'transitHour24'];
+  hourSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>ชม.</option>';
+      for(let h=0; h<24; h++) {
+        let opt = document.createElement('option');
+        opt.value = h; opt.textContent = String(h).padStart(2, '0');
+        el.appendChild(opt);
+      }
+    }
+  });
+
+  // สร้างตัวเลือกนาที (00 - 59)
+  const minSelects = ['birthMinute24', 'transitMinute24'];
+  minSelects.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options.length <= 1) {
+      el.innerHTML = '<option value="" disabled selected>นาที</option>';
+      for(let m=0; m<60; m+=5) {
+        let opt = document.createElement('option');
+        opt.value = m; opt.textContent = String(m).padStart(2, '0');
+        el.appendChild(opt);
+      }
+    }
+  });
+});  
 </script>
 </body>
 </html>
