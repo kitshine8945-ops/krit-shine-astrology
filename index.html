@@ -2420,17 +2420,16 @@ if (typeof applyAgeChange === 'function') {
   applyAgeChange(calculatedAge);
 }
 
-      updateDailyHoroscopeView();
-      calcNum7Base();
-      calcMahataksa();
-      calcChatraThreeLayers();
-      calcAuspiciousDates();
+updateDailyHoroscopeView();
+    calcNum7Base();
+    calcMahataksa();
+    calcChatraThreeLayers();
+    calcAuspiciousDates();
     if (typeof calcBaziEngine === 'function') {
       calcBaziEngine();
     }
   }
 }
-
 function calcChatraThreeLayers() {
   const cTop = document.getElementById('chatraTop');
   const cMid = document.getElementById('chatraMid');
