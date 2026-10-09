@@ -4645,23 +4645,26 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (แยกคำทำนายระหว่างวันเกิดและวันจรอย่างแม่นยำตามเงื่อนไข 1, 2, 3)
+// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (VIP เปลี่ยนคำทำนายตามวันจรอย่างแม่นยำ)
 function switchSajuMode(mode) {
   const btnFree = document.getElementById('btn-saju-free');
   const btnVip = document.getElementById('btn-saju-vip');
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
 
-  // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก (ใช้สำหรับข้อ 1 และ 2)
+  // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก (สำหรับโหมดฟรี)
   const bD = AppState.birthDay || parseInt(document.getElementById('birthDay')?.value, 10) || 30;
   const bM = AppState.birthMonth || parseInt(document.getElementById('birthMonth')?.value, 10) || 4;
   const bY = AppState.birthBE || parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522;
 
-  // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจร (ใช้สำหรับข้อ 3)
+  // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจร (สำหรับโหมด VIP - เปลี่ยนตามวันจร)
   const tD = parseInt(document.getElementById('transitDay')?.value, 10) || new Date().getDate();
   const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || (new Date().getMonth() + 1);
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
   const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+
+  let ageYang = (tY - bY) + 1;
+  if (ageYang < 1) ageYang = 1;
 
   if (btnFree) {
     btnFree.classList.toggle('active', mode === 'free');
@@ -4676,7 +4679,7 @@ function switchSajuMode(mode) {
     btnVip.style.color = mode === 'vip' ? '#eab308' : '#94a3b8';
   }
 
-  // --- เงื่อนไขที่ 1: โหมดฟรี (คำทำนายเปลี่ยนตามวันเกิด) ---
+  // --- โหมดฟรี: คำทำนายเปลี่ยนตามวันเกิด ---
   if (mode === 'free') {
     const freePools = [
       {
@@ -4702,50 +4705,71 @@ function switchSajuMode(mode) {
       </div>
     `;
   } 
-  // --- เงื่อนไขที่ 2 และ 3: โหมด VIP (แยกคำทำนายระหว่างวันเกิด และ วันจร) ---
+  // --- โหมด VIP: คำทำนายเปลี่ยนตามวันจรอย่างแม่นยำ ---
   else {
-    const vipBirthPools = [
-      {
-        title: "เจาะลึก 4 เสาชะตาเชิงลึก (อิงวันเกิดกำเนิด)",
-        desc: `วิเคราะห์จากวันเกิด ${bD}/${bM}/${bY}: ดวงชะตามีโครงสร้าง 4 เสาหลักที่เกื้อหนุนด้านทรัพย์สินและวาสนาบารมีระยะยาว มีเกณฑ์ความก้าวหน้าในสายอาชีพและกิจการส่วนตัวอย่างมั่นคง`
-      },
-      {
-        title: "เจาะลึก 4 เสาชะตาเชิงลึก (อิงวันเกิดกำเนิด)",
-        desc: `วิเคราะห์จากวันเกิด ${bD}/${bM}/${bY}: ดิถีธาตุและสภาวะราศีเกิดส่งเสริมเรื่องการลงทุนและการสร้างเครือข่ายพันธมิตร มีโอกาสขยายขอบเขตธุรกิจและรับผลตอบแทนก้อนโต`
-      }
-    ];
-    let bIdx = (bD + bM * 5 + bY) % vipBirthPools.length;
-    let bRes = vipBirthPools[bIdx];
-
     const vipTransitPools = [
       {
         transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `อิงวันจร ${tD}/${tMName}/${tY}: ธาตุพลังงานจรวันนี้ส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภ การเจรจาธุรกิจ การเซ็นสัญญา หรือการลงทุนในวันนี้จะให้ผลลัพธ์ที่งดงามเกินคาด`
+        desc: `อิงวันจร ${tD} ${tMName} ${tY} (อายุย่าง ${ageYang} ปี): ธาตุพลังงานจรวันนี้ส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภและการเจรจา การเซ็นสัญญา การทำธุรกิจ หรือการลงทุนในวันนี้จะให้ผลลัพธ์ที่งดงามเกินคาด`
       },
       {
         transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `อิงวันจร ${tD}/${tMName}/${tY}: พลังงานดาวจรในวันนี้โดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
+        desc: `อิงวันจร ${tD} ${tMName} ${tY} (อายุย่าง ${ageYang} ปี): พลังงานดาวจรในวันนี้โดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
       },
       {
         transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
-        desc: `อิงวันจร ${tD}/${tMName}/${tY}: ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
+        desc: `อิงวันจร ${tD} ${tMName} ${tY} (อายุย่าง ${ageYang} ปี): ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
       }
     ];
     let tIdx = (tY * 7 + tMVal * 11 + tD + bD) % vipTransitPools.length;
     let tRes = vipTransitPools[tIdx];
 
     resultBox.innerHTML = `
-      <div style="display: flex; flex-direction: column; gap: 14px;">
-        <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
-          <h4 style="color: #ffd700; margin-bottom: 6px;"><i class="fa-solid fa-crown"></i> ${bRes.title}</h4>
-          <p style="font-size: 0.88rem; color: #fff; line-height: 1.7;">${bRes.desc}</p>
-        </div>
-        <div style="background: rgba(56,189,248,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid #38bdf8;">
-          <h4 style="color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-satellite-dish"></i> ${tRes.transitTitle}</h4>
-          <p style="font-size: 0.88rem; color: #fff; line-height: 1.7;">${tRes.desc}</p>
-        </div>
+      <div style="background: rgba(255,215,0,0.08); padding: 18px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
+        <h4 style="color: #ffd700; margin-bottom: 8px;"><i class="fa-solid fa-satellite-dish"></i> ${tRes.transitTitle}</h4>
+        <p style="font-size: 0.88rem; color: #fff; line-height: 1.7;">${tRes.desc}</p>
       </div>
     `;
+  }
+}
+
+// ฟังก์ชันเปิด Modal ซาจู
+function openSajuModal() {
+  const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
+  const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
+
+  const content = `
+    <div style="text-align:center; margin-bottom:14px;">
+      <img src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800&auto=format&fit=crop" style="width:100%; max-height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(234,179,8,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+      <h3 style="color:#facc15; margin:10px 0 4px; font-size:1.15rem;">🇰🇷 ผูกดวงชะตาเกาหลี 4 เสาหลัก (사주 - Saju)</h3>
+      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต</p>
+    </div>
+
+    <!-- ปุ่มสลับโหมด Free / VIP -->
+    <div class="tier-switcher" style="margin-bottom:14px; display:flex; gap:8px;">
+      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #38bdf8; background:rgba(56,189,248,0.25); color:#38bdf8; font-weight:bold; cursor:pointer;">
+        คำนวณฟรี
+      </button>
+      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #64748b; background:transparent; color:#94a3b8; font-weight:bold; cursor:pointer;">
+        👑 ทำนายเต็มรูปแบบ (VIP)
+      </button>
+    </div>
+
+    <!-- กล่องแสดงผลคำทำนาย -->
+    <div id="sajuResultBox" style="margin-top:10px;"></div>
+  `;
+
+  if (modalTitle) modalTitle.textContent = "🇰🇷 การพยากรณ์แบบเกาหลี (Saju)";
+  if (modalBody) modalBody.innerHTML = content;
+
+  // เริ่มต้นแสดงผลแบบ Free ทันทีเมื่อเปิด Modal
+  switchSajuMode('free');
+
+  if (typeof openFeatureModal === 'function') {
+    openFeatureModal('articles');
+  } else {
+    const m = document.getElementById('modal-articles') || document.getElementById('articlesModal') || document.getElementById('artModal');
+    if (m) m.style.display = 'flex';
   }
 }
 
