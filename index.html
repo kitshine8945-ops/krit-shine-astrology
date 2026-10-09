@@ -8002,32 +8002,26 @@ function checkUserHasEnteredBirth() {
 window.calcBaziEngine = function() {
     var freeResBox = document.getElementById('bazi-free-result');
     var vipResBox = document.getElementById('bazi-vip-result');
-
-    if (freeResBox && freeResBox.parentElement) {
-        freeResBox.parentElement.style.display = "block";
-        freeResBox.parentElement.style.width = "100%";
-    }
+    
+    // ดึง Element ย่อยตามโครงสร้าง HTML จริงของหน้าเว็บ
+    var freeTitleEl = document.getElementById('bazi-free-title');
+    var freeDescEl = document.getElementById('bazi-free-desc');
 
     if (!checkUserHasEnteredBirth()) {
         var warnHtml = `
-            <div style="padding: 15px; background: #222; color: #fff; border-radius: 8px; text-align: center;">
-                <h4>ยังไม่ได้ระบุวันเดือนปีเกิด</h4>
-                <p>กรุณากรอก วัน / เดือน / ปีเกิด และเวลาเกิด ที่หน้าแรก เพื่อถอดรหัส 4 เสาหลักดวงจีนปาจื่อเฉพาะบุคคล</p>
-                <button onclick="scrollToForm()" style="background: #gold; color: #000; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">ไปกรอกวันเกิดที่หน้าแรก</button>
+            <div style="padding: 12px; text-align: center; color: #ffeb3b;">
+                <strong>⚠️ ยังไม่ได้ระบุวันเดือนปีเกิด</strong><br>
+                <span style="font-size: 0.8rem; color: #aaa;">กรุณากรอก วัน / เดือน / ปีเกิด และเวลาเกิด ที่หน้าแรกก่อนครับ</span>
             </div>
         `;
-        if (AppState.currentBaziMode === 'free') {
-            if (freeResBox) {
-                freeResBox.innerHTML = warnHtml;
-                freeResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important;";
-            }
+        if (AppState.currentBaziMode === 'free' && freeResBox) {
+            freeResBox.style.display = 'block';
+            freeResBox.innerHTML = warnHtml;
             if (vipResBox) vipResBox.style.display = 'none';
-        } else {
+        } else if (vipResBox) {
+            vipResBox.style.display = 'block';
+            vipResBox.innerHTML = warnHtml;
             if (freeResBox) freeResBox.style.display = 'none';
-            if (vipResBox) {
-                vipResBox.innerHTML = warnHtml;
-                vipResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important;";
-            }
         }
         return;
     }
@@ -8041,47 +8035,56 @@ window.calcBaziEngine = function() {
     var bazi = calculateDynamicBaZi(yBE, m, d, h);
 
     if (AppState.currentBaziMode === 'free') {
-        if (freeResBox) {
-            freeResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important; margin-top: 14px;";
-            // เปลี่ยนมาใช้เครื่องหมาย Backtick สังเกตตัวแรกและตัวสุดท้ายของ innerHTML
-            freeResBox.innerHTML = `
-                <div style="padding: 15px; background: #111; border: 1px solid #ffd700; border-radius: 8px; color: #fff;">
-                    <h4 style="color: #ffd700;">ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})</h4>
-                    <p><b>ลักษณะตัวตนและจิตวิญญาณ:</b> เปรียบประดุจ <b>${bazi.dayMaster.nature}</b> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ</p>
-                    <p>✨ <b>คำแนะนำสมดุล 5 ธาตุ:</b> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง</p>
-                </div>
-            `;
-        }
         if (vipResBox) vipResBox.style.display = 'none';
+        
+        if (freeResBox) {
+            freeResBox.style.display = 'block';
+            
+            // เช็กว่ามี Element ย่อยครบไหม ถ้าครบให้เปลี่ยนตาม ID ย่อยเพื่อรักษาดีไซน์เดิมไว้
+            if (freeTitleEl && freeDescEl) {
+                freeTitleEl.textContent = `ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})`;
+                freeDescEl.innerHTML = `
+                    เปรียบประดุจ <strong>${bazi.dayMaster.nature}</strong> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ
+                    <br><br>
+                    ✨ <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+                `;
+            } else {
+                // ถ้าโครงสร้าง HTML โดนเขียนทับไปแล้ว ให้ Render กล่องใหม่แบบชัวร์ ๆ เข้าไปแทน
+                freeResBox.innerHTML = `
+                    <h4 style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})</h4>
+                    <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">
+                        เปรียบประดุจ <strong>${bazi.dayMaster.nature}</strong> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ
+                        <br><br>
+                        ✨ <strong>คำแนะนำสมดุล 5 ธาตุ:</strong> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+                    </p>
+                `;
+            }
+        }
     } else {
         if (freeResBox) freeResBox.style.display = 'none';
         if (vipResBox) {
-            vipResBox.style.cssText = "display: block !important; width: 100% !important; box-sizing: border-box !important; margin-top: 14px;";
-            // เปลี่ยนมาใช้เครื่องหมาย Backtick ในฝั่ง VIP เช่นกัน
+            vipResBox.style.display = 'block';
             vipResBox.innerHTML = `
-                <div style="padding: 15px; background: #111; border: 2px solid #ffd700; border-radius: 8px; color: #fff;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center;">
-                        <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาปี (รากฐาน)</small><br><b>${bazi.year.stem.name}</b><br><span>${bazi.year.branch.name}</span></div>
-                        <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเดือน (งาน/พ่อแม่)</small><br><b>${bazi.month.stem.name}</b><br><span>${bazi.month.branch.name}</span></div>
-                        <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาวัน (ดิถี/คู่ครอง)</small><br><b>${bazi.day.stem.name}</b><br><span>${bazi.day.branch.name}</span></div>
-                        <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเวลา (บริวาร/ปลาย)</small><br><b>${bazi.hour.stem.name}</b><br><span>${bazi.hour.branch.name}</span></div>
-                    </div>
-                    <h4 style="color: #ffd700;">ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}${bazi.dayMaster.pol}) - สภาพดวง: ${bazi.isStrong ? 'เข้มแข็ง (Strong Day Master)' : 'อ่อนแรง (Weak Day Master)'}</h4>
-                    <p><b>พลังงานแก่นแท้:</b> ${bazi.dayMaster.nature}</p>
-                    <p><span style="color: #00ff00;"><b>ธาตุให้คุณเกื้อหนุน (Yong Shen):</b></span> ${bazi.yongShen} | <span style="color: #ff0000;"><b>ธาตุให้โทษต้องระวัง (Ji Shen):</b></span> ${bazi.jiShen}</p>
-                    
-                    <h4 style="color: #ffd700; margin-top: 15px; border-bottom: 1px dashed #444; padding-bottom: 5px;">คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis)</h4>
-                    <p><b>1. วาสนาการเงิน & ขุมทรัพย์ (เจียไช่/เพียนไช่):</b> กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและสินทรัพย์ระยะยาว</p>
-                    <p><b>2. การงาน & บารมี (เจิ้งกวาน/ชีซา):</b> โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง</p>
-                    <p><b>3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</b> คู่ครองมีสติปัญญาเฉียบคม คอยเป็นคู่คิดช่วยวางแผนการเงิน เกื้อหนุนธาตุชะตาให้มั่นคงและเป็นปึกแผ่น</p>
-                    <p><b>4. ฮวงจุ้ยเสริมพลังชี่ประจำตัว:</b> จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภตลอดทั้งปี</p>
-                    <p><b>มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</b> วงจรชีวิตในทศวรรษนี้กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณเริ่มส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น</p>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center;">
+                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาปี (รากฐาน)</small><br><b>${bazi.year.stem.name}</b><br><span>${bazi.year.branch.name}</span></div>
+                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเดือน (งาน/พ่อแม่)</small><br><b>${bazi.month.stem.name}</b><br><span>${bazi.month.branch.name}</span></div>
+                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาวัน (ดิถี/คู่ครอง)</small><br><b>${bazi.day.stem.name}</b><br><span>${bazi.day.branch.name}</span></div>
+                    <div style="flex: 1; background: #222; margin: 2px; padding: 5px; border-radius: 4px;"><small style="color: #aaa;">เสาเวลา (บริวาร/ปลาย)</small><br><b>${bazi.hour.stem.name}</b><br><span>${bazi.hour.branch.name}</span></div>
                 </div>
+                <h4 style="color: #ffd700;">ดิถี ${bazi.dayMaster.name} (${bazi.dayMaster.elem}${bazi.dayMaster.pol}) - สภาพดวง: ${bazi.isStrong ? 'เข้มแข็ง (Strong Day Master)' : 'อ่อนแรง (Weak Day Master)'}</h4>
+                <p><b>พลังงานแก่นแท้:</b> ${bazi.dayMaster.nature}</p>
+                <p><span style="color: #00ff00;"><b>ธาตุให้คุณเกื้อหนุน (Yong Shen):</b></span> ${bazi.yongShen} | <span style="color: #ff0000;"><b>ธาตุให้โทษต้องระวัง (Ji Shen):</b></span> ${bazi.jiShen}</p>
+                
+                <h4 style="color: #ffd700; margin-top: 15px; border-bottom: 1px dashed #444; padding-bottom: 5px;">คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis)</h4>
+                <p><b>1. วาสนาการเงิน & ขุมทรัพย์:</b> กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและสินทรัพย์ระยะยาว</p>
+                <p><b>2. การงาน & บารมี:</b> โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง</p>
+                <p><b>3. คู่ครอง & หุ้นส่วนชะตา:</b> คู่ครองมีสติปัญญาเฉียบคม คอยเป็นคู่คิดช่วยวางแผนการเงิน เกื้อหนุนธาตุชะตาให้มั่นคงและเป็นปึกแผ่น</p>
+                <p><b>4. ฮวงจุ้ยเสริมพลังชี่ประจำตัว:</b> จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภตลอดทั้งปี</p>
+                <p><b>มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</b> วงจรชีวิตในทศวรรษนี้กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณเริ่มส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด</p>
             `;
         }
     }
 };
-
 
                 <!-- สภาพดวงและธาตุปรับดวง -->
                 <div style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(234,179,8,0.6); padding: 22px; border-radius: 16px; margin-bottom: 16px; width: 100%; box-sizing: border-box;">
