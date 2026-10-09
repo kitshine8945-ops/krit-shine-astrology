@@ -2450,11 +2450,7 @@ function calculateAscendantAndTransit(e) {
   const ascInfo = ZODIAC_DATA[ascIndex];
   const sunInfo = ZODIAC_DATA[sunSignIndex];
 
-      document.getElementById('resAscendantTitle').textContent = `คุณ ${AppState.userName || 'เจ้าชะตา'} : ลัคนาสถิต${ascInfo.name} (${ascInfo.elem})`;
-      document.getElementById('dispAscendant').textContent = ascInfo.name;
-      document.getElementById('dispAscLord').textContent = `ตนุลัคน์: ${ascInfo.lord}`;
-      document.getElementById('dispSunSign').textContent = sunInfo.name;
-      document.getElementById('dispSunDegree').textContent = `ธาตุกำเนิด: ${sunInfo.elem}`;
+  document.getElementById('resAscendantTitle').textContent = `คุณ ${AppState.userName || 'เจ้าชะตา'} : ลัคนาสถิต${ascInfo.name} (${ascInfo.elem})`;
 
       const freeContent = document.getElementById('free-result-content');
       const vipContent = document.getElementById('vip-result-content');
