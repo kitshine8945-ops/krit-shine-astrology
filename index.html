@@ -715,12 +715,11 @@ footer {
     <div class="cat-name">กราฟชีวิต</div>
     <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
 </div>
- <div class="cat-item" onclick="calcBaziEngine()">
+<div class="cat-item" onclick="openFeatureModal('bazi'); calcBaziEngine();">
   <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
   <div class="cat-name">ปาจื่อ (BaZi)</div>
   <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
 </div>
-
 <div class="cat-item" onclick="if(!AppState.birthDay){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal();}">
   <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
   <div class="cat-name">ซาจู (Saju)</div>
@@ -9321,30 +9320,10 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     }); 
 function calcBaziEngine() {
-    // 1. ตรวจสอบว่าผู้ใช้กรอกวันเดือนปีเกิดที่หน้าแรกหรือยัง
-    const dayEl = document.getElementById('birthDay');
-    const monthEl = document.getElementById('birthMonth');
-    const yearEl = document.getElementById('birthYearBE');
-
-    const dVal = dayEl ? dayEl.value : '';
-    const mVal = monthEl ? monthEl.value : '';
-    const yVal = yearEl ? yearEl.value : '';
-
-    // หากยังไม่กรอก ให้เด้งแจ้งเตือนครั้งเดียวและเลื่อนไปที่ฟอร์มทันที โดยไม่เปิด Modal
-    if (!dVal || !mVal || !yVal || !AppState.birthDay) {
-      alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
-      scrollToForm();
-      return;
-    }
-
-    // หากกรอกแล้ว ให้เปิดหน้าต่าง Modal ของปาจื่อขึ้นมาตามปกติ
-    if (typeof openFeatureModal === 'function') {
-      openFeatureModal('bazi');
-    }
-
-    const d = parseInt(dVal, 10);
-    const m = parseInt(mVal, 10);
-    const yBE = parseInt(yVal, 10);
+    // ดึงค่าวัน เดือน ปีเกิด จากฟอร์มหน้าเว็บอย่างปลอดภัยโดยไม่เด้ง Alert ขัดจังหวะตอนเลือกวันที่
+    const d = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+    const m = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
+    const yBE = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
     const h = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
 
     // ดึงวัน เดือน ปีจรสำหรับส่วน 5 มิติ VIP
