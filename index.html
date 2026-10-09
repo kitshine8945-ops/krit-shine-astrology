@@ -678,25 +678,25 @@ footer {
     <h3 class="category-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> ศูนย์รวมศาสตร์พยากรณ์ชั้นสูง (ศาสตร์ครบวงจร)</h3>
     <div class="category-grid">
  <!-- 4 เมนูพยากรณ์พรีเมียม -->
-<div class="cat-item" onclick="openKSpremFeature('karmicModal')">
+<div class="cat-item" onclick="openNewPremModal('karmic')">
     <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
     <div class="cat-name">รหัสกรรมข้ามภพ</div>
     <div class="cat-sub">ถอดบทเรียนชีวิต & วาสนา</div>
 </div>
 
-<div class="cat-item" onclick="openKSpremFeature('lifeTurningModal')">
+<div class="cat-item" onclick="openNewPremModal('lifeturn')">
     <div class="cat-icon-circle" style="background: rgba(52,152,219,0.2); border: 1px solid #3498db;"><i class="fa-solid fa-shield-halved" style="color: #5dade2;"></i></div>
     <div class="cat-name">มหาพิชัยสงคราม</div>
     <div class="cat-sub">จังหวะพลิกชีวิต 12 ฤดูกาล</div>
 </div>
 
-<div class="cat-item" onclick="openKSpremFeature('soulElementModal')">
+<div class="cat-item" onclick="openNewPremModal('soul')">
     <div class="cat-icon-circle" style="background: rgba(155,89,182,0.2); border: 1px solid #9b59b6;"><i class="fa-solid fa-gem" style="color: #c39bd3;"></i></div>
     <div class="cat-name">ถอดรหัสจิตวิญญาณ</div>
     <div class="cat-sub">ธาตุกายสิทธิ์เสริมออร่า</div>
 </div>
 
-<div class="cat-item" onclick="openKSpremFeature('wealthFlowModal')">
+<div class="cat-item" onclick="openNewPremModal('wealth')">
     <div class="cat-icon-circle" style="background: rgba(46,204,113,0.2); border: 1px solid #2ecc71;"><i class="fa-solid fa-coins" style="color: #2ecc71;"></i></div>
     <div class="cat-name">ขุมทรัพย์มหาเศรษฐี</div>
     <div class="cat-sub">เปิดสายธารเงิน & รหัสรวย</div>
@@ -9677,6 +9677,27 @@ function switchWealthMode(mode) {
     }
   }
 }
+// --- ฟังก์ชันเปิด Modal แบบใหม่ ตัดปัญหาชนของเก่า ---
+function openNewPremModal(type) {
+  let modalId = '';
+  if (type === 'karmic') modalId = 'modal-karmic';
+  else if (type === 'lifeturn') modalId = 'modal-lifeturturning';
+  else if (type === 'soul') modalId = 'modal-soulelement';
+  else if (type === 'wealth') modalId = 'modal-wealthflow';
+
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box;";
+    
+    // อัปเดตข้อความเริ่มต้น
+    const uName = AppState.userName || 'เจ้าชะตา';
+    if(type === 'karmic') document.getElementById('karmicFreeText').innerHTML = `คุณ <strong>${uName}</strong> จากพื้นดวงกำเนิดมีปมกรรมตั้งต้นเกี่ยวกับความเด็ดเดี่ยวและการเชื่อใจคนใกล้ตัว บททดสอบชีวิตคือการเรียนรู้ที่จะพึ่งพาตนเอง`;
+    if(type === 'lifeturn') document.getElementById('lifeturnFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสพลังงานดาวประจำตัวกำลังเคลื่อนเข้าสู่จังหวะปรับเปลี่ยนโครงสร้างชีวิต รอบปีนี้ควรเน้นการตั้งรับอย่างมีสติ`;
+    if(type === 'soul') document.getElementById('soulFreeText').innerHTML = `คุณ <strong>${uName}</strong> พลังงานธาตุแท้ประจำดวงจิตมีความละเอียดอ่อนและเปิดรับคลื่นความถี่เชิงบวกได้ไว`;
+    if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
+  }
+}  
 </script>
 </body>
 </html>
