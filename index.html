@@ -4645,23 +4645,120 @@ function openAllArticlesModal() {
     if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
     if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
 }   
-// ฟังก์ชันเปิด Modal ซาจู (เปลี่ยนคำทำนายตามวันจรอย่างเดียว)
-// ฟังก์ชันเปิด Modal ซาจู (คงโครงสร้างเดิมครบถ้วน และคำทำนายเปลี่ยนตามวันจร)
-function openSajuModal() {
-  const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
-  const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
+// ฟังก์ชันสลับโหมด Free / VIP ของซาจู (แยกคำทำนายระหว่างวันเกิดและวันจรอย่างแม่นยำตามเงื่อนไข 1, 2, 3)
+function switchSajuMode(mode) {
+  const btnFree = document.getElementById('btn-saju-free');
+  const btnVip = document.getElementById('btn-saju-vip');
+  const resultBox = document.getElementById('sajuResultBox');
+  if (!resultBox) return;
 
-  // ดึงค่าวันจรจากฟอร์มวันจร (หรือใช้วันปัจจุบันถ้าไม่ได้กรอก)
+  // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก (ใช้สำหรับข้อ 1 และ 2)
+  const bD = AppState.birthDay || parseInt(document.getElementById('birthDay')?.value, 10) || 30;
+  const bM = AppState.birthMonth || parseInt(document.getElementById('birthMonth')?.value, 10) || 4;
+  const bY = AppState.birthBE || parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522;
+
+  // 2. ดึงวันเดือนปี "จร" จากฟอร์มวันจร (ใช้สำหรับข้อ 3)
   const tD = parseInt(document.getElementById('transitDay')?.value, 10) || new Date().getDate();
   const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || (new Date().getMonth() + 1);
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
   const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
 
+  if (btnFree) {
+    btnFree.classList.toggle('active', mode === 'free');
+    btnFree.style.background = mode === 'free' ? 'rgba(56,189,248,0.25)' : 'transparent';
+    btnFree.style.borderColor = mode === 'free' ? '#38bdf8' : '#64748b';
+    btnFree.style.color = mode === 'free' ? '#38bdf8' : '#94a3b8';
+  }
+  if (btnVip) {
+    btnVip.classList.toggle('active', mode === 'vip');
+    btnVip.style.background = mode === 'vip' ? 'rgba(234,179,8,0.25)' : 'transparent';
+    btnVip.style.borderColor = mode === 'vip' ? '#eab308' : '#64748b';
+    btnVip.style.color = mode === 'vip' ? '#eab308' : '#94a3b8';
+  }
+
+  // --- เงื่อนไขที่ 1: โหมดฟรี (คำทำนายเปลี่ยนตามวันเกิด) ---
+  if (mode === 'free') {
+    const freePools = [
+      {
+        title: "บทวิเคราะห์ดิถีธาตุพื้นดวง (โหมดฟรี)",
+        desc: `อิงจากพื้นดวงวันเกิด ${bD}/${bM}/${bY}: ดิถีธาตุประจำตัวมีความสมดุล โดดเด่นด้านการสร้างฐานะด้วยความมุ่งมั่นและอดทน มีเกณฑ์รับทรัพย์และสร้างความมั่นคงในชีวิตจากน้ำพักน้ำแรงตนเอง`
+      },
+      {
+        title: "บทวิเคราะห์ดิถีธาตุพื้นดวง (โหมดฟรี)",
+        desc: `อิงจากพื้นดวงวันเกิด ${bD}/${bM}/${bY}: ดิถีธาตุประจำตัวมีความยืดหยุ่น ปรับตัวเก่ง มีไหวพริบปฏิภาณและวาทศิลป์โดดเด่น เหมาะกับการเจรจาค้าขายและการติดต่อประสานงาน`
+      },
+      {
+        title: "บทวิเคราะห์ดิถีธาตุพื้นดวง (โหมดฟรี)",
+        desc: `อิงจากพื้นดวงวันเกิด ${bD}/${bM}/${bY}: ดิถีธาตุประจำตัวมีความหนักแน่น มั่นคง มีความรับผิดชอบสูง ผู้ใหญ่และคนรอบข้างให้การสนับสนุนเกื้อหนุนด้วยดีเสมอมา`
+      }
+    ];
+    let idx = (bD * 3 + bM * 7 + bY) % freePools.length;
+    let res = freePools[idx];
+
+    resultBox.innerHTML = `
+      <div style="background: rgba(14,20,38,0.9); padding: 18px; border-radius: 12px; border: 1px solid var(--border-soft);">
+        <h4 style="color: #38bdf8; margin-bottom: 8px;"><i class="fa-solid fa-user"></i> ${res.title}</h4>
+        <p style="font-size: 0.88rem; color: #d1d9ec; line-height: 1.7;">${res.desc}</p>
+      </div>
+    `;
+  } 
+  // --- เงื่อนไขที่ 2 และ 3: โหมด VIP (แยกคำทำนายระหว่างวันเกิด และ วันจร) ---
+  else {
+    const vipBirthPools = [
+      {
+        title: "เจาะลึก 4 เสาชะตาเชิงลึก (อิงวันเกิดกำเนิด)",
+        desc: `วิเคราะห์จากวันเกิด ${bD}/${bM}/${bY}: ดวงชะตามีโครงสร้าง 4 เสาหลักที่เกื้อหนุนด้านทรัพย์สินและวาสนาบารมีระยะยาว มีเกณฑ์ความก้าวหน้าในสายอาชีพและกิจการส่วนตัวอย่างมั่นคง`
+      },
+      {
+        title: "เจาะลึก 4 เสาชะตาเชิงลึก (อิงวันเกิดกำเนิด)",
+        desc: `วิเคราะห์จากวันเกิด ${bD}/${bM}/${bY}: ดิถีธาตุและสภาวะราศีเกิดส่งเสริมเรื่องการลงทุนและการสร้างเครือข่ายพันธมิตร มีโอกาสขยายขอบเขตธุรกิจและรับผลตอบแทนก้อนโต`
+      }
+    ];
+    let bIdx = (bD + bM * 5 + bY) % vipBirthPools.length;
+    let bRes = vipBirthPools[bIdx];
+
+    const vipTransitPools = [
+      {
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+        desc: `อิงวันจร ${tD}/${tMName}/${tY}: ธาตุพลังงานจรวันนี้ส่งกระแสเกื้อหนุนโดยตรงต่อเสาโชคลาภ การเจรจาธุรกิจ การเซ็นสัญญา หรือการลงทุนในวันนี้จะให้ผลลัพธ์ที่งดงามเกินคาด`
+      },
+      {
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+        desc: `อิงวันจร ${tD}/${tMName}/${tY}: พลังงานดาวจรในวันนี้โดดเด่นเรื่องการบริหารจัดการ การแก้ไขปัญหาเฉพาะหน้า และการสะสางงานคั่งค้างให้สำเร็จลุล่วงไปด้วยดี`
+      },
+      {
+        transitTitle: `พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}`,
+        desc: `อิงวันจร ${tD}/${tMName}/${tY}: ดาวจรเคลื่อนเข้าสู่มุมอภินันทนาการ มีโชคลาภทางการเงินแบบไม่คาดฝัน การติดต่อสื่อสารและการเดินทางนำพาโอกาสทองมาให้`
+      }
+    ];
+    let tIdx = (tY * 7 + tMVal * 11 + tD + bD) % vipTransitPools.length;
+    let tRes = vipTransitPools[tIdx];
+
+    resultBox.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
+          <h4 style="color: #ffd700; margin-bottom: 6px;"><i class="fa-solid fa-crown"></i> ${bRes.title}</h4>
+          <p style="font-size: 0.88rem; color: #fff; line-height: 1.7;">${bRes.desc}</p>
+        </div>
+        <div style="background: rgba(56,189,248,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid #38bdf8;">
+          <h4 style="color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-satellite-dish"></i> ${tRes.transitTitle}</h4>
+          <p style="font-size: 0.88rem; color: #fff; line-height: 1.7;">${tRes.desc}</p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ฟังก์ชันเปิด Modal ซาจู
+function openSajuModal() {
+  const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
+  const modalBody = document.getElementById('artModalBody') || document.getElementById('featureModalBody');
+
   const content = `
     <div style="text-align:center; margin-bottom:14px;">
       <img src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800&auto=format&fit=crop" style="width:100%; max-height:160px; object-fit:cover; border-radius:12px; border:1px solid rgba(234,179,8,0.4); box-shadow:0 4px 15px rgba(0,0,0,0.5);">
       <h3 style="color:#facc15; margin:10px 0 4px; font-size:1.15rem;">🇰🇷 ผูกดวงชะตาเกาหลี 4 เสาหลัก (사주 - Saju)</h3>
-      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY})</p>
+      <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">วิเคราะห์รอยพิมพ์แห่งโชคชะตา ธาตุประจำตัว และจังหวะชีวิต</p>
     </div>
 
     <!-- ปุ่มสลับโหมด Free / VIP -->
@@ -4669,24 +4766,20 @@ function openSajuModal() {
       <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #38bdf8; background:rgba(56,189,248,0.25); color:#38bdf8; font-weight:bold; cursor:pointer;">
         คำนวณฟรี
       </button>
-      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #eab308; background:transparent; color:#eab308; font-weight:bold; cursor:pointer;">
+      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')" style="flex:1; padding:9px; border-radius:8px; border:1px solid #64748b; background:transparent; color:#94a3b8; font-weight:bold; cursor:pointer;">
         👑 ทำนายเต็มรูปแบบ (VIP)
       </button>
     </div>
 
-    <!-- กล่องแสดงผลคำทำนาย (เปลี่ยนตามวันจร) -->
-    <div id="sajuResultBox" style="margin-top:10px;">
-      <div style="background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-main);">
-        <strong style="color: #ffd700; font-size: 1rem;"><i class="fa-solid fa-satellite-dish"></i> พลังงานวันจรประจำวันที่ ${tD} ${tMName} พ.ศ. ${tY}</strong>
-        <p style="font-size: 0.88rem; color: #fff; margin-top: 8px; line-height: 1.7;">
-          ธาตุพลังงานจรในวันนี้ส่งผลโดยตรงต่อดวงชะตา 4 เสาหลัก การเจรจา การทำสัญญา และทิศทางธุรกิจมีความโดดเด่นและคล่องตัวสูง
-        </p>
-      </div>
-    </div>
+    <!-- กล่องแสดงผลคำทำนาย -->
+    <div id="sajuResultBox" style="margin-top:10px;"></div>
   `;
 
   if (modalTitle) modalTitle.textContent = "🇰🇷 การพยากรณ์แบบเกาหลี (Saju)";
   if (modalBody) modalBody.innerHTML = content;
+
+  // เริ่มต้นแสดงผลแบบ Free ทันทีเมื่อเปิด Modal
+  switchSajuMode('free');
 
   if (typeof openFeatureModal === 'function') {
     openFeatureModal('articles');
