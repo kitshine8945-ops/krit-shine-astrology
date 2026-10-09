@@ -5051,12 +5051,14 @@ if (bHourSelect) {
     }
 }
 
-      const bMinSelect = document.getElementById('baziMinute24');
-      for (let m = 0; m < 60; m++) {
-        let opt = document.createElement('option');
-        opt.value = m; opt.textContent = `${String(m).padStart(2, '0')} นาที`;
-        bMinSelect.appendChild(opt);
-      }
+const bMinSelect = document.getElementById('baziMinute24');
+if (bMinSelect) { // เพิ่มเงื่อนไขเช็คว่ามีตัวตนอยู่จริงไหมก่อนทำต่อ
+  for (let m = 0; m < 60; m++) {
+    let opt = document.createElement('option');
+    opt.value = m; opt.textContent = `${String(m).padStart(2, '0')} นาที`;
+    bMinSelect.appendChild(opt);
+  }
+}
 
       // ดึงวันและเวลาปัจจุบันจริงแบบอัตโนมัติ
       const nowTransit = new Date();
