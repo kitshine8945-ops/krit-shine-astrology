@@ -8973,7 +8973,7 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       }
     }
 
-    // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และอัปเดตตามวันจร)
+    // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และคำทำนายเปลี่ยนตามวันจรแบบไดนามิก 100%)
     function switchWesternMode(mode) {
       const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
       
@@ -9010,11 +9010,14 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
         const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-        // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร
+        // 2. ดึงค่าวัน/เดือน/ปี "จร" จากฟอร์มวันจร (แบบเดียวกับลัคนาพยากรณ์)
         const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
         const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-        const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
+        const tMIndex = tMVal - 1;
+        const tM = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMIndex] : null) || 'มกราคม';
         const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+        const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+        const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
 
         let ageYang = (tY - bY) + 1;
         if (ageYang < 1) ageYang = 1;
@@ -9030,9 +9033,30 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
           return;
         }
 
+        // คลังชุดคำทำนายแบบสลับเปลี่ยนตามวันจร (Dynamic Pool ตามสูตรคำนวณวันจร)
+        const WESTERN_VIP_POOLS = [
+          {
+            h1: `อิทธิพลวันจร ${tD} ${tM} ${tY} (เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.) ส่งผลให้ลัคนาจรและ 1st House ในรอบปี พ.ศ. ${tY} นี้ ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ส่วนตัว`,
+            h10: `ตำแหน่ง Midheaven ณ ห้วงเวลา ${tY} นี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
+            asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในรอบปี ${tY}): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู พลิกวิกฤตเป็นโอกาสได้ยอดเยี่ยม`,
+            asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส - พ.ศ. ${tY}): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรมและการสื่อสาร`,
+            asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจนำมาซึ่งชื่อเสียงและรายได้มหาศาล`
+          },
+          {
+            h1: `กระแสพลังงานดาวสากลจรประจำวันที่ ${tD} ${tM} ${tY} ส่งผลให้ 1st House เปิดรับพลังแห่งความสำเร็จและความมั่นคง คุณมีความสุขุมรอบคอบและพร้อมผลักดันเป้าหมายชีวิตให้ก้าวหน้า`,
+            h10: `Midheaven ในรอบปี พ.ศ. ${tY} บ่งบอกถึงจังหวะเวลาของการขยายเครือข่ายธุรกิจ การได้รับความไว้วางใจจากพาร์ทเนอร์ และความสำเร็จในระยะยาว`,
+            asp1: `Sun Sextile Saturn (ดาวอาทิตย์ทำมุมโยคถึงดาวเสาร์ในปี ${tY}): ความมีวินัยและความรับผิดชอบนำมาซึ่งความสำเร็จที่มั่นคงถาวร`,
+            asp2: `Moon Trine Venus (ดวงจันทร์ทำมุมตรีโกณถึงดาวศุกร์): บรรยากาศรอบตัวในรอบปีนี้มีความสุข ความสัมพันธ์ราบรื่น อบอุ่น และเป็นกันเอง`,
+            asp3: `Mars Trine Neptune (ดาวอังคารทำมุมตรีโกณถึงดาวเนปจูน): แรงบันดาลใจสูงส่ง เปลี่ยนจินตนาการในห้วงเวลานี้ให้กลายเป็นผลงานและความสำเร็จจริง`
+          }
+        ];
+
+        let poolIndex = (tY * 5 + tMVal * 3 + tD + bD) % WESTERN_VIP_POOLS.length;
+        let selected = WESTERN_VIP_POOLS[poolIndex];
+
         targetBox.innerHTML = `
           <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-            <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY} - อายุย่าง ${ageYang} ปี):</strong>
+            <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
             <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา (Placidus Houses) ได้รับการอัปเดตตามห้วงเวลาวันจร พ.ศ. ${tY} เรียบร้อยแล้ว</p>
           </div>
 
@@ -9043,11 +9067,11 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
                 <strong style="color: #ffd700;">1st House (Ascendant - ตัวตน & วิสัยทัศน์):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งผลให้บุคลิกภาพโดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ส่วนตัว</p>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h1}</p>
               </div>
               <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
                 <strong style="color: #64b5f6;">10th House (Midheaven - เกียรติยศ & อาชีพ):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เส้นทางอาชีพและชื่อเสียงในรอบปี พ.ศ. ${tY} เติบโตสู่ระดับผู้บริหารหรือผู้เชี่ยวชาญ ผลงานเป็นที่ประจักษ์และสร้างกระแสรายได้ก้อนโต</p>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h10}</p>
               </div>
             </div>
           </div>
@@ -9058,16 +9082,16 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
             </h4>
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดี):</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู มีความสามารถในการพลิกวิกฤตให้เป็นโอกาส และนำพาความเจริญรุ่งเรืองมาสู่ตนเองได้เสมอในรอบปีนี้</p>
+                <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> ${selected.asp1.split(':')[0]}:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp1.split(':')[1]}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส):</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรม การสื่อสาร สื่อดิจิทัล และศาสตร์การพยากรณ์</p>
+                <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> ${selected.asp2.split(':')[0]}:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp2.split(':')[1]}</p>
               </div>
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า):</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างความเพลิดเพลินและแรงบันดาลใจให้ผู้อื่นจะนำมาซึ่งชื่อเสียงและรายได้มหาศาล</p>
+                <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> ${selected.asp3.split(':')[0]}:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
               </div>
             </div>
           </div>
