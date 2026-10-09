@@ -9707,7 +9707,7 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
-// ฟังก์ชันกำหนดค่าเริ่มต้นวันจรอัตโนมัติ
+// ฟังก์ชันกำหนดค่าเริ่มต้นวันจรอัตโนมัติ (แบบรอให้ Dropdown โหลดเสร็จ)
 function setDefaultTransitValues() {
   const dayEl = document.getElementById('transitDay');
   const monthEl = document.getElementById('transitMonth');
@@ -9715,16 +9715,16 @@ function setDefaultTransitValues() {
   const hourEl = document.getElementById('transitHour24');
   const minEl = document.getElementById('transitMinute24');
 
-  if (dayEl && (!dayEl.value || dayEl.value === "")) dayEl.value = 10;
-  if (monthEl && (!monthEl.value || monthEl.value === "")) monthEl.value = 10; // ตุลาคม
-  if (yearEl && (!yearEl.value || yearEl.value === "")) yearEl.value = 2569;
-  if (hourEl && (!hourEl.value || hourEl.value === "")) hourEl.value = 12;
-  if (minEl && (!minEl.value || minEl.value === "")) minEl.value = 0;
+  if (dayEl) dayEl.value = "10";
+  if (monthEl) monthEl.value = "10"; // ตุลาคม
+  if (yearEl) yearEl.value = "2569";
+  if (hourEl) hourEl.value = "12";
+  if (minEl) minEl.value = "0";
 }
 
-// สั่งให้ทำงานเมื่อโหลดหน้าเว็บ
+// หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่า Options ใน Dropdown ถูกสร้างครบแล้ว
 window.addEventListener('DOMContentLoaded', function() {
-  setDefaultTransitValues();
+  setTimeout(setDefaultTransitValues, 500);
 });  
 </script>
 </body>
