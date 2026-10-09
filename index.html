@@ -2243,7 +2243,7 @@ const password = document.getElementById('authPassword').value;
       const compZ1 = document.getElementById('compZodiac1');
       if (compZ1) compZ1.value = ascIndex;
 
-      // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว
+     // แสดงผลโหราศาสตร์สากลเมื่อกรอกวันเกิดแล้ว (อัปเดตตามวันเกิดจริงที่เปลี่ยน)
       const westFree = document.getElementById('westernFreeBox');
       if (westFree) {
         westFree.innerHTML = `
@@ -2252,7 +2252,7 @@ const password = document.getElementById('authPassword').value;
             <div class="res-metric"><strong style="color:#64b5f6;">Moon Sign (อารมณ์ภายใน)</strong><div style="font-size:1.05rem; font-weight:700;">Gemini (เมถุน)</div><span style="font-size:0.75rem; color:#aaa;">คิดไว เรียนรู้เร็ว</span></div>
             <div class="res-metric"><strong style="color:#81c784;">Rising/Asc (หน้ากากสังคม)</strong><div id="westDispAsc" style="font-size:1.05rem; font-weight:700;">${ascSignName}</div><span style="font-size:0.75rem; color:#aaa;">ล้ำสมัย รักอิสระ</span></div>
           </div>
-          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล ชี้ว่าท่านเป็นคนที่มีความมุ่งมั่นจริงจัง มีความคิดสร้างสรรค์ยืดหยุ่น และมีบุคลิกภายนอกโดดเด่นน่าเชื่อถือ</p>
+          <p style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;">โครงสร้างพลังงานจิตวิทยาแบบสากล ชี้ว่าท่านเป็นคนที่มีความมุ่งมั่นจดจ่อ มีความคิดสร้างสรรค์ยืดหยุ่นดั่งสายลม และมีบุคลิกภายนอกที่โดดเด่นน่าเชื่อถือ (อิงจากวันเกิด ${AppState.birthDay}/${AppState.birthMonth}/${AppState.birthBE})</p>
         `;
       }
 
@@ -2747,15 +2747,15 @@ function switchNum7Mode(mode) {
       });
     });
 
-    // วาง Event Listener ไว้ข้างนอกสุด ปิดปีกกาอย่างถูกต้อง
+  // เพิ่มการดักจับวันจรเพื่ออัปเดตโหราศาสตร์สากล VIP เพิ่มเติม
     document.addEventListener('DOMContentLoaded', function() {
-      const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
-      transitInputs.forEach(id => {
+      const extraTransitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
+      extraTransitInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
           el.addEventListener('change', function() {
-            if (typeof calcNum7Base === 'function') {
-              calcNum7Base();
+            if (typeof AppState !== 'undefined' && AppState.currentWesternMode === 'vip' && typeof switchWesternMode === 'function') {
+              switchWesternMode('vip');
             }
           });
         }
