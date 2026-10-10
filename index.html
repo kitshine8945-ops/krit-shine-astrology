@@ -728,13 +728,12 @@ footer {
     <div class="cat-name">กราฟชีวิต</div>
     <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
 </div>
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('bazi'); calcBaziEngine();}">
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('bazi'); setTimeout(calcBaziEngine, 100);}">
   <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
   <div class="cat-name">ปาจื่อ (BaZi)</div>
   <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
 </div>
-
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal();}">
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal(); setTimeout(calcSajuEngine, 100);}">
   <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
   <div class="cat-name">ซาจู (Saju)</div>
   <div class="cat-sub">4 เสาชะตาเกาหลี</div>
