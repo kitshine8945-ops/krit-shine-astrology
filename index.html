@@ -3928,9 +3928,20 @@ const STEMS = [
         month: { stem: STEMS[stemMonthIdx], branch: monthBranch },
         day: { stem: dayMaster, branch: BRANCHES[branchDayIdx] },
         hour: { stem: STEMS[stemHourIdx], branch: BRANCHES[branchHourIdx] },
-        dayMaster: dayMaster, isStrong: isStrong, yongShen: yongShen, jiShen: jiShen
-      };
-   }
+               dayMaster: dayMaster, isStrong: isStrong, yongShen: yongShen, jiShen: jiShen
+    }; // 👈 ต้องนำเครื่องหมายปิดตัวนี้มาอยู่ตรงนี้ เพื่อปิดการส่งคืนค่าดวงเดิมให้เสร็จสิ้นก่อน
+
+    // 💡 [ย้ายลงมาทำงานตรงนี้อย่างปลอดภัย] ส่งไม้ต่อให้คำทำนาย VIP ด้านล่างอัปเดตทันทีเมื่อกดเปลี่ยนวันจร
+    if (typeof AppState !== 'undefined') {
+        AppState.transitDay = typeof tD !== 'undefined' ? tD : 9;
+        AppState.transitMonth = typeof tM !== 'undefined' ? tM : 10;
+        AppState.transitYearBE = typeof tY !== 'undefined' ? tY : 2569;
+    }
+    if (typeof window.updateBaziVipRender === 'function') {
+        window.updateBaziVipRender();
+    }
+} 
+
 // --- ฟังก์ชันคำนวณดวงจีน BaZi (บังคับเปลี่ยนตามวันเกิดและวันจรแบบเรียลไทม์) ---
 function calcBaziEngine() {
     // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด)
@@ -3951,17 +3962,6 @@ function calcBaziEngine() {
     const tM = tMonthEl && tMonthEl.value ? parseInt(tMonthEl.value, 10) : bM;
     const tY = tYearEl && tYearEl.value ? parseInt(tYearEl.value, 10) : bY;
 
-     // ถ้ายังไม่ได้เลือกวันเกิด ให้แสดงกล่องแจ้งเตือนและหยุดทำงานทันที
-     if (!bD || !bM || !bY) {
-        if (freeRes) {
-           freeRes.style.display = 'block';
-           document.getElementById('bazi-free-title').textContent = "กรุณากรอกข้อมูลวันเกิด";
-           document.getElementById('bazi-free-desc').innerHTML = "กรุณาระบุ วัน / เดือน / ปีเกิด ที่หน้าแรกให้ครบถ้วนเพื่อเปิดระบบวิเคราะห์ดิถีธาตุและปาจื่อเฉพาะบุคคล";
-        }
-        if (vipRes) vipRes.style.display = 'none';
-        return;
-     }
-      
        const hourEl = document.getElementById('birthHour24');
     const minEl = document.getElementById('birthMinute24');
     const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
@@ -9797,18 +9797,37 @@ document.addEventListener('DOMContentLoaded', function() {
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
       `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต`
     ];
-   // สร้างความเชื่อมโยงกับวันจรจริง ๆ โดยคำนวณดัชนีวันจร (Transit Seed) ขึ้นมาใหม่ตรงนี้
-let tYearCE = (parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569) - 543;
-let tSeed = Math.abs((tD * 37 + tM * 23 + tYearCE * 13) % 10);
-    let vipPoolIndex = tSeed % VIP_5D_POOLS.length;
-    selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
-    if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
-    if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
-    if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
-    if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
+    // window.updateBaziVipRender จะถูกฟังก์ชันตัวบนเรียกซ้ำทุกครั้งที่กดเปลี่ยนวันจร
+    window.updateBaziVipRender = function() {
+        // ดึงค่าสดๆ จาก AppState ที่ฟังก์ชันหลักส่งข้ามสายลงมาให้
+        let currentTD = (typeof AppState !== 'undefined' && AppState.transitDay) ? AppState.transitDay : (parseInt(document.getElementById('transitDay')?.value, 10) || 9);
+        let currentTM = (typeof AppState !== 'undefined' && AppState.transitMonth) ? AppState.transitMonth : (parseInt(document.getElementById('transitMonth')?.value, 10) || 10);
+        let currentTY = (typeof AppState !== 'undefined' && AppState.transitYearBE) ? AppState.transitYearBE : (parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569);
 
-let luckCycleIndex = tSeed % LUCK_CYCLE_POOLS.length;
-let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
+        let tYearCE = currentTY - 543;
+        let tSeed = Math.abs((currentTD * 37 + currentTM * 23 + tYearCE * 13) % 10);
+
+        let vipPoolIndex = tSeed % VIP_5D_POOLS.length;
+        selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+
+        // สั่งพ่นข้อความแสดงผล 5 มิติ VIP ออกหน้าจอทันที
+        if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
+        if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
+        if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
+        if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
+
+        // คำนวณและสลับข้อความมหาวัฏจักร 10 ปีตามวันจรจริง
+        let luckCycleIndex = tSeed % LUCK_CYCLE_POOLS.length;
+        selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
+
+        const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
+        if (luckDescEl && typeof selectedLuckCycle !== 'undefined') {
+            luckDescEl.innerHTML = selectedLuckCycle;
+        }
+    };
+
+    // สั่งให้ทำงานครั้งแรกทันทีตอนโหลดหน้าเว็บ
+   window.updateBaziVipRender();
 
     const freeRes = document.getElementById('bazi-free-result');
     const vipRes = document.getElementById('bazi-vip-result');
@@ -9816,11 +9835,6 @@ let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
     if (AppState.currentBaziMode === 'free') {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
-    }
-       // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
-    const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
-    if (luckDescEl && typeof selectedLuckCycle !== 'undefined') {
-        luckDescEl.innerHTML = selectedLuckCycle;
     }
 
     // --- อัปเดตข้อมูลการแสดงผลคำทำนายดวงเดิมโหมดฟรี ฏ---
