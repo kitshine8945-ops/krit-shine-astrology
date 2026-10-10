@@ -9254,18 +9254,10 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
         calcBaziEngine();
       }
     }
-    // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และคำทำนายเปลี่ยนตามวันจรแบบไดนามิก 100%)
+// ฟังก์ชันสลับโหมดโหราศาสตร์สากล (รองรับการเช็กสิทธิ์ VIP และคำทำนายเปลี่ยนตามวันจรแบบไดนามิก 100%)
    function switchWesternMode(mode) {
       const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
       
-      if (mode === 'vip' && !isVip) {
-        alert('ฟีเจอร์นี้สำหรับสมาชิกระดับ VIP เท่านั้น กรุณาสมัครสมาชิก VIP ครับ');
-        if (typeof openFeatureModal === 'function') {
-          openFeatureModal('member');
-        }
-        return;
-      }
-
       AppState.currentWesternMode = mode;
       const btnFree = document.getElementById('btn-western-free');
       const btnVip = document.getElementById('btn-western-vip');
