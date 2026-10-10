@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    #modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
+    display: none !important;
+  }
     :root {
       --bg-midnight: #040816;
       --bg-panel: rgba(10, 16, 35, 0.94);
@@ -2719,11 +2722,7 @@ function calcNum7Base() {
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
       const isVip = (AppState.currentNum7Mode === 'vip');
-// ซ่อนหรือแสดงกล่องวันจรตามโหมด (ฟรีซ่อน, VIP แสดง)
-const transitDateBox = document.getElementById('num7TransitDateBox'); // หรือชื่อ ID ของกล่องวันจรนั้น
-if (transitDateBox) {
-  transitDateBox.style.display = isVip ? 'block' : 'none';
-}
+
       // คำนวณอายุย่างตามปี พ.ศ. จรจริง
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
