@@ -1526,6 +1526,100 @@ footer {
       }, 100);
     }
   });
+   // นำฟังก์ชัน switchWesternMode มาวางตรงนี้ครับ
+    function switchWesternMode(mode) {
+        AppState.currentWesternMode = mode;
+        const btnFree = document.getElementById('btn-western-free');
+        const btnVip = document.getElementById('btn-western-vip');
+        if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+        if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+        const freeBox = document.getElementById('westernFreeBox');
+        const vipBox = document.getElementById('westernVipBox');
+        if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
+        if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
+
+        if (mode === 'vip') {
+            const container = document.getElementById('westernVipContent') || document.getElementById('westernVipBox');
+            if (!container) return;
+            const targetBox = document.getElementById('westernVipContent') ? document.getElementById('westernVipContent') : container;
+
+            const bDayEl = document.getElementById('birthDay');
+            const bMonthEl = document.getElementById('birthMonth');
+            const bYearEl = document.getElementById('birthYearBE');
+
+            const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
+            const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
+            const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
+
+            const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+            const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+            const tMIndex = tMVal - 1;
+            const tM = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMIndex] : null) || 'มกราคม';
+            const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+            const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+            const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
+
+            let ageYang = (tY - bY) + 1;
+            if (ageYang < 1) ageYang = 1;
+
+            const WESTERN_VIP_POOLS = [
+                {
+                    h1: `อิทธิพลวันจรวันที่ ${tD} ${tM} ${tY} (เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.) ส่งผลให้ลัคนาจรและ 1st House ในรอบปี พ.ศ. ${tY} นี้ ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย`,
+                    h10: `ตำแหน่ง Midheaven ณ ห้วงเวลา ${tY} นี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
+                    asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในรอบปี ${tY}): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู`,
+                    asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส - พ.ศ. ${tY}): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย`,
+                    asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า - พ.ศ. ${tY}): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจ`
+                }
+            ];
+
+            let poolIndex = (tY * 7 + tMVal * 5 + tD * 3 + bD) % WESTERN_VIP_POOLS.length;
+            let selected = WESTERN_VIP_POOLS[poolIndex];
+
+            targetBox.innerHTML = `
+                <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                    <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
+                    <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา เรียบร้อยแล้ว</p>
+                </div>
+
+                <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พ.ศ. ${tY})
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
+                            <strong style="color: #ffd700;">1st House (Ascendant - ตัวตน & วิสัยทัศน์):</strong>
+                            <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h1}</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
+                            <strong style="color: #64b5f6;">10th House (Midheaven - เกียรติยศ & อาชีพ):</strong>
+                            <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h10}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-shapes" style="color: #ffd700;"></i> การวิเคราะห์มุมสัมพันธ์ดวงดาวเชิงลึก (Major Natal Aspects)
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                            <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> ${selected.asp1.split(':')[0]}:</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp1.split(':')[1]}</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                            <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> ${selected.asp2.split(':')[0]}:</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp2.split(':')[1]}</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                            <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> ${selected.asp3.split(':')[0]}:</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
 </script>
 
   <!-- MODAL: โหราศาสตร์สากล -->
