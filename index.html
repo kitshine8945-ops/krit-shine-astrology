@@ -3933,17 +3933,26 @@ const STEMS = [
    }
 // --- ฟังก์ชันคำนวณดวงจีน BaZi (บังคับเปลี่ยนตามวันเกิดและวันจรแบบเรียลไทม์) ---
 function calcBaziEngine() {
-     // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด)
-     const bDayEl = document.getElementById('birthDay');
-     const bMonthEl = document.getElementById('birthMonth');
-     const bYearEl = document.getElementById('birthYearBE');
-     
-     const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
-     const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
-     const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
-     
-     const freeRes = document.getElementById('bazi-free-result');
-     const vipRes = document.getElementById('bazi-vip-result');
+    // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด)
+    const bDayEl = document.getElementById('birthDay');
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
+
+    const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
+    const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
+    const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
+
+    // ⭐ [เพิ่มใหม่] ดึงค่้าวัน เดือน ปีจร จากกล่องระบบ VIP ของหน้าเว็บ
+    const tDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
+    const tMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
+    const tYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
+
+    const tD = tDayEl && tDayEl.value ? parseInt(tDayEl.value, 10) : bD; // ถ้าไม่มีวันจร ให้ใช้วันเกิดแทน
+    const tM = tMonthEl && tMonthEl.value ? parseInt(tMonthEl.value, 10) : bM;
+    const tY = tYearEl && tYearEl.value ? parseInt(tYearEl.value, 10) : bY;
+
+    const freeRes = document.getElementById('bazi-free-result');
+    const vipRes = document.getElementById('bazi-vip-result');
 
      // ถ้ายังไม่ได้เลือกวันเกิด ให้แสดงกล่องแจ้งเตือนและหยุดทำงานทันที
      if (!bD || !bM || !bY) {
@@ -3961,12 +3970,10 @@ function calcBaziEngine() {
      const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
      const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
 
-     // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม
-     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-     const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-     const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
-     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+      // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม (ย้ายไปดึงอย่างปลอดภัยที่ด้านบนแล้ว)
+    const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tM - 1] : null) || 'มกราคม';
 
+  
      let yearCE = bY - 543;
      let stemDayIdx = Math.abs((bD * 37 + bM * 23 + yearCE * 13) % 10);
      let branchMonthIdx = Math.abs((bM + 2) % 12);
@@ -3977,12 +3984,12 @@ function calcBaziEngine() {
      let dayMaster = safeStems[stemDayIdx % safeStems.length] || safeStems[0];
      let monthBranch = safeBranches[branchMonthIdx % safeBranches.length] || safeBranches[0];
      
-     let isStrong = (dayMaster.elem === monthBranch.elem || (dayMaster.elem === 'ไม้' && monthBranch.elem === 'น้ำ'));
-     let yongShen = isStrong ? "ธาตุทอง (Metal) & ธาตุน้ำ (Water)" : "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)";
-     let jiShen = isStrong ? "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)" : "ธาตุดิน (Earth) & ธาตุทอง (Metal)";
+    let yearCE = tY - 543; // เปลี่ยนจาก bY เป็น tY เพื่อคำนวณตามปีจร
+    let stemDayIdx = Math.abs((tD * 37 + tM * 23 + yearCE * 13) % 10); // เปลี่ยนจาก bD, bM เป็น tD, tM
+    let branchMonthIdx = Math.abs((tM + 2) % 12); // เปลี่ยนจาก bM เป็น tM เพื่อให้เดือนจรขยับตาม
 
      // คลังคำทำนายโหมดฟรี (แยกข้อความตามวันเกิด bD, bM, bY)
-     const FREE_BAZI_POOLS = [
+        const FREE_BAZI_POOLS = [
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงกำเนิดเกิดวันที่ ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) รอบวันเกิด ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตาเกิดวันที่ ${bD} เดือน ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} โดดเด่นด้านความสุขุมรอบคอบและการวางแผน สร้างความมั่นคงด้วยธาตุ <strong>${yongShen}</strong>`,
