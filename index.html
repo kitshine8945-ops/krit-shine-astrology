@@ -3949,40 +3949,44 @@ const STEMS = [
       let yongShen = bz.yongShen;
       let jiShen = bz.jiShen;
 
-      // 1. โหมดฟรี: ใช้ค่า seed จาก "วันเดือนปีเกิดและเวลาเกิด" ล้วนๆ (ไม่เกี่ยวกับวันจร)
-      let birthSeed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17) + (min * 3);
+      // 1. โหมดฟรี: คำนวณจาก "วันเดือนปีเกิดและเวลาเกิด" เท่านั้น (ไม่เกี่ยวกับวันจร)
+      let birthSeed = (d * 37) + (m * 73) + (yBE * 11) + (h * 19) + (min * 5);
       const FREE_BAZI_POOLS = [
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} (${h} นาฬิกา) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
-        `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยธาตุหนุน <strong>${yongShen}</strong>`
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} ยาม ${h}:${min} น. สะท้อนถึงพลังแก่นแท้แห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล หนุนนำความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ มีไหวพริบยอดเยี่ยม ขับเคลื่อนชีวิตด้วยพลังงาน <strong>${yongShen}</strong> และควรระมัดระวังธาตุให้โทษ (${jiShen})`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่งคั่งมั่นคงด้วยธาตุเสริมพลัง <strong>${yongShen}</strong>`,
+        `ดิถี ${dayMaster.name} (${dayMaster.elem}) พลังงานตั้งต้นจากวันกำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่เมื่อเปิดรับธาตุเกื้อหนุน <strong>${yongShen}</strong>`
       ];
       let freePoolIndex = Math.abs(birthSeed) % FREE_BAZI_POOLS.length;
 
-      // 2. โหมด VIP: แปรผันตาม "วันเดือนปีเกิด + วันเดือนปีจร" ร่วมกัน
-      const VIP_5D_POOLS = [
-        {
-          fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
-          work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
-          love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน`,
-          fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
-        },
-        {
-          fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
-          work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
-          love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่`,
-          fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
-        },
-        {
-          fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนให้ดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
-          work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
-          love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
-          fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
-        }
+      // 2. โหมด VIP: แปรผันตาม "วันเดือนปีเกิด + วันเดือนปีจร" ร่วมกันแบบสมบูรณ์ทุกข้อ
+      const VIP_FIN_POOL = [
+        `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
+        `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
+        `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนให้ดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาวในรอบวันนี้`
       ];
-      let vipSeed = birthSeed + tY + tD + tM;
-      let vipPoolIndex = Math.abs(vipSeed) % VIP_5D_POOLS.length;
-      let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+      const VIP_WORK_POOL = [
+        `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
+        `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่ในรอบนี้`,
+        `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดีไม่มีอุปสรรค`
+      ];
+      const VIP_LOVE_POOL = [
+        `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกันในช่วงวันจรนี้`,
+        `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่ในรอบวันจร ${tD} ${tMName} ${tY}`,
+        `พาร์ทเนอร์หรือคู่ชีวิตมีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยมในห้วงเวลานี้`
+      ];
+      const VIP_FENG_POOL = [
+        `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`,
+        `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY} ตามอิทธิพลวันจร`,
+        `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen}) เพื่อรับโชคลาภรอบวันจร ${tD} ${tMName} ${tY}`
+      ];
+
+      // คำนวณดัชนีแยกตามองค์ประกอบ เพื่อให้แต่ละมิติเปลี่ยนตามวันจรและวันเกิดอย่างอิสระไม่ซ้ำกัน
+      let vSeed = birthSeed + tY + tD + tM;
+      let finIdx = Math.abs(vSeed) % VIP_FIN_POOL.length;
+      let workIdx = Math.abs(vSeed + 3) % VIP_WORK_POOL.length;
+      let loveIdx = Math.abs(vSeed + 7) % VIP_LOVE_POOL.length;
+      let fengIdx = Math.abs(vSeed + 11) % VIP_FENG_POOL.length;
 
       const freeRes = document.getElementById('bazi-free-result');
       const vipRes = document.getElementById('bazi-vip-result');
@@ -4035,19 +4039,19 @@ const STEMS = [
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
               <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
                 <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์:</strong>
-                <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fin}</p>
+                <p style="margin-top:3px; color:#cfd8dc;">${VIP_FIN_POOL[finIdx]}</p>
               </div>
               <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
                 <strong style="color:#64b5f6;">2. การงาน & บารมี:</strong>
-                <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.work}</p>
+                <p style="margin-top:3px; color:#cfd8dc;">${VIP_WORK_POOL[workIdx]}</p>
               </div>
               <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
                 <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา:</strong>
-                <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.love}</p>
+                <p style="margin-top:3px; color:#cfd8dc;">${VIP_LOVE_POOL[loveIdx]}</p>
               </div>
               <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
                 <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
-                <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fengshui}</p>
+                <p style="margin-top:3px; color:#cfd8dc;">${VIP_FENG_POOL[fengIdx]}</p>
               </div>
             </div>
           `;
