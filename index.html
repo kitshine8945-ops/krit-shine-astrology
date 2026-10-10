@@ -1526,7 +1526,7 @@ footer {
       }, 100);
     }
   });
-// ฟังก์ชันสลับโหมดโหราศาสตร์สากล (ล็อกโหมดฟรี และอัปเกรด VIP ให้เปลี่ยนตามวันเกิด + วันจรจริง)
+// ฟังก์ชันสลับโหมดโหราศาสตร์สากล (ล็อกโหมดฟรีและส่วนอื่นๆ ไว้สมบูรณ์แล้ว - อัปเกรด VIP ให้เปลี่ยนตามวันเกิด)
     function switchWesternMode(mode) {
         AppState.currentWesternMode = mode;
         const btnFree = document.getElementById('btn-western-free');
@@ -1544,7 +1544,7 @@ footer {
             if (!container) return;
             const targetBox = document.getElementById('westernVipContent') ? document.getElementById('westernVipContent') : container;
 
-            // 1. ดึงวันเดือนปีเกิดจริง
+            // 1. ดึงวันเดือนปีเกิดจริงของผู้ใช้
             const bDayEl = document.getElementById('birthDay');
             const bMonthEl = document.getElementById('birthMonth');
             const bYearEl = document.getElementById('birthYearBE');
@@ -1553,7 +1553,7 @@ footer {
             const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
             const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-            // 2. ดึงค่าวัน/เดือน/ปี "จร" สดๆ จากฟอร์ม
+            // 2. ดึงค่าวัน/เดือน/ปี จร สำหรับแสดงผลหัวข้อ
             const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
             const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
             const tMIndex = tMVal - 1;
@@ -1576,44 +1576,44 @@ footer {
                 return;
             }
 
-            // คลังชุดคำทำนาย VIP หลายชุด เพื่อให้เปลี่ยนแปรผันตามวันเกิดและวันจรอย่างแท้จริง
+            // คลังชุดคำทำนาย VIP หลายชุด
             const WESTERN_VIP_POOLS = [
                 {
-                    h1: `อิทธิพลวันจรวันที่ ${tD} ${tM} ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): ลัคนาจรและ 1st House ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ใหม่`,
-                    h10: `ตำแหน่ง Midheaven ณ ห้วงเวลานี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
-                    asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดี): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู พลิกวิกฤตเป็นโอกาสได้ยอดเยี่ยม`,
-                    asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรมและการสื่อสาร`,
+                    h1: `อิทธิพลพื้นดวงเกิดวันที่ ${bD}/${bM}/${bY} (อายุย่าง ${ageYang} ปี): ลัคนาและ 1st House ในดวงกำเนิดขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ส่วนตัว`,
+                    h10: `ตำแหน่ง Midheaven ในพื้นดวงชะตา ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
+                    asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในพื้นดวง): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู พลิกวิกฤตเป็นโอกาสได้ยอดเยี่ยม`,
+                    asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัสในดวงกำเนิด): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรมและการสื่อสาร`,
                     asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจนำมาซึ่งชื่อเสียงและรายได้มหาศาล`
                 },
                 {
-                    h1: `กระแสพลังงานดาวสากลจรประจำวันที่ ${tD} ${tM} ${tY} (อิงดวงกำเนิด ${bD}/${bM}/${bY}): 1st House เปิดรับพลังแห่งความสำเร็จและความมั่นคง คุณมีความสุขุมรอบคอบและพร้อมผลักดันเป้าหมายชีวิต`,
-                    h10: `Midheaven ในรอบปีนี้ บ่งบอกถึงจังหวะเวลาของการขยายเครือข่ายธุรกิจ การได้รับความไว้วางใจจากพาร์ทเนอร์ และความสำเร็จในระยะยาว`,
-                    asp1: `Sun Sextile Saturn (ดาวอาทิตย์ทำมุมโยคถึงดาวเสาร์): ความมีวินัยและความรับผิดชอบนำมาซึ่งความสำเร็จที่มั่นคงถาวร`,
-                    asp2: `Moon Trine Venus (ดวงจันทร์ทำมุมตรีโกณถึงดาวศุกร์): บรรยากาศรอบตัวมีความสุข ความสัมพันธ์ราบรื่น อบอุ่น และเป็นกันเอง`,
+                    h1: `กระแสพลังงานดวงกำเนิดประจำวันเกิด ${bD}/${bM}/${bY}: 1st House เปิดรับพลังแห่งความสำเร็จและความมั่นคง คุณมีความสุขุมรอบคอบและพร้อมผลักดันเป้าหมายชีวิตให้ก้าวหน้า`,
+                    h10: `Midheaven ในพื้นดวงชะตา บ่งบอกถึงจังหวะเวลาของการขยายเครือข่ายธุรกิจ การได้รับความไว้วางใจจากพาร์ทเนอร์ และความสำเร็จในระยะยาว`,
+                    asp1: `Sun Sextile Saturn (ดาวอาทิตย์ทำมุมโยคถึงดาวเสาร์ในพื้นดวง): ความมีวินัยและความรับผิดชอบนำมาซึ่งความสำเร็จที่มั่นคงถาวร`,
+                    asp2: `Moon Trine Venus (ดวงจันทร์ทำมุมตรีโกณถึงดาวศุกร์กำเนิด): บรรยากาศรอบตัวมีความสุข ความสัมพันธ์ราบรื่น อบอุ่น และเป็นกันเอง`,
                     asp3: `Mars Trine Neptune (ดาวอังคารทำมุมตรีโกณถึงดาวเนปจูน): แรงบันดาลใจสูงส่ง เปลี่ยนจินตนาการให้กลายเป็นผลงานและความสำเร็จจริง`
                 },
                 {
-                    h1: `อิทธิพลโคจร ณ วันที่ ${tD} ${tM} ${tY} ร่วมกับดวงเกิด ${bD}/${bM}/${bY}: กระตุ้นเรือน 1st House ให้เกิดพลังขับเคลื่อนทางความคิดและการเจรจา มีความเฉียบคมในการตัดสินใจ`,
-                    h10: `Midheaven เคลื่อนรับมุมสัมพันธ์หนุนนำให้เกียรติยศและตำแหน่งหน้าที่การงานขยับขยาย มีชื่อเสียงเป็นที่ยอมรับในวงกว้าง`,
+                    h1: `อิทธิพลจากวันเกิด ${bD}/${bM}/${bY}: กระตุ้นเรือน 1st House ให้เกิดพลังขับเคลื่อนทางความคิดและการเจรจา มีความเฉียบคมในการตัดสินใจและพร้อมลุยงานใหญ่`,
+                    h10: `Midheaven ดวงกำเนิดหนุนนำให้เกียรติยศและตำแหน่งหน้าที่การงานขยับขยาย มีชื่อเสียงเป็นที่ยอมรับในวงกว้าง`,
                     asp1: `Jupiter Trine Midheaven (ดาวพฤหัสบดีทำมุมตรีโกณจุดจอมฟ้า): โอกาสทองด้านการงานและการเงินวิ่งเข้าหา ได้รับการสนับสนุนจากผู้หลักผู้ใหญ่`,
-                    asp2: `Sun Conjunction Mercury (ดาวอาทิตย์กุมดาวพุธ): ความคิดความอ่านเฉียบคม วาทศิลป์โดดเด่น เจรจาค้าขายหรือปิดดีลสำเร็จลุล่วง`,
+                    asp2: `Sun Conjunction Mercury (ดาวอาทิตย์กุมดาวพุธในดวงเกิด): ความคิดความอ่านเฉียบคม วาทศิลป์โดดเด่น เจรจาค้าขายหรือปิดดีลสำเร็จลุล่วง`,
                     asp3: `Mars Sextile Jupiter (ดาวอังคารทำมุมโยคดาวพฤหัสบดี): พลังงานและความมุ่งมั่นสูงส่ง สร้างผลงานเข้าเป้าและรับทรัพย์ก้อนโต`
                 }
             ];
 
-            // สูตรคำนวณนำ วันเกิด (bD, bM, bY) และ วันจร (tD, tMVal, tY) มาผสมกันเพื่อสลับชุดคำทำนาย VIP ไม่ให้ซ้ำกัน
-            let poolIndex = (tY * 7 + tMVal * 11 + tD * 3 + bD * 5 + bM * 13 + bY) % WESTERN_VIP_POOLS.length;
+            // สูตรคำนวณสลับชุดคำทำนาย VIP โดยอิงจากวันเดือนปีเกิด (bD, bM, bY) จริงๆ 100%
+            let poolIndex = (bD * 7 + bM * 13 + bY) % WESTERN_VIP_POOLS.length;
             let selected = WESTERN_VIP_POOLS[poolIndex];
 
             targetBox.innerHTML = `
                 <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                    <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันเกิด ${bD}/${bM}/${bY} - วันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
-                    <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา (Placidus Houses) อัปเดตตามดวงชะตาส่วนบุคคลเรียบร้อยแล้ว</p>
+                    <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันเกิด ${bD}/${bM}/${bY} - ดวงจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
+                    <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา (Placidus Houses) อัปเดตตามวันเกิดเฉพาะบุคคลเรียบร้อยแล้ว</p>
                 </div>
 
                 <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                     <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พ.ศ. ${tY})
+                        <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พื้นดวงเกิด ${bD}/${bM}/${bY})
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
                         <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
