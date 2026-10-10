@@ -3927,31 +3927,28 @@ const STEMS = [
       };
    }
 
-// --- ฟังก์ชันคำนวณดวงจีน BaZi (แก้ไขระบบ Seed และการสลับพูลคำทำนายใหม่ 100%) ---
+// --- ฟังก์ชันคำนวณดวงจีน BaZi (อิงสูตรดึงค่าสดและการคำนวณ Index สมบูรณ์แบบ) ---
    function calcBaziEngine() {
-      // 1. ดึงข้อมูลวัน เดือน ปีเกิด และเวลาเกิดแบบละเอียดจากฟอร์ม
-      const dayEl = document.getElementById('birthDay');
-      const monthEl = document.getElementById('birthMonth');
-      const yearEl = document.getElementById('birthYearBE');
+      // 1. ดึงข้อมูลวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์ม
+      const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+      const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
+      const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
+      
       const hourEl = document.getElementById('birthHour24');
       const minEl = document.getElementById('birthMinute24');
-
-      const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : AppState.birthDay || 30;
-      const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : AppState.birthMonth || 4;
-      const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : AppState.birthBE || 2522;
       const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 1;
       const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 52;
 
-      // 2. ดึงข้อมูลวัน เดือน ปี "จร" จากฟอร์ม
+      // 2. ดึงข้อมูลวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-      const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+      const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+      const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-      const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tM - 1] : null) || 'มกราคม';
 
       // คำนวณดิถีธาตุและเสาหลักตามวันเกิดจริง
-      let yearCE = yBE - 543;
-      let stemDayIdx = Math.abs((d * 37 + m * 23 + yearCE * 13) % 10);
-      let branchMonthIdx = Math.abs((m + 2) % 12);
+      let yearCE = bY - 543;
+      let stemDayIdx = Math.abs((bD * 37 + bM * 23 + yearCE * 13) % 10);
+      let branchMonthIdx = Math.abs((bM + 2) % 12);
 
       let dayMaster = STEMS[stemDayIdx] || STEMS[0];
       let monthBranch = BRANCHES[branchMonthIdx] || BRANCHES[0];
@@ -3959,66 +3956,59 @@ const STEMS = [
       let yongShen = isStrong ? "ธาตุทอง (Metal) & ธาตุน้ำ (Water)" : "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)";
       let jiShen = isStrong ? "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)" : "ธาตุดิน (Earth) & ธาตุทอง (Metal)";
 
-      // --- 1. โหมดฟรี: คำนวณจาก "วันเดือนปีเกิดและเวลาเกิด" ล้วนๆ (ไม่เกี่ยวกับวันจร) ---
-      let birthUniqueSeed = (d * 149) + (m * 257) + (yBE * 43) + (h * 97) + (min * 17);
-      
+      // --- 1. โหมดฟรี: คำนวณจากวันเดือนปีเกิดเด็ดขาด (ไม่เกี่ยวกับวันจร) ---
       const FREE_BAZI_POOLS = [
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงกำเนิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} (${h}:${min} น.) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตาเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยธาตุหนุน <strong>${yongShen}</strong>`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พลังงานตั้งต้นจากดวงกำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีพรสวรรค์เฉพาะตัวในการเจรจาและบริหารจัดการ เสริมบารมีด้วยธาตุ <strong>${yongShen}</strong>`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีสายธารแห่งปัญญาและสัญชาตญาณเฉียบคม ดึงดูดความสำเร็จด้วยธาตุคู่มิตร <strong>${yongShen}</strong>`
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงกำเนิดวันที่ ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${bD} ${MONTH_NAMES[bM-1]} ${bY} (${h}:${min} น.) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตาเกิด ${bD} ${MONTH_NAMES[bM-1]} ${bY} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิด ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยธาตุหนุน <strong>${yongShen}</strong>`,
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พลังงานตั้งต้นจากดวงกำเนิด ${bD} ${MONTH_NAMES[bM-1]} ${bY} มีพรสวรรค์เฉพาะตัวในการเจรจาและบริหารจัดการ เสริมบารมีด้วยธาตุ <strong>${yongShen}</strong>`
       ];
-      let freePoolIndex = Math.abs(birthUniqueSeed) % FREE_BAZI_POOLS.length;
+      let freeIndex = (bY * 7 + bM * 13 + bD * 5) % FREE_BAZI_POOLS.length;
+      let selectedFreePrediction = FREE_BAZI_POOLS[freeIndex];
 
-      // --- 2. โหมด VIP: แปรผันตาม "วันเดือนปีเกิด + วันจร" ร่วมกันแบบสมบูรณ์ในทุกมิติ ---
-      let vipDynamicSeed = birthUniqueSeed + (tY * 11) + (tD * 53) + (tM * 29);
-
+      // --- 2. โหมด VIP: คำนวณ Index ร่วมกันระหว่างวันเกิดและวันจรแบบสดๆ ---
       const VIP_FIN = [
-         `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
-         `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
+         `อิงวันเกิด (${bD}/${bM}/${bY}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
+         `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${bD}/${bM}/${bY}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
          `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนให้ดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาวในรอบวันนี้`,
-         `กระแสเงินทองในรอบวันจร ${tD} ${tMName} ${tY} เปิดกว้างสำหรับดิถี ${dayMaster.name} มีเกณฑ์ได้รับผลตอบแทนจากทรัพย์สินรอการขายหรือเงินปันผลพิเศษ`,
-         `อิทธิพลวันจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีช่องทางสร้างรายได้ใหม่ๆ เพิ่มเติมจากการเจรจาธุรกิจหรือการลงทุนข้ามเขต`
+         `กระแสเงินทองในรอบวันจร ${tD} ${tMName} ${tY} เปิดกว้างสำหรับดิถี ${dayMaster.name} มีเกณฑ์ได้รับผลตอบแทนจากทรัพย์สินรอการขายหรือเงินปันผลพิเศษ`
       ];
 
       const VIP_WORK = [
          `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
          `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่ในรอบนี้`,
          `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดีไม่มีอุปสรรค`,
-         `รอบวันจร ${tD} ${tMName} ${tY} นี้ เหมาะกับการเปิดตัวโปรเจกต์ใหม่หรือขยายสาขา งานด้านลิขสิทธิ์และสื่อออนไลน์จะสร้างชื่อเสียงอย่างงดงาม`,
-         `ดาวจรส่งเสริมให้ดิถี ${dayMaster.name} ได้รับมอบหมายภารกิจสำคัญในรอบวันจร ${tD} ${tMName} ${tY} สร้างความก้าวหน้าในสายอาชีพอย่างก้าวกระโดด`
+         `รอบวันจร ${tD} ${tMName} ${tY} นี้ เหมาะกับการเปิดตัวโปรเจกต์ใหม่หรือขยายสาขา งานด้านลิขสิทธิ์และสื่อออนไลน์จะสร้างชื่อเสียงอย่างงดงาม`
       ];
 
       const VIP_LOVE = [
-         `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกันในช่วงวันจรนี้`,
+         `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกันในช่วงวันจรนี้ (${tD} ${tMName} ${tY})`,
          `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่ในรอบวันจร ${tD} ${tMName} ${tY}`,
-         `พาร์ทเนอร์หรือคู่ชีวิตมีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยมในห้วงเวลานี้`,
-         `คนโสดมีเกณฑ์พบเจอคนรู้ใจจากการเดินทางหรือติดต่องาน ส่วนคนมีคู่จะได้ร่วมเดินทางไกลเพื่อกระชับความสัมพันธ์ในรอบวันจร ${tD} ${tMName} ${tY}`,
-         `อิทธิพลวันจร ${tD} ${tMName} ${tY} ช่วยเคลียร์ปัญหาคาใจในความสัมพันธ์ ทำให้ความรักและความเข้าใจกับคนรอบข้างกลับมาแน่นแฟ้นยิ่งขึ้น`
+         `พาร์ทเนอร์หรือคู่ชีวิตมีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยมในห้วงเวลานี้ (${tD} ${tMName} ${tY})`,
+         `คนโสดมีเกณฑ์พบเจอคนรู้ใจจากการเดินทางหรือติดต่องาน ส่วนคนมีคู่จะได้ร่วมเดินทางไกลเพื่อกระชับความสัมพันธ์ในรอบวันจร ${tD} ${tMName} ${tY}`
       ];
 
       const VIP_FENG = [
          `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`,
          `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY} ตามอิทธิพลวันจร`,
          `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen}) เพื่อรับโชคลาภรอบวันจร ${tD} ${tMName} ${tY}`,
-         `ปรับทิศทางการหันหน้าโต๊ะทำงานหรือเตียงนอนตามทิศมงคลเฉพาะรอบวันจร ${tD} ${tMName} ${tY} เพื่อเปิดรับพลังงานโชคลาภเข้าสู่ตัวท่านโดยตรง`,
-         `เสริมดวงชะตาด้วยการประดับภาพสายน้ำหรือต้นไม้มงคลทิศเหนือหรือทิศตะวันออกตามพลังงานวันจร ${tD} ${tMName} ${tY} เพื่อเปิดคลังสมบัติ`
+         `ปรับทิศทางการหันหน้าโต๊ะทำงานหรือเตียงนอนตามทิศมงคลเฉพาะรอบวันจร ${tD} ${tMName} ${tY} เพื่อเปิดรับพลังงานโชคลาภเข้าสู่ตัวท่านโดยตรง`
       ];
 
       const VIP_LUCK = [
-         `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขายและการลงทุนเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
+         `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${bD}/${bM}/${bY} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขายและการลงทุนเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
          `มหาวัฏจักร 10 ปีนี้เปิดประตูรับโชคลาภครั้งใหญ่ อิทธิพลวันจร ${tD} ${tMName} ${tY} ช่วยปลดล็อกอุปสรรคเก่าๆ เปิดทางให้ดิถี ${dayMaster.name} ก้าวขึ้นสู่สถานะที่มั่นคงยิ่งขึ้น`,
          `ช่วงวัฏจักรนี้สอดรับกับพลังงานดาวจร ${tD} ${tMName} ${tY} ส่งผลให้การสร้างเครือข่ายพันธมิตรและการลงทุนระยะยาวออกดอกออกผลเกินความคาดหมาย`,
          `มหาวัฏจักรโชคชะตาเปลี่ยนผ่านสู่วิถีใหม่ อิทธิพลวันจร ${tD} ${tMName} ${tY} เกื้อหนุนให้ดิถี ${dayMaster.name} มีโอกาสสร้างความมั่งคั่งและเกียรติยศมั่นคงถาวร`
       ];
 
-      let finIdx = Math.abs(vipDynamicSeed * 3) % VIP_FIN.length;
-      let workIdx = Math.abs(vipDynamicSeed * 7 + 1) % VIP_WORK.length;
-      let loveIdx = Math.abs(vipDynamicSeed * 11 + 3) % VIP_LOVE.length;
-      let fengIdx = Math.abs(vipDynamicSeed * 13 + 5) % VIP_FENG.length;
-      let luckIdx = Math.abs(vipDynamicSeed * 17 + 9) % VIP_LUCK.length;
+      let dynamicIndex = (tY * 7 + tMVal * 11 + tD * 3 + bD * 5 + bM * 13 + bY);
+      let finIdx = Math.abs(dynamicIndex) % VIP_FIN.length;
+      let workIdx = Math.abs(dynamicIndex + 3) % VIP_WORK.length;
+      let loveIdx = Math.abs(dynamicIndex + 7) % VIP_LOVE.length;
+      let fengIdx = Math.abs(dynamicIndex + 11) % VIP_FENG.length;
+      let luckIdx = Math.abs(dynamicIndex + 17) % VIP_LUCK.length;
 
       const freeRes = document.getElementById('bazi-free-result');
       const vipRes = document.getElementById('bazi-vip-result');
@@ -4034,7 +4024,7 @@ const STEMS = [
             descEl.innerHTML = `
                <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
                <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-                  <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
+                  <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${selectedFreePrediction}
                </div>
             `;
          }
@@ -4042,7 +4032,7 @@ const STEMS = [
          if (freeRes) freeRes.style.display = 'none';
          if (vipRes) vipRes.style.display = 'block';
 
-         let bzObj = calculateDynamicBaZi(yBE, m, d, h);
+         let bzObj = calculateDynamicBaZi(bY, bM, bD, h);
          const pillarsGrid = document.getElementById('bazi-pillars-grid');
          if (pillarsGrid) {
             pillarsGrid.innerHTML = `
