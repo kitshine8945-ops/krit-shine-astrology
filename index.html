@@ -5038,18 +5038,38 @@ function switchSajuMode(mode) {
   calcSajuEngine(mode);
 }
 
-// 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (VIP เปลี่ยนคำทำนายตามวันจรแบบสมบูรณ์)
+// --- 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (อิงวันเกิดและวันจรแบบสดๆ - ไม่มีค่าจำลอง) ---
 function calcSajuEngine(mode) {
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
 
   const currentMode = mode || (typeof AppState !== 'undefined' && AppState.currentSajuMode ? AppState.currentSajuMode : 'free');
 
-  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || 30;
-  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || 4;
-  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522;
+  // ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (ตัดค่าสำรอง 30/4/2522 ออกทั้งหมด)
+  const bDayEl = document.getElementById('birthDay');
+  const bMonthEl = document.getElementById('birthMonth');
+  const bYearEl = document.getElementById('birthYearBE');
+
+  const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
+  const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
+  const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
+
+  // ตรวจสอบความถูกต้อง: หากยังไม่ได้เลือกวันเกิด ให้แสดงข้อความแจ้งเตือนและหยุดการคำนวณทันที
+  if (!bD || !bM || !bY) {
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = `
+      <div style="background: rgba(255,215,0,0.08); border: 1px dashed #ffd700; border-radius: 12px; padding: 20px; text-align: center; color: #ffd700;">
+        <i class="fa-solid fa-circle-exclamation" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+        <strong>กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรกก่อนครับ</strong>
+        <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 6px; margin-bottom: 0;">ระบบจำเป็นต้องใช้วันเกิดจริงของท่านในการถอดรหัสพยากรณ์เชิงลึก</p>
+      </div>
+    `;
+    return;
+  }
+
   const birthText = `${bD}/${bM}/${bY}`;
 
+  // ดึงค่าวันเดือนปี "จร" แบบสดๆ จากฟอร์ม
   const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
   const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
   const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
@@ -5121,8 +5141,11 @@ function calcSajuEngine(mode) {
     }
   ];
 
+  // สูตรคำนวณ Index ที่ผสานทั้งวันเกิด (bD, bM, bY) และวันจร (tD, tM, tY) เข้าด้วยกันอย่างสมบูรณ์
+  let dynamicSeed = (tY * 31 + tM * 19 + tD * 13 + bY * 7 + bM * 5 + bD * 3 + ageYang);
+
   if (currentMode === 'free') {
-    const elemIndex = (bD + bM + (bY % 5)) % 5;
+    const elemIndex = Math.abs(bY * 11 + bM * 7 + bD * 3) % elements.length;
     const u = elements[elemIndex];
     resultBox.style.display = 'block';
     resultBox.innerHTML = `
@@ -5132,7 +5155,7 @@ function calcSajuEngine(mode) {
       </div>
     `;
   } else {
-    const transitElemIndex = (tD + tM + tY + ageYang) % elements.length;
+    const transitElemIndex = Math.abs(dynamicSeed) % elements.length;
     const u = elements[transitElemIndex];
 
     resultBox.style.display = 'block';
@@ -5140,7 +5163,7 @@ function calcSajuEngine(mode) {
       <div style="background:linear-gradient(145deg, rgba(234,179,8,0.12), rgba(15,23,42,0.85)); border:1.5px solid #eab308; border-radius:12px; padding:16px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:8px; margin-bottom:14px;">
           <h4 style="color:#facc15; margin:0; font-size:1.08rem;">👑 คัมภีร์ซาจูฉบับสมบูรณ์ VIP</h4>
-          <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
+          <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr} (อิงวันเกิด ${birthText})</span>
         </div>
 
         <div style="background:rgba(234,179,8,0.08); padding:10px 12px; border-radius:8px; border-left:3px solid #eab308; margin-bottom:14px;">
