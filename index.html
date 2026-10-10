@@ -7602,7 +7602,7 @@ window.getKsUserBirthData = function() {
     return '';
 };
 
-// ฟังก์ชันคำนวณฐานดวงชะตาจริงตาม วัน/เดือน/ปี/เวลาเกิด พร้อมดึงข้อมูลวันจรปัจจุบันมาร่วมประมวลผล VIP
+// ฟังก์ชันคำนวณฐานดวงชะตาจริงตาม วัน/เดือน/ปี/เวลาเกิด พร้อมดึงข้อมูลวัน/เดือน/ปี จร มาประมวลผล
 function getKsCalculatedProfile() {
     var d = parseInt(document.getElementById('birthDay') ? document.getElementById('birthDay').value : 1) || 1;
     var m = parseInt(document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : 1) || 1;
@@ -7611,12 +7611,11 @@ function getKsCalculatedProfile() {
     var mn = parseInt(document.getElementById('birthMinute24') ? document.getElementById('birthMinute24').value : 0) || 0;
     var prov = document.getElementById('birthProvince') ? document.getElementById('birthProvince').value : 'กรุงเทพมหานคร';
 
-    // ดึงค่าวัน/เดือน/ปี จร จากฟอร์มหน้าเว็บ (ถ้ามี) หรือใช้วันปัจจุบัน
     var tD = parseInt(document.getElementById('transitDay')?.value, 10) || new Date().getDate();
     var tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || (new Date().getMonth() + 1);
     var tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
+    var transitFormatted = tD + '/' + tMVal + '/' + tY;
 
-    // 1. คำนวณเลขรหัสกรรม (Karmic Root 1-9)
     var sumDigits = function(num) {
         var s = 0;
         String(num).split('').forEach(function(c) { s += parseInt(c) || 0; });
@@ -7626,7 +7625,6 @@ function getKsCalculatedProfile() {
     while (kTotal > 9) { kTotal = sumDigits(kTotal); }
     if (kTotal === 0) kTotal = 1;
 
-    // 2. คำนวณธาตุแก่นแท้ (Soul Element)
     var elements = [
         { 
             name: "ธาตุไฟ (สนามพลังหยางบริสุทธิ์)", 
@@ -7687,7 +7685,7 @@ function getKsCalculatedProfile() {
 
     return {
         dateStr: `${d}/${m}/${y} เวลา ${hr}:${mn < 10 ? '0' + mn : mn} น. (${prov})`,
-        transitStr: `${tD}/${tMVal}/${tY}`,
+        transitStr: transitFormatted,
         kNum: kTotal,
         elem: elemData,
         dir: luckyDir,
@@ -7747,9 +7745,8 @@ window.calcKarmic = function() {
     var vipBox = `
         <div style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(15,23,42,0.95)); border: 1.5px solid #ffd700; border-radius: 14px; padding: 18px; margin-top: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);">
             <div style="color:#ffd700; font-weight:bold; font-size:1.05rem; margin-bottom:10px; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:6px;">
-                👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})
+                👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE - อิงวันจร ${p.transitStr})
             </div>
-            <p style="font-size:12px; color:#ffd700; margin-bottom:8px;">📌 รอบปีจรปัจจุบัน: <b>${p.transitStr}</b></p>
             <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>1. เจ้ากรรมนายเวรที่เด่นชัดประจำรหัส ${p.kNum} (อัปเดตตามห้วงวันจร):</b><br>${k.exp}</p>
             <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>2. พิธีขอขมาและตัดสัญญากรรมเฉพาะตัว:</b><br>จุดธูป 16 ดอกกลางแจ้งในวันพระ ขึ้นต้นด้วย นะโม 3 จบ แล้วกล่าว: <i>"กายกรรม วจีกรรม มโนกรรม รหัสกรรมที่ ${p.kNum} ที่ข้าพเจ้าได้เคยก่อไว้ต่อดวงจิตใดในอดีตชาติ ขอถอนพันธะสัญญาและวิบากกรรมทั้งหมด ณ บัดนี้ ขออโหสิกรรมซึ่งกันและกันเทอญ"</i></p>
             <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>3. บุญเฉพาะทางแก้ดวงรหัสกรรมที่ ${p.kNum}:</b><br>${k.act}</p>
@@ -7864,8 +7861,7 @@ window.calcLifeTurning = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #3498db; background:rgba(52,152,219,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#5dade2; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 แผนภูมิพิชัยสงคราม 4 ไตรมาสเฉพาะดวง (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
-                <p style="font-size:11.5px; color:#aed6f1; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
+                <div style="color:#5dade2; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 แผนภูมิพิชัยสงคราม 4 ไตรมาสเฉพาะดวง (VIP EXCLUSIVE - อิงวันจร ${p.transitStr})</div>
                 <p><b>ไตรมาสที่ 1 (กุมภาพันธ์ - เมษายน):</b><br>${cycle.q1}</p>
                 <p><b>ไตรมาสที่ 2 (พฤษภาคม - กรกฎาคม):</b><br>${cycle.q2}</p>
                 <p><b>ไตรมาสที่ 3 (สิงหาคม - ตุลาคม):</b><br>${cycle.q3}</p>
@@ -7916,8 +7912,7 @@ window.calcSoulElement = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #9b59b6; background:rgba(155,89,182,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#c39bd3; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผลวิเคราะห์เมทริกซ์ 5 ธาตุระดับลึก (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
-                <p style="font-size:11.5px; color:#e8daef; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
+                <div style="color:#c39bd3; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผลวิเคราะห์เมทริกซ์ 5 ธาตุระดับลึก (VIP EXCLUSIVE - อิงวันจร ${p.transitStr})</div>
                 <p><b>1. เมทริกซ์สัดส่วน 5 ธาตุเฉพาะดวง:</b><br>
                 - ธาตุไฟ (Fire): <b>${p.elem.fire}%</b><br>
                 - ธาตุไม้/ลม (Wood): <b>${p.elem.wood}%</b><br>
@@ -8026,8 +8021,7 @@ window.calcWealthFlow = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #2ecc71; background:rgba(46,204,113,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#2ecc71; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผังการเงินมหาเศรษฐีและรหัสเหนี่ยวนำทรัพย์ (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
-                <p style="font-size:11.5px; color:#a9dfbf; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
+                <div style="color:#2ecc71; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผังการเงินมหาเศรษฐีและรหัสเหนี่ยวนำทรัพย์ (VIP EXCLUSIVE - อิงวันจร ${p.transitStr})</div>
                 <p><b>1. ขุมทรัพย์ซ่อนเร้น 3 สายธารประจำดวงชะตา:</b><br>
                 - <b>สายธารที่ 1:</b> ${wp.s1}<br>
                 - <b>สายธารที่ 2:</b> ${wp.s2}<br>
