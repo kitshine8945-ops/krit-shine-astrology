@@ -3932,25 +3932,40 @@ const STEMS = [
       };
    }
 // --- ฟังก์ชันคำนวณดวงจีน BaZi (บังคับเปลี่ยนตามวันเกิดและวันจรแบบเรียลไทม์) ---
-   function calcBaziEngine() {
-      // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม
-      const bD = parseInt(document.getElementById('birthDay')?.value, 10) || 1;
-      const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || 1;
-      const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || 2520;
+function calcBaziEngine() {
+     // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด ไม่มีค่าสำรองตายตัว)
+     const bDayEl = document.getElementById('birthDay');
+     const bMonthEl = document.getElementById('birthMonth');
+     const bYearEl = document.getElementById('birthYearBE');
+     
+     const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
+     const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
+     const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
+     
+     const freeRes = document.getElementById('bazi-free-result');
+     const vipRes = document.getElementById('bazi-vip-result');
+
+     // ถ้ายังไม่ได้เลือกวันเกิด ให้แสดงกล่องแจ้งเตือนและหยุดทำงานทันที
+     if (!bD || !bM || !bY) {
+        if (freeRes) {
+           freeRes.style.display = 'block';
+           document.getElementById('bazi-free-title').textContent = "กรุณากรอกข้อมูลวันเกิด";
+           document.getElementById('bazi-free-desc').innerHTML = "กรุณาระบุ วัน / เดือน / ปีเกิด ที่หน้าแรกให้ครบถ้วนเพื่อเปิดระบบวิเคราะห์ดิถีธาตุและปาจื่อเฉพาะบุคคล";
+        }
+        if (vipRes) vipRes.style.display = 'none';
+        return;
+     }
       
-      const hourEl = document.getElementById('birthHour24');
-      const minEl = document.getElementById('birthMinute24');
-      const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
-      const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
+     const hourEl = document.getElementById('birthHour24');
+     const minEl = document.getElementById('birthMinute24');
+     const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
+     const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
 
-      // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม
-      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-      const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-      const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
-      const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-
-      const freeRes = document.getElementById('bazi-free-result');
-      const vipRes = document.getElementById('bazi-vip-result');
+     // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม
+     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+     const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+     const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
+     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
       // คำนวณดิถีธาตุเบื้องต้น
       let stemDayIdx = Math.abs((bD * 7 + bM * 11 + bY * 3) % 10);
