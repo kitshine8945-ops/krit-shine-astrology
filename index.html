@@ -3928,63 +3928,61 @@ const STEMS = [
         month: { stem: STEMS[stemMonthIdx], branch: monthBranch },
         day: { stem: dayMaster, branch: BRANCHES[branchDayIdx] },
         hour: { stem: STEMS[stemHourIdx], branch: BRANCHES[branchHourIdx] },
-               dayMaster: dayMaster, isStrong: isStrong, yongShen: yongShen, jiShen: jiShen
-    }; // 👈 ต้องนำเครื่องหมายปิดตัวนี้มาอยู่ตรงนี้ เพื่อปิดการส่งคืนค่าดวงเดิมให้เสร็จสิ้นก่อน
-
-    // 💡 [ย้ายลงมาทำงานตรงนี้อย่างปลอดภัย] ส่งไม้ต่อให้คำทำนาย VIP ด้านล่างอัปเดตทันทีเมื่อกดเปลี่ยนวันจร
-    if (typeof AppState !== 'undefined') {
-        AppState.transitDay = typeof tD !== 'undefined' ? tD : 9;
-        AppState.transitMonth = typeof tM !== 'undefined' ? tM : 10;
-        AppState.transitYearBE = typeof tY !== 'undefined' ? tY : 2569;
-    }
-    if (typeof window.updateBaziVipRender === 'function') {
-        window.updateBaziVipRender();
-    }
-} 
-
+        dayMaster: dayMaster, isStrong: isStrong, yongShen: yongShen, jiShen: jiShen
+      };
+   }
 // --- ฟังก์ชันคำนวณดวงจีน BaZi (บังคับเปลี่ยนตามวันเกิดและวันจรแบบเรียลไทม์) ---
 function calcBaziEngine() {
-    // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด)
-    const bDayEl = document.getElementById('birthDay');
-    const bMonthEl = document.getElementById('birthMonth');
-    const bYearEl = document.getElementById('birthYearBE');
+     // 1. ดึงค่าวัน เดือน ปีเกิด แบบสดๆ จากฟอร์ม (เช็กค่าว่างแบบเข้มงวด)
+     const bDayEl = document.getElementById('birthDay');
+     const bMonthEl = document.getElementById('birthMonth');
+     const bYearEl = document.getElementById('birthYearBE');
+     
+     const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
+     const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
+     const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
+     
+     const freeRes = document.getElementById('bazi-free-result');
+     const vipRes = document.getElementById('bazi-vip-result');
 
-    const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : null;
-    const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : null;
-    const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : null;
+     // ถ้ายังไม่ได้เลือกวันเกิด ให้แสดงกล่องแจ้งเตือนและหยุดทำงานทันที
+     if (!bD || !bM || !bY) {
+        if (freeRes) {
+           freeRes.style.display = 'block';
+           document.getElementById('bazi-free-title').textContent = "กรุณากรอกข้อมูลวันเกิด";
+           document.getElementById('bazi-free-desc').innerHTML = "กรุณาระบุ วัน / เดือน / ปีเกิด ที่หน้าแรกให้ครบถ้วนเพื่อเปิดระบบวิเคราะห์ดิถีธาตุและปาจื่อเฉพาะบุคคล";
+        }
+        if (vipRes) vipRes.style.display = 'none';
+        return;
+     }
+      
+     const hourEl = document.getElementById('birthHour24');
+     const minEl = document.getElementById('birthMinute24');
+     const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
+     const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
 
-    // ⭐ [เพิ่มใหม่] ดึงค่้าวัน เดือน ปีจร จากกล่องระบบ VIP ของหน้าเว็บ
-    const tDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
-    const tMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
-    const tYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
+     // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม
+     const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+     const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+     const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMVal - 1] : null) || 'มกราคม';
+     const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
-    const tD = tDayEl && tDayEl.value ? parseInt(tDayEl.value, 10) : bD; // ถ้าไม่มีวันจร ให้ใช้วันเกิดแทน
-    const tM = tMonthEl && tMonthEl.value ? parseInt(tMonthEl.value, 10) : bM;
-    const tY = tYearEl && tYearEl.value ? parseInt(tYearEl.value, 10) : bY;
+     let yearCE = bY - 543;
+     let stemDayIdx = Math.abs((bD * 37 + bM * 23 + yearCE * 13) % 10);
+     let branchMonthIdx = Math.abs((bM + 2) % 12);
 
-       const hourEl = document.getElementById('birthHour24');
-    const minEl = document.getElementById('birthMinute24');
-    const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
-    const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
-
-    // 2. ดึงชื่อเดือนจรมาใช้งาน (ตัวแปร tM, tY, tD ดึงจากด้านบนสุดของฟังก์ชันแล้ว)
-    const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tM - 1] : null) || 'มกราคม';
-
-    // 3. สูตรคำนวณปาจื่อ อิงตามวันเกิดและวันจร VIP
-    let yearCE = tY - 543; 
-    let stemDayIdx = Math.abs((tD * 37 + tM * 23 + yearCE * 13) % 10); 
-    let branchMonthIdx = Math.abs((tM + 2) % 12); 
-
+     let safeStems = (typeof STEMS !== 'undefined') ? STEMS : [{name: "เจี๋ย", elem: "ไม้", pol: "หยาง", desc: "พลังแห่งความเติบโต"}, {name: "ยี่", elem: "ไม้", pol: "หยิน", desc: "พลังแห่งความยืดหยุ่น"}];
+     let safeBranches = (typeof BRANCHES !== 'undefined') ? BRANCHES : [{name: "ชวด", elem: "น้ำ"}, {name: "ฉลู", elem: "ดิน"}];
 
      let dayMaster = safeStems[stemDayIdx % safeStems.length] || safeStems[0];
      let monthBranch = safeBranches[branchMonthIdx % safeBranches.length] || safeBranches[0];
      
-      yearCE = tY - 543; // เปลี่ยนจาก bY เป็น tY เพื่อคำนวณตามปีจร
-    stemDayIdx = Math.abs((tD * 37 + tM * 23 + yearCE * 13) % 10); // เปลี่ยนจาก bD, bM เป็น tD, tM
-    branchMonthIdx = Math.abs((tM + 2) % 12); // เปลี่ยนจาก bM เป็น tM เพื่อให้เดือนจรขยับตาม
+     let isStrong = (dayMaster.elem === monthBranch.elem || (dayMaster.elem === 'ไม้' && monthBranch.elem === 'น้ำ'));
+     let yongShen = isStrong ? "ธาตุทอง (Metal) & ธาตุน้ำ (Water)" : "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)";
+     let jiShen = isStrong ? "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)" : "ธาตุดิน (Earth) & ธาตุทอง (Metal)";
 
-   // คลังคำทำนายโหมดฟรี (แยกข้อความตามวันเกิด bD, bM, bY)
-        const FREE_BAZI_POOLS = [
+     // คลังคำทำนายโหมดฟรี (แยกข้อความตามวันเกิด bD, bM, bY)
+     const FREE_BAZI_POOLS = [
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงกำเนิดเกิดวันที่ ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) รอบวันเกิด ${bD} ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตาเกิดวันที่ ${bD} เดือน ${MONTH_NAMES[bM-1]} พ.ศ. ${bY} โดดเด่นด้านความสุขุมรอบคอบและการวางแผน สร้างความมั่นคงด้วยธาตุ <strong>${yongShen}</strong>`,
@@ -9635,68 +9633,57 @@ function switchWesternMode(mode) {
                 <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
               </div>
             </div>
-           </div>
-    `;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
-    const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
-    birthInputs.forEach(id => {
+          </div>
+        `;
+      }
+    }
+ document.addEventListener('DOMContentLoaded', function() {
+      // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
+      const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
+      birthInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('change', function() {
-                if (typeof calcBaziEngine === 'function') {
-                    calcBaziEngine();
-                }
-            });
+          el.addEventListener('change', function() {
+            if (typeof calcBaziEngine === 'function') {
+              calcBaziEngine();
+            }
+          });
         }
-    });
+      });
 
-    // 1.2 ดักจับเพิ่มเติมเมื่อมีการเปลี่ยนข้อมูลในฟอร์ม "วันจร VIP" เพื่อให้คำทำนายเปลี่ยนตามทันที
-    const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE'];
-    transitInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', function() {
-                if (typeof calcBaziEngine === 'function') {
-                    calcBaziEngine();
-                }
-            });
-        }
-    });
-
-    // // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ (อัปเดตทันทีเมื่อเปลี่ยนวันเกิด)
+      // 2. ดักจับทุกครั้งที่มีการคลิกเปิดหน้าต่างปาจื่อจากทุกปุ่มในเว็บไซต์
+      document.querySelectorAll('[onclick*="bazi"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          setTimeout(function() {
+            if (typeof calcBaziEngine === 'function') {
+              calcBaziEngine();
+            }
+          }, 100);
+        });
+      });
+    }); 
+function calcBaziEngine() {
+    // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ (อัปเดตทันทีเมื่อเปลี่ยนวันเกิด)
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
     const hourEl = document.getElementById('birthHour24');
-    
-    // ดึงค่าวันจรเพิ่มเติมเพื่อส่งเข้าระบบ VIP
-    const transitDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
-    const transitMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
-    const transitYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
 
-    let d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : (AppState.birthDay || 30);
-    let m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : (AppState.birthMonth || 4);
-    let yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : (AppState.birthBE || 2522);
-    let hHour = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : (AppState.birthHour || 0);
+    const d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : (AppState.birthDay || 30);
+    const m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : (AppState.birthMonth || 4);
+    const yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : (AppState.birthBE || 2522);
+    const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : (AppState.birthHour || 0);
 
-    // บันทึกค่าลงสถานะระบบ AppState ทั้งวันเกิดและวันจร VIP
     AppState.birthDay = d;
     AppState.birthMonth = m;
     AppState.birthBE = yBE;
-    AppState.birthHour = hHour;
+    AppState.birthHour = h;
 
-    if (transitDayEl && transitDayEl.value) AppState.transitDay = parseInt(transitDayEl.value, 10);
-    if (transitMonthEl && transitMonthEl.value) AppState.transitMonth = parseInt(transitMonthEl.value, 10);
-    if (transitYearEl && transitYearEl.value) AppState.transitYearBE = parseInt(transitYearEl.value, 10);
-
-    // 2. ดึงวัน เดือน ปีจรแบบสดๆ จากฟอร์มวันจร VIP (แก้คำสั่งเพื่อไม่ให้เกิดการ Redeclare ซ้ำซ้อน)
-    let tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
-    let tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
-    let tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-    let tMName = (typeof MONTH_NAMES !== 'undefined' && MONTH_NAMES[tM - 1]) ? MONTH_NAMES[tM - 1] : 'ตุลาคม';
+    // 2. ดึงวัน เดือน ปีจรแบบสดๆ จากฟอร์มวันจร VIP
+    const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
+    const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
+    const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+    const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
 
     // คลังดิถีธาตุ 10 แบบ
     const stemsList = [
@@ -9712,8 +9699,7 @@ document.addEventListener('DOMContentLoaded', function() {
       { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
     ];
 
-    // แก้ไขตัวแปร seed ให้สอดคล้องกับ hHour ที่ประกาศไว้ด้านบน
-    let seed = (d * 31) + (m * 53) + (yBE * 7) + (hHour * 17);
+    let seed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
     let stemIdx = seed % stemsList.length;
     let dayMaster = stemsList[stemIdx];
 
@@ -9727,9 +9713,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
     const FREE_BAZI_POOLS = [
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
@@ -9761,7 +9747,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     ];
 
-
     let transitSeed = (tY * 7) + (tD * 13) + (tM * 11) + seed;
     let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
@@ -9774,22 +9759,6 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
     let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
-         // --- สั่งพิมพ์ค่าทำนายปาจื่อ VIP ออกสู่หน้าจอ HTML แบบเรียลไทม์ ---
-    // 1. อัปเดตกล่องดวงเดิมโหมดฟรี (ดึงจากอาร์เรย์ตรงๆ เพื่อไม่ให้ตัวแปรหลุด)
-    const freeBaziDesc = document.getElementById('bazi-free-desc');
-    if (freeBaziDesc) {
-        freeBaziDesc.innerHTML = (typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : null) || 'ไม่มีข้อมูลคำทำนายพื้นดวง';
-    }
-
-    // 2. อัปเดตกล่องรายงานดวงจีน VIP ครบวงจร ทั้ง 5 มิติชะตาและสภาพดวงชะตาจร (ใช้ตัวแปร selectedVip5D ให้ตรงตามประกาศข้างบน)
-    const vipFinEl = document.getElementById('bazi-vip-fin') || document.getElementById('vip-fin-desc');
-    const vipWorkEl = document.getElementById('bazi-vip-work') || document.getElementById('vip-work-desc');
-    const vipLoveEl = document.getElementById('bazi-vip-love') || document.getElementById('vip-love-desc');
-    const vipFengshuiEl = document.getElementById('bazi-vip-fengshui') || document.getElementById('vip-fengshui-desc');
-    const vipStrengthEl = document.getElementById('bazi-vip-strength') || document.getElementById('vip-strength-desc');
-
-   
-    if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
 
     // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่มาจากวันเกิด ทำให้เมื่อเปลี่ยนวันเกิด คำทำนายจะเปลี่ยนตามทันที และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
     const LUCK_CYCLE_POOLS = [
@@ -9797,37 +9766,8 @@ document.addEventListener('DOMContentLoaded', function() {
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
       `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต`
     ];
-    // window.updateBaziVipRender จะถูกฟังก์ชันตัวบนเรียกซ้ำทุกครั้งที่กดเปลี่ยนวันจร
-    window.updateBaziVipRender = function() {
-        // ดึงค่าสดๆ จาก AppState ที่ฟังก์ชันหลักส่งข้ามสายลงมาให้
-        let currentTD = (typeof AppState !== 'undefined' && AppState.transitDay) ? AppState.transitDay : (parseInt(document.getElementById('transitDay')?.value, 10) || 9);
-        let currentTM = (typeof AppState !== 'undefined' && AppState.transitMonth) ? AppState.transitMonth : (parseInt(document.getElementById('transitMonth')?.value, 10) || 10);
-        let currentTY = (typeof AppState !== 'undefined' && AppState.transitYearBE) ? AppState.transitYearBE : (parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569);
-
-        let tYearCE = currentTY - 543;
-        let tSeed = Math.abs((currentTD * 37 + currentTM * 23 + tYearCE * 13) % 10);
-
-        let vipPoolIndex = tSeed % VIP_5D_POOLS.length;
-        selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
-
-        // สั่งพ่นข้อความแสดงผล 5 มิติ VIP ออกหน้าจอทันที
-        if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
-        if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
-        if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
-        if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
-
-        // คำนวณและสลับข้อความมหาวัฏจักร 10 ปีตามวันจรจริง
-        let luckCycleIndex = tSeed % LUCK_CYCLE_POOLS.length;
-        selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
-
-        const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
-        if (luckDescEl && typeof selectedLuckCycle !== 'undefined') {
-            luckDescEl.innerHTML = selectedLuckCycle;
-        }
-    };
-
-    // สั่งให้ทำงานครั้งแรกทันทีตอนโหลดหน้าเว็บ
-   window.updateBaziVipRender();
+    let luckCycleIndex = seed % LUCK_CYCLE_POOLS.length;
+    let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
 
     const freeRes = document.getElementById('bazi-free-result');
     const vipRes = document.getElementById('bazi-vip-result');
@@ -9835,22 +9775,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (AppState.currentBaziMode === 'free') {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
-    }
 
-    // --- อัปเดตข้อมูลการแสดงผลคำทำนายดวงเดิมโหมดฟรี ฏ---
-    const freeTitleEl = document.getElementById('bazi-free-title');
-    if (freeTitleEl) freeTitleEl.textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem})${dayMaster.pol}`;
-
-    const freeDescEl = document.getElementById('bazi-free-desc');
-    if (freeDescEl) {
-        freeDescEl.innerHTML = `
-            <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
-            <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.6;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${(typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : 'ไม่มีข้อมูลคำทำนาย')}
-
-            </div>
-        `;
-    }
+      document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
+      document.getElementById('bazi-free-desc').innerHTML = `
+        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+        <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
+        </div>
+      `;
     } else {
       if (freeRes) freeRes.style.display = 'none';
       if (vipRes) vipRes.style.display = 'block';
