@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <style>
+ /* ป้องกันหน้าจอล้น */
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -23,55 +24,62 @@
     padding: 0 !important;
   }
 
+  /* บังคับ Navbar ให้จัดระยะห่างพอดีจอ ไม่ซ้อนทับ */
   header.navbar {
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    flex-wrap: nowrap !important;
     width: 100% !important;
-    height: 60px !important;
-    max-height: 60px !important;
-    overflow: hidden !important;
-    padding: 0 10px !important;
+    min-height: 60px !important;
+    height: auto !important;
+    padding: 8px 12px !important;
     box-sizing: border-box !important;
+    gap: 8px !important;
   }
 
-  /* จัดการเมื่อหน้าจอไม่กว้างพอ (มือถือ / จอ Fold แนวตั้ง) */
-  @media (max-width: 1100px) {
-    /* 1. ซ่อนเมนูลิงก์ยาวๆ */
-    ul.nav-links {
-      display: none !important;
-    }
+  /* ซ่อนเมนูตัวหนังสือยาวๆ ตรงกลาง */
+  ul.nav-links {
+    display: none !important;
+  }
 
-    /* 2. ย่อโลโก้ลงให้กะทัดรัด */
-    .brand, div[class*="brand"] {
-      transform: scale(0.8) !important;
-      transform-origin: left center !important;
-      flex-shrink: 0 !important;
-    }
+  /* ปรับขนาดโลโก้และชื่อเว็บฝั่งซ้าย */
+  .brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+  }
 
-    /* 3. จัดกลุ่มปุ่มด้านขวาให้อยู่ในแถวเดียว ไม่ตกบรรทัด */
-    header .auth-buttons, 
-    header .nav-actions, 
-    header div:has(> a), 
-    header div:has(> button) {
-      display: flex !important;
-      align-items: center !important;
-      gap: 4px !important;
-      flex-shrink: 0 !important;
-    }
+  .brand h1 {
+    font-size: 16px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
 
-    /* 4. ซ่อนปุ่มดาวน์โหลดแอปในมือถือ และย่อขนาดปุ่มที่เหลือ */
-    a[href*="download"], .btn-download, a:has(.fa-download) {
-      display: none !important;
-    }
-    
-    header button, header a.btn, header a {
-      padding: 4px 8px !important;
-      font-size: 11px !important;
-      white-space: nowrap !important;
-    }
+  .brand span {
+    display: none !important;
+  }
+
+  /* ย่อขนาดกลุ่มปุ่มฝั่งขวา */
+  header.navbar > div:last-child,
+  .nav-actions,
+  .user-menu {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ย่อขนาดปุ่ม VIP และปุ่มเข้าสู่ระบบ */
+  header.navbar button, 
+  header.navbar a.btn,
+  .vip-badge,
+  .btn-vip {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
   }
 </style>
 <style>
