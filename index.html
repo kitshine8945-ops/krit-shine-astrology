@@ -3302,7 +3302,8 @@ function updateDailyHoroscopeView() {
     if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
 
     // สลับเลือกข้อมูลแต่ละหมวดแบบอิสระต่อกัน (ผสมผสานกันจนแทบไม่ซ้ำเดิม)
-    if (sumEl) sumEl.textContent = `${ascInfo.name} : ${POOL_SUMMARIES[Math.abs(baseSeed) % POOL_SUMMARIES.length]}`;
+    const ascText = ascInfo.name.includes("ราศี") ? ascInfo.name : "ราศี" + ascInfo.name;
+if (sumEl) sumEl.textContent = `ลัคนา${ascText} : ${POOL_SUMMARIES[Math.abs(baseSeed) % POOL_SUMMARIES.length]}`;
     if (workEl) workEl.textContent = POOL_WORKS[Math.abs(baseSeed + 3) % POOL_WORKS.length];
     if (moneyEl) moneyEl.textContent = POOL_MONEY[Math.abs(baseSeed + 7) % POOL_MONEY.length];
     if (loveEl) loveEl.textContent = POOL_LOVES[Math.abs(baseSeed + 11) % POOL_LOVES.length];
