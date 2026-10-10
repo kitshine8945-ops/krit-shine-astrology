@@ -15,6 +15,43 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    <style>
+  /* 1. ล็อกไม่ให้หน้าเว็บเลื่อนหลุดเฟรม */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 2. จัดการ Navbar ไม่ให้ยืดบังหน้าจอ และไม่ค้างทับเนื้อหา */
+  header.navbar {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    height: 60px !important;       /* ล็อกความสูงไม่ให้แผ่บังทั้งจอ */
+    max-height: 60px !important;
+    overflow: hidden !important;     /* ตัดส่วนที่ล้นทับจอทิ้ง */
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. ลิสต์เมนูตัวหนังสือ ถ้าพื้นที่หน้าจอไม่พอ ให้ซ่อนไว้ก่อน ไม่ให้ตกบรรทัดมากองกลางจอ */
+  @media (max-width: 1100px) {
+    ul.nav-links {
+      display: none !important;
+    }
+  }
+
+  /* 4. ปรับขนาดโลโก้ให้พอดี */
+  .brand {
+    flex-shrink: 0 !important;
+  }
+</style>
     /* ซ่อนแถบกล่องวันจรเฉพาะเมื่ออยู่ในโหมดเลข 7 ตัว 4 ฐาน (ฟรี) */
 #modal-num7base:has(#btn-num7-free.active) .transit-active-badge-bar,
 #modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
