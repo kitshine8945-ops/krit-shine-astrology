@@ -1466,9 +1466,7 @@ footer {
       </div>
       <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:8px;"><i class="fa-solid fa-atom"></i> โหราศาสตร์ยูเรเนียน (Uranian Astrology)</h3>
       <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:14px;">การคำนวณจุดสะท้อน ฮาร์มอนิก และศูนย์รังสี (Midpoints)</p>
-      <div id="uranianFreeBox">
-        <div class="desc-block"><strong style="color:#ffd700;">จุดเมษ (Aries Point) & จุดอาทิตย์/ลัคนา:</strong><p style="font-size:0.86rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">การผสานพลังเชิงมุมสะท้อนบ่งบอกถึงความสามารถในการสื่อสารสู่สาธารณชน วาทศิลป์โดดเด่น มีแรงขับเคลื่อนสร้างสรรค์งานสู่โลกภายนอก</p></div>
-      </div>
+      <div id="uranianFreeBox"></div>
       <div id="uranianVipBox" style="display:none;">
   <div id="uranianVipContent" style="padding: 15px 0;">
     <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright);">
@@ -9798,6 +9796,11 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof switchUranianMode === 'function') {
+    switchUranianMode('free');
+  }
+});
 </script>
 </body>
 </html>
