@@ -7477,7 +7477,7 @@ window.askCosmicBall = function() {
             <button onclick="calcKarmic()" style="background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; font-weight: bold; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer;">ถอดรหัสชะตากรรม</button>
         </div>
         <div id="karmic_result" class="ksprem-result-area" style="display: none; border: 1px solid #d4af37;"></div>
-    </div>
+    </div>Control + Shi
 </div>
 
 <div id="lifeTurningModal" class="ksprem-modal">
@@ -7516,6 +7516,7 @@ window.askCosmicBall = function() {
     </div>
 </div>
 
+<script>
 <script>
 // ฟังก์ชันเปิดป๊อปอัป และผูกปุ่มถาวร
 window.openKsPremFeature = function(modalId) {
@@ -7567,7 +7568,6 @@ window.isKsVipUser = function() {
     return false;
 };
 
-// แก้ข้อ 2: ปิดป๊อปอัปทันที แล้วดึงหน้าต่าง QR VIP ให้ลอยเด่นอยู่ข้างหน้าสุด
 window.triggerKsVipCheckout = function() {
     if (typeof window.closeAllKsPremModals === 'function') {
         window.closeAllKsPremModals();
@@ -7589,8 +7589,6 @@ window.triggerKsVipCheckout = function() {
     }
 };
 
-// แก้ข้อ 1: ดึงวันเดือนปีเกิดจากฟอร์มหน้าเว็บ
-
 window.getKsUserBirthData = function() {
     var d = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
     var m = document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : '';
@@ -7604,7 +7602,8 @@ window.getKsUserBirthData = function() {
     }
     return '';
 };
-// ฟังก์ชันคำนวณฐานดวงชะตาจริงตาม วัน/เดือน/ปี/เวลาเกิด (แบบแยกผลทำนายรายบุคคล 100%)
+
+// ฟังก์ชันคำนวณฐานดวงชะตาจริงตาม วัน/เดือน/ปี/เวลาเกิด พร้อมดึงข้อมูลวันจรปัจจุบันมาร่วมประมวลผล VIP
 function getKsCalculatedProfile() {
     var d = parseInt(document.getElementById('birthDay') ? document.getElementById('birthDay').value : 1) || 1;
     var m = parseInt(document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : 1) || 1;
@@ -7612,6 +7611,11 @@ function getKsCalculatedProfile() {
     var hr = parseInt(document.getElementById('birthHour24') ? document.getElementById('birthHour24').value : 0) || 0;
     var mn = parseInt(document.getElementById('birthMinute24') ? document.getElementById('birthMinute24').value : 0) || 0;
     var prov = document.getElementById('birthProvince') ? document.getElementById('birthProvince').value : 'กรุงเทพมหานคร';
+
+    // ดึงค่าวัน/เดือน/ปี จร จากฟอร์มหน้าเว็บ (ถ้ามี) หรือใช้วันปัจจุบัน
+    var tD = parseInt(document.getElementById('transitDay')?.value, 10) || new Date().getDate();
+    var tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || (new Date().getMonth() + 1);
+    var tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (new Date().getFullYear() + 543);
 
     // 1. คำนวณเลขรหัสกรรม (Karmic Root 1-9)
     var sumDigits = function(num) {
@@ -7623,13 +7627,13 @@ function getKsCalculatedProfile() {
     while (kTotal > 9) { kTotal = sumDigits(kTotal); }
     if (kTotal === 0) kTotal = 1;
 
-    // 2. คำนวณธาตุแก่นแท้ (Soul Element) แยกบทวิเคราะห์ 5 ธาตุไม่ซ้ำกัน
+    // 2. คำนวณธาตุแก่นแท้ (Soul Element)
     var elements = [
         { 
             name: "ธาตุไฟ (สนามพลังหยางบริสุทธิ์)", 
             aura: "สีส้มประกายทองเจิดจ้า", 
-            coreDesc: "มีไฟแห่งความทะเยอทะยานสูง มุ่งมั่นเด็ดเดี่ยว ไม่ชอบการถูกตีกรอบ ตัดสินใจรวดเร็วและมีความคิดริเริ่มสร้างสรรค์อย่างโดดเด่น",
-            leakDesc: "จุดอ่อนคือธาตุน้ำและธาตุทองพร่อง ทำให้อารมณ์ร้อนวู่วาม ขาดความอดทนในเรื่องจุกจิก และมักจะหมดไฟอย่างรวดเร็วหากไม่เห็นผลลัพธ์ทันตา",
+            coreDesc: "มีไฟแห่งความทะเยอทะยานสูง มุ่งมั่นเด็ดเดี่ยว ไม่ชอบการถูกตีกรอบ ตัดสินใจรวดเร็วและมีความคิดริเริ่มสร้างสรรค์อย่างโดดเด่น", 
+            leakDesc: "จุดอ่อนคือธาตุน้ำและธาตุทองพร่อง ทำให้อารมณ์ร้อนวู่วาม ขาดความอดทนในเรื่องจุกจิก และมักจะหมดไฟอย่างรวดเร็วหากไม่เห็นผลลัพธ์ทันตา", 
             gem: "ไหมทอง (Gold Rutilated Quartz), ซิทริน (Citrine)", 
             stone: "ช่วยกักเก็บกระแสทรัพย์ ลดความใจร้อน และสร้างความหนักแน่นในการตัดสินใจ", 
             fire: 40, wood: 25, earth: 15, metal: 10, water: 10 
@@ -7637,8 +7641,8 @@ function getKsCalculatedProfile() {
         { 
             name: "ธาตุน้ำ (คลื่นสัญชาตญาณหยินลึกซึ้ง)", 
             aura: "สีน้ำเงินครามเหลือบประกายเงิน", 
-            coreDesc: "มีญาณหยั่งรู้และลางสังหรณ์แม่นยำ ปรับตัวเก่งเหมือนน้ำ นุ่มนวล มีเสน่ห์ทางวาจา ลึกซึ้งและเข้าใจความรู้สึกของคนรอบข้างได้เป็นอย่างดี",
-            leakDesc: "จุดอ่อนคือธาตุดินและธาตุไฟพร่อง ส่งผลให้อารมณ์อ่อนไหวแปรปรวนง่าย ขี้สงสารจนกลายเป็นดาบสองคม และขาดความกล้าเสี่ยงในจังหวะสำคัญ",
+            coreDesc: "มีญาณหยั่งรู้และลางสังหรณ์แม่นยำ ปรับตัวเก่งเหมือนน้ำ นุ่มนวล มีเสน่ห์ทางวาจา ลึกซึ้งและเข้าใจความรู้สึกของคนรอบข้างได้เป็นอย่างดี", 
+            leakDesc: "จุดอ่อนคือธาตุดินและธาตุไฟพร่อง ส่งผลให้อารมณ์อ่อนไหวแปรปรวนง่าย ขี้สงสารจนกลายเป็นดาบสองคม และขาดความกล้าเสี่ยงในจังหวะสำคัญ", 
             gem: "อความารีน (Aquamarine), ลาพิส ลาซูลี, มูนสโตน", 
             stone: "สร้างเกราะป้องกันพลังงานลบ ช่วยให้จิตใจนิ่งสงบ และเพิ่มพลังอำนาจในการสั่งการ", 
             fire: 10, wood: 20, earth: 10, metal: 25, water: 35 
@@ -7646,8 +7650,8 @@ function getKsCalculatedProfile() {
         { 
             name: "ธาตุลม (พลังจินตนาการและการแปรผัน)", 
             aura: "สีเขียวมรกตประกายฟ้า", 
-            coreDesc: "สมองแล่นไว สื่อสารเก่ง มีวิสัยทัศน์กว้างไกล มักมองเห็นไอเดียก่อนผู้อื่น ชอบงานที่อิสระและมีความยืดหยุ่นสูง",
-            leakDesc: "จุดอ่อนคือธาตุดินพร่องมาก ทำให้จิตใจวอกแวกง่าย คิดหลายเรื่องพร้อมกันแต่ทำไม่จบเป็นชิ้นเป็นอัน และสูญเสียพลังงานชีวิตไปกับความกังวลล่วงหน้า",
+            coreDesc: "สมองแล่นไว สื่อสารเก่ง มีวิสัยทัศน์กว้างไกล มักมองเห็นไอเดียก่อนผู้อื่น ชอบงานที่อิสระและมีความยืดหยุ่นสูง", 
+            leakDesc: "จุดอ่อนคือธาตุดินพร่องมาก ทำให้จิตใจวอกแวกง่าย คิดหลายเรื่องพร้อมกันแต่ทำไม่จบเป็นชิ้นเป็นอัน และสูญเสียพลังงานชีวิตไปกับความกังวลล่วงหน้า", 
             gem: "มาลาไคต์ (Malachite), หินลาบราดอไรต์ (Labradorite)", 
             stone: "ช่วยดึงจิตให้อยู่กับปัจจุบัน ตรึงพลังสมาธิ และขจัดความฟุ้งซ่านในความคิด", 
             fire: 25, wood: 35, earth: 10, metal: 15, water: 15 
@@ -7655,8 +7659,8 @@ function getKsCalculatedProfile() {
         { 
             name: "ธาตุดิน (ฐานพลังแห่งความมั่นคงมั่งคั่ง)", 
             aura: "สีเหลืองอำพันประกายน้ำตาลทอง", 
-            coreDesc: "สุขุม หนักแน่น อดทนเป็นเลิศ ซื่อสัตย์ ไว้วางใจได้สูง มีวินัยในการสะสมทรัพยากรและเป็นที่พึ่งพาให้ผู้อื่นได้เสมอ",
-            leakDesc: "จุดอ่อนคือธาตุลมและธาตุน้ำพร่อง ทำให้ยึดติดกับกรอบเดิมๆ ปรับตัวรับความเปลี่ยนแปลงช้า และมักแบกรับความตึงเครียดไว้เงียบๆ เพียงลำพัง",
+            coreDesc: "สุขุม หนักแน่น อดทนเป็นเลิศ ซื่อสัตย์ ไว้วางใจได้สูง มีวินัยในการสะสมทรัพยากรและเป็นที่พึ่งพาให้ผู้อื่นได้เสมอ", 
+            leakDesc: "จุดอ่อนคือธาตุลมและธาตุน้ำพร่อง ทำให้ยึดติดกับกรอบเดิมๆ ปรับตัวรับความเปลี่ยนแปลงช้า และมักแบกรับความตึงเครียดไว้เงียบๆ เพียงลำพัง", 
             gem: "ไทเกอร์อาย (Tiger Eye), หยกพม่าแท้, โกเมนแดง", 
             stone: "เพิ่มความยืดหยุ่น ปลดล็อกความคิดสร้างสรรค์ และเสริมความคล่องตัวในการเจรจาค้าขาย", 
             fire: 15, wood: 15, earth: 40, metal: 20, water: 10 
@@ -7664,8 +7668,8 @@ function getKsCalculatedProfile() {
         { 
             name: "ธาตุทอง (พลังอำนาจและระเบียบวินัย)", 
             aura: "สีขาวประกายรุ้งดั่งเพชร", 
-            coreDesc: "เฉียบขาด มีหลักการ ชัดเจน รักความสมบูรณ์แบบ มีพรสวรรค์ด้านการบริหาร การคำนวณ และการจัดวางโครงสร้างระบบงาน",
-            leakDesc: "จุดอ่อนคือธาตุไฟและธาตุไม้พร่อง มักเคร่งเครียดเกินไป ตัดสินผู้อื่นอย่างเข้มงวด และมักเผชิญความเหนื่อยล้าจากการควบคุมทุกสิ่งด้วยตนเอง",
+            coreDesc: "เฉียบขาด มีหลักการ ชัดเจน รักความสมบูรณ์แบบ มีพรสวรรค์ด้านการบริหาร การคำนวณ และการจัดวางโครงสร้างระบบงาน", 
+            leakDesc: "จุดอ่อนคือธาตุไฟและธาตุไม้พร่อง มักเคร่งเครียดเกินไป ตัดสินผู้อื่นอย่างเข้มงวด และมักเผชิญความเหนื่อยล้าจากการควบคุมทุกสิ่งด้วยตนเอง", 
             gem: "เพชรคริสตัล (Clear Quartz), ไหมเงิน, นิลดำโอนิกซ์", 
             stone: "กระตุ้นพลังเมตตามหานิยม เติมความผ่อนคลาย และช่วยให้คนรอบข้างเข้าถึงได้ง่ายขึ้น", 
             fire: 10, wood: 15, earth: 20, metal: 40, water: 15 
@@ -7674,7 +7678,6 @@ function getKsCalculatedProfile() {
     var elemIdx = (d + m + hr) % 5;
     var elemData = elements[elemIdx];
 
-    // 3. ทิศและตัวเลขการเงินเฉพาะดวง
     var directions = ["ทิศตะวันออกเฉียงเหนือ", "ทิศเหนือ", "ทิศตะวันออก", "ทิศตะวันออกเฉียงใต้", "ทิศใต้", "ทิศตะวันตกเฉียงใต้", "ทิศตะวันตก", "ทิศตะวันตกเฉียงเหนือ"];
     var luckyDir = directions[(d + y) % 8];
     var n1 = ((d * 3) % 9) + 1;
@@ -7685,18 +7688,19 @@ function getKsCalculatedProfile() {
 
     return {
         dateStr: `${d}/${m}/${y} เวลา ${hr}:${mn < 10 ? '0' + mn : mn} น. (${prov})`,
+        transitStr: `${tD}/${tMVal}/${tY}`,
         kNum: kTotal,
         elem: elemData,
         dir: luckyDir,
         nums: luckyNumbers,
         day: d,
         month: m,
-        year: y
+        year: y,
+        tYear: tY
     };
 }
 
 // 1. รหัสกรรม & วาสนาข้ามภพ
-// 1. รหัสกรรม & วาสนาข้ามภพ (แยกกล่อง ฟรี และ VIP อย่างเด็ดขาด)
 window.calcKarmic = function() {
     var bdate = window.getKsUserBirthData();
     var res = document.getElementById('karmic_result');
@@ -7726,13 +7730,12 @@ window.calcKarmic = function() {
     ];
     var k = karmicData[p.kNum];
 
-    // 1. กล่องเนื้อหาฝั่งฟรี (แสดงผลตลอดเวลา)
     var freeBox = `
         <div style="background: rgba(15,23,42,0.9); border: 1px solid rgba(234,179,8,0.4); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
             <div style="color:#ffd700; font-weight:bold; font-size:1rem; margin-bottom:8px; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:6px;">
                 📜 ผลวิเคราะห์รหัสกรรมฐานดวง: รหัสกรรมชั้นที่ ${p.kNum}
             </div>
-            <div style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">📅 คำนวณจาก: <b>${p.dateStr}</b></div>
+            <div style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">📅 คำนวณจากวันเกิด: <b>${p.dateStr}</b></div>
             <div style="margin-bottom:10px; font-size:13px; color:#e2e8f0;">
                 <b style="color:#ffd700;">⚖️ ปมกรรมดั้งเดิม (Karmic Debt):</b><br>${k.debt}
             </div>
@@ -7742,29 +7745,27 @@ window.calcKarmic = function() {
         </div>
     `;
 
-    // 2. กล่องเนื้อหาฝั่ง VIP (แยกเป็นกล่องอิสระอีกกล่องต่างหาก)
     var vipBox = `
         <div style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(15,23,42,0.95)); border: 1.5px solid #ffd700; border-radius: 14px; padding: 18px; margin-top: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);">
             <div style="color:#ffd700; font-weight:bold; font-size:1.05rem; margin-bottom:10px; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:6px;">
-                👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE)
+                👑 คำพยากรณ์เชิงลึกระดับมหาคัมภีร์ (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})
             </div>
-            <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>1. เจ้ากรรมนายเวรที่เด่นชัดประจำรหัส ${p.kNum}:</b><br>${k.exp}</p>
+            <p style="font-size:12px; color:#ffd700; margin-bottom:8px;">📌 รอบปีจรปัจจุบัน: <b>${p.transitStr}</b></p>
+            <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>1. เจ้ากรรมนายเวรที่เด่นชัดประจำรหัส ${p.kNum} (อัปเดตตามห้วงวันจร):</b><br>${k.exp}</p>
             <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>2. พิธีขอขมาและตัดสัญญากรรมเฉพาะตัว:</b><br>จุดธูป 16 ดอกกลางแจ้งในวันพระ ขึ้นต้นด้วย นะโม 3 จบ แล้วกล่าว: <i>"กายกรรม วจีกรรม มโนกรรม รหัสกรรมที่ ${p.kNum} ที่ข้าพเจ้าได้เคยก่อไว้ต่อดวงจิตใดในอดีตชาติ ขอถอนพันธะสัญญาและวิบากกรรมทั้งหมด ณ บัดนี้ ขออโหสิกรรมซึ่งกันและกันเทอญ"</i></p>
             <p style="font-size:13px; color:#e2e8f0; margin-bottom:8px;"><b>3. บุญเฉพาะทางแก้ดวงรหัสกรรมที่ ${p.kNum}:</b><br>${k.act}</p>
             <p style="font-size:13px; color:#e2e8f0;"><b>4. พระคาถาคุ้มครองดวงชะตา:</b><br>สวด <b>${k.prayer}</b> เป็นประจำทุกค่ำวันเกิด จะช่วยสลายพลังงานลบและเปิดทางสว่างให้ชีวิตทันตาเห็น</p>
         </div>
     `;
 
-    // 3. การ์ดล็อกสำหรับผู้ใช้ทั่วไป (ยังไม่เป็นสมาชิก)
     var lockCard = `
         <div style="background: rgba(234,179,8,0.08); border: 1.5px dashed #ffd700; border-radius: 14px; padding: 18px; text-align: center; margin-top: 16px;">
             <div style="color:#ffd700; font-weight:bold; font-size:0.95rem; margin-bottom:6px;">🔒 ปลดล็อกรหัสตัดวิบากกรรมเฉพาะดวง (VIP)</div>
-            <div style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px;">ดูรูปพรรณเจ้ากรรมนายเวร, พิธีขอขมาข้ามภพ, บุญเฉพาะดวง และพระคาถาประจำตัว</div>
+            <div style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px;">ดูรูปพรรณเจ้ากรรมนายเวร, พิธีขอขมาข้ามภพ, บุญเฉพาะดวง และพระคาถาประจำตัวตามวันจร</div>
             <button onclick="checkKsVipAndOpen()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">⭐ สมัคร VIP ปลดล็อกทันที</button>
         </div>
     `;
 
-    // ประกอบร่างแสดงผลตามสถานะสมาชิก
     if (isVip) {
         res.innerHTML = freeBox + vipBox;
     } else {
@@ -7772,7 +7773,7 @@ window.calcKarmic = function() {
     }
 };
 
-// 2. มหาพิชัยสงคราม: จังหวะพลิกชีวิต (กระจายผล 6 รูปแบบตามวันเกิดจริง)
+// 2. มหาพิชัยสงคราม: จังหวะพลิกชีวิต
 window.calcLifeTurning = function() {
     var bdate = window.getKsUserBirthData();
     var res = document.getElementById('life_result');
@@ -7842,7 +7843,7 @@ window.calcLifeTurning = function() {
 
     var freeContent = `
         <div style="color:#5dade2; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:1px solid rgba(93,173,226,0.3); padding-bottom:6px;">
-            ⚔️ ผังมหาพิชัยสงคราม 12 ฤดูกาล (${p.dateStr})
+            ⚔️ ผังมหาพิชัยสงคราม 12 ฤดูกาล (คำนวณจากวันเกิด: ${p.dateStr})
         </div>
         <div style="margin-bottom:12px;">
             <b style="color:#aed6f1;">🚩 ยุทธศาสตร์ภาพรวม (Grand Strategy):</b><br>
@@ -7864,7 +7865,8 @@ window.calcLifeTurning = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #3498db; background:rgba(52,152,219,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#5dade2; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 แผนภูมิพิชัยสงคราม 4 ไตรมาสเฉพาะดวง (VIP EXCLUSIVE)</div>
+                <div style="color:#5dade2; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 แผนภูมิพิชัยสงคราม 4 ไตรมาสเฉพาะดวง (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
+                <p style="font-size:11.5px; color:#aed6f1; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
                 <p><b>ไตรมาสที่ 1 (กุมภาพันธ์ - เมษายน):</b><br>${cycle.q1}</p>
                 <p><b>ไตรมาสที่ 2 (พฤษภาคม - กรกฎาคม):</b><br>${cycle.q2}</p>
                 <p><b>ไตรมาสที่ 3 (สิงหาคม - ตุลาคม):</b><br>${cycle.q3}</p>
@@ -7874,7 +7876,7 @@ window.calcLifeTurning = function() {
     }
 };
 
-// 3. ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์ (ดึงบทวิเคราะห์เฉพาะของแต่ละธาตุ 100%)
+// 3. ถอดรหัสจิตวิญญาณ & ธาตุกายสิทธิ์
 window.calcSoulElement = function() {
     var bdate = window.getKsUserBirthData();
     var res = document.getElementById('soul_result');
@@ -7892,7 +7894,7 @@ window.calcSoulElement = function() {
 
     var freeContent = `
         <div style="color:#c39bd3; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:1px solid rgba(195,155,211,0.3); padding-bottom:6px;">
-            💎 สแกนคลื่นจิตวิญญาณ (${p.dateStr})
+            💎 สแกนคลื่นจิตวิญญาณ (คำนวณจากวันเกิด: ${p.dateStr})
         </div>
         <div style="margin-bottom:12px;">
             <b style="color:#e8daef;">🔮 ธาตุแก่นแท้ (Soul Core Element):</b><br>
@@ -7915,7 +7917,8 @@ window.calcSoulElement = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #9b59b6; background:rgba(155,89,182,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#c39bd3; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผลวิเคราะห์เมทริกซ์ 5 ธาตุระดับลึก (VIP EXCLUSIVE)</div>
+                <div style="color:#c39bd3; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผลวิเคราะห์เมทริกซ์ 5 ธาตุระดับลึก (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
+                <p style="font-size:11.5px; color:#e8daef; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
                 <p><b>1. เมทริกซ์สัดส่วน 5 ธาตุเฉพาะดวง:</b><br>
                 - ธาตุไฟ (Fire): <b>${p.elem.fire}%</b><br>
                 - ธาตุไม้/ลม (Wood): <b>${p.elem.wood}%</b><br>
@@ -7932,7 +7935,7 @@ window.calcSoulElement = function() {
     }
 };
 
-// 4. เปิดขุมทรัพย์มหาเศรษฐี & สายธารเงิน (กระจายผล 6 โครงสร้างการเงินตามวันเกิดจริง)
+// 4. เปิดขุมทรัพย์มหาเศรษฐี & สายธารเงิน
 window.calcWealthFlow = function() {
     var bdate = window.getKsUserBirthData();
     var res = document.getElementById('wealth_result');
@@ -8002,7 +8005,7 @@ window.calcWealthFlow = function() {
 
     var freeContent = `
         <div style="color:#2ecc71; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:1px solid rgba(46,204,113,0.3); padding-bottom:6px;">
-            💰 ผังสายธารทรัพย์และขุมพลังมหาเศรษฐี (${p.dateStr})
+            💰 ผังสายธารทรัพย์และขุมพลังมหาเศรษฐี (คำนวณจากวันเกิด: ${p.dateStr})
         </div>
         <div style="margin-bottom:12px;">
             <b style="color:#a9dfbf;">🌊 โครงสร้างกระแสเงินสด: '${wp.type}'</b><br>
@@ -8024,7 +8027,8 @@ window.calcWealthFlow = function() {
     } else {
         res.innerHTML = freeContent + `
             <div style="margin-top:14px; padding-top:12px; border-top:1px dashed #2ecc71; background:rgba(46,204,113,0.06); padding:14px; border-radius:10px;">
-                <div style="color:#2ecc71; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผังการเงินมหาเศรษฐีและรหัสเหนี่ยวนำทรัพย์ (VIP EXCLUSIVE)</div>
+                <div style="color:#2ecc71; font-weight:bold; font-size:15px; margin-bottom:8px;">👑 ผังการเงินมหาเศรษฐีและรหัสเหนี่ยวนำทรัพย์ (VIP EXCLUSIVE - อิงวันจรปี ${p.tYear})</div>
+                <p style="font-size:11.5px; color:#a9dfbf; margin-bottom:8px;">📌 พยากรณ์อิงห้วงเวลาวันจรปัจจุบัน พ.ศ. ${p.tYear}</p>
                 <p><b>1. ขุมทรัพย์ซ่อนเร้น 3 สายธารประจำดวงชะตา:</b><br>
                 - <b>สายธารที่ 1:</b> ${wp.s1}<br>
                 - <b>สายธารที่ 2:</b> ${wp.s2}<br>
@@ -8040,6 +8044,7 @@ window.calcWealthFlow = function() {
             </div>`;
     }
 };
+</script>
 /* ========================================================
    ชุดคำสั่งแก้ไขสมบูรณ์แบบ (แก้ตรงจุด 100% ไม่ตีกับระบบเดิม)
    ======================================================== */
