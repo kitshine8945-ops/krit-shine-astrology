@@ -9777,6 +9777,25 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
     let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
+         // --- สั่งพิมพ์ค่าทำนายปาจื่อ VIP ออกสู่หน้าจอ HTML แบบเรียลไทม์ ---
+    // 1. อัปเดตกล่องดวงเดิมโหมดฟรี (ดึงจากอาร์เรย์ตรงๆ เพื่อไม่ให้ตัวแปรหลุด)
+    const freeBaziDesc = document.getElementById('bazi-free-desc');
+    if (freeBaziDesc) {
+        freeBaziDesc.innerHTML = (typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : null) || 'ไม่มีข้อมูลคำทำนายพื้นดวง';
+    }
+
+    // 2. อัปเดตกล่องรายงานดวงจีน VIP ครบวงจร ทั้ง 5 มิติชะตาและสภาพดวงชะตาจร (ใช้ตัวแปร selectedVip5D ให้ตรงตามประกาศข้างบน)
+    const vipFinEl = document.getElementById('bazi-vip-fin') || document.getElementById('vip-fin-desc');
+    const vipWorkEl = document.getElementById('bazi-vip-work') || document.getElementById('vip-work-desc');
+    const vipLoveEl = document.getElementById('bazi-vip-love') || document.getElementById('vip-love-desc');
+    const vipFengshuiEl = document.getElementById('bazi-vip-fengshui') || document.getElementById('vip-fengshui-desc');
+    const vipStrengthEl = document.getElementById('bazi-vip-strength') || document.getElementById('vip-strength-desc');
+
+    if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
+    if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
+    if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
+    if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
+    if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
 
     // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่มาจากวันเกิด ทำให้เมื่อเปลี่ยนวันเกิด คำทำนายจะเปลี่ยนตามทันที และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
     const LUCK_CYCLE_POOLS = [
@@ -9793,7 +9812,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (AppState.currentBaziMode === 'free') {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
-
+    }
+      // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
+    let luckPoolIndex = seed % LUCK_CYCLE_POOLS.length;
+    
+    const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
+    if (luckDescEl && typeof LUCK_CYCLE_POOLS !== 'undefined') {
+        luckDescEl.innerHTML = LUCK_CYCLE_POOLS[luckPoolIndex];
+    }
       document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
       document.getElementById('bazi-free-desc').innerHTML = `
         <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
