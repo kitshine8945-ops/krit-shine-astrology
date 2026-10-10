@@ -3290,16 +3290,46 @@ const DAILY_PREDICTIONS_POOL = [
 ];
 
 function updateDailyHoroscopeView() {
-    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
-    const ascIndex = AppState.currentCalculatedAscIndex;
+    // 1. ดึงค่าวันเกิดจากฟอร์ม (ถ้ายังไม่กรอก ให้ใช้ค่าเริ่มต้นวันที่ 30 เมษายน)
+    const bDayVal = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+    const bMonthVal = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
     
+    // 2. คำนวณราศีกำเนิดคร่าวๆ จากวันเดือนปีเกิด เพื่อให้มีข้อมูลแสดงผลทันทีโดยไม่ต้องกดคำนวณลัคนา
+    let zodiacIndex = 0;
+    if (bMonthVal === 4 && bDayVal >= 13) zodiacIndex = 0; // เมษ
+    else if (bMonthVal === 5 && bDayVal >= 14) zodiacIndex = 1; // พฤษภ
+    else if (bMonthVal === 6 && bDayVal >= 14) zodiacIndex = 2; // เมถุน
+    else if (bMonthVal === 7 && bDayVal >= 16) zodiacIndex = 3; // กรกฎ
+    else if (bMonthVal === 8 && bDayVal >= 16) zodiacIndex = 4; // สิงห์
+    else if (bMonthVal === 9 && bDayVal >= 16) zodiacIndex = 5; // กันย์
+    else if (bMonthVal === 10 && bDayVal >= 17) zodiacIndex = 6; // ตุลย์
+    else if (bMonthVal === 11 && bDayVal >= 16) zodiacIndex = 7; // พิจิก
+    else if (bMonthVal === 12 && bDayVal >= 15) zodiacIndex = 8; // ธนู
+    else if (bMonthVal === 1 && bDayVal >= 14) zodiacIndex = 9; // มังกร
+    else if (bMonthVal === 2 && bDayVal >= 13) zodiacIndex = 10; // กุมภ์
+    else if (bMonthVal === 3 && bDayVal >= 14) zodiacIndex = 11; // มีน
+    else zodiacIndex = (bMonthVal + bDayVal) % 12;
+
+    // หากมีการกดคำนวณลัคนาหลักไว้แล้ว ให้ใช้ลัคนาจริง ถ้ายัง ให้ใช้ราศีกำเนิดแทน
+    const activeIndex = (AppState.currentCalculatedAscIndex !== null && AppState.currentCalculatedAscIndex !== undefined) 
+                        ? AppState.currentCalculatedAscIndex 
+                        : zodiacIndex;
+
+    // 3. ดึงวันที่ปัจจุบันแบบสดๆ (เปลี่ยนตามปฏิทินจริงทุกวันอัตโนมัติ)
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
     const date = now.getDate();
     
-    const daySeed = year * 10000 + month * 100 + date;
+    const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    const dateStr = `${date} ${thMonths[month]} พ.ศ. ${year + 543}`;
 
+    // สร้าง Seed ที่เปลี่ยนไปทุกวันอย่างแท้จริง
+    const daySeed = (year * 10000) + (month * 100) + date;
+    const combinedSeed = daySeed + activeIndex;
+
+    const dateEl = document.getElementById('daily-current-date-str');
+    const ascEl = document.getElementById('daily-ascendant-label');
     const sumEl = document.getElementById('dailySummaryText');
     const workEl = document.getElementById('dailyWorkText');
     const moneyEl = document.getElementById('dailyMoneyText');
@@ -3309,21 +3339,14 @@ function updateDailyHoroscopeView() {
     const luckyColorEl = document.getElementById('dailyLuckyColor');
     const luckyDirEl = document.getElementById('dailyLuckyDirection');
 
-    if (!bDayVal || ascIndex === null || ascIndex === undefined) {
-        if (sumEl) sumEl.textContent = '⚠️ กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรก แล้วกด "ดูดวงลัคนาเลย" ก่อนเปิดดูดวงรายวันเฉพาะบุคคลครับ';
-        if (workEl) workEl.textContent = '-';
-        if (moneyEl) moneyEl.textContent = '-';
-        if (loveEl) loveEl.textContent = '-';
-        if (healthEl) healthEl.textContent = '-';
-        if (luckyNumEl) luckyNumEl.textContent = '-';
-        if (luckyColorEl) luckyColorEl.textContent = '-';
-        if (luckyDirEl) luckyDirEl.textContent = '-';
-        return;
-    }
+    if (dateEl) dateEl.textContent = dateStr;
+    
+    const ascInfo = ZODIAC_DATA[activeIndex] || { name: "ราศีเมษ", elem: "ธาตุไฟ" };
+    if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
 
-    const poolIndex = (daySeed + ascIndex) % DAILY_PREDICTIONS_POOL.length;
+    // สลับชุดคำทำนายใหม่ตามวันจริงๆ โดยไม่ติดเงื่อนไขบล็อก
+    const poolIndex = combinedSeed % DAILY_PREDICTIONS_POOL.length;
     const todayPred = DAILY_PREDICTIONS_POOL[poolIndex];
-    const ascInfo = ZODIAC_DATA[ascIndex] || { name: "ราศีกุมภ์" };
 
     if (sumEl) sumEl.textContent = `${ascInfo.name} : ${todayPred.summary}`;
     if (workEl) workEl.textContent = todayPred.work;
