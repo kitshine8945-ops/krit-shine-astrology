@@ -3951,9 +3951,6 @@ function calcBaziEngine() {
     const tM = tMonthEl && tMonthEl.value ? parseInt(tMonthEl.value, 10) : bM;
     const tY = tYearEl && tYearEl.value ? parseInt(tYearEl.value, 10) : bY;
 
-    const freeRes = document.getElementById('bazi-free-result');
-    const vipRes = document.getElementById('bazi-vip-result');
-
      // ถ้ายังไม่ได้เลือกวันเกิด ให้แสดงกล่องแจ้งเตือนและหยุดทำงานทันที
      if (!bD || !bM || !bY) {
         if (freeRes) {
