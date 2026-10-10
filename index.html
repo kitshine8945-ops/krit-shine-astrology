@@ -14,8 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-  /* 1. ล็อกไม่ให้หน้าเว็บเลื่อนหลุดเฟรม */
+ <style>
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -24,7 +23,6 @@
     padding: 0 !important;
   }
 
-  /* 2. จัดการ Navbar ไม่ให้ยืดบังหน้าจอ */
   header.navbar {
     display: flex !important;
     flex-direction: row !important;
@@ -35,19 +33,45 @@
     height: 60px !important;
     max-height: 60px !important;
     overflow: hidden !important;
-    padding: 0 12px !important;
+    padding: 0 10px !important;
     box-sizing: border-box !important;
   }
 
-  /* 3. ซ่อนเมนูยาวๆ เมื่อหน้าจอแคบ */
+  /* จัดการเมื่อหน้าจอไม่กว้างพอ (มือถือ / จอ Fold แนวตั้ง) */
   @media (max-width: 1100px) {
+    /* 1. ซ่อนเมนูลิงก์ยาวๆ */
     ul.nav-links {
       display: none !important;
     }
-  }
 
-  .brand {
-    flex-shrink: 0 !important;
+    /* 2. ย่อโลโก้ลงให้กะทัดรัด */
+    .brand, div[class*="brand"] {
+      transform: scale(0.8) !important;
+      transform-origin: left center !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* 3. จัดกลุ่มปุ่มด้านขวาให้อยู่ในแถวเดียว ไม่ตกบรรทัด */
+    header .auth-buttons, 
+    header .nav-actions, 
+    header div:has(> a), 
+    header div:has(> button) {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* 4. ซ่อนปุ่มดาวน์โหลดแอปในมือถือ และย่อขนาดปุ่มที่เหลือ */
+    a[href*="download"], .btn-download, a:has(.fa-download) {
+      display: none !important;
+    }
+    
+    header button, header a.btn, header a {
+      padding: 4px 8px !important;
+      font-size: 11px !important;
+      white-space: nowrap !important;
+    }
   }
 </style>
 <style>
