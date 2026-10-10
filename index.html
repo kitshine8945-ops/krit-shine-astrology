@@ -3294,28 +3294,27 @@ function updateDailyHoroscopeView() {
     const bDayVal = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
     const bMonthVal = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
     
-    // 2. คำนวณราศีกำเนิดคร่าวๆ จากวันเดือนปีเกิด เพื่อให้มีข้อมูลแสดงผลทันทีโดยไม่ต้องกดคำนวณลัคนา
+    // 2. คำนวณราศีกำเนิดคร่าวๆ
     let zodiacIndex = 0;
-    if (bMonthVal === 4 && bDayVal >= 13) zodiacIndex = 0; // เมษ
-    else if (bMonthVal === 5 && bDayVal >= 14) zodiacIndex = 1; // พฤษภ
-    else if (bMonthVal === 6 && bDayVal >= 14) zodiacIndex = 2; // เมถุน
-    else if (bMonthVal === 7 && bDayVal >= 16) zodiacIndex = 3; // กรกฎ
-    else if (bMonthVal === 8 && bDayVal >= 16) zodiacIndex = 4; // สิงห์
-    else if (bMonthVal === 9 && bDayVal >= 16) zodiacIndex = 5; // กันย์
-    else if (bMonthVal === 10 && bDayVal >= 17) zodiacIndex = 6; // ตุลย์
-    else if (bMonthVal === 11 && bDayVal >= 16) zodiacIndex = 7; // พิจิก
-    else if (bMonthVal === 12 && bDayVal >= 15) zodiacIndex = 8; // ธนู
-    else if (bMonthVal === 1 && bDayVal >= 14) zodiacIndex = 9; // มังกร
-    else if (bMonthVal === 2 && bDayVal >= 13) zodiacIndex = 10; // กุมภ์
-    else if (bMonthVal === 3 && bDayVal >= 14) zodiacIndex = 11; // มีน
+    if (bMonthVal === 4 && bDayVal >= 13) zodiacIndex = 0;
+    else if (bMonthVal === 5 && bDayVal >= 14) zodiacIndex = 1;
+    else if (bMonthVal === 6 && bDayVal >= 14) zodiacIndex = 2;
+    else if (bMonthVal === 7 && bDayVal >= 16) zodiacIndex = 3;
+    else if (bMonthVal === 8 && bDayVal >= 16) zodiacIndex = 4;
+    else if (bMonthVal === 9 && bDayVal >= 16) zodiacIndex = 5;
+    else if (bMonthVal === 10 && bDayVal >= 17) zodiacIndex = 6;
+    else if (bMonthVal === 11 && bDayVal >= 16) zodiacIndex = 7;
+    else if (bMonthVal === 12 && bDayVal >= 15) zodiacIndex = 8;
+    else if (bMonthVal === 1 && bDayVal >= 14) zodiacIndex = 9;
+    else if (bMonthVal === 2 && bDayVal >= 13) zodiacIndex = 10;
+    else if (bMonthVal === 3 && bDayVal >= 14) zodiacIndex = 11;
     else zodiacIndex = (bMonthVal + bDayVal) % 12;
 
-    // หากมีการกดคำนวณลัคนาหลักไว้แล้ว ให้ใช้ลัคนาจริง ถ้ายัง ให้ใช้ราศีกำเนิดแทน
     const activeIndex = (AppState.currentCalculatedAscIndex !== null && AppState.currentCalculatedAscIndex !== undefined) 
                         ? AppState.currentCalculatedAscIndex 
                         : zodiacIndex;
 
-    // 3. ดึงวันที่ปัจจุบันแบบสดๆ (เปลี่ยนตามปฏิทินจริงทุกวันอัตโนมัติ)
+    // 3. ดึงวันที่ปัจจุบันแบบสดๆ จากระบบ
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
@@ -3324,9 +3323,9 @@ function updateDailyHoroscopeView() {
     const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
     const dateStr = `${date} ${thMonths[month]} พ.ศ. ${year + 543}`;
 
-    // สร้าง Seed ที่เปลี่ยนไปทุกวันอย่างแท้จริง
-    const daySeed = (year * 10000) + (month * 100) + date;
-    const combinedSeed = daySeed + activeIndex;
+    // [ปรับปรุงสูตร] ใช้สูตรกระจายตัวเลขเพื่อให้ข้ามไปชุดข้อความใหม่ทุกวันอย่างไร้รอยต่อ
+    const daySeed = (year * 365) + (month * 31) + (date * 17);
+    const combinedSeed = daySeed + (activeIndex * 13);
 
     const dateEl = document.getElementById('daily-current-date-str');
     const ascEl = document.getElementById('daily-ascendant-label');
@@ -3344,8 +3343,8 @@ function updateDailyHoroscopeView() {
     const ascInfo = ZODIAC_DATA[activeIndex] || { name: "ราศีเมษ", elem: "ธาตุไฟ" };
     if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
 
-    // สลับชุดคำทำนายใหม่ตามวันจริงๆ โดยไม่ติดเงื่อนไขบล็อก
-    const poolIndex = combinedSeed % DAILY_PREDICTIONS_POOL.length;
+    // สลับชุดคำทำนายใหม่ตามวันจริงแบบไม่ซ้ำเดิม
+    const poolIndex = Math.abs(combinedSeed) % DAILY_PREDICTIONS_POOL.length;
     const todayPred = DAILY_PREDICTIONS_POOL[poolIndex];
 
     if (sumEl) sumEl.textContent = `${ascInfo.name} : ${todayPred.summary}`;
