@@ -3899,17 +3899,18 @@ const STEMS = [
    function calculateDynamicBaZi(yearBE, month, day, hour) {
       let yearCE = yearBE - 543;
       
-      let stemYearIdx = Math.abs((yearCE * 3 + 7) % 10);
-      let branchYearIdx = Math.abs((yearCE * 5 + 3) % 12);
+      // กระจายสูตรดัชนีด้วยพารามิเตอร์วันเกิดจริงอย่างทั่วถึง
+      let stemYearIdx = Math.abs((yearCE * 7 + day * 3) % 10);
+      let branchYearIdx = Math.abs((yearCE * 5 + month * 7) % 12);
       
-      let stemMonthIdx = Math.abs((month * 7 + yearCE) % 10);
-      let branchMonthIdx = Math.abs((month + 2) % 12);
+      let stemMonthIdx = Math.abs((month * 11 + day * 5 + yearCE) % 10);
+      let branchMonthIdx = Math.abs((month + day + 2) % 12);
 
-      let stemDayIdx = Math.abs((day * 17 + month * 23 + yearCE * 7) % 10);
-      let branchDayIdx = Math.abs((day * 11 + month * 13) % 12);
+      let stemDayIdx = Math.abs((day * 37 + month * 23 + yearCE * 13) % 10);
+      let branchDayIdx = Math.abs((day * 19 + month * 13 + yearCE * 3) % 12);
 
       let branchHourIdx = Math.abs(Math.floor((hour + 1) / 2) % 12);
-      let stemHourIdx = Math.abs((stemDayIdx * 3 + branchHourIdx) % 10);
+      let stemHourIdx = Math.abs((stemDayIdx * 7 + branchHourIdx + day) % 10);
       
       let dayMaster = STEMS[stemDayIdx];
       let monthBranch = BRANCHES[branchMonthIdx];
@@ -3949,60 +3950,66 @@ const STEMS = [
       let yongShen = bz.yongShen;
       let jiShen = bz.jiShen;
 
-      // 1. โหมดฟรี: คำนวณจากวันเกิดล้วนๆ (กระจายตัวด้วยค่าเฉพาะตัว ไม่เกี่ยวกับวันจร)
-      let birthHash = (d * 101) + (m * 211) + (yBE * 31) + (h * 73) + (min * 13);
+      // 1. โหมดฟรี: อิงค่าจากวันเดือนปีเกิดและเวลาเกิดแบบเฉพาะตัวเด็ดขาด (ไม่เกี่ยวกับวันจร)
+      let birthUniqueSeed = (d * 149) + (m * 257) + (yBE * 43) + (h * 97) + (min * 17);
       
       const FREE_POOLS = [
          `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงกำเนิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
          `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} (${h}:${min} น.) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
          `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตาเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`,
          `ดิถี ${dayMaster.name} (${dayMaster.elem}) เจ้าชะตาเกิด ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เป็นผู้ที่มีพลังขับเคลื่อนภายในสูง กล้าตัดสินใจ และมีเกณฑ์สร้างความสำเร็จครั้งใหญ่ด้วยธาตุหนุน <strong>${yongShen}</strong>`,
-         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พลังงานตั้งต้นจากดวงกำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีพรสวรรค์เฉพาะตัวในการเจรจาและบริหารจัดการ เสริมบารมีด้วยธาตุ <strong>${yongShen}</strong>`
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พลังงานตั้งต้นจากดวงกำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีพรสวรรค์เฉพาะตัวในการเจรจาและบริหารจัดการ เสริมบารมีด้วยธาตุ <strong>${yongShen}</strong>`,
+         `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${MONTH_NAMES[m-1]} ${yBE} มีสายธารแห่งปัญญาและสัญชาตญาณเฉียบคม ดึงดูดความสำเร็จด้วยธาตุคู่มิตร <strong>${yongShen}</strong>`
       ];
-      let freeIdx = Math.abs(birthHash) % FREE_POOLS.length;
+      let freeIdx = Math.abs(birthUniqueSeed) % FREE_POOLS.length;
 
       // 2. โหมด VIP: แปรผันตาม วันเกิด + วันจร อย่างสมบูรณ์และอิสระในแต่ละมิติ
-      let vipBaseHash = birthHash + (tY * 7) + (tD * 37) + (tM * 19);
+      let vipDynamicSeed = birthUniqueSeed + (tY * 11) + (tD * 53) + (tM * 29);
 
       const VIP_FIN = [
          `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
          `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
          `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนให้ดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาวในรอบวันนี้`,
-         `กระแสเงินทองในรอบวันจร ${tD} ${tMName} ${tY} เปิดกว้างสำหรับดิถี ${dayMaster.name} มีเกณฑ์ได้รับผลตอบแทนจากทรัพย์สินรอการขายหรือเงินปันผลพิเศษ`
+         `กระแสเงินทองในรอบวันจร ${tD} ${tMName} ${tY} เปิดกว้างสำหรับดิถี ${dayMaster.name} มีเกณฑ์ได้รับผลตอบแทนจากทรัพย์สินรอการขายหรือเงินปันผลพิเศษ`,
+         `อิทธิพลวันจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีช่องทางสร้างรายได้ใหม่ๆ เพิ่มเติมจากการเจรจาธุรกิจหรือการลงทุนข้ามเขต`
       ];
 
       const VIP_WORK = [
          `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
          `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่ในรอบนี้`,
          `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดีไม่มีอุปสรรค`,
-         `รอบวันจร ${tD} ${tMName} ${tY} นี้ เหมาะกับการเปิดตัวโปรเจกต์ใหม่หรือขยายสาขา งานด้านลิขสิทธิ์และสื่อออนไลน์จะสร้างชื่อเสียงอย่างงดงาม`
+         `รอบวันจร ${tD} ${tMName} ${tY} นี้ เหมาะกับการเปิดตัวโปรเจกต์ใหม่หรือขยายสาขา งานด้านลิขสิทธิ์และสื่อออนไลน์จะสร้างชื่อเสียงอย่างงดงาม`,
+         `ดาวจรส่งเสริมให้ดิถี ${dayMaster.name} ได้รับมอบหมายภารกิจสำคัญในรอบวันจร ${tD} ${tMName} ${tY} สร้างความก้าวหน้าในสายอาชีพอย่างก้าวกระโดด`
       ];
 
       const VIP_LOVE = [
          `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกันในช่วงวันจรนี้`,
          `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่ในรอบวันจร ${tD} ${tMName} ${tY}`,
          `พาร์ทเนอร์หรือคู่ชีวิตมีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยมในห้วงเวลานี้`,
-         `คนโสดมีเกณฑ์พบเจอคนรู้ใจจากการเดินทางหรือติดต่องาน ส่วนคนมีคู่จะได้ร่วมเดินทางไกลเพื่อกระชับความสัมพันธ์ในรอบวันจร ${tD} ${tMName} ${tY}`
+         `คนโสดมีเกณฑ์พบเจอคนรู้ใจจากการเดินทางหรือติดต่องาน ส่วนคนมีคู่จะได้ร่วมเดินทางไกลเพื่อกระชับความสัมพันธ์ในรอบวันจร ${tD} ${tMName} ${tY}`,
+         `อิทธิพลวันจร ${tD} ${tMName} ${tY} ช่วยเคลียร์ปัญหาคาใจในความสัมพันธ์ ทำให้ความรักและความเข้าใจกับคนรอบข้างกลับมาแน่นแฟ้นยิ่งขึ้น`
       ];
 
       const VIP_FENG = [
          `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`,
          `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY} ตามอิทธิพลวันจร`,
          `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen}) เพื่อรับโชคลาภรอบวันจร ${tD} ${tMName} ${tY}`,
-         `ปรับทิศทางการหันหน้าโต๊ะทำงานหรือเตียงนอนตามทิศมงคลเฉพาะรอบวันจร ${tD} ${tMName} ${tY} เพื่อเปิดรับพลังงานโชคลาภเข้าสู่ตัวท่านโดยตรง`
+         `ปรับทิศทางการหันหน้าโต๊ะทำงานหรือเตียงนอนตามทิศมงคลเฉพาะรอบวันจร ${tD} ${tMName} ${tY} เพื่อเปิดรับพลังงานโชคลาภเข้าสู่ตัวท่านโดยตรง`,
+         `เสริมดวงชะตาด้วยการประดับภาพสายน้ำหรือต้นไม้มงคลทิศเหนือหรือทิศตะวันออกตามพลังงานวันจร ${tD} ${tMName} ${tY} เพื่อเปิดคลังสมบัติ`
       ];
 
       const VIP_LUCK = [
          `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขายและการลงทุนเติบโตอย่างก้าวกระโดดในรอบวันจร ${tD} ${tMName} ${tY}`,
          `มหาวัฏจักร 10 ปีนี้เปิดประตูรับโชคลาภครั้งใหญ่ อิทธิพลวันจร ${tD} ${tMName} ${tY} ช่วยปลดล็อกอุปสรรคเก่าๆ เปิดทางให้ดิถี ${dayMaster.name} ก้าวขึ้นสู่สถานะที่มั่นคงยิ่งขึ้น`,
-         `ช่วงวัฏจักรนี้สอดรับกับพลังงานดาวจร ${tD} ${tMName} ${tY} ส่งผลให้การสร้างเครือข่ายพันธมิตรและการลงทุนระยะยาวออกดอกออกผลเกินความคาดหมาย`
+         `ช่วงวัฏจักรนี้สอดรับกับพลังงานดาวจร ${tD} ${tMName} ${tY} ส่งผลให้การสร้างเครือข่ายพันธมิตรและการลงทุนระยะยาวออกดอกออกผลเกินความคาดหมาย`,
+         `มหาวัฏจักรโชคชะตาเปลี่ยนผ่านสู่วิถีใหม่ อิทธิพลวันจร ${tD} ${tMName} ${tY} เกื้อหนุนให้ดิถี ${dayMaster.name} มีโอกาสสร้างความมั่งคั่งและเกียรติยศมั่นคงถาวร`
       ];
 
-      let finIdx = Math.abs(vipBaseHash * 3) % VIP_FIN.length;
-      let workIdx = Math.abs(vipBaseHash * 5 + 1) % VIP_WORK.length;
-      let loveIdx = Math.abs(vipBaseHash * 7 + 2) % VIP_LOVE.length;
-      let fengIdx = Math.abs(vipBaseHash * 11 + 4) % VIP_FENG.length;
-      let luckIdx = Math.abs(vipBaseHash * 13 + 6) % VIP_LUCK.length;
+      let finIdx = Math.abs(vipDynamicSeed * 3) % VIP_FIN.length;
+      let workIdx = Math.abs(vipDynamicSeed * 7 + 1) % VIP_WORK.length;
+      let loveIdx = Math.abs(vipDynamicSeed * 11 + 3) % VIP_LOVE.length;
+      let fengIdx = Math.abs(vipDynamicSeed * 13 + 5) % VIP_FENG.length;
+      let luckIdx = Math.abs(vipDynamicSeed * 17 + 9) % VIP_LUCK.length;
 
       const freeRes = document.getElementById('bazi-free-result');
       const vipRes = document.getElementById('bazi-vip-result');
