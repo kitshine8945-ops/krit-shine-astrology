@@ -15,9 +15,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    #modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
-    display: none !important;
-  }
     :root {
       --bg-midnight: #040816;
       --bg-panel: rgba(10, 16, 35, 0.94);
@@ -9006,10 +9003,16 @@ function getCleanTransitBadgeString() {
 }
 
 function renderCleanTransitHtml() {
+    // ถ้าอยู่ในโหมดฟรี (ไม่ใช่ VIP) ให้ซ่อนกล่องนี้โดยส่งค่าว่างเปล่าออกไป
+    const isVipMode = (typeof AppState !== 'undefined' && AppState.currentNum7Mode === 'vip');
+    if (!isVipMode) {
+        return '';
+    }
+
     return `
-        <div class="transit-active-badge-bar" style="background: linear-gradient(135deg, rgba(234,179,8,0.22), rgba(184,134,11,0.12)); border: 1.5px solid #ffd700; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.25);">
+        <div class="transit-active-badge-bar" style="background: linear-gradient(135deg, rgba(234,179,8,0.22)...">
             <span><i class="fa-solid fa-satellite-dish"></i> <b>อิงวันจรลัคนาพยากรณ์:</b></span>
-            <span style="background: rgba(255,215,0,0.3); padding: 2px 8px; border-radius: 6px; color: #fff; font-weight: bold;">${getCleanTransitBadgeString()}</span>
+            <span style="background: rgba(255,215,0,0.3); padding: 2px 8px; border-radius: 6px; color: #fff;">...</span>
         </div>
     `;
 }
