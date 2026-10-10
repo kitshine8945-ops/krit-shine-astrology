@@ -2792,7 +2792,7 @@ function calcNum7Base() {
         }
       ];
 
-      // --- คลังคำทำนายโหมด VIP ---
+      // --- คลังคำทำนายโหมด VIP (แยกข้อความหลากหลาย) ---
       const VIP_POOLS = [
         {
           transit: `อิงวันจร ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี): ดวงชะตาขับเคลื่อนเข้าสู่เรือนฐานที่ ${transitHouseIndex + 1} อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข ${activeVipNum}) ส่งผลให้รอบปี พ.ศ. ${tY} นี้ มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ และโอกาสรับทรัพย์ก้อนโตจากการลงทุน`,
@@ -2823,12 +2823,12 @@ function calcNum7Base() {
       let freePoolIdx = (bD * 3 + bM * 7 + bY) % FREE_POOLS.length;
       let selectedFree = FREE_POOLS[freePoolIdx];
 
+      // สูตรคำนวณดัชนีคำทำนาย VIP ที่ดึงค่าวันจร (tD, tM, tY) มาผสมโดยตรงเพื่อให้ข้อความเปลี่ยนตามวันจร
       let vipPoolIdx = (tD * 7 + tM * 13 + tY + ageYang + activeVipNum) % VIP_POOLS.length;
       let selectedVip = VIP_POOLS[vipPoolIdx];
 
       if (!isVip) {
         if (analysisTitle) analysisTitle.textContent = "บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี - พื้นดวงกำเนิด)";
-        // โหมดฟรี: ไม่มีกล่องวันจรกวนใจ แสดงเฉพาะบทวิเคราะห์พื้นดวง
         if (analysisBody) analysisBody.innerHTML = `
           <div style="display:grid; grid-template-columns:1fr; gap:10px;">
             <div class="desc-block">
@@ -2847,7 +2847,6 @@ function calcNum7Base() {
         `;
       } else {
         if (analysisTitle) analysisTitle.textContent = `บทวิเคราะห์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP) - อายุย่าง ${ageYang} ปี (วันจร: ${tD}/${tM}/${tY})`;
-        // โหมด VIP: แสดงกล่องวันจรปกติ
         if (analysisBody) analysisBody.innerHTML = `
           <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px; margin-bottom:12px;">
             <strong style="color:#ffd700;"><i class="fa-solid fa-satellite-dish"></i> ดวงจรรายปี & วันจร (Dynamic Transit Active):</strong>
@@ -2877,6 +2876,7 @@ function calcNum7Base() {
           </div>
         `;
       }
+    }
 document.addEventListener('DOMContentLoaded', function() {
       // ดักจับการเปลี่ยนค่าในฟอร์มวันเกิด วันจร และเวลาทุกช่องแบบเบ็ดเสร็จ
       const targetInputs = [
