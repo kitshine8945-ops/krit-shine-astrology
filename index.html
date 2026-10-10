@@ -9813,20 +9813,26 @@ document.addEventListener('DOMContentLoaded', function() {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
     }
-      // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
-    let luckPoolIndex = seed % LUCK_CYCLE_POOLS.length;
-    
+       // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
     const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
-    if (luckDescEl && typeof LUCK_CYCLE_POOLS !== 'undefined') {
-        luckDescEl.innerHTML = LUCK_CYCLE_POOLS[luckPoolIndex];
+    if (luckDescEl && typeof selectedLuckCycle !== 'undefined') {
+        luckDescEl.innerHTML = selectedLuckCycle;
     }
-      document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
-      document.getElementById('bazi-free-desc').innerHTML = `
-        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
-        <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-          <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
-        </div>
-      `;
+
+    // --- อัปเดตข้อมูลการแสดงผลคำทำนายดวงเดิมโหมดฟรี ฏ---
+    const freeTitleEl = document.getElementById('bazi-free-title');
+    if (freeTitleEl) freeTitleEl.textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem})${dayMaster.pol}`;
+
+    const freeDescEl = document.getElementById('bazi-free-desc');
+    if (freeDescEl) {
+        freeDescEl.innerHTML = `
+            <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+            <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.6;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${(typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : 'ไม่มีข้อมูลคำทำนาย')}
+
+            </div>
+        `;
+    }
     } else {
       if (freeRes) freeRes.style.display = 'none';
       if (vipRes) vipRes.style.display = 'block';
