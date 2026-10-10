@@ -2879,30 +2879,68 @@ function switchNum7Mode(mode) {
       }
   
 document.addEventListener('DOMContentLoaded', function() {
-      // ดักจับการเปลี่ยนค่าในฟอร์มวันเกิดและวันจรทุุกช่อง
-      const targetInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'transitDay', 'transitMonth', 'transitYearBE'];
+      // ดักจับการเปลี่ยนค่าในฟอร์มวันเกิด วันจร และเวลาทุกช่องแบบเบ็ดเสร็จ
+      const targetInputs = [
+        'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24', 
+        'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'
+      ];
+
       targetInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
           el.addEventListener('change', function() {
+            // 1. ซิงค์ข้อมูลวันเกิดและวันจรใหม่ทั้งหมดเข้าสู่ระบบ
+            if (typeof syncBirthDataToAllModules === 'function') {
+              syncBirthDataToAllModules();
+            }
+
+            // 2. อัปเดตผลลัพธ์ลัคนาหลัก & VIP วันจร (ถ้ากำลังเปิดแสดงผลอยู่)
+            if (typeof calculateAscendantAndTransit === 'function' && document.getElementById('result-view-box')?.style.display === 'block') {
+              calculateAscendantAndTransit();
+            }
+
+            // 3. อัปเดตเลข 7 ตัว (4/9 ฐาน)
+            if (typeof calcNum7Base === 'function') {
+              calcNum7Base();
+            }
+
+            // 4. อัปเดตปาจื่อ (BaZi)
             if (typeof calcBaziEngine === 'function') {
               calcBaziEngine();
             }
-          });
-        }
-      });
-    });
 
-  // เพิ่มการดักจับวันจรเพื่ออัปเดตโหราศาสตร์สากล VIP เพิ่มเติม
-    document.addEventListener('DOMContentLoaded', function() {
-      const extraTransitInputs = ['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24'];
-      extraTransitInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener('change', function() {
-            if (typeof AppState !== 'undefined' && AppState.currentWesternMode === 'vip' && typeof switchWesternMode === 'function') {
-              switchWesternMode('vip');
+            // 5. อัปเดตซาจู (Saju)
+            if (typeof calcSajuEngine === 'function') {
+              calcSajuEngine();
             }
+
+            // 6. อัปเดตโหราศาสตร์ยูเรเนียน (Uranian)
+            if (typeof switchUranianMode === 'function') {
+              let currentUranMode = (typeof AppState !== 'undefined') ? AppState.currentUranianMode : 'free';
+              switchUranianMode(currentUranMode);
+            }
+
+            // 7. อัปเดตโหราศาสตร์สากล (Western Natal Chart)
+            if (typeof switchWesternMode === 'function') {
+              let currentWestMode = (typeof AppState !== 'undefined') ? AppState.currentWesternMode : 'free';
+              switchWesternMode(currentWestMode);
+            }
+
+            // 8. อัปเดตรหัสกรรมข้ามภพ, มหาพิชัยสงคราม และถอดรหัสจิตวิญญาณ
+            if (typeof switchKarmicMode === 'function') {
+              switchKarmicMode((typeof AppState !== 'undefined') ? AppState.currentKarmicMode || 'free' : 'free');
+            }
+            if (typeof switchLifeTurnMode === 'function') {
+              switchLifeTurnMode((typeof AppState !== 'undefined') ? AppState.currentLifeTurnMode || 'free' : 'free');
+            }
+            if (typeof switchSoulMode === 'function') {
+              switchSoulMode((typeof AppState !== 'undefined') ? AppState.currentSoulMode || 'free' : 'free');
+            }
+            if (typeof switchWealthMode === 'function') {
+              switchWealthMode((typeof AppState !== 'undefined') ? AppState.currentWealthMode || 'free' : 'free');
+            }
+
+            console.log('🔄 ระบบอัปเดตคำทำนายทุกศาสตร์ตามวันเกิด/วันจรใหม่เรียบร้อยแล้ว');
           });
         }
       });
