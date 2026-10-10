@@ -3122,129 +3122,131 @@ function renderWesternVip() {
  }
 
 function switchUranianMode(mode) {
-      AppState.currentUranianMode = mode;
-      const btnFree = document.getElementById('btn-uranian-free');
-      const btnVip = document.getElementById('btn-uranian-vip');
-      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
-      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+    AppState.currentUranianMode = mode;
+    const btnFree = document.getElementById('btn-uranian-free');
+    const btnVip = document.getElementById('btn-uranian-vip');
+    if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+    if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
 
-      const freeBox = document.getElementById('uranianFreeBox');
-      const vipBox = document.getElementById('uranianVipBox');
-      if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
-      if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
+    const freeBox = document.getElementById('uranianFreeBox');
+    const vipBox = document.getElementById('uranianVipBox');
+    if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
+    if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
 
-      // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลักมาใช้ร่วมกันทั้งฟรีและ VIP
-      const bDayEl = document.getElementById('birthDay');
-      const bMonthEl = document.getElementById('birthMonth');
-      const bYearEl = document.getElementById('birthYearBE');
+    // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลักมาใช้ร่วมกันทั้งฟรีและ VIP
+    const bDayEl = document.getElementById('birthDay');
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
 
-      const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
-      const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
-      const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
+    const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
+    const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
+    const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-      // ดึงข้อมูลลัคนาจาก AppState
-      const ascIndex = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 10;
-      const ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[ascIndex]) ? ZODIAC_DATA[ascIndex] : { name: "ราศีกุมภ์" };
-      const ascText = ascInfo.name;
+    // ดึงข้อมูลลัคนาจาก AppState
+    const ascIndex = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 10;
+    const ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[ascIndex]) ? ZODIAC_DATA[ascIndex] : { name: "ราศีกุมภ์" };
+    const ascText = ascInfo.name;
 
-      // 2. ถ้าผู้ใช้อยู่ในโหมดฟรี (Free) - คำทำนายเปลี่ยนตามวันเกิดและลัคนา พร้อมกล่องครบถ้วน
-      if (mode === 'free') {
-        const freeContainer = document.getElementById('uranianFreeBox') || document.getElementById('uranianFreeContent');
-        if (freeContainer) {
-          const URANIAN_FREE_POOLS = [
-            {
-              midpoint1: "สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูงตามอิทธิพลราศีเกิด",
-              midpoint2: "สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกัน ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง",
-              cupido: "โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุน",
-              zeus: "พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมาย",
-              kronos: "ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการ"
-            },
-            {
-              midpoint1: "อิทธิพลมุมสัมพันธ์ลัคนา${ascText} ส่งเสริมให้มีความโดดเด่นด้านการเจรจาติดต่อและการค้าขายรุ่งเรือง",
-              midpoint2: "การบริหารจัดการเงินทองและทรัพย์สินมีความคล่องตัวสูง มีช่องทางสร้างรายได้เสริมจากความสามารถเฉพาะตัว",
-              cupido: "มีเสน่ห์เมตตามหานิยม เหมาะกับการเจรจาพาที การตกลงทำสัญญา หรือการสร้างเครือข่ายคอนเนกชันใหม่ๆ",
-              zeus: "ความเด็ดเดี่ยวและเฉียบคมช่วยให้คุณจัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม ปิดดีลหรือภารกิจลุล่วงอย่างรวดเร็ว",
-              kronos: "ได้รับความไว้วางใจจากผู้ใหญ่หรือผู้บังคับบัญชา มอบหมายภารกิจสำคัญที่มีความก้าวหน้าและเกียรติยศ"
-            },
-            {
-              midpoint1: "กระแสพลังงานเชื่อมโยงโดยตรงกับลัคนา${ascText} โดดเด่นเป็นพิเศษในเรื่องเสน่ห์ เมตตามหานิยม และผลประโยชน์ทรัพย์สิน",
-              midpoint2: "พลังแห่งความก้าวหน้าและความสำเร็จหลอมรวม ส่งเสริมให้มีความเด็ดเดี่ยว กล้าตัดสินใจ และมีผู้ใหญ่สนับสนุนผลักดัน",
-              cupido: "บรรยากาศรอบตัวเต็มไปด้วยมิตรภาพที่ดี การร่วมมือทำโปรเจกต์กลุ่มหรือการทำงานเป็นทีมมีความสามัคคีกลมเกลียว",
-              zeus: "ความมุ่งมั่นและแรงขับเคลื่อนสูง สามารถฝ่าฟันอุปสรรคเล็กๆ น้อยๆ ให้ผ่านไปได้อย่างง่ายดาย",
-              kronos: "มีความโดดเด่นในการบริหารงาน มีความเป็นมืออาชีพสูง เป็นที่ปรึกษาและที่พึ่งพาให้แก่ทีมงานได้เป็นอย่างดี"
-            }
-          ];
+    // 2. โหมดฟรี (Free) - แก้ไขให้คำทำนายเปลี่ยนตามวันเกิด (bD, bM, bY) จริงๆ
+    if (mode === 'free') {
+      const freeContainer = document.getElementById('uranianFreeBox') || document.getElementById('uranianFreeContent');
+      if (freeContainer) {
+        const URANIAN_FREE_POOLS = [
+          {
+            midpoint1: `สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูงตามอิทธิพลราศีเกิดและลัคนา${ascText} (พื้นดวงเกิดวันที่ ${bD}/${bM}/${bY})`,
+            midpoint2: "สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกัน ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง",
+            cupido: "โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุน",
+            zeus: "พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมาย",
+            kronos: "ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการ"
+          },
+          {
+            midpoint1: `อิทธิพลมุมสัมพันธ์ลัคนา${ascText} และดวงชะตาเกิด ${bD}/${bM}/${bY} ส่งเสริมให้มีความโดดเด่นด้านการเจรจาติดต่อและการค้าขายรุ่งเรือง`,
+            midpoint2: "การบริหารจัดการเงินทองและทรัพย์สินมีความคล่องตัวสูง มีช่องทางสร้างรายได้เสริมจากความสามารถเฉพาะตัว",
+            cupido: "มีเสน่ห์เมตตามหานิยม เหมาะกับการเจรจาพาที การตกลงทำสัญญา หรือการสร้างเครือข่ายคอนเนกชันใหม่ๆ",
+            zeus: "ความเด็ดเดี่ยวและเฉียบคมช่วยให้คุณจัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม ปิดดีลหรือภารกิจลุล่วงอย่างรวดเร็ว",
+            kronos: "ได้รับความไว้วางใจจากผู้ใหญ่หรือผู้บังคับบัญชา มอบหมายภารกิจสำคัญที่มีความก้าวหน้าและเกียรติยศ"
+          },
+          {
+            midpoint1: `กระแสพลังงานเชื่อมโยงโดยตรงกับลัคนา${ascText} และดวงชะตาเกิด ${bD}/${bM}/${bY} โดดเด่นเป็นพิเศษในเรื่องเสน่ห์ เมตตามหานิยม และผลประโยชน์ทรัพย์สิน`,
+            midpoint2: "พลังแห่งความก้าวหน้าและความสำเร็จหลอมรวม ส่งเสริมให้มีความเด็ดเดี่ยว กล้าตัดสินใจ และมีผู้ใหญ่สนับสนุนผลักดัน",
+            cupido: "บรรยากาศรอบตัวเต็มไปด้วยมิตรภาพที่ดี การร่วมมือทำโปรเจกต์กลุ่มหรือการทำงานเป็นทีมมีความสามัคคีกลมเกลียว",
+            zeus: "ความมุ่งมั่นและแรงขับเคลื่อนสูง สามารถฝ่าฟันอุปสรรคเล็กๆ น้อยๆ ให้ผ่านไปได้อย่างง่ายดาย",
+            kronos: "มีความโดดเด่นในการบริหารงาน มีความเป็นมืออาชีพสูง เป็นที่ปรึกษาและที่พึ่งพาให้แก่ทีมงานได้เป็นอย่างดี"
+          }
+        ];
 
-          let freePoolIdx = (bD * 7 + bM * 13 + bY) % URANIAN_FREE_POOLS.length;
-          let selectedFree = URANIAN_FREE_POOLS[freePoolIdx];
+        // นำ วัน/เดือน/ปีเกิด มาคำนวณสลับเลือกชุดคำทำนายในโหมดฟรีให้เปลี่ยนตามวันเกิดจริง
+        let freePoolIdx = (bD * 7 + bM * 13 + bY) % URANIAN_FREE_POOLS.length;
+        let selectedFree = URANIAN_FREE_POOLS[freePoolIdx];
 
-          let targetFreeBox = document.getElementById('uranianFreeContent') || freeBox;
-          
-          targetFreeBox.innerHTML = `
-            <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนเฉพาะดวงชะตา (${ascText} - วันเกิด ${bD}/${bM}/${bY})
-              </h4>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px;">
-                <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                  <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล):</strong>
-                  <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.midpoint1}</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                  <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน):</strong>
-                  <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.midpoint2}</p>
-                </div>
+        let targetFreeBox = document.getElementById('uranianFreeContent') || freeContainer;
+        
+        targetFreeBox.innerHTML = `
+          <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนเฉพาะดวงชะตา (${ascText} - วันเกิด ${bD}/${bM}/${bY})
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px;">
+              <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
+                <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.midpoint1}</p>
+              </div>
+              <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
+                <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน):</strong>
+                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.midpoint2}</p>
               </div>
             </div>
+          </div>
 
-            <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (พื้นดวงกำเนิด)
-              </h4>
-              <div style="display: flex; flex-direction: column; gap: 14px;">
-                <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                  <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
-                  <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.cupido}</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                  <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
-                  <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.zeus}</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                  <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
-                  <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.kronos}</p>
-                </div>
+          <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพลดาวทิพย์ยูเรเนียน (พื้นดวงกำเนิด - วันเกิด ${bD}/${bM}/${bY})
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.cupido}</p>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.zeus}</p>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+                <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
+                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedFree.kronos}</p>
               </div>
             </div>
-          `;
-        }
+          </div>
+        `;
       }
+    }
 
-      // 3. ถ้าผู้ใช้อยู่ในโหมด VIP - ใช้โค้ดคำทำนายตามวันจรเดิมที่ท่านคอนเฟิร์มว่าถูกต้องแล้ว 100%
-      if (mode === 'vip') {
-        const container = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
-        if (!container) return;
-        const targetBox = document.getElementById('uranianVipContent') ? document.getElementById('uranianVipContent') : container;
+    // 3. โหมด VIP (VIP) - คงระบบเดิมไว้ตามปกติ ไม่เปลี่ยนแปลง
+    if (mode === 'vip') {
+      const container = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
+      if (!container) return;
+      const targetBox = document.getElementById('uranianVipContent') ? document.getElementById('uranianVipContent') : container;
 
-        const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-        const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-        const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
-        const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+      const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+      const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+      const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+      const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
-        let ageYang = (tY - bY) + 1;
-        if (ageYang < 1) ageYang = 1;
+      let ageYang = (tY - bY) + 1;
+      if (ageYang < 1) ageYang = 1;
 
-        if (!bD || !bM || !bY) {
-          targetBox.innerHTML = `
-            <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-              <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-              <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
-              <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบคำนวณศูนย์รังสี 8 ดาวทิพย์เฉพาะบุคคล</p>
-            </div>
-          `;
-          return;
-        }
-
+      if (!bD || !bM || !bY) {
+        targetBox.innerHTML = `
+          <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
+            <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
+            <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบคำนวณศูนย์รังสี 8 ดาวทิพย์เฉพาะบุคคล</p>
+          </div>
+        `;
+        return;
+      }
+    }
+}
         const URANIAN_VIP_POOLS = [
           {
             midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (อายุย่าง ${ageYang} ปี): พลังงานดาวจรในวันนี้ส่งกระแสสะท้อนโดยตรง เปิดทางให้การติดต่อเจรจา การประสานงาน และการตัดสินใจเรื่องสำคัญมีความโดดเด่นและสำเร็จลุล่วงด้วยดี`,
