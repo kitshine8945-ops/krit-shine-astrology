@@ -1478,19 +1478,22 @@ footer {
       </div>
     </div>
   </div>
-  <script>
-    const uranModal = document.getElementById('modal-uranian');
-    if (uranModal) {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.attributeName === 'style' && uranModal.style.display === 'block') {
+ <script>
+  // ดักจับจังหวะที่มีการกดปุ่มคำนวณ หรือเปิด modal เพื่อให้เรนเดอร์โหมดฟรีทันที
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('button, [onclick*="uranian"], [onclick*="Modal"]');
+    if (target) {
+      setTimeout(() => {
+        const uranModal = document.getElementById('modal-uranian');
+        if (uranModal && uranModal.style.display === 'block') {
+          if (typeof switchUranianMode === 'function') {
             switchUranianMode('free');
           }
-        });
-      });
-      observer.observe(uranModal, { attributes: true });
+        }
+      }, 100);
     }
-  </script>
+  });
+</script>
 
   <!-- MODAL: โหราศาสตร์สากล -->
   <div class="modal-overlay" id="modal-western">
