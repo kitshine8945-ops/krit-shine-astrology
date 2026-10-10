@@ -1455,7 +1455,7 @@ footer {
     </div>
   </div>
 
-  <!-- MODAL: โหราศาสตร์ยูเรเนียน -->
+ <!-- MODAL: โหราศาสตร์ยูเรเนียน -->
   <div class="modal-overlay" id="modal-uranian">
     <div class="modal-content" style="max-width: 900px;">
       <div class="modal-close-btn" onclick="closeModal('modal-uranian')"><i class="fa-solid fa-xmark"></i></div>
@@ -1478,6 +1478,19 @@ footer {
       </div>
     </div>
   </div>
+  <script>
+    const uranModal = document.getElementById('modal-uranian');
+    if (uranModal) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'style' && uranModal.style.display === 'block') {
+            switchUranianMode('free');
+          }
+        });
+      });
+      observer.observe(uranModal, { attributes: true });
+    }
+  </script>
 
   <!-- MODAL: โหราศาสตร์สากล -->
   <div class="modal-overlay" id="modal-western">
