@@ -15,6 +15,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* ซ่อนแถบกล่องวันจรเฉพาะเมื่ออยู่ในโหมดเลข 7 ตัว 4 ฐาน (ฟรี) */
+#modal-num7base:has(#btn-num7-free.active) .transit-active-badge-bar,
+#modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
+  display: none !important;
+}
     :root {
       --bg-midnight: #040816;
       --bg-panel: rgba(10, 16, 35, 0.94);
@@ -9001,13 +9006,6 @@ function getCleanTransitBadgeString() {
     
     return `${day} ${monthName} พ.ศ. ${yearBE} เวลา ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} น.`;
 }
-
-function renderCleanTransitHtml() {
-    // ถ้าอยู่ในโหมดฟรี (ไม่ใช่ VIP) ให้ซ่อนกล่องนี้โดยส่งค่าว่างเปล่าออกไป
-    const isVipMode = (typeof AppState !== 'undefined' && AppState.currentNum7Mode === 'vip');
-    if (!isVipMode) {
-        return '';
-    }
 
     return `
         <div class="transit-active-badge-bar" style="background: linear-gradient(135deg, rgba(234,179,8,0.22)...">
