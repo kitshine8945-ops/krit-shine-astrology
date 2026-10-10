@@ -3133,7 +3133,7 @@ function switchUranianMode(mode) {
     if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
     if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
 
-    // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลักมาใช้ร่วมกันทั้งฟรีและ VIP
+    // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์มหลักมาใช้งาน
     const bDayEl = document.getElementById('birthDay');
     const bMonthEl = document.getElementById('birthMonth');
     const bYearEl = document.getElementById('birthYearBE');
@@ -3142,32 +3142,31 @@ function switchUranianMode(mode) {
     const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
     const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-    // ดึงข้อมูลลัคนาจาก AppState
+    // ดึงข้อมูลลัคนาจริงจาก AppState
     const ascIndex = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 10;
     const ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[ascIndex]) ? ZODIAC_DATA[ascIndex] : { name: "ราศีกุมภ์" };
     const ascText = ascInfo.name;
 
-    // 2. โหมดฟรี (Free) - แสดงผลโครงสร้างศูนย์รังสีและดาวทิพย์ครบถ้วนสมบูรณ์ทันทีตั้งแต่เปิด
+    // 2. โหมดฟรี (Free) - ให้คำทำนายเปลี่ยนแปรผันตามวันเกิดและลัคนาจริง 100%
     if (mode === 'free') {
-      const freeContainer = document.getElementById('uranianFreeBox') || document.getElementById('uranianFreeContent');
-      if (freeContainer) {
+      if (freeBox) {
         const URANIAN_FREE_POOLS = [
           {
-            midpoint1: `สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูงตามอิทธิพลราศีเกิดและลัคนา${ascText} (พื้นดวงเกิดวันที่ ${bD}/${bM}/${bY})`,
+            midpoint1: `อิทธิพลลัคนา${ascText}และดวงชะตาเกิดวันที่ ${bD}/${bM}/${bY} สะท้อนถึงจุดความสำเร็จครั้งใหญ่ วาสนาบารมีเปิดกว้าง มีเกณฑ์ได้รับชื่อเสียงและการยอมรับจากสังคมชั้นสูง`,
             midpoint2: "สร้างสรรค์ผลงานได้หลายช่องทางพร้อมกัน ความรู้ความสามารถสร้างกระแสการเงินและเครือข่ายธุรกิจที่กว้างขวาง",
             cupido: "โดดเด่นในด้านการรวมกลุ่ม สร้างคอมมูนิตี้ งานบันเทิง สื่อสาธารณะ และศิลปวัฒนธรรม มีพลังดึงดูดผู้คนให้เข้ามาสนับสนุน",
             zeus: "พลังขับเคลื่อนในการสร้างสิ่งใหม่แบบแม่นยำดุจลูกศร มุ่งมั่น ไม่ยอมแพ้ มีความสามารถในการกำหนดทิศทางของโปรเจกต์ให้บรรลุเป้าหมาย",
             kronos: "ได้รับการยกย่องนับถือในฐานะผู้เชี่ยวชาญ ได้รับความเมตตาจากผู้ใหญ่ระดับบริหาร หรือเกี่ยวข้องกับงานระดับทางการ"
           },
           {
-            midpoint1: `อิทธิพลมุมสัมพันธ์ลัคนา${ascText} และดวงชะตาเกิด ${bD}/${bM}/${bY} ส่งเสริมให้มีความโดดเด่นด้านการเจรจาติดต่อและการค้าขายรุ่งเรือง`,
+            midpoint1: `มุมดาวตามดวงชะตาเกิด ${bD}/${bM}/${bY} และลัคนา${ascText} ส่งเสริมให้มีความโดดเด่นด้านการเจรจาติดต่อและการค้าขายรุ่งเรืองเป็นพิเศษ`,
             midpoint2: "การบริหารจัดการเงินทองและทรัพย์สินมีความคล่องตัวสูง มีช่องทางสร้างรายได้เสริมจากความสามารถเฉพาะตัว",
             cupido: "มีเสน่ห์เมตตามหานิยม เหมาะกับการเจรจาพาที การตกลงทำสัญญา หรือการสร้างเครือข่ายคอนเนกชันใหม่ๆ",
             zeus: "ความเด็ดเดี่ยวและเฉียบคมช่วยให้คุณจัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม ปิดดีลหรือภารกิจลุล่วงอย่างรวดเร็ว",
             kronos: "ได้รับความไว้วางใจจากผู้ใหญ่หรือผู้บังคับบัญชา มอบหมายภารกิจสำคัญที่มีความก้าวหน้าและเกียรติยศ"
           },
           {
-            midpoint1: `กระแสพลังงานเชื่อมโยงโดยตรงกับลัคนา${ascText} และดวงชะตาเกิด ${bD}/${bM}/${bY} โดดเด่นเป็นพิเศษในเรื่องเสน่ห์ เมตตามหานิยม และผลประโยชน์ทรัพย์สิน`,
+            midpoint1: `กระแสพลังงานดวงกำเนิด ${bD}/${bM}/${bY} ร่วมกับราศีลัคนา${ascText} โดดเด่นเป็นพิเศษในเรื่องเสน่ห์ เมตตามหานิยม และผลประโยชน์ทรัพย์สิน`,
             midpoint2: "พลังแห่งความก้าวหน้าและความสำเร็จหลอมรวม ส่งเสริมให้มีความเด็ดเดี่ยว กล้าตัดสินใจ และมีผู้ใหญ่สนับสนุนผลักดัน",
             cupido: "บรรยากาศรอบตัวเต็มไปด้วยมิตรภาพที่ดี การร่วมมือทำโปรเจกต์กลุ่มหรือการทำงานเป็นทีมมีความสามัคคีกลมเกลียว",
             zeus: "ความมุ่งมั่นและแรงขับเคลื่อนสูง สามารถฝ่าฟันอุปสรรคเล็กๆ น้อยๆ ให้ผ่านไปได้อย่างง่ายดาย",
@@ -3175,12 +3174,11 @@ function switchUranianMode(mode) {
           }
         ];
 
+        // คำนวณดึงชุดคำทำนายตามวันเดือนปีเกิดจริงโดยไม่ซ้ำซาก
         let freePoolIdx = (bD * 7 + bM * 13 + bY) % URANIAN_FREE_POOLS.length;
         let selectedFree = URANIAN_FREE_POOLS[freePoolIdx];
 
-        let targetFreeBox = document.getElementById('uranianFreeContent') || freeBox;
-        
-        targetFreeBox.innerHTML = `
+        freeBox.innerHTML = `
           <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
               <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนเฉพาะดวงชะตา (${ascText} - วันเกิด ${bD}/${bM}/${bY})
@@ -3199,7 +3197,7 @@ function switchUranianMode(mode) {
 
           <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพลดาวทิพย์ยูเรเนียน (พื้นดวงกำเนิด - วันเกิด ${bD}/${bM}/${bY})
+              <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพลพาดพิงดาวทิพย์ยูเรเนียน (พื้นดวงกำเนิด - วันเกิด ${bD}/${bM}/${bY})
             </h4>
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
@@ -3220,127 +3218,121 @@ function switchUranianMode(mode) {
       }
     }
 
-    // 3. โหมด VIP (VIP)
+    // 3. โหมด VIP (VIP) - ผูกวันเกิดและวันจรเข้าด้วยกันเพื่อให้คำทำนายเปลี่ยนตามวันเกิด/วันจรจริง
     if (mode === 'vip') {
-      const container = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
-      if (!container) return;
-      const targetBox = document.getElementById('uranianVipContent') ? document.getElementById('uranianVipContent') : container;
+      const targetBox = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
+      if (!targetBox) return;
 
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
       const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-      const tMName = (typeof MONTH_NAMES !== 'undefined' && MONTH_NAMES[tMVal - 1]) ? MONTH_NAMES[tMVal - 1] : 'มกราคม';
+      const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
 
       if (!bD || !bM || !bY) {
-         return; // สิ้นสุดการทำงานหากข้อมูลไม่ครบ
+        targetBox.innerHTML = `
+          <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
+            <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
+            <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบคำนวณศูนย์รังสี 8 ดาวทิพย์เฉพาะบุคคล</p>
+          </div>
+        `;
+        return;
       }
-      
+
       const URANIAN_VIP_POOLS = [
         {
-          midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): กระแสพลังงานดาวจรและพื้นดวงส่งแรงขับเคลื่อนสะท้อนเชิงบวกอย่างทรงพลัง เปิดประตูรับความสำเร็จ โอกาสทองในการเจรจาธุรกิจขนาดใหญ่ และการผลักดันโปรเจกต์สำคัญให้ก้าวล่วงสู่เป้าหมายได้อย่างราบรื่น`,
-          sunJupiter: `แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล) แผ่รัศมีหนุนนำให้วันนี้เป็นวันแห่งความสำเร็จสูงสุด มีเกณฑ์รับโชคลาภก้อนโต ได้รับการยอมรับจากสังคม และมีผู้ใหญ่คอยให้การสนับสนุนเบื้องหลัง`,
-          meridApollo: `แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน) ส่งเสริมให้การติดต่อประสานงานและการค้าขายพุ่งทะยาน ไอเดียสร้างสรรค์ทำงานสอดรับกับตลาด สร้างกระแสเงินสดและผลกำไรได้อย่างงดงาม`,
-          cupido: `พลังแห่งคูปิโด (สังคม ศิลปะ และสายสัมพันธ์) เปิดมิติใหม่แห่งความสัมพันธ์อันดีเยี่ยม เหมาะอย่างยิ่งกับการเข้าสังคม เจรจาทำสัญญา หรือสร้างเครือข่ายคอนเนกชันทางธุรกิจ`,
-          zeus: `พลังแห่งเซอุส (ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์) จุดประกายความเด็ดเดี่ยวและเฉียบคมในการตัดสินใจ คุณสามารถบริหารจัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม`,
-          kronos: `พลังแห่งโครโนส (อำนาจ รัฐ ความเป็นเลิศระดับสูง) ส่งเสริมความน่าเชื่อถือขั้นสูงสุด ได้รับความไว้วางใจจากผู้บริหารระดับสูง หรือหน่วยงานภาครัฐ`,
-          apollon: `พลังแห่งอพอลลอน (การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา) เปิดช่องทางรายได้รอบด้าน หยิบจับสิ่งใดก็เกิดดอกออกผลเป็นผลงานชิ้นโบว์แดงและผลกำไร`,
-          poseidon: `พลังแห่งโพไซดอน (จิตวิญญาณ ปัญญาญาณ & แสงสว่าง) มอบสติปัญญาอันลึกซึ้งและลางสังหรณ์แม่นยำ เหมาะแก่การใช้ปัญญาญาณวิเคราะห์ วางแผนกลยุทธ์`,
-          vulcanus: `พลังแห่งวัลแคนุส (พลังอำนาจอันยิ่งใหญ่ ความอดทน & ความสำเร็จมั่นคง) เสริมความแข็งแกร่งดั่งหินผา ให้พลังใจในการฝ่าฟันอุปสรรคใหญ่จนได้รับชัยชนะ`,
-          admetos: `พลังแห่งแอดเมตอส (ความลึกซึ้ง การมุ่งเน้นรากฐาน & ความจริงจัง) ช่วยให้การวางแผนระยะยาว การจัดการทรัพย์สิน และการตั้งรับปัญหามีความรอบคอบสูงสุด`,
-          hades: `พลังแห่งฮาเดส (การชำระสะสางสิ่งเก่า & การเปลี่ยนวิกฤตเป็นโอกาส) ส่งเสริมให้สามารถเคลียร์ปัญหาตกค้าง ปลดล็อกข้อจำกัด และเริ่มต้นสิ่งใหม่ที่ดีกว่า`
+          midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): กระแสพลังงานดาวจรและพื้นดวงส่งแรงขับเคลื่อนสะท้อนเชิงบวกอย่างทรงพลัง เปิดประตูรับความสำเร็จ โอกาสทองในการเจรจาธุรกิจขนาดใหญ่`,
+          sunJupiter: `แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล) แผ่รัศมีหนุนนำให้วันนี้เป็นวันแห่งความสำเร็จสูงสุด มีเกณฑ์รับโชคลาภก้อนโต ได้รับการยอมรับจากสังคม`,
+          meridApollo: `แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน) ส่งเสริมให้การติดต่อประสานงานและการค้าขายพุ่งทะยาน สร้างกระแสเงินสดและกำไร`,
+          cupido: `พลังแห่งคูปิโด (สังคม ศิลปะ และสายสัมพันธ์) เปิดมิติใหม่แห่งความสัมพันธ์อันดีเยี่ยม เหมาะกับการเจรจาทำสัญญา`,
+          zeus: `พลังแห่งเซอุส (ภาวะผู้นำ ความคิดริเริ่ม) จุดประกายความเด็ดเดี่ยวและเฉียบคมในการตัดสินใจ จัดการปัญหาเฉพาะหน้าได้อย่างยอดเยี่ยม`,
+          kronos: `พลังแห่งโครโนส (อำนาจ รัฐ ความเป็นเลิศระดับสูง) ได้รับความไว้วางใจจากผู้บริหารระดับสูง หรือหน่วยงานภาครัฐ`,
+          apollon: `พลังแห่งอพอลลอน (การขยายตัวทางธุรกิจ) เปิดช่องทางรายได้รอบด้าน หยิบจับสิ่งใดก็เกิดผลกำไร`,
+          poseidon: `พลังแห่งโพไซดอน (จิตวิญญาณ ปัญญาญาณ) มอบสติปัญญาอันลึกซึ้งและลางสังหรณ์แม่นยำ เหมาะแก่การวางแผนกลยุทธ์`,
+          vulcanus: `พลังแห่งวัลแคนุส (พลังอำนาจและความสำเร็จมั่นคง) เสริมความแข็งแกร่งดั่งหินผา ให้พลังใจในการฝ่าฟันอุปสรรคใหญ่`,
+          admetos: `พลังแห่งแอดเมตอส (ความลึกซึ้งและการจัดการรากฐาน) ช่วยให้การวางแผนระยะยาวและการบริหารความเสี่ยงรัดกุมสูงสุด`,
+          hades: `พลังแห่งฮาเดส (การชำระสะสางสิ่งเก่า) ส่งเสริมให้สามารถเคลียร์ปัญหาตกค้าง ปลดล็อกข้อจำกัด และเริ่มต้นสิ่งใหม่ที่ดีกว่า`
         },
         {
-          midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): พลังงานดาวทิพย์และดวงกำเนิดโคจรสอดรับกันอย่างแม่นยำ ส่งผลให้รอบวันนี้มีความคล่องตัวสูง มีช่องทางสร้างทรัพย์สินรายได้เพิ่มขึ้น และได้รับความร่วมมือจากพันธมิตร`,
-          sunJupiter: `แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล) หนุนนำให้การเงินสะพัด มีโชคลาภทางการค้าขาย และได้รับข่าวดีที่รอคอยมานาน สร้างความปีติยินดีแก่ตัวท่านและครอบครัว`,
-          meridApollo: `แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน) โดดเด่นในการทำงานเป็นทีมและการกระจายงานอย่างมีระบบ ผลงานเป็นที่ประจักษ์และสร้างความน่าเชื่อถือ`,
-          cupido: `พลังแห่งคูปิโด (สังคม ศิลปะ และสายสัมพันธ์) นำพาความสามัคคีกลมเกลียวมาสู่ทีมงานและครอบครัว การเจรจาตกลงเรื่องยากให้กลายเป็นเรื่องง่าย`,
-          zeus: `พลังแห่งเซอุส (ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์) มอบพลังใจอันฮึกเหิมในการบุกเบิกงานใหม่ๆ เอาชนะอุปสรรคเล็กๆ น้อยๆ ได้โดยง่ายดาย`,
-          kronos: `พลังแห่งโครโนส (อำนาจ รัฐ ความเป็นเลิศระดับสูง) ส่งผลให้บทบาทหน้าที่การงานมีความก้าวหน้า ผู้บังคับบัญชาเมตตาและมองเห็นศักยภาพที่แท้จริง`,
-          apollon: `พลังแห่งอพอลลอน (การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา) สร้างโอกาสขยายกิจการ เพิ่มฐานลูกค้า และต่อยอดเม็ดเงินลงทุนให้งอกเงยเป็นกอบเป็นกำ`,
-          poseidon: `พลังแห่งโพไซดอน (จิตวิญญาณ ปัญญาญาณ & แสงสว่าง) ช่วยให้จิตใจสงบนิ่ง มีวิสัยทัศน์กว้างไกล เหมาะกับการคิดทบทวนโปรเจกต์ระยะยาว`,
-          vulcanus: `พลังแห่งวัลแคนุส (พลังอำนาจอันยิ่งใหญ่ ความอดทน & ความสำเร็จมั่นคง) เติมเต็มพลังงานความมุ่งมั่นทุ่มเท ทำให้งานยากสำเร็จลุล่วงด้วยดี`,
-          admetos: `พลังแห่งแอดเมตอส (ความลึกซึ้ง การมุ่งเน้นรากฐาน & ความจริงจัง) เสริมความมั่นคงในเรื่องทรัพย์สิน ที่อยู่อาศัย และการบริหารความเสี่ยงได้อย่างรัดกุม`,
-          hades: `พลังแห่งฮาเดส (การชำระสะสางสิ่งเก่า & การเปลี่ยนวิกฤตเป็นโอกาส) ช่วยขจัดปัดเป่าอุปสรรคเรื้อรังให้หมดไป เปิดทางให้ชีวิตพบเจอแต่ความโปร่งโล่งสบาย`
-        },
-        {
-          midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): กระแสจักรวาลและวันเดือนปีเกิดส่งเสริมการพลิกฟื้นดวงชะตาครั้งสำคัญ สิ่งที่เคยติดขัดจะได้รับการคลี่คลาย พร้อมเปิดรับพลังแห่งความเจริญรุ่งเรือง`,
-          sunJupiter: `แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล) คุ้มครองดวงชะตาให้แคล้วคลาดปลอดภัย ทำสิ่งใดก็ราบรื่น มีเกณฑ์รับทรัพย์ก้อนโตและเกียรติยศชื่อเสียง`,
-          meridApollo: `แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน) ทักษะและความสามารถพิเศษเฉพาะตัวโดดเด่นเข้าตาผู้คน สร้างผลงานสร้างชื่อและรายได้มหาศาล`,
-          cupido: `พลังแห่งคูปิโด (สังคม ศิลปะ และสายสัมพันธ์) สร้างเสน่ห์มหานิยมในการติดต่อสื่อสาร เหมาะกับการตกลงเซ็นสัญญา การค้าขาย และการผูกมิตร`,
-          zeus: `พลังแห่งเซอุส (ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์) มอบชัยชนะเหนืออุปสรรคทั้งปวง ความเด็ดเดี่ยวและกล้าหาญจะนำพาความสำเร็จมาสู่มือท่าน`,
-          kronos: `พลังแห่งโครโนส (อำนาจ รัฐ ความเป็นเลิศระดับสูง) ได้รับการยกย่องสรรเสริญในผลงาน มีอำนาจในการตัดสินใจและบริหารจัดการโครงงานใหญ่`,
-          apollon: `พลังแห่งอพอลลอน (การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา) โชคลาภจากการเจรจาและการค้าขายรุ่งโรจน์ สร้างเม็ดเงินหมุนเวียนคล่องตัว`,
-          poseidon: `พลังแห่งโพไซดอน (จิตวิญญาณ ปัญญาญาณ & แสงสว่าง) ปัญญาญาณสว่างไสว มองเห็นลู่ทางและทางออกที่ดีที่สุดสำหรับอนาคต`,
-          vulcanus: `พลังแห่งวัลแคนุส (พลังอำนาจอันยิ่งใหญ่ ความอดทน & ความสำเร็จมั่นคง) สร้างเกราะคุ้มกันและพลังใจอันเข้มแข็งให้ผ่านพ้นภารกิจยากๆ ไปได้ด้วยดี`,
-          admetos: `พลังแห่งแอดเมตอส (ความลึกซึ้ง การมุ่งเน้นรากฐาน & ความจริงจัง) จัดการระบบหลังบ้าน ทรัพย์สิน และโครงสร้างชีวิตให้มีความมั่นคงถาวร`,
-          hades: `พลังแห่งฮาเดส (การชำระสะสางสิ่งเก่า & การเปลี่ยนวิกฤตเป็นโอกาส) ปัดเป่าพลังงานลบและปัญหาเก่าๆ ให้มลายหายไป พร้อมรับความเฮงครั้งใหม่`
+          midpointDesc: `อัพเดตดวงชะตารายวันจร ณ วันที่ ${tD} ${tMName} พ.ศ. ${tY} (พื้นดวงเกิด ${bD}/${bM}/${bY} - อายุย่าง ${ageYang} ปี): พลังงานดาวทิพย์และดวงกำเนิดโคจรสอดรับกันอย่างแม่นยำ รอบวันนี้มีความคล่องตัวสูง มีช่องทางสร้างทรัพย์สินรายได้เพิ่มขึ้น`,
+          sunJupiter: `แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล) หนุนนำให้การเงินสะพัด มีโชคลาภทางการค้าขาย และได้รับข่าวดีที่รอคอยมานาน`,
+          meridApollo: `แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน) โดดเด่นในการทำงานเป็นทีม ผลงานเป็นที่ประจักษ์และสร้างความน่าเชื่อถือ`,
+          cupido: `พลังแห่งคูปิโด (สังคม ศิลปะ และสายสัมพันธ์) นำพาความสามัคคีกลมเกลียวมาสู่ทีมงาน การเจรจาตกลงเรื่องยากให้กลายเป็นเรื่องง่าย`,
+          zeus: `พลังแห่งเซอุส (ภาวะผู้นำ ความคิดริเริ่ม) มอบพลังใจในการบุกเบิกงานใหม่ๆ เอาชนะอุปสรรคเล็กๆ น้อยๆ ได้โดยง่าย`,
+          kronos: `พลังแห่งโครโนส (อำนาจ รัฐ ความเป็นเลิศ) ส่งผลให้บทบาทหน้าที่การงานมีความก้าวหน้า ผู้บังคับบัญชาเมตตา`,
+          apollon: `พลังแห่งอพอลลอน (การขยายตัวทางธุรกิจ) สร้างโอกาสขยายกิจการ เพิ่มฐานลูกค้า และต่อยอดการลงทุนให้งอกเงย`,
+          poseidon: `พลังแห่งโพไซดอน (จิตวิญญาณ ปัญญาญาณ) ช่วยให้จิตใจสงบนิ่ง มีวิสัยทัศน์กว้างไกล เหมาะกับการคิดทบทวนโปรเจกต์`,
+          vulcanus: `พลังแห่งวัลแคนุส (พลังความสำเร็จมั่นคง) เติมเต็มพลังงานความมุ่งมั่นทุ่มเท ทำให้งานยากสำเร็จลุล่วงด้วยดี`,
+          admetos: `พลังแห่งแอดเมตอส (ความลึกซึ้งรากฐาน) เสริมความมั่นคงในเรื่องทรัพย์สิน ที่อยู่อาศัย และการบริหารจัดการ`,
+          hades: `พลังแห่งฮาเดส (เปลี่ยนวิกฤตเป็นโอกาส) ช่วยขจัดอุปสรรคเรื้อรังให้หมดไป เปิดทางให้ชีวิตพบความโปร่งโล่งสบาย`
         }
       ];
 
-      let poolIdx = (tY * 7 + tMVal * 11 + tD * 3 + bD * 5 + bM * 13 + bY) % URANIAN_VIP_POOLS.length;
-      let selectedPool = URANIAN_VIP_POOLS[poolIdx];
+      // คำนวณสลับพูล VIP ตามวันเกิด (bD, bM, bY) และวันจร (tD, tMVal, tY) จริงๆ
+      let vipPoolIdx = (tY * 7 + tMVal * 11 + tD * 3 + bD * 5 + bM * 13 + bY) % URANIAN_VIP_POOLS.length;
+      let selectedVip = URANIAN_VIP_POOLS[vipPoolIdx];
 
       targetBox.innerHTML = `
         <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-          <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-satellite-dish"></i> โหราศาสตร์ยูเรเนียน VIP (อิงวันจร: ${tD} ${tMName} พ.ศ. ${tY} - อายุย่าง ${ageYang} ปี):</strong>
-          <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">${selectedPool.midpointDesc}</p>
+          <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-satellite-dish"></i> โหราศาสตร์ยูเรเนียน VIP (อิงวันเกิด ${bD}/${bM}/${bY} ดวงจร ${tD} ${tMName} ${tY}):</strong>
+          <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">${selectedVip.midpointDesc}</p>
         </div>
 
         <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
           <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนประจำวันจร ${tD} ${tMName} ${tY} (Midpoints)
+            <i class="fa-solid fa-atom" style="color: #64b5f6;"></i> โครงสร้างศูนย์รังสี & แกนสะท้อนประจำวันจร (Midpoints)
           </h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px;">
             <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
               <strong style="color: #ffd700;">แกนอาทิตย์/พฤหัสบดี (เกียรติยศ & ลาภผล):</strong>
-              <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.sunJupiter}</p>
+              <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.sunJupiter}</p>
             </div>
             <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
               <strong style="color: #64b5f6;">แกนเมอริเดียน/อพอลลอน (ความสำเร็จรอบด้าน):</strong>
-              <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.meridApollo}</p>
+              <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.meridApollo}</p>
             </div>
           </div>
         </div>
 
         <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
           <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน (ประจำวันจร ${tD} ${tMName} ${tY})
+            <i class="fa-solid fa-crown" style="color: #ffd700;"></i> ถอดรหัสอิทธิพล 8 ดาวทิพย์ยูเรเนียน VIP
           </h4>
           <div style="display: flex; flex-direction: column; gap: 14px;">
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido) - สังคม ศิลปะ และสายสัมพันธ์:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.cupido}</p>
+              <strong style="color: #ff8a80;"><i class="fa-solid fa-star"></i> คูปิโด (Cupido):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.cupido}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus) - ภาวะผู้นำ ความคิดริเริ่ม & พลังสร้างสรรค์:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.zeus}</p>
+              <strong style="color: #ffd180;"><i class="fa-solid fa-star"></i> เซอุส (Zeus):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.zeus}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos) - อำนาจ รัฐ ความเป็นเลิศระดับสูง:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.kronos}</p>
+              <strong style="color: #80d8ff;"><i class="fa-solid fa-star"></i> โครโนส (Kronos):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.kronos}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon) - การขยายตัวทางธุรกิจ สันติภาพ & ปัญญา:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.apollon}</p>
+              <strong style="color: #ccff90;"><i class="fa-solid fa-star"></i> อพอลลอน (Apollon):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.apollon}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon) - จิตวิญญาณ ปัญญาญาณ & แสงสว่าง:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.poseidon}</p>
+              <strong style="color: #ea80fc;"><i class="fa-solid fa-star"></i> โพไซดอน (Poseidon):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.poseidon}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #ffccbc;"><i class="fa-solid fa-star"></i> วัลแคนุส (Vulcanus) - พลังอำนาจอันยิ่งใหญ่ & ความสำเร็จมั่นคง:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.vulcanus}</p>
+              <strong style="color: #ffccbc;"><i class="fa-solid fa-star"></i> วัลแคนุส (Vulcanus):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.vulcanus}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #b2dfdb;"><i class="fa-solid fa-star"></i> แอดเมตอส (Admetos) - ความลึกซึ้ง & รากฐานชีวิต:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.admetos}</p>
+              <strong style="color: #b2dfdb;"><i class="fa-solid fa-star"></i> แอดเมตอส (Admetos):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.admetos}</p>
             </div>
             <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-              <strong style="color: #d1c4e9;"><i class="fa-solid fa-star"></i> ฮาเดส (Hades) - การชำระสะสางสิ่งเก่า & เปลี่ยนวิกฤตเป็นโอกาส:</strong>
-              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedPool.hades}</p>
+              <strong style="color: #d1c4e9;"><i class="fa-solid fa-star"></i> ฮาเดส (Hades):</strong>
+              <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selectedVip.hades}</p>
             </div>
           </div>
         </div>
