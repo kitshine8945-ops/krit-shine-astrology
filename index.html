@@ -2707,7 +2707,7 @@ function switchNum7Mode(mode) {
       calcNum7Base();
     }
 
-    function calcNum7Base() {
+function calcNum7Base() {
       // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์ม (ใช้เปลี่ยนพื้นดวงและคำทำนายฟรี)
       const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
       const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
@@ -2739,12 +2739,13 @@ function switchNum7Mode(mode) {
         row1.push(v1); row2.push(v2); row3.push(v3); row4.push(v4);
 
         if (isVip) {
-          let transitFactor = (tY % 7) + (ageYang % 7);
+          // ผูกสูตรคำนวณกับวันจร (tD, tM, tY) เพื่อให้ฐานตัวเลขเปลี่ยนตามวันจรที่เลือก
+          let transitFactor = (tY % 7) + (tM * 3) + (tD % 5) + (ageYang % 7);
           let v5 = (v1 + v2 + (transitFactor % 3)) % 21 || 21;
           let v6 = (v2 + v3 + (tY % 5)) % 21 || 21;
           let v7 = (v1 + v3 + (ageYang % 4)) % 21 || 21;
           let v8 = (v4 + 7 + (tD % 3)) % 21 || 21;
-          let v9 = ((v4 * 2) + (tY % 9)) % 21 || 21;
+          let v9 = ((v4 * 2) + (tY % 9) + tD) % 21 || 21;
           row5.push(v5); row6.push(v6); row7.push(v7); row8.push(v8); row9.push(v9);
         }
       }
@@ -2773,7 +2774,7 @@ function switchNum7Mode(mode) {
       const analysisTitle = document.getElementById('num7AnalysisTitle');
       const analysisBody = document.getElementById('num7AnalysisBody');
 
-      // --- คลังคำทำนายโหมดฟรี (เพิ่มชุดข้อมูลและผูกตรงกับ วัน/เดือน/ปีเกิด เพื่อให้เปลี่ยนตามวันเกิดทันที) ---
+      // --- คลังคำทำนายโหมดฟรี ---
       const FREE_POOLS = [
         {
           atta: `พื้นดวงอัตตะตกเลข ${row1[0]} และกำลังรวมฐาน 4 ได้เลข ${row4[0]} ชี้ว่าเจ้าชะตาจากพื้นดวงวันเกิด ${bD}/${bM}/${bY} เป็นคนมีความมุ่งมั่น ทรหดอดทน มีความเป็นผู้นำในตัวเองสูง สร้างฐานะด้วยลำแข้งและความเพียรพยายามของตนเอง`,
@@ -2792,7 +2793,7 @@ function switchNum7Mode(mode) {
         }
       ];
 
-      // --- คลังคำทำนายโหมด VIP (คงเดิมตามที่คุณคอนเฟิร์มว่าสมบูรณ์แล้ว) ---
+      // --- คลังคำทำนายโหมด VIP (ผูกกับวันจร tD, tM, tY) ---
       const VIP_POOLS = [
         {
           transit: `อิงวันจร ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี): ดวงชะตาขับเคลื่อนเข้าสู่เรือนฐานที่ ${transitHouseIndex + 1} อิทธิพลพลังงานดาวจรและฐาน ๙ (มหาโชค ได้เลข ${activeVipNum}) ส่งผลให้รอบปี พ.ศ. ${tY} นี้ มีความโดดเด่นอย่างมากในการเจรจา การขยายธุรกิจ และโอกาสรับทรัพย์ก้อนโตจากการลงทุน`,
@@ -2820,12 +2821,11 @@ function switchNum7Mode(mode) {
         }
       ];
 
-      // แก้สูตรฝั่งฟรีให้นำ วันเกิด (bD), เดือนเกิด (bM), ปีเกิด (bY) มาคำนวณดัชนี เพื่อให้เปลี่ยนตามวันเกิดทันที
       let freePoolIdx = (bD * 3 + bM * 7 + bY) % FREE_POOLS.length;
       let selectedFree = FREE_POOLS[freePoolIdx];
 
-      // สูตรฝั่ง VIP ที่สมบูรณ์แบบ (อิงทั้งวันเกิดและวันจรพร้อมกัน)
-      let vipPoolIdx = (bD + bM + tY + tD) % VIP_POOLS.length;
+      // สูตรคำนวณดัชนีคำทำนาย VIP ที่อิงวันจรโดยตรง
+      let vipPoolIdx = (bD + bM + tY + tD + ageYang) % VIP_POOLS.length;
       let selectedVip = VIP_POOLS[vipPoolIdx];
 
       if (!isVip) {
@@ -2877,6 +2877,7 @@ function switchNum7Mode(mode) {
           </div>
         `;
       }
+    }
   
 document.addEventListener('DOMContentLoaded', function() {
       // ดักจับการเปลี่ยนค่าในฟอร์มวันเกิด วันจร และเวลาทุกช่องแบบเบ็ดเสร็จ
