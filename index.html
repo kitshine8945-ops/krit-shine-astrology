@@ -1796,24 +1796,28 @@ footer {
     </div>
   </div>
 
-  <!-- MODAL: ปาจื่อ -->
-  <div class="modal-overlay" id="modal-bazi">
-    <div class="modal-content" style="max-width: 890px;">
-      <div class="modal-close-btn" onclick="closeModal('modal-bazi')"><i class="fa-solid fa-xmark"></i></div>
-      <div class="profile-astro-badge dynamic-user-badge"></div>
-      <div class="tier-switcher" style="margin-bottom:14px;">
-        <button type="button" class="tier-btn active" id="btn-bazi-free" onclick="switchBaziMode('free')">ดิถีธาตุพื้นฐาน (ดูฟรี)</button>
-        <button type="button" class="tier-btn" id="btn-bazi-vip" onclick="switchBaziMode('vip')"><i class="fa-solid fa-crown"></i> 4 เสาหลัก, 10 เทพ & ฮวงจุ้ยชั้นสูง (VIP)</button>
+<!-- MODAL: ปาจื่อ -->
+<div class="modal-overlay" id="modal-bazi">
+  <div class="modal-content" style="max-width: 890px;">
+    <div class="modal-close-btn" onclick="closeModal('modal-bazi')"><i class="fa-solid fa-xmark"></i></div>
+    <div class="profile-astro-badge dynamic-user-badge"></div>
+    <div class="tier-switcher" style="margin-bottom:14px;">
+      <button type="button" class="tier-btn active" id="btn-bazi-free" onclick="switchBaziMode('free')">ดิถีธาตุพื้นฐาน (ดูฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-bazi-vip" onclick="switchBaziMode('vip')"><i class="fa-solid fa-crown"></i> 4 เสาหลัก, 10 เทพ & ฮวงจุ้ยชั้นสูง (VIP)</button>
+    </div>
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-yin-yang"></i> ปาจื่อ (BaZi) ดวงจีนโบราณ</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์พลังงาน 5 ธาตุ หยิน-หยาง และถอดรหัสกิ่งฟ้า-ก้านดิน 4 เสาหลัก (ระบบ พ.ศ.)</p>
+    </div>
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      
+      <!-- โหมดฟรี -->
+      <div id="bazi-free-result" style="display:none; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4>
+        <p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
       </div>
-      <div style="text-align: center; margin-bottom: 15px;">
-        <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-yin-yang"></i> ปาจื่อ (BaZi) ดวงจีนโบราณ</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์พลังงาน 5 ธาตุ หยิน-หยาง และถอดรหัสกิ่งฟ้า-ก้านดิน 4 เสาหลัก (ระบบ พ.ศ.)</p>
-      </div>
-      <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
-        <div style="display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; margin-bottom: 10px;">
-                <div id="bazi-free-result" style="display:none; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
-        <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4><p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
-      </div>
+
+      <!-- โหมด VIP -->
       <div id="bazi-vip-result" style="display:none; margin-top: 18px;">
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="bazi-pillars-grid"></div>
         <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-soft);">
@@ -1823,8 +1827,10 @@ footer {
           <div id="bazi-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
         </div>
       </div>
+
     </div>
   </div>
+</div>
 
   <!-- MODAL: 12 ราศี -->
   <div class="modal-overlay" id="modal-zodiac">
