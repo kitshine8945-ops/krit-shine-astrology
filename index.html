@@ -4658,7 +4658,7 @@ function openAllArticlesModal() {
     function scrollToForm() { switchTierMode('free'); document.getElementById('birth-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     function scrollToFormVip() { switchTierMode('vip'); document.getElementById('birth-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 
- function updateDailyHoroscopeView() {
+function updateDailyHoroscopeView(targetDateOverride) {
     // 1. ตรวจสอบว่าผู้ใช้กรอกวันเกิดหรือยัง (ตรวจสอบจาก AppState หรือช่อง input)
     const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
     const ascIndex = AppState.currentCalculatedAscIndex;
@@ -4674,7 +4674,7 @@ function openAllArticlesModal() {
     const luckyColorEl = document.getElementById('dailyLuckyColor');
     const luckyDirEl = document.getElementById('dailyLuckyDirection');
 
-    // ถ้ายังไม่ได้กรอกวันเกิด หรือยังไม่ได้คำนวณลัคนา ให้เคลียร์ข้อความให้ว่างเปล่าทั้งหมด
+    // ถ้ายังไม่ได้กรอกวันเกิด หรือยังไม่ได้คำนวณลัคนา ให้เคลียร์ข้อความแจ้งเตือนตามที่คุณต้องการ
     if (!bDayVal || ascIndex === null || ascIndex === undefined) {
         if (dateEl) dateEl.textContent = '-';
         if (ascEl) ascEl.textContent = '-';
@@ -4686,27 +4686,43 @@ function openAllArticlesModal() {
         if (luckyNumEl) luckyNumEl.textContent = '-';
         if (luckyColorEl) luckyColorEl.textContent = '-';
         if (luckyDirEl) luckyDirEl.textContent = '-';
-        return; // หยุดการทำงาน ไม่แสดงคำทำนายมั่ว
+        return; // หยุดการทำงานทันที
     }
 
-    // 2. หากกรอกวันเกิดแล้ว ให้แสดงผลตามลัคนาจริงปกติ
+    // 2. หากกรอกวันเกิดแล้ว ดึงข้อมูลตามลัคนาจริง และคำนวณเปลี่ยนคำทำนายตามวันจริงอัตโนมัติ
     const ascInfo = ZODIAC_DATA[ascIndex] || ZODIAC_DATA[10];
-    const now = new Date();
-    const dateStr = `${now.getDate()} ${MONTH_NAMES[now.getMonth()]} พ.ศ. ${now.getFullYear() + 543}`;
+    
+    const now = targetDateOverride ? new Date(targetDateOverride) : new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const date = now.getDate();
+    
+    const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    const dateStr = `${date} ${thMonths[month]} พ.ศ. ${year + 543}`;
     
     if (dateEl) dateEl.textContent = dateStr;
     if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
 
-    // ดึงคำทำนายตามลัคนาจริง
-    if (sumEl) sumEl.textContent = ascInfo.dailySummary || "จังหวะชีวิตเปิดรับสิ่งใหม่ โอกาสดีกำลังเข้ามาหาคุณอย่างต่อเนื่อง";
-    if (workEl) workEl.textContent = ascInfo.dailyWork || "งานออนไลน์ งานสร้างสรรค์ และโครงการใหม่ได้รับการตอบรับดีเยี่ยม ขยับขยายได้ดี";
-    if (moneyEl) moneyEl.textContent = ascInfo.dailyMoney || "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้พิเศษเข้ามาจากการลงทุนหรือโปรเจกต์เสริม";
-    if (loveEl) loveEl.textContent = ascInfo.dailyLove || "คนโสดมีเกณฑ์พบมิตรภาพดีๆ ที่พัฒนาได้ คนมีคู่บรรยากาศสบายใจ ให้เกียรติซึ่งกันและกัน";
-    if (healthEl) healthEl.textContent = ascInfo.dailyHealth || "ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้เต็มที่ ระวังอาการเมื่อยล้าจากการทำงาน";
-    if (luckyNumEl) luckyNumEl.textContent = ascInfo.luckyNum || "8, 17, 26";
-    if (luckyColorEl) luckyColorEl.textContent = ascInfo.luckyColor || "สีฟ้า หรือ สีบรอนซ์เงิน";
-    if (luckyDirEl) luckyDirEl.textContent = ascInfo.luckyDir || "ทิศตะวันออกเฉียงเหนือ";
-}   
+    // สร้าง Seed อิงตามวันที่ปัจจุบันและลัคนา เพื่อให้คำทำนายเปลี่ยนสลับไปชุดใหม่ทุกวัน
+    const baseSeed = (year * 365) + (month * 31) + (date * 23) + (ascIndex * 17);
+
+    // ดึงข้อมูลจาก Pool คำทำนายแบบแยกอิสระ (ไม่ซ้ำซ้อน)
+    if (sumEl) sumEl.textContent = `${ascInfo.name} : ${POOL_SUMMARIES[Math.abs(baseSeed) % POOL_SUMMARIES.length]}`;
+    if (workEl) workEl.textContent = POOL_WORKS[Math.abs(baseSeed + 5) % POOL_WORKS.length];
+    if (moneyEl) moneyEl.textContent = POOL_MONEY[Math.abs(baseSeed + 9) % POOL_MONEY.length];
+    if (loveEl) loveEl.textContent = POOL_LOVES[Math.abs(baseSeed + 3) % POOL_LOVES.length];
+    if (healthEl) healthEl.textContent = POOL_HEALTH[Math.abs(baseSeed + 11) % POOL_HEALTH.length];
+    if (luckyNumEl) luckyNumEl.textContent = POOL_NUMBERS[Math.abs(baseSeed + 7) % POOL_NUMBERS.length];
+    if (luckyColorEl) luckyColorEl.textContent = POOL_COLORS[Math.abs(baseSeed + 4) % POOL_COLORS.length];
+    if (luckyDirEl) luckyDirEl.textContent = POOL_DIRS[Math.abs(baseSeed + 6) % POOL_DIRS.length];
+}
+
+window.renderDailyHoroscope = updateDailyHoroscopeView;
+window.openDailyHoroscopeModal = function() {
+    updateDailyHoroscopeView();
+    const m = document.getElementById('modal-daily');
+    if (m) m.style.display = 'flex';
+}; 
 // 1. ฟังก์ชันเปิด Modal ซาจู (ตัวเปิดใช้งาน)
 function openSajuModal() {
   const modalTitle = document.getElementById('artModalTitle') || document.getElementById('featureModalTitle');
