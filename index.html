@@ -3896,7 +3896,6 @@ const STEMS = [
       { name: "戌 (ซวี)", animal: "จอ", elem: "ดิน" }, { name: "亥 (ไฮ่)", animal: "กุน", elem: "น้ำ" }
    ];
 
-   // ฟังก์ชันคำนวณดวงจีน BaZi แบบไดนามิก (โครงสร้างเดิมของท่าน)
    function calculateDynamicBaZi(yearBE, month, day, hour) {
       let yearCE = yearBE - 543;
       
@@ -3950,8 +3949,8 @@ const STEMS = [
       let yongShen = bz.yongShen;
       let jiShen = bz.jiShen;
 
-      // คลังคำทำนายโหมดฟรี (อิงจากวันเกิดอย่างเดียว)
-      let birthSeed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17);
+      // 1. โหมดฟรี: ใช้ค่า seed จาก "วันเดือนปีเกิดและเวลาเกิด" ล้วนๆ (ไม่เกี่ยวกับวันจร)
+      let birthSeed = (d * 31) + (m * 53) + (yBE * 7) + (h * 17) + (min * 3);
       const FREE_BAZI_POOLS = [
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${MONTH_NAMES[m-1]} พ.ศ. ${yBE} เวลา ${h}:${min} น. สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
         `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${MONTH_NAMES[m-1]} ${yBE} (${h} นาฬิกา) บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
@@ -3960,7 +3959,7 @@ const STEMS = [
       ];
       let freePoolIndex = Math.abs(birthSeed) % FREE_BAZI_POOLS.length;
 
-      // คลังคำทำนาย VIP (แปรผันตามวันเกิด + วันจร)
+      // 2. โหมด VIP: แปรผันตาม "วันเดือนปีเกิด + วันเดือนปีจร" ร่วมกัน
       const VIP_5D_POOLS = [
         {
           fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
