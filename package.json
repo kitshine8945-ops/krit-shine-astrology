@@ -1,0 +1,13 @@
+{
+  "name": "krit-shine-astrology",
+  "version": "1.0.0",
+  "description": "Krit Shine Astrology Web App",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
