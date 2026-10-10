@@ -3965,21 +3965,19 @@ function calcBaziEngine() {
         return;
      }
       
-     const hourEl = document.getElementById('birthHour24');
-     const minEl = document.getElementById('birthMinute24');
-     const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
-     const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
+       const hourEl = document.getElementById('birthHour24');
+    const minEl = document.getElementById('birthMinute24');
+    const h = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 0;
+    const min = minEl && minEl.value ? parseInt(minEl.value, 10) : 0;
 
-      // 2. ดึงค่าวัน เดือน ปี "จร" แบบสดๆ จากฟอร์ม (ย้ายไปดึงอย่างปลอดภัยที่ด้านบนแล้ว)
+    // 2. ดึงชื่อเดือนจรมาใช้งาน (ตัวแปร tM, tY, tD ดึงจากด้านบนสุดของฟังก์ชันแล้ว)
     const tMName = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tM - 1] : null) || 'มกราคม';
 
-  
-     let yearCE = bY - 543;
-     let stemDayIdx = Math.abs((bD * 37 + bM * 23 + yearCE * 13) % 10);
-     let branchMonthIdx = Math.abs((bM + 2) % 12);
+    // 3. สูตรคำนวณปาจื่อ อิงตามวันเกิดและวันจร VIP
+    let yearCE = tY - 543; 
+    let stemDayIdx = Math.abs((tD * 37 + tM * 23 + yearCE * 13) % 10); 
+    let branchMonthIdx = Math.abs((tM + 2) % 12); 
 
-     let safeStems = (typeof STEMS !== 'undefined') ? STEMS : [{name: "เจี๋ย", elem: "ไม้", pol: "หยาง", desc: "พลังแห่งความเติบโต"}, {name: "ยี่", elem: "ไม้", pol: "หยิน", desc: "พลังแห่งความยืดหยุ่น"}];
-     let safeBranches = (typeof BRANCHES !== 'undefined') ? BRANCHES : [{name: "ชวด", elem: "น้ำ"}, {name: "ฉลู", elem: "ดิน"}];
 
      let dayMaster = safeStems[stemDayIdx % safeStems.length] || safeStems[0];
      let monthBranch = safeBranches[branchMonthIdx % safeBranches.length] || safeBranches[0];
