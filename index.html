@@ -9791,10 +9791,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const vipFengshuiEl = document.getElementById('bazi-vip-fengshui') || document.getElementById('vip-fengshui-desc');
     const vipStrengthEl = document.getElementById('bazi-vip-strength') || document.getElementById('vip-strength-desc');
 
-    if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
-    if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
-    if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
-    if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
+   
     if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
 
     // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่มาจากวันเกิด ทำให้เมื่อเปลี่ยนวันเกิด คำทำนายจะเปลี่ยนตามทันที และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
@@ -9803,8 +9800,18 @@ document.addEventListener('DOMContentLoaded', function() {
       `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
       `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต`
     ];
-    let luckCycleIndex = seed % LUCK_CYCLE_POOLS.length;
-    let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
+   // สร้างความเชื่อมโยงกับวันจรจริง ๆ โดยคำนวณดัชนีวันจร (Transit Seed) ขึ้นมาใหม่ตรงนี้
+let tYearCE = (parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569) - 543;
+let tSeed = Math.abs((tD * 37 + tM * 23 + tYearCE * 13) % 10);
+    let vipPoolIndex = tSeed % VIP_5D_POOLS.length;
+    selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+    if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
+    if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
+    if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
+    if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
+
+let luckCycleIndex = tSeed % LUCK_CYCLE_POOLS.length;
+let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
 
     const freeRes = document.getElementById('bazi-free-result');
     const vipRes = document.getElementById('bazi-vip-result');
