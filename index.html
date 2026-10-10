@@ -13,75 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- <style>
- /* ป้องกันหน้าจอล้น */
-  html, body {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* บังคับ Navbar ให้จัดระยะห่างพอดีจอ ไม่ซ้อนทับ */
-  header.navbar {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100% !important;
-    min-height: 60px !important;
-    height: auto !important;
-    padding: 8px 12px !important;
-    box-sizing: border-box !important;
-    gap: 8px !important;
-  }
-
-  /* ซ่อนเมนูตัวหนังสือยาวๆ ตรงกลาง */
-  ul.nav-links {
-    display: none !important;
-  }
-
-  /* ปรับขนาดโลโก้และชื่อเว็บฝั่งซ้าย */
-  .brand {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    flex-shrink: 1 !important;
-    min-width: 0 !important;
-  }
-
-  .brand h1 {
-    font-size: 16px !important;
-    white-space: nowrap !important;
-    margin: 0 !important;
-  }
-
-  .brand span {
-    display: none !important;
-  }
-
-  /* ย่อขนาดกลุ่มปุ่มฝั่งขวา */
-  header.navbar > div:last-child,
-  .nav-actions,
-  .user-menu {
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* ย่อขนาดปุ่ม VIP และปุ่มเข้าสู่ระบบ */
-  header.navbar button, 
-  header.navbar a.btn,
-  .vip-badge,
-  .btn-vip {
-    padding: 4px 8px !important;
-    font-size: 12px !important;
-    white-space: nowrap !important;
-  }
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
 <style>
     /* ซ่อนแถบกล่องวันจรเฉพาะเมื่ออยู่ในโหมดเลข 7 ตัว 4 ฐาน (ฟรี) */
 #modal-num7base:has(#btn-num7-free.active) .transit-active-badge-bar,
