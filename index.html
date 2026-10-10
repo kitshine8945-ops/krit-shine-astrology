@@ -9205,15 +9205,7 @@ function getCleanTransitBadgeString() {
     var monthName = thMonths[monthVal - 1] || "ตุลาคม";
     
     return `${day} ${monthName} พ.ศ. ${yearBE} เวลา ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} น.`;
-}
-
-    return `
-        <div class="transit-active-badge-bar" style="background: linear-gradient(135deg, rgba(234,179,8,0.22)...">
-            <span><i class="fa-solid fa-satellite-dish"></i> <b>อิงวันจรลัคนาพยากรณ์:</b></span>
-            <span style="background: rgba(255,215,0,0.3); padding: 2px 8px; border-radius: 6px; color: #fff;">...</span>
-        </div>
-    `;
-}
+   }
 
 // --- 2. ฟังก์ชันแปะแถบวันจรเข้าสู่กล่องเป้าหมาย ---
 function injectBadgeDirectly(container, selector) {
