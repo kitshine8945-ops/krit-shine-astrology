@@ -9241,7 +9241,9 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       } else {
         console.warn('ไม่พบ Modal: modal-' + name);
       }
-
+if (name === 'uranian' && typeof switchUranianMode === 'function') {
+    switchUranianMode('free');
+  }
       // เพิ่มบรรทัดนี้เพื่อบังคับให้ปาจื่อคำนวณและอัปเดตใหม่ทันทีที่เปิดหน้าต่าง
       if (name === 'bazi' && typeof calcBaziEngine === 'function') {
         calcBaziEngine();
