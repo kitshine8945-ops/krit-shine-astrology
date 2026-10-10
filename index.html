@@ -3186,6 +3186,7 @@ function switchUranianMode(mode) {
         `;
       }
     }
+
     // 3. โหมด VIP (VIP)
     if (mode === 'vip') {
       const container = document.getElementById('uranianVipContent') || document.getElementById('uranianVipBox');
@@ -3194,24 +3195,22 @@ function switchUranianMode(mode) {
 
       const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
       const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-      const tMName = MONTH_NAMES[tMVal - 1] || 'มกราคม';
+      const tMName = (typeof MONTH_NAMES !== 'undefined' && MONTH_NAMES[tMVal - 1]) ? MONTH_NAMES[tMVal - 1] : 'มกราคม';
       const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
       let ageYang = (tY - bY) + 1;
       if (ageYang < 1) ageYang = 1;
 
+      // ตรวจสอบค่าตัวแปรวันเกิดเบื้องต้นก่อนทำงานต่อ
       if (!bD || !bM || !bY) {
-        targetBox.innerHTML = `
-          <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-            <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-            <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
-            <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบคำนวณศูนย์รังสี 8 ดาวทิพย์เฉพาะบุคคล</p>
-          </div>
-        `;
-        return;
+         return; // สิ้นสุดการทำงานหากข้อมูลไม่ครบ
       }
-    }
-}
+      
+      // --- เพิ่มโค้ดประมวลผลสำหรับโหมด VIP ต่อตรงนี้ ---
+      
+    } // ปิดเงื่อนไข if (mode === 'vip')
+} // ปิดฟังก์ชัน switchUranianMode
+
    
       const URANIAN_VIP_POOLS = [
         {
