@@ -10287,17 +10287,45 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
-// ดักจับจังหวะเปิดหน้าต่างดูดวงฉัตรสามชั้น ให้คำนวณและแสดงผลทันที
-document.addEventListener('click', function(e) {
-  // ตรวจจับปุ่มหรือการ์ดที่ใช้เปิดฉัตรสามชั้น
-  const btn = e.target.closest('[onclick*="chatra"], [data-modal*="chatra"], [onclick*="Chatra"]');
-  if (btn) {
-    setTimeout(function() {
+// ดักจับการเปิดหน้าต่างดวงฉัตรสามชั้นอัตโนมัติ (ไม่ว่าหน้าต่างจะเปิดด้วยวิธีไหน)
+(function() {
+  function checkAndRunChatra() {
+    const modal = document.getElementById('modal-chatra');
+    if (!modal) return;
+
+    // ตรวจสอบว่าหน้าต่างกำลังแสดงผลอยู่หรือไม่
+    const isVisible = modal.classList.contains('active') || 
+                      modal.classList.contains('show') || 
+                      modal.style.display === 'flex' || 
+                      modal.style.display === 'block' ||
+                      getComputedStyle(modal).display !== 'none';
+
+    if (isVisible) {
       if (typeof calcChatra === 'function') calcChatra();
       if (typeof calcChatraReal === 'function') calcChatraReal();
-    }, 150);
+    }
   }
-});
+
+  // 1. ดักจับเมื่อผู้ใช้คลิกทุกจุดบนหน้าจอที่มีคำว่า chatra หรือเปิดหน้าต่าง
+  document.addEventListener('click', function(e) {
+    const target = e.target.closest('[onclick*="chatra"], [onclick*="Chatra"], [data-target*="chatra"], .feature-card, .menu-card');
+    if (target) {
+      setTimeout(checkAndRunChatra, 100);
+      setTimeout(checkAndRunChatra, 300);
+    }
+  });
+
+  // 2. ใช้ MutationObserver ตรวจจับการเปลี่ยนแปลงของตัว modal-chatra โดยตรง
+  window.addEventListener('DOMContentLoaded', function() {
+    const targetModal = document.getElementById('modal-chatra');
+    if (targetModal) {
+      const observer = new MutationObserver(function() {
+        checkAndRunChatra();
+      });
+      observer.observe(targetModal, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+  });
+})();
 </script>
 </body>
 </html>
