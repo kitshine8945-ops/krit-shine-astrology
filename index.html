@@ -1488,7 +1488,7 @@ header.navbar {
     </div>
   </div>
 
-  <!-- MODAL: ดวงฉัตรสามชั้น -->
+<!-- MODAL: ดวงฉัตรสามชั้น -->
   <div class="modal-overlay" id="modal-chatra">
     <div class="modal-content" style="max-width: 740px;">
       <div class="modal-close-btn" onclick="closeModal('modal-chatra')"><i class="fa-solid fa-xmark"></i></div>
@@ -1498,18 +1498,27 @@ header.navbar {
       <div style="display:grid; grid-template-columns:1fr; gap:12px;">
         <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px;">
           <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> ๑. ชั้นยอดฉัตร (เกียรติยศ บารมี ชาติกำเนิด):</strong>
-          <p id="chatraTop" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">เกียรติยศชื่อเสียงโดดเด่น มีจิตวิญญาณแห่งความเป็นผู้นำ วาสนาชะตาชีวิตมักได้รับการยกย่องและมีบารมีเป็นที่พึ่งพา</p>
+          <p id="chatraTop" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
         </div>
         <div style="background:rgba(100,181,246,0.08); border:1px solid #64b5f6; border-radius:10px; padding:14px;">
           <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ๒. ชั้นกลางฉัตร (การสร้างฐานะ ครอบครัว และมิตรสหาย):</strong>
-          <p id="chatraMid" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">การสร้างฐานะราบรื่น มิตรสหายเกื้อหนุน การเงินหมุนเวียนคล่องตัว ครอบครัวเป็นหลักยึดเหนี่ยวที่มั่นคงและอบอุ่น</p>
+          <p id="chatraMid" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
         </div>
         <div style="background:rgba(129,199,132,0.08); border:1px solid #81c784; border-radius:10px; padding:14px;">
           <strong style="color:#81c784;"><i class="fa-solid fa-monument"></i> ๓. ชั้นฐานฉัตร (ความมั่นคงในบั้นปลายชีวิตและมรดก):</strong>
-          <p id="chatraBase" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">บั้นปลายชีวิตเปี่ยมสุข มีหลักทรัพย์อสังหาริมทรัพย์และมรดกตกทอด ลูกหลานบริวารกตัญญูคอยดูแลอย่างใกล้ชิด</p>
+          <p id="chatraBase" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
         </div>
       </div>
     </div>
+    <script>
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('[onclick*="modal-chatra"]')) {
+          setTimeout(function() {
+            if (typeof calcChatra === 'function') calcChatra();
+          }, 60);
+        }
+      });
+    </script>
   </div>
 
   <!-- MODAL: ฤกษ์มงคลเฉพาะบุคคล -->
