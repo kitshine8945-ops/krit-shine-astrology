@@ -8586,7 +8586,7 @@ function checkUserHasEnteredBirth() {
     return (d && m && y && !isNaN(parseInt(d)) && !isNaN(parseInt(m)) && !isNaN(parseInt(y)));
 }
 
-// 2. ระบบคำนวณดวงจีนปาจื่อ (BaZi) แบบสมบูรณ์
+// 2. ระบบคำนวณดวงจีนปาจื่อ (BaZi) แบบสมบูรณ์ (ไดนามิกตามวันเกิดและวันจรจริง)
 window.calcBaziEngine = function() {
     var freeResBox = document.getElementById('bazi-free-result');
     var vipResBox = document.getElementById('bazi-vip-result');
@@ -8629,8 +8629,68 @@ window.calcBaziEngine = function() {
     var yBE = parseInt(document.getElementById('birthYearBE').value, 10);
     var h = parseInt(document.getElementById('birthHour24').value, 10) || 0;
 
+    // ดึงวันจรสดๆ จากระบบ VIP
+    var tD = parseInt(document.getElementById('transitDay')?.value, 10) || d;
+    var tM = parseInt(document.getElementById('transitMonth')?.value, 10) || m;
+    var tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+
     if (typeof calculateDynamicBaZi !== 'function') return;
     var bazi = calculateDynamicBaZi(yBE, m, d, h);
+
+    // คลังคำทำนายดิถีธาตุ 5 ธาตุ (โหมดฟรี - ตามธาตุจริง)
+    var FREE_DESCS = {
+        "ไม้": {
+            nature: "มีความมุ่งมั่น ก้าวหน้าดั่งพรรณไม้ เปี่ยมด้วยเมตตาธรรม รักความยุติธรรม ชอบเรียนรู้สิ่งใหม่ และเติบโตอย่างไม่หยุดยั้ง",
+            balance: "เสริมสร้างสมดุลด้วยการบริหารความยืดหยุ่น หลีกเลี่ยงความดื้อรั้น เปิดใจรับฟังผู้อื่นเพื่อเพิ่มพูนโชคลาภ"
+        },
+        "ไฟ": {
+            nature: "มีความกระตือรือร้น อบอุ่น มีเสน่ห์เปิดเผย ตรงไปตรงมา มีพลังในการขับเคลื่อนผู้อื่น และชอบความชัดเจนโปร่งใส",
+            balance: "เสริมสร้างสมดุลด้วยการผ่อนคลายอารมณ์ ควบคุมความใจร้อน การมีสติรอบคอบจะช่วยรักษาความมั่งคั่งให้ยั่งยืน"
+        },
+        "ดิน": {
+            nature: "มีความหนักแน่น มั่นคงดั่งขุนเขา ซื่อสัตย์ กตัญญู เก็บความลับเก่ง และเป็นเสาหลักที่พึ่งพาได้ของคนรอบข้าง",
+            balance: "เสริมสร้างสมดุลด้วยการเปิดรับสิ่งใหม่ๆ ปรับตัวให้ทันยุคสมัย หลีกเลี่ยงการยึดติดในกรอบเดิมๆ"
+        },
+        "ทอง": {
+            nature: "มีความเด็ดเดี่ยว เฉียบคมดั่งดาบเหล็กกล้า ยึดมั่นในศักดิ์ศรี รักความถูกต้อง มีวินัยสูง และตัดสินใจได้เฉียบขาด",
+            balance: "เสริมสร้างสมดุลด้วยการใช้คำพูดที่นุ่มนวล หลีกเลี่ยงความแข็งกร้าว และสร้างมิตรภาพที่เกื้อหนุนรอบด้าน"
+        },
+        "น้ำ": {
+            nature: "มีปฏิภาณไหวพริบยอดเยี่ยม ปรับตัวเก่งดั่งสายน้ำ มีจินตนาการสูง ลึกซึ้ง และมีทักษะในการเจรจาสื่อสารเป็นเลิศ",
+            balance: "เสริมสร้างสมดุลด้วยการตั้งเป้าหมายให้มั่นคง หลีกเลี่ยงความโลเลหรือคิดมากเกินไป จะช่วยดึงดูดทรัพย์ได้มั่นคง"
+        }
+    };
+    var elemKey = bazi.dayMaster.elem || "ไม้";
+    var curFree = FREE_DESCS[elemKey] || FREE_DESCS["ไม้"];
+
+    // คลังคำทำนาย 5 มิติ VIP (คำนวณสลับเปลี่ยนตาม วันเกิด + วันจรจริง)
+    var VIP_POOLS = [
+        {
+            money: `กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ อิทธิพลวันจรหนุนนำให้มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและการลงทุน`,
+            work: `โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง`,
+            spouse: `คู่ครองและหุ้นส่วนมีสติปัญญาเฉียบคม คอยเป็นคู่คิดช่วยวางแผนการเงิน เกื้อหนุนธาตุชะตาให้มั่นคงและเป็นปึกแผ่น`,
+            fengshui: `จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุ ${bazi.yongShen} ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภ`,
+            cycle: `วัฏจักรพลังงานประจำปี พ.ศ. ${tY} (วันจร ${tD}/${tM}): ธาตุให้คุณส่งกำลังหนุนนำ ทำให้การเจรจาค้าขายและการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`
+        },
+        {
+            money: `ช่องทางรายได้ในรอบปี พ.ศ. ${tY} หลั่งไหลเข้ามาจากหลายสาย การค้าขายคล่องตัว มีลาภลอยหรือโอกาสทำกำไรจากพาร์ทเนอร์ใหม่ๆ`,
+            work: `การประสานงานและการเจรจาราบรื่น ได้รับความไว้วางใจจากผู้ใหญ่และพันธมิตร มีเกณฑ์เลื่อนขั้นหรือขยายกิจการสำเร็จ`,
+            spouse: `คนรักและบริวารมีความเข้าใจ ช่วยเหลือเกื้อกูลแบ่งเบาภาระหน้าที่ ทำให้มีสมาธิโฟกัสกับเป้าหมายใหญ่ได้อย่างเต็มที่`,
+            fengshui: `วางน้ำพุหรือต้นไม้มงคลไว้ในทิศส่งเสริมธาตุ ${bazi.yongShen} เพื่อกระตุ้นพลังชี่แห่งความสำเร็จให้ไหลเวียนเข้าสู่เคหสถาน`,
+            cycle: `วัฏจักรดวงชะตา ณ วันจร ${tD}/${tM}/${tY}: เป็นช่วงเวลาแห่งการเก็บเกี่ยวผลประโยชน์จากสิ่งที่สะสมมา รากฐานชีวิตมั่นคงเป็นปึกแผ่น`
+        },
+        {
+            money: `การบริหารสินทรัพย์และเงินออมให้ผลตอบแทนงอกเงย มีเกณฑ์ได้รับทรัพย์สินชิ้นใหญ่ อสังหาริมทรัพย์ หรือผลประโยชน์ระยะยาว`,
+            work: `ความเชี่ยวชาญเฉพาะด้านนำพาชื่อเสียงและอำนาจบารมี สามารถพลิกวิกฤตเป็นโอกาสและก้าวขึ้นสู่จุดที่โดดเด่นในสายอาชีพ`,
+            spouse: `คู่ครองช่วยส่งเสริมด้านภาพลักษณ์และบารมี ชวนกันสร้างอนาคตอย่างอบอุ่นและมีคุณธรรมร่วมกัน`,
+            fengshui: `เสริมแสงสว่างและรักษาความสะอาดบริเวณทางเข้าบ้านและห้องทำงาน นำพลังงานธาตุ ${bazi.yongShen} มาขับไล่สิ่งติดขัด`,
+            cycle: `วัฏจักรชะตา ณ ห้วงเวลาวันจร (${tD}/${tM}/${tY}): ฟ้าเปิดทางให้เริ่มต้นโปรเจกต์ใหม่ ความมุ่งมั่นตั้งใจจะนำพาความเจริญรุ่งเรืองสูงสุด`
+        }
+    ];
+
+    // คำนวณ index หมุนเวียนตามวันเกิดและวันจร
+    var vipIdx = (tY * 7 + tM * 11 + tD * 3 + d * 5 + m * 13 + yBE) % VIP_POOLS.length;
+    var curVip = VIP_POOLS[vipIdx];
 
     if (AppState.currentBaziMode === 'free') {
         if (freeResBox) {
@@ -8641,10 +8701,10 @@ window.calcBaziEngine = function() {
                         ดิถีธาตุกำเนิดของคุณ: ${bazi.dayMaster.name} (ธาตุ${bazi.dayMaster.elem}${bazi.dayMaster.pol})
                     </h4>
                     <p style="font-size: 0.95rem; color: #f8fafc; line-height: 1.85; margin-bottom: 16px;">
-                        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> เปรียบประดุจ <b>${bazi.dayMaster.nature}</b> ท่านเป็นผู้ที่มีปฏิภาณไหวพริบ มีความเด็ดเดี่ยว หนักแน่น ยึดมั่นในความซื่อสัตย์ มีพลังในการขับเคลื่อนเป้าหมายสูง ปรับตัวเข้ากับกระแสสังคมได้เป็นอย่างดี และมีภาวะผู้นำในตัวเองโดยธรรมชาติ
+                        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> เปรียบประดุจ <b>${bazi.dayMaster.nature}</b> ${curFree.nature}
                     </p>
                     <div style="background: rgba(255,255,255,0.04); border-left: 3px solid #ffd700; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.75;">
-                        ✨ <b>คำแนะนำสมดุล 5 ธาตุ:</b> ควรเสริมสร้างความสมดุลด้วยการบริหารจัดการพลังงานให้เหมาะสม หลีกเลี่ยงความใจร้อน และสร้างความสัมพันธ์ที่เกื้อกูลกับคนรอบข้างเพื่อเปิดรับโชคลาภอย่างต่อเนื่อง
+                        ✨ <b>คำแนะนำสมดุล 5 ธาตุ:</b> ${curFree.balance}
                     </div>
                 </div>
             `;
@@ -8687,35 +8747,38 @@ window.calcBaziEngine = function() {
                     </p>
                 </div>
 
-                <!-- 5 มิติชะตาชีวิต VIP เต็มหน้าต่าง -->
+                <!-- 5 มิติชะตาชีวิต VIP เต็มหน้าต่าง (อัปเดตตามวันเกิดและวันจร) -->
                 <div style="background: rgba(10, 16, 32, 0.95); border: 1px solid rgba(234,179,8,0.4); border-radius: 16px; padding: 22px; margin-bottom: 16px; width: 100%; box-sizing: border-box;">
-                    <h4 style="color:#ffd700; margin-bottom: 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-crown" style="color:#ffd700;"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis)
-                    </h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+                        <h4 style="color:#ffd700; font-size: 1.1rem; margin:0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-crown" style="color:#ffd700;"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP)
+                        </h4>
+                        <span style="font-size:0.8rem; background:rgba(255,215,0,0.15); color:#ffd700; padding:3px 10px; border-radius:12px;">อิงวันจร: ${tD}/${tM}/${tY}</span>
+                    </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 0.88rem; line-height: 1.8;">
                         <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #ffd700;">
                             <strong style="color:#ffd700; font-size:0.92rem;">1. วาสนาการเงิน & ขุมทรัพย์ (เจียไช่/เพียนไช่):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">กระแสเงินสดหมุนเวียนมาจากทักษะเฉพาะตัวและความเป็นผู้นำ มีจังหวะรับทรัพย์ก้อนโตจากการขยายตัวของเทคโนโลยีและสินทรัพย์ระยะยาว</p>
+                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.money}</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #64b5f6;">
                             <strong style="color:#64b5f6; font-size:0.92rem;">2. การงาน & บารมี (เจิ้งกวาน/ชีซา):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">โดดเด่นในสายงานบริหาร การคุมคน ธุรกิจส่วนตัว และงานดิจิทัล ยิ่งสร้างสรรค์ผลงานที่เป็นเอกลักษณ์ ยิ่งได้รับการยอมรับในวงกว้าง</p>
+                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.work}</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #f48fb1;">
                             <strong style="color:#f48fb1; font-size:0.92rem;">3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">คู่ครองมีสติปัญญาเฉียบคม คอยเป็นคู่คิดช่วยวางแผนการเงิน เกื้อหนุนธาตุชะตาให้มั่นคงและเป็นปึกแผ่น</p>
+                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.spouse}</p>
                         </div>
                         <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #81c784;">
                             <strong style="color:#81c784; font-size:0.92rem;">4. ฮวงจุ้ยเสริมพลังชี่ประจำตัว:</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">จัดโต๊ะทำงานหันรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ ช่วยกระจายพลังงานลบและดึงดูดกระแสโชคลาภตลอดทั้งปี</p>
+                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.fengshui}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- มหาวัฏจักร 10 ปี เต็มความกว้าง -->
+                <!-- มหาวัฏจักร 10 ปี -->
                 <div style="background: rgba(234,179,8,0.1); border: 1.5px dashed #ffd700; padding: 18px 20px; border-radius: 14px; font-size: 0.9rem; color: #fff; line-height: 1.85; width: 100%; box-sizing: border-box;">
                     <strong style="color:#ffd700; font-size: 0.95rem;"><i class="fa-solid fa-chart-line"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</strong><br>
-                    วงจรชีวิตในทศวรรษนี้กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณเริ่มส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น
+                    ${curVip.cycle}
                 </div>
             `;
         }
