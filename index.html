@@ -643,18 +643,18 @@ footer {
       <li><a onclick="openFeatureModal('auspicious')">ฤกษ์มงคล</a></li>
       <li><a onclick="openFeatureModal('dream')">ทำนายฝัน</a></li>
     </ul>
-    <div class="nav-actions">
-      <span class="vip-active-badge" id="nav-vip-badge" style="display: none;"><i class="fa-solid fa-crown"></i> สมาชิก VIP</span>
-     <button class="btn-user-login" id="main-auth-btn" type="button" onclick="openAuthModal()">
+   <div class="nav-actions" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important;">
+        <span class="vip-active-badge" id="nav-vip-badge" style="display: none;"><i class="fa-solid fa-crown"></i> สมาชิก VIP</span>
+        <button class="btn-user-login" id="main-auth-btn" type="button" onclick="openAuthModal()">
           <i class="fa-solid fa-user"></i> เข้าสู่ระบบ / สมัครสมาชิก
         </button>
         <button class="btn-user-login" id="logout-btn" type="button" onclick="handleLogout()" style="display: none; background: #333; margin-left: 6px;">
           <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
         </button>
-        <button type="button" onclick="if((typeof AppState!='undefined'&&AppState.isVipUser)||localStorage.getItem('ks_vip_active')==='true'){alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทันที');}else{if(typeof openVipUpgradeModal==='function'){openVipUpgradeModal();}else{alert('กรุณาติดต่อผู้ดูแลระบบเพื่อสมัคร VIP');}}">
+        <button class="btn-vip" type="button" onclick="if((typeof AppState!='undefined'&&AppState.isVipUser)||localStorage.getItem('ks_vip_active')==='true'){alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทันที');}else{if(typeof openVipUpgradeModal==='function'){openVipUpgradeModal();}else{alert('กรุณาติดต่อผู้ดูแลระบบเพื่อสมัคร VIP');}}">
           <i class="fa-solid fa-crown"></i> สมัคร VIP
         </button>
-        <a href="https://drive.google.com/uc?export=download&id=13XqP03Sm7Y3gzI4qOzwWGTUw6OIq4fR9" target="_blank" class="btn-download">
+        <a href="https://drive.google.com/uc?export=download&id=13XqP03Sm7Y3gzI4qOzwWGTUw6OIq4fR9" target="_blank" class="btn-download" style="display: inline-flex !important; align-items: center !important; gap: 6px !important; white-space: nowrap !important;">
           <i class="fa-solid fa-download"></i> ดาวน์โหลดแอป
         </a>
       </div>
