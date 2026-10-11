@@ -6625,39 +6625,23 @@ function calcMahataksaReal() {
   if (prayEl) prayEl.textContent = majorPlanet.pray;
 }
 // ==========================================
-// ฟังก์ชันคำนวณดวงฉัตรสามชั้น โบราณจารย์
+// ฟังก์ชันคำนวณดวงฉัตรสามชั้น โบราณจารย์ (ฉบับสมบูรณ์)
 // ==========================================
-function calcChatraReal() {
-  // ตรวจสอบว่ากรอกวันเกิดหน้าแรกแล้วหรือยัง
-  if (typeof AppState === 'undefined' || !AppState.birthDay || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
-    if (document.getElementById('chatraTop')) document.getElementById('chatraTop').textContent = 'กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก';
-    if (document.getElementById('chatraMiddle')) document.getElementById('chatraMiddle').textContent = 'กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก';
-    if (document.getElementById('chatraBase')) document.getElementById('chatraBase').textContent = 'กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก';
-    return;
-  }
+function calcChatra() {
+  // 1. ดึงข้อมูลวันเดือนปีเกิดและลัคนา
+  const dVal = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 30) || 30;
+  const mVal = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 4) || 4;
+  const yBEVal = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
+  const hVal = parseInt(document.getElementById('birthHour24')?.value, 10) || 0;
 
-  const bDayInput = document.getElementById('birthDay') || document.getElementById('numBirthDay');
-  const bDateInput = document.getElementById('birthDate') || document.querySelector('input[type="date"]');
+  // หาตัวเลขวันเกิดในสัปดาห์ (1=อาทิตย์, 2=จันทร์, ..., 7=เสาร์)
+  let bDate = new Date(yBEVal - 543, mVal - 1, dVal);
+  if (hVal < 6) bDate.setDate(bDate.getDate() - 1); // ก่อน 6 โมงเช้าคิดเป็นวันก่อนหน้า
+  let dayNum = bDate.getDay() + 1; // 1-7
 
-  let dayNum = 1;
-  let bYear = AppState.birthBE ? (AppState.birthBE - 543) : 1979;
+  const bYear = yBEVal - 543;
 
-  if (bDayInput && bDayInput.value) {
-    const val = String(bDayInput.value).toLowerCase();
-    if (val.includes("อาทิตย์") || val.includes("sun") || val === "1") dayNum = 1;
-    else if (val.includes("จันทร์") || val.includes("mon") || val === "2") dayNum = 2;
-    else if (val.includes("อังคาร") || val.includes("tue") || val === "3") dayNum = 3;
-    else if (val.includes("พุธ") || val.includes("wed") || val === "4") dayNum = 4;
-    else if (val.includes("พฤหัส") || val.includes("thu") || val === "5") dayNum = 5;
-    else if (val.includes("ศุกร์") || val.includes("fri") || val === "6") dayNum = 6;
-    else if (val.includes("เสาร์") || val.includes("sat") || val === "7") dayNum = 7;
-  }
-
-  if (bDateInput && bDateInput.value) {
-    bYear = new Date(bDateInput.value).getFullYear();
-  }
-
-  // คำนวณฐานฉัตรตามกำลังวันและรอบชะตา
+  // 2. ฐานข้อมูลคำทำนายฉัตรสามชั้น
   const CHATRA_DATA = {
     top: [
       "เกียรติยศชื่อเสียงโดดเด่น มีจิตวิญญาณแห่งความเป็นผู้นำ วาสนาชะตาชีวิตมักได้รับการยกย่องและมีบารมีเป็นที่พึ่งพา",
@@ -6676,17 +6660,22 @@ function calcChatraReal() {
     ]
   };
 
-  const topIdx = (dayNum + bYear) % CHATRA_DATA.top.length;
-  const midIdx = (dayNum * 2 + bYear) % CHATRA_DATA.mid.length;
-  const baseIdx = (dayNum * 3 + bYear) % CHATRA_DATA.base.length;
+  const topIdx = (dayNum + bYear + dVal) % CHATRA_DATA.top.length;
+  const midIdx = (dayNum * 2 + bYear + mVal) % CHATRA_DATA.mid.length;
+  const baseIdx = (dayNum * 3 + bYear + dVal + mVal) % CHATRA_DATA.base.length;
 
   const topEl = document.getElementById('chatraTop');
-  const midEl = document.getElementById('chatraMid');
+  const midEl = document.getElementById('chatraMid') || document.getElementById('chatraMiddle');
   const baseEl = document.getElementById('chatraBase');
 
   if (topEl) topEl.textContent = CHATRA_DATA.top[topIdx];
   if (midEl) midEl.textContent = CHATRA_DATA.mid[midIdx];
   if (baseEl) baseEl.textContent = CHATRA_DATA.base[baseIdx];
+}
+
+// ทำ alias เผื่อมีจุดอื่นในโค้ดเรียกชื่อเก่า
+function calcChatraReal() {
+  calcChatra();
 }
 // ==========================================
 // ฟังก์ชันคำนวณฤกษ์มงคลเฉพาะบุคคลแบบไดนามิก
