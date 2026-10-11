@@ -2767,6 +2767,108 @@ if (typeof applyAgeChange === 'function') {
       updateDailyHoroscopeView();
     }
 
+// ฐานข้อมูลประเภทฤกษ์มงคลตามกิจกรรม
+    const AUSPICIOUS_TYPES = {
+      business: {
+        title: "ฤกษ์เปิดร้าน / เริ่มต้นธุรกิจใหม่",
+        desc: "เน้นความเจริญรุ่งเรือง ค้าขายคล่องตัว การเงินหมุนเวียนดี มีลูกค้าอุปถัมภ์ต่อเนื่อง",
+        luckyDaysText: "วันพฤหัสบดี , วันศุกร์ , วันจันทร์",
+        targetDayNums: [4, 5, 1], // 4=พฤหัสบดี, 5=ศุกร์, 1=จันทร์
+        time: "08:29 - 09:39 น. (ภูมิปาโลฤกษ์) หรือ 10:19 - 11:29 น. (มหัทธโนฤกษ์)",
+        blessing: "เสริมทรัพย์มหาศาล เมตตามหานิยม ค้าขายคล่องตัว"
+      },
+      car: {
+        title: "ฤกษ์ออกรถใหม่ / ยานพาหนะ",
+        desc: "เน้นความแคล้วคลาดปลอดภัย เดินทางราบรื่น มีเสน่ห์เมตตามหานิยมและเสริมโชคลาภ",
+        luckyDaysText: "วันจันทร์ , วันศุกร์ , วันเสาร์",
+        targetDayNums: [1, 5, 6], // 1=จันทร์, 5=ศุกร์, 6=เสาร์
+        time: "09:19 - 10:09 น. (เทวีฤกษ์) หรือ 13:39 - 14:49 น. (ราชาฤกษ์)",
+        blessing: "ยานพาหนะนำโชค เมตตามหานิยม นำพาความสำเร็จ"
+      },
+      house: {
+        title: "ฤกษ์ขึ้นบ้านใหม่ / ลงเสาเอก",
+        desc: "เน้นความร่มเย็นเป็นสุข ปักหลักฐานมั่นคง ปราศจากโรคภัยไข้เจ็บ",
+        luckyDaysText: "วันพฤหัสบดี , วันอาทิตย์ , วันจันทร์",
+        targetDayNums: [4, 0, 1], // 4=พฤหัสบดี, 0=อาทิตย์, 1=จันทร์
+        time: "09:09 - 10:19 น. (ภูมิปาโลฤกษ์) หรือ 11:09 - 12:19 น. (มหัทธโนฤกษ์)",
+        blessing: "เคหสถานมั่นคง มั่งคั่ง ร่มเย็นเป็นสุข"
+      },
+      deal: {
+        title: "ฤกษ์เจรจาธุรกิจ / เซ็นสัญญาสำคัญ",
+        desc: "เน้นความเป็นต่อในการเจรจา ปิดดีลสำเร็จลุล่วง ได้รับความเมตตาเอ็นดูจากคู่ค้า",
+        luckyDaysText: "วันพุธ , วันพฤหัสบดี , วันศุกร์",
+        targetDayNums: [3, 4, 5], // 3=พุธ, 4=พฤหัสบดี, 5=ศุกร์
+        time: "09:39 - 10:49 น. (ราชาฤกษ์) หรือ 14:19 - 15:29 น. (มหัทธโนฤกษ์)",
+        blessing: "ปิดดีลสำเร็จ กำไรงดงาม คู่ค้าเกื้อหนุน"
+      }
+    };
+
+    function calcAuspiciousDates() {
+      const typeEl = document.getElementById('auspiciousType');
+      const type = typeEl ? typeEl.value : 'business';
+      const container = document.getElementById('auspiciousListContainer');
+      if (!container) return;
+
+      const cfg = AUSPICIOUS_TYPES[type] || AUSPICIOUS_TYPES.business;
+
+      const dayNames = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+      const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+
+      // อิงวันเริ่มต้นจากฟอร์มวันจร (ถ้ามี) หรือวันปัจจุบัน
+      const tDEl = document.getElementById('transitDay');
+      const tMEl = document.getElementById('transitMonth');
+      const tYEl = document.getElementById('transitYearBE');
+
+      let startDate;
+      if (tDEl && tMEl && tYEl && tDEl.value && tMEl.value && tYEl.value) {
+        const dVal = parseInt(tDEl.value, 10);
+        const mVal = parseInt(tMEl.value, 10) - 1;
+        const yVal = parseInt(tYEl.value, 10) - 543;
+        startDate = new Date(yVal, mVal, dVal);
+      } else {
+        startDate = new Date();
+      }
+
+      let foundDates = [];
+      let checkDate = new Date(startDate.getTime());
+
+      // วนลูปหาวันที่ 3 วันถัดไปที่ตรงกับวันมงคลจริงในปฏิทิน
+      while (foundDates.length < 3) {
+        checkDate.setDate(checkDate.getDate() + 1);
+        let dayOfWeek = checkDate.getDay();
+        if (cfg.targetDayNums.includes(dayOfWeek)) {
+          let d = checkDate.getDate();
+          let mStr = thMonths[checkDate.getMonth()];
+          let yBE = checkDate.getFullYear() + 543;
+          let wName = dayNames[dayOfWeek];
+          foundDates.push({
+            fullDateStr: `${d} ${mStr} ${yBE} (${wName})`,
+            dayName: wName
+          });
+        }
+      }
+
+      container.innerHTML = `
+        <div style="background: rgba(20,28,55,0.7); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 18px; margin-bottom: 12px;">
+          <h4 style="color:#ffd700; font-size:1.05rem; margin-bottom:6px;"><i class="fa-solid fa-sparkles"></i> ${cfg.title}</h4>
+          <p style="font-size:0.86rem; color:#cfd8dc; margin-bottom:8px;">${cfg.desc}</p>
+          <div style="font-size:0.86rem; color:#81c784; margin-bottom:4px;"><strong>วันมงคลที่แนะนำ:</strong> ${cfg.luckyDaysText}</div>
+          <div style="font-size:0.86rem; color:#64b5f6;"><strong>ช่วงเวลาฤกษ์สะดวก:</strong> ${cfg.time}</div>
+        </div>
+
+        <div style="background: rgba(14,20,38,0.9); border: 1px dashed var(--gold-main); border-radius: 14px; padding: 16px;">
+          <strong style="color:var(--gold-bright); font-size:0.92rem; display:block; margin-bottom:10px;">
+            <i class="fa-regular fa-calendar-check"></i> วันธงชัยใกล้ที่สุดสำหรับคุณ:
+          </strong>
+          <ul style="list-style:none; padding-left:0; margin:0; display:flex; flex-direction:column; gap:8px;">
+            <li style="font-size:0.86rem; color:#fff;">• <strong>${foundDates[0].fullDateStr}</strong> - เหมาะแก่การเริ่มต้นพิธีการ</li>
+            <li style="font-size:0.86rem; color:#fff;">• <strong>${foundDates[1].fullDateStr}</strong> - ${cfg.blessing}</li>
+            <li style="font-size:0.86rem; color:#fff;">• <strong>${foundDates[2].fullDateStr}</strong> - ฤกษ์มั่นคงถาวร ปราศจากอุปสรรค</li>
+          </ul>
+        </div>
+      `;
+    }
+
     const DREAM_DATABASE = {
     "งู": { title: "ฝันเห็นงู / งูรัด / งูกัด", desc: "มีเกณฑ์จะได้พบเนื้อคู่หรือคนถูกใจเข้ามาพัวพัน หากมีคู่อยู่แล้วระวังเสน่ห์มือที่สาม หรือจะมีโชคลาภเงินทองแบบไม่คาดฝัน", d: "9", d2: "59, 95, 69", d3: "569, 599, 698" },
     "พระ": { title: "ฝันเห็นพระพุทธรูป / พระสงฆ์ / พระเครื่อง", desc: "เป็นมงคลแก่ชีวิตยิ่งนัก เคราะห์กรรมที่หนักจะเบาบางลง ผู้ใหญ่ให้การอุปถัมภ์ การงานเจริญก้าวหน้า แคล้วคลาดปลอดภัย", d: "8", d2: "88, 89, 28", d3: "889, 289, 188" },
@@ -6609,72 +6711,44 @@ function calcAuspiciousDates() {
 
   const type = typeSelect ? typeSelect.value : 'business';
 
-// ฟังก์ชันคำนวณฤกษ์มงคลเฉพาะบุคคล (คำนวณวันและวันที่ตรงปฏิทินจริง 100%)
-function calcAuspiciousDates() {
-  const typeEl = document.getElementById('auspiciousType');
-  const type = typeEl ? typeEl.value : 'business';
-  const container = document.getElementById('auspiciousListContainer');
-  if (!container) return;
-
+  // ฐานข้อมูลช่วงเวลาและดาวฤกษ์เด่นตามกิจกรรม
   const AUSPICIOUS_DATA = {
     business: {
       title: "ฤกษ์เปิดร้าน / เริ่มต้นธุรกิจใหม่",
-      daysText: "วันพฤหัสบดี , วันศุกร์ , วันจันทร์",
-      targetDays: [4, 5, 1], // 4=พฤหัสบดี, 5=ศุกร์, 1=จันทร์
+      days: ["วันพฤหัสบดี", "วันศุกร์", "วันจันทร์"],
       times: ["08:29 - 09:39 น. (ภูมิปาโลฤกษ์)", "10:19 - 11:29 น. (มหัทธโนฤกษ์)"],
-      desc: "เน้นความเจริญรุ่งเรือง ค้าขายคล่องตัว การเงินหมุนเวียนดี มีลูกค้าอุปถัมภ์ต่อเนื่อง",
-      blessing: "เสริมทรัพย์มหาศาล เมตตามหานิยม ค้าขายคล่องตัว"
+      desc: "เน้นความเจริญรุ่งเรือง ค้าขายคล่องตัว การเงินหมุนเวียนดี มีลูกค้าอุปถัมภ์ต่อเนื่อง"
     },
     car: {
       title: "ฤกษ์ออกรถใหม่ / ยานพาหนะ",
-      daysText: "วันจันทร์ , วันศุกร์ , วันเสาร์",
-      targetDays: [1, 5, 6], // 1=จันทร์, 5=ศุกร์, 6=เสาร์
+      days: ["วันจันทร์", "วันศุกร์", "วันเสาร์"],
       times: ["09:19 - 10:09 น. (เทวีฤกษ์)", "13:39 - 14:49 น. (ราชาฤกษ์)"],
-      desc: "เน้นความแคล้วคลาดปลอดภัย เดินทางราบรื่น มีเสน่ห์เมตตามหานิยมและเสริมโชคลาภ",
-      blessing: "ยานพาหนะนำโชค เมตตามหานิยม นำพาความสำเร็จ"
+      desc: "เน้นความแคล้วคลาดปลอดภัย เดินทางราบรื่น มีเสน่ห์เมตตามหานิยมและเสริมโชคลาภ"
     },
     house: {
       title: "ฤกษ์ขึ้นบ้านใหม่ / ลงเสาเอก",
-      daysText: "วันพฤหัสบดี , วันอาทิตย์ , วันพุธ",
-      targetDays: [4, 0, 3], // 4=พฤหัสบดี, 0=อาทิตย์, 3=พุธ
+      days: ["วันพฤหัสบดี", "วันอาทิตย์", "วันพุธ"],
       times: ["06:39 - 07:49 น. (มหัทธโนฤกษ์)", "09:09 - 10:19 น. (ภูมิปาโลฤกษ์)"],
-      desc: "เสริมความร่มเย็นเป็นสุข ความมั่นคงของครอบครัวและทรัพย์สินงอกเงยถาวร",
-      blessing: "เคหสถานมั่นคง ร่มเย็นเป็นสุข"
+      desc: "เสริมความร่มเย็นเป็นสุข ความมั่นคงของครอบครัวและทรัพย์สินงอกเงยถาวร"
     },
     deal: {
       title: "ฤกษ์เจรจาธุรกิจ / เซ็นสัญญาสำคัญ",
-      daysText: "วันพุธ , วันพฤหัสบดี , วันศุกร์",
-      targetDays: [3, 4, 5], // 3=พุธ, 4=พฤหัสบดี, 5=ศุกร์
+      days: ["วันพุธ", "วันพฤหัสบดี", "วันศุกร์"],
       times: ["09:59 - 10:49 น. (ราชาฤกษ์)", "14:19 - 15:29 น. (มหัทธโนฤกษ์)"],
-      desc: "วาจาศักดิ์สิทธิ์ คู่ค้าไว้วางใจ การเจรจาราบรื่นไร้อุปสรรค ได้ผลประโยชน์ลงตัว",
-      blessing: "ปิดดีลสำเร็จ กำไรงดงาม คู่ค้าเกื้อหนุน"
+      desc: "วาจาศักดิ์สิทธิ์ คู่ค้าไว้วางใจ การเจรจาราบรื่นไร้อุปสรรค ได้ผลประโยชน์ลงตัว"
     }
   };
 
   const item = AUSPICIOUS_DATA[type] || AUSPICIOUS_DATA.business;
-  const dayNames = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
-  const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
 
-  // วันเริ่มต้นค้นหา (นับจากวันพรุ่งนี้เป็นต้นไป)
+  // คำนวณวันที่มงคลใกล้เคียงสำหรับเดือนปัจจุบัน
   const today = new Date();
-  let foundDates = [];
-  let checkDate = new Date(today);
-  checkDate.setDate(checkDate.getDate() + 1);
+  const day1 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 3);
+  const day2 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
+  const day3 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 12);
 
-  // ค้นหาวันที่ในปฏิทินจริงที่ตรงกับ targetDays ให้ครบ 3 วัน
-  while (foundDates.length < 3) {
-    let dayOfWeek = checkDate.getDay();
-    if (item.targetDays.includes(dayOfWeek)) {
-      let d = checkDate.getDate();
-      let mStr = thMonths[checkDate.getMonth()];
-      let yBE = checkDate.getFullYear() + 543;
-      let wName = dayNames[dayOfWeek];
-      foundDates.push({
-        fullText: `${d} ${mStr} ${yBE} (${wName})`
-      });
-    }
-    checkDate.setDate(checkDate.getDate() + 1);
-  }
+  const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  const fmtDate = (d) => `${d.getDate()} ${thMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
 
   container.innerHTML = `
     <div style="background: rgba(255,215,0,0.06); border: 1px solid var(--gold-main); border-radius: 10px; padding: 12px; margin-bottom: 8px;">
@@ -6683,7 +6757,7 @@ function calcAuspiciousDates() {
       </div>
       <div style="font-size: 0.85rem; color: #cfd8dc; margin-bottom: 8px;">${item.desc}</div>
       <div style="font-size: 0.82rem; color: #81c784;">
-        <strong>วันมงคลที่แนะนำ:</strong> ${item.daysText}
+        <strong>วันมงคลที่แนะนำ:</strong> ${item.days.join(" , ")}
       </div>
       <div style="font-size: 0.82rem; color: #64b5f6; margin-top: 3px;">
         <strong>ช่วงเวลาฤกษ์สะดวก:</strong> ${item.times.join(" หรือ ")}
@@ -6695,9 +6769,9 @@ function calcAuspiciousDates() {
         📅 วันธงชัยใกล้ที่สุดสำหรับคุณ:
       </div>
       <ul style="margin: 0; padding-left: 20px; font-size: 0.82rem; color: #fff; line-height: 1.8;">
-        <li><strong>${foundDates[0].fullText}</strong> - เหมาะแก่การเริ่มต้นพิธีการ</li>
-        <li><strong>${foundDates[1].fullText}</strong> - ${item.blessing}</li>
-        <li><strong>${foundDates[2].fullText}</strong> - ฤกษ์มั่นคงถาวร ปราศจากอุปสรรค</li>
+        <li><strong>${fmtDate(day1)}</strong> (${item.days[0]}) - เหมาะแก่การเริ่มต้นพิธีการ</li>
+        <li><strong>${fmtDate(day2)}</strong> (${item.days[1]}) - เสริมทรัพย์มหาศาล เมตตามหานิยม</li>
+        <li><strong>${fmtDate(day3)}</strong> (${item.days[2]}) - ฤกษ์มั่นคงถาวร ปราศจากอุปสรรค</li>
       </ul>
     </div>
   `;
