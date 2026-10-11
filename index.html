@@ -643,7 +643,7 @@ footer {
       <li><a onclick="openFeatureModal('auspicious')">ฤกษ์มงคล</a></li>
       <li><a onclick="openFeatureModal('dream')">ทำนายฝัน</a></li>
     </ul>
-  <div class="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;">
+ <div class="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;">
         <span class="vip-active-badge" id="nav-vip-badge" style="display: none;"><i class="fa-solid fa-crown"></i> สมาชิก VIP</span>
         <button class="btn-user-login" id="main-auth-btn" type="button" onclick="openAuthModal()">
           <i class="fa-solid fa-user"></i> เข้าสู่ระบบ
@@ -651,9 +651,9 @@ footer {
         <button class="btn-user-login" id="logout-btn" type="button" onclick="handleLogout()" style="display: none; background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 7px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
           <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
         </button>
-       <button type="button" onclick="if(typeof openAuthModal==='function'){openAuthModal('vip');}else{alert('กรุณาเข้าสู่ระบบ');}" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #ffd700, #ff9900); color: #000; border: none; padding: 7px 16px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 0 15px rgba(255, 180, 0, 0.4); white-space: nowrap;">
-  <i class="fa-solid fa-crown"></i> สมัครสมาชิก
-</button>
+        <button type="button" onclick="if((typeof AppState!='undefined'&&AppState.isVipUser)||localStorage.getItem('ks_vip_active')==='true'){alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทันที');}else{openVipUpgradeModal();}" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #ffd700, #ff9900); color: #000; border: none; padding: 7px 16px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 0 15px rgba(255, 180, 0, 0.4); white-space: nowrap;">
+          <i class="fa-solid fa-crown"></i> สมัครสมาชิก
+        </button>
         <a href="https://drive.google.com/uc?export=download&id=13XqP03Sm7Y3gzI4qOzwWGTUw6OIq4fR9" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; text-decoration: none; padding: 7px 16px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); white-space: nowrap;">
           <i class="fa-solid fa-download"></i> ดาวน์โหลดแอป
         </a>
