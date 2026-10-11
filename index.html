@@ -10287,7 +10287,17 @@ function openNewPremModal(type) {
     if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
   }
 }  
-
+// ดักจับจังหวะเปิดหน้าต่างดูดวงฉัตรสามชั้น ให้คำนวณและแสดงผลทันที
+document.addEventListener('click', function(e) {
+  // ตรวจจับปุ่มหรือการ์ดที่ใช้เปิดฉัตรสามชั้น
+  const btn = e.target.closest('[onclick*="chatra"], [data-modal*="chatra"], [onclick*="Chatra"]');
+  if (btn) {
+    setTimeout(function() {
+      if (typeof calcChatra === 'function') calcChatra();
+      if (typeof calcChatraReal === 'function') calcChatraReal();
+    }, 150);
+  }
+});
 </script>
 </body>
 </html>
