@@ -6564,7 +6564,173 @@ function renderDailyHoroscope(customSign) {
     if (colorEl) colorEl.textContent = data.luckyColor;
     if (dirEl) dirEl.textContent = data.luckyDir;
 }
+// ฟังก์ชันคำนวณมหาทักษาเทวดาเสวยอายุ & แทรก (คลังคำทำนายละเอียดจัดเต็ม)
+function calcMahataksa() {
+  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 1) || 1;
+  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 1) || 1;
+  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
+  const bH = parseInt(document.getElementById('birthHour24')?.value, 10) || 0;
 
+  // วันจร หรือปีปัจจุบัน (พ.ศ. 2569)
+  const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+
+  // คำนวณอายุย่าง
+  let ageYang = (tY - bY) + 1;
+  if (ageYang < 1) ageYang = 1;
+
+  // 1. คำนวณวันเกิดในสัปดาห์ (1=อาทิตย์, 2=จันทร์, ..., 7=เสาร์, 8=ราหูพุธกลางคืน)
+  let dateObj = new Date(bY - 543, bM - 1, bD);
+  if (bH < 6) dateObj.setDate(dateObj.getDate() - 1);
+  let dayOfWeek = dateObj.getDay() + 1; // 1-7
+  if (dayOfWeek === 4 && (bH >= 18 || bH < 6)) dayOfWeek = 8; // พุธกลางคืน (ราหู)
+
+  // กำลังดาวและรอบเสวยอายุตามคัมภีร์มหาทักษา
+  // ลำดับทักษา: อาทิตย์(6ปี) -> จันทร์(15ปี) -> อังคาร(8ปี) -> พุธ(17ปี) -> เสาร์(10ปี) -> พฤหัส(19ปี) -> ราหู(12ปี) -> ศุกร์(21ปี)
+  const PLANETS = [
+    { id: 1, name: "พระอาทิตย์ (๑)", years: 6, elem: "ธาตุไฟ", mantra: "โอม อะ อิจิตตัง นะโม พุทธายะ (สวด 6 จบ)" },
+    { id: 2, name: "พระจันทร์ (๒)", years: 15, elem: "ธาตุดิน", mantra: "อิ ระ ชา คะ ตะ ระ สา (สวด 15 จบ)" },
+    { id: 3, name: "พระอังคาร (๓)", years: 8, elem: "ธาตุลม", mantra: "ติ หัง จะ โต โร ถิ นัง (สวด 8 จบ)" },
+    { id: 4, name: "พระพุธ (๔)", years: 17, elem: "ธาตุน้ำ", mantra: "ปิ สัม ระ โล ปุ สัต พุท (สวด 17 จบ)" },
+    { id: 7, name: "พระเสาร์ (๗)", years: 10, elem: "ธาตุไฟ", mantra: "โส มา ณะ กะ ริ ถา โธ (สวด 10 จบ)" },
+    { id: 5, name: "พระพฤหัสบดี (๕)", years: 19, elem: "ธาตุดิน", mantra: "ภะ สัม สัม วิ สะ เท ภะ (สวด 19 จบ)" },
+    { id: 8, name: "พระราหู (๘)", years: 12, elem: "ธาตุลม", mantra: "คะ พุท ปัน ทู ธัม วะ คะ (สวด 12 จบ)" },
+    { id: 6, name: "พระศุกร์ (๖)", years: 21, elem: "ธาตุน้ำ", mantra: "วา โธ โน อะ มะ มะ วา (สวด 21 จบ)" }
+  ];
+
+  // หาจุดเริ่มต้นทักษาตามวันเกิด
+  let startIdx = 0;
+  if (dayOfWeek === 1) startIdx = 0;      // อาทิตย์
+  else if (dayOfWeek === 2) startIdx = 1; // จันทร์
+  else if (dayOfWeek === 3) startIdx = 2; // อังคาร
+  else if (dayOfWeek === 4) startIdx = 3; // พุธกลางวัน
+  else if (dayOfWeek === 7) startIdx = 4; // เสาร์
+  else if (dayOfWeek === 5) startIdx = 5; // พฤหัส
+  else if (dayOfWeek === 8) startIdx = 6; // ราหู
+  else if (dayOfWeek === 6) startIdx = 7; // ศุกร์
+
+  // คำนวณดาวเสวยอายุ (Major Planet)
+  let remainAge = ageYang;
+  let curMajorIdx = startIdx;
+  while (remainAge > PLANETS[curMajorIdx].years) {
+    remainAge -= PLANETS[curMajorIdx].years;
+    curMajorIdx = (curMajorIdx + 1) % PLANETS.length;
+  }
+  const majorPlanet = PLANETS[curMajorIdx];
+
+  // คำนวณดาวแทรก (Minor Planet)
+  let subIdx = curMajorIdx;
+  let subStep = Math.floor((remainAge / majorPlanet.years) * PLANETS.length);
+  subIdx = (curMajorIdx + subStep) % PLANETS.length;
+  const minorPlanet = PLANETS[subIdx];
+
+  // คลังคำทำนายเชิงลึกสำหรับดาวเสวยอายุ
+  const MAJOR_DETAILS = {
+    1: {
+      desc: "อยู่ในช่วงพระอาทิตย์เสวยอายุ มีเกียรติยศชื่อเสียงเด่นชัด มีความเป็นผู้นำสูง ผู้ใหญ่ให้การยอมรับ แต่ต้องระวังเรื่องทิฐิและความใจร้อน",
+      work: "หน้าที่การงานมีเกณฑ์เลื่อนขั้นปรับตำแหน่ง ได้รับผิดชอบงานที่มีเกียรติ",
+      money: "การเงินหมุนเวียนคล่องตัว มีช่องทางรายได้จากบารมีและตำแหน่งหน้าที่",
+      health: "ระวังเรื่องสายตา ความดันโลหิต หัวใจ และความร้อนในร่างกาย",
+      remedy: "ทำบุญเติมน้ำมันตะเกียง บริจาคหลอดไฟ หรือถวายสังฆทานในวันอาทิตย์"
+    },
+    2: {
+      desc: "อยู่ในช่วงพระจันทร์เสวยอายุ เปี่ยมด้วยเสน่ห์เมตตามหานิยม มีผู้ให้การช่วยเหลือเกื้อกูล อารมณ์นุ่มนวล แต่ต้องระวังความลังเลใจ",
+      work: "งานบริการ การเจรจา การประสานงาน และงานที่เกี่ยวกับผู้หญิงรุ่งเรืองมาก",
+      money: "การเงินหลั่งไหลเข้ามาเรื่อยๆ มีโชคลาภจากคนใกล้ชิดและครอบครัว",
+      health: "ระวังระบบทางเดินอาหาร ภูมิแพ้ และภาวะอารมณ์แปรปรวน",
+      remedy: "บริจาคน้ำดื่ม ทำบุญค่าน้ำวัด หรือถวายดอกมะลิสีขาวสดแด่พระพุทธรูป"
+    },
+    3: {
+      desc: "อยู่ในช่วงพระอังคารเสวยอายุ พลังแห่งความมุ่งมั่นและความกล้าหาญเต็มเปี่ยม มีพลังสู้งานหนัก ชนะการแข่งขัน แต่อย่าประมาทเรื่องโทสะ",
+      work: "โดดเด่นในงานที่ต้องใช้ความเด็ดเดี่ยว ลุยงาน แก้ปัญหาเฉพาะหน้า ปิดดีลไว",
+      money: "หาเงินเก่ง กล้าได้กล้าเสีย มีลาภผลจากการแข่งขัน แต่รายจ่ายก็ออกไว",
+      health: "ระวังอุบัติเหตุจากความเร่งรีบ ของมีคม รอยฟกช้ำ และความดัน",
+      remedy: "บริจาคโลหิต ทำบุญโรงพยาบาลทหารผ่านศึก หรือถวายผ้าไตรจีวร"
+    },
+    4: {
+      desc: "อยู่ในช่วงพระพุธเสวยอายุ วาทศิลป์ ปฏิภาณไหวพริบ และความคิดสร้างสรรค์โดดเด่น ค้าขายคล่องตัว เจรจาปิดการขายสำเร็จง่าย",
+      work: "งานสื่อสาร การตลาด นายหน้า ค้าขายออนไลน์ และเอกสารสัญญาสำเร็จงดงาม",
+      money: "กระแสเงินสดหมุนเวียนดีมาก มีรายได้เข้ามาจากหลายทิศทาง",
+      health: "ระวังระบบทางเดินหายใจ หลอดลม ปวดเมื่อยมือและนิ้วจากการทำงาน",
+      remedy: "ทำบุญหนังสือเรียน หนังสือธรรมะ หรือร่วมสนับสนุนทุนการศึกษาให้เด็กยากไร้"
+    },
+    7: {
+      desc: "อยู่ในช่วงพระเสาร์เสวยอายุ ช่วงเวลาแห่งความอดทนและการสร้างรากฐานใหญ่ ต้องเหน็ดเหนื่อยทุ่มเทก่อนจึงจะสำเร็จ มั่นคงดั่งหินผา",
+      work: "รับภาระงานชิ้นใหญ่ โครงการระยะยาว การก่อสร้าง หรืออสังหาริมทรัพย์สำเร็จมั่นคง",
+      money: "เน้นการเก็บออมและลงทุนในสินทรัพย์ถาวร ได้เงินก้อนใหญ่จากความอดทน",
+      health: "ระวังอาการปวดหลัง กระดูก เส้นเอ็น ข้อต่อ และความเครียดสะสม",
+      remedy: "ทำบุญบูรณะโบสถ์ วิหาร สร้างถนนเข้าวัด ช่วยเหลือผู้ยากไร้ ปล่อยปลาไหล"
+    },
+    5: {
+      desc: "อยู่ในช่วงพระพฤหัสบดีเสวยอายุ ช่วงเวลาทองแห่งปัญญาบารมี สิ่งศักดิ์สิทธิ์และครูบาอาจารย์คุ้มครอง มีผู้หลักผู้ใหญ่หนุนหลังอย่างมั่นคง",
+      work: "วิชาการ การศึกษา งานบริหาร ที่ปรึกษา ก้าวหน้าอย่างก้าวกระโดด ได้รับการยกย่อง",
+      money: "การเงินมั่นคง มีโชคลาภจากความรู้และการตัดสินใจที่ถูกต้อง",
+      health: "สุขภาพแข็งแรงดี ควรระวังเรื่องน้ำหนักตัวและอาการปวดเมื่อยช่วงสะโพก",
+      remedy: "ถวายสังฆทานยา บริจาคโรงพยาบาลสงฆ์ และหมั่นสวดมนต์นั่งสมาธิ"
+    },
+    8: {
+      desc: "อยู่ในช่วงพระราหูเสวยอายุ ชีวิตมีการเปลี่ยนแปลงครั้งใหญ่ ลางสังหรณ์แม่นยำ เด่นเรื่องเทคโนโลยี ออนไลน์ ต่างแดน หรือโชคลาภที่ไม่คาดคิด",
+      work: "งานต่างประเทศ วงการบันเทิง สื่อดิจิทัล และธุรกิจออนไลน์เติบโตรวดเร็ว",
+      money: "มีโชคลาภลอย หรือเงินก้อนใหญ่แบบไม่คาดฝัน ระวังอย่าหลงเชื่อคนง่าย",
+      health: "ระวังระบบประสาท นอนไม่หลับ อาการมึนศีรษะ และโรคภูมิแพ้",
+      remedy: "ไหว้พระราหูด้วยของดำ 8 อย่าง ทำบุญมูลนิธิคนตาบอด ช่วยเหลือผู้พิการ"
+    },
+    6: {
+      desc: "อยู่ในช่วงพระศุกร์เสวยอายุ ช่วงเวลาแห่งความสุขสำราญ เสน่ห์ รสนิยม ศิลปะ และความมั่งคั่ง โดดเด่นในสังคม การเงินเฟื่องฟู",
+      work: "งานด้านความงาม ออกแบบ ดนตรี อาหาร ธุรกิจบันเทิง และการค้าส่งเสริมดีมาก",
+      money: "เงินทองคล่องตัว มีกินมีใช้ไม่ขาดมือ ได้ของขวัญของมีค่าชิ้นงาม",
+      health: "ระวังสุขภาพเกี่ยวกับระบบขับถ่าย ไต และการตามใจปากเรื่องอาหารหวาน",
+      remedy: "ถวายแจกันดอกไม้สดสวยงาม น้ำอบไทย หรือทำบุญบริจาคเสื้อผ้าเครื่องนุ่งห่ม"
+    }
+  };
+
+  const majDetail = MAJOR_DETAILS[majorPlanet.id] || MAJOR_DETAILS[7];
+
+  // อัปเดตการแสดงผลในหน้าจอ
+  const ageDisp = document.getElementById('taksaAgeDisp');
+  const majorDisp = document.getElementById('taksaMajorDisp');
+  const minorDisp = document.getElementById('taksaMinorDisp');
+  const effectEl = document.getElementById('taksaEffect');
+  const prayEl = document.getElementById('taksaPray');
+
+  if (ageDisp) ageDisp.textContent = `${ageYang} ปี`;
+  if (majorDisp) majorDisp.textContent = `${majorPlanet.name} (${majorPlanet.elem})`;
+  if (minorDisp) minorDisp.textContent = `${minorPlanet.name} - แทรกหนุนชะตา`;
+
+  if (effectEl) {
+    // เปลี่ยนหัวข้อและเนื้อหาให้อ่านง่าย ชัดเจน ครบทุกมิติ
+    effectEl.innerHTML = `
+      <div style="margin-bottom: 12px; color: #fff; line-height: 1.8;">
+        <strong>ภาพรวมชะตาช่วงอายุย่าง ${ageYang} ปี:</strong> ${majDetail.desc} โดยมี <strong>${minorPlanet.name}</strong> เข้ามาแทรก ส่งผลให้เกิดความกระตือรือร้นและจังหวะโอกาสใหม่ๆ เข้ามาเสริมกำลัง
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.86rem;">
+        <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #64b5f6;">
+          <strong style="color: #64b5f6;"><i class="fa-solid fa-briefcase"></i> ด้านการงาน:</strong>
+          <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.work}</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #ffd700;">
+          <strong style="color: #ffd700;"><i class="fa-solid fa-coins"></i> ด้านการเงิน:</strong>
+          <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.money}</p>
+        </div>
+      </div>
+      <div style="margin-top: 10px; background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #ff7675; font-size: 0.86rem;">
+        <strong style="color: #ff7675;"><i class="fa-solid fa-shield-heart"></i> ด้านสุขภาพที่ควรระวัง:</strong>
+        <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.health}</p>
+      </div>
+    `;
+  }
+
+  if (prayEl) {
+    prayEl.innerHTML = `
+      <div style="color: #fff; line-height: 1.8;">
+        <strong>เคล็ดลับทำบุญเสริมบารมี:</strong> ${majDetail.remedy}<br>
+        <div style="margin-top: 8px; background: rgba(0,0,0,0.35); padding: 10px 14px; border-radius: 8px; border: 1px dashed #81c784;">
+          <strong style="color: #81c784;"><i class="fa-solid fa-hands-praying"></i> พระคาถาบูชาประจำดาวเสวยอายุ (${majorPlanet.name}):</strong><br>
+          <span style="color: #ffd700; font-size: 0.95rem; font-weight: 600;">"${majorPlanet.mantra}"</span>
+        </div>
+      </div>
+    `;
+  }
+}
 // ==========================================
 // ฟังก์ชันคำนวณฤกษ์มงคลเฉพาะบุคคลแบบไดนามิก
 // ==========================================
@@ -8291,172 +8457,88 @@ window.calcCompatibility = function() {
     resultBox.style.display = 'block';
 };
 
-// 3. มหาทักษาเทวดาเสวยอายุ & แทรก (คลังคำทำนายละเอียดจัดเต็ม)
+// 3. แก้ไข มหาทักษาเทวดาเสวยอายุ ให้อายุย่างเปลี่ยนตามปีเกิดจริง
 window.calcMahataksa = function() {
-  const bD = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 1) || 1;
-  const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 1) || 1;
-  const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
-  const bH = parseInt(document.getElementById('birthHour24')?.value, 10) || 0;
-  const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-
-  let ageYang = (tY - bY) + 1;
-  if (ageYang < 1) ageYang = 1;
-
-  let dateObj = new Date(bY - 543, bM - 1, bD);
-  if (bH < 6) dateObj.setDate(dateObj.getDate() - 1);
-  let dayOfWeek = dateObj.getDay() + 1;
-  if (dayOfWeek === 4 && (bH >= 18 || bH < 6)) dayOfWeek = 8;
-
-  const PLANETS = [
-    { id: 1, name: "พระอาทิตย์ (๑)", years: 6, elem: "ธาตุไฟ", mantra: "โอม อะ อิจิตตัง นะโม พุทธายะ (สวด 6 จบ)" },
-    { id: 2, name: "พระจันทร์ (๒)", years: 15, elem: "ธาตุดิน", mantra: "อิ ระ ชา คะ ตะ ระ สา (สวด 15 จบ)" },
-    { id: 3, name: "พระอังคาร (๓)", years: 8, elem: "ธาตุลม", mantra: "ติ หัง จะ โต โร ถิ นัง (สวด 8 จบ)" },
-    { id: 4, name: "พระพุธ (๔)", years: 17, elem: "ธาตุน้ำ", mantra: "ปิ สัม ระ โล ปุ สัต พุท (สวด 17 จบ)" },
-    { id: 7, name: "พระเสาร์ (๗)", years: 10, elem: "ธาตุไฟ", mantra: "โส มา ณะ กะ ริ ถา โธ (สวด 10 จบ)" },
-    { id: 5, name: "พระพฤหัสบดี (๕)", years: 19, elem: "ธาตุดิน", mantra: "ภะ สัม สัม วิ สะ เท ภะ (สวด 19 จบ)" },
-    { id: 8, name: "พระราหู (๘)", years: 12, elem: "ธาตุลม", mantra: "คะ พุท ปัน ทู ธัม วะ คะ (สวด 12 จบ)" },
-    { id: 6, name: "พระศุกร์ (๖)", years: 21, elem: "ธาตุน้ำ", mantra: "วา โธ โน อะ มะ มะ วา (สวด 21 จบ)" }
-  ];
-
-  let startIdx = 0;
-  if (dayOfWeek === 1) startIdx = 0;
-  else if (dayOfWeek === 2) startIdx = 1;
-  else if (dayOfWeek === 3) startIdx = 2;
-  else if (dayOfWeek === 4) startIdx = 3;
-  else if (dayOfWeek === 7) startIdx = 4;
-  else if (dayOfWeek === 5) startIdx = 5;
-  else if (dayOfWeek === 8) startIdx = 6;
-  else if (dayOfWeek === 6) startIdx = 7;
-
-  let remainAge = ageYang;
-  let curMajorIdx = startIdx;
-  while (remainAge > PLANETS[curMajorIdx].years) {
-    remainAge -= PLANETS[curMajorIdx].years;
-    curMajorIdx = (curMajorIdx + 1) % PLANETS.length;
-  }
-  const majorPlanet = PLANETS[curMajorIdx];
-
-  let subStep = Math.floor((remainAge / majorPlanet.years) * PLANETS.length);
-  let subIdx = (curMajorIdx + subStep) % PLANETS.length;
-  const minorPlanet = PLANETS[subIdx];
-
-  const MAJOR_DETAILS = {
-    1: {
-      desc: "อยู่ในช่วงพระอาทิตย์เสวยอายุ มีเกียรติยศชื่อเสียงเด่นชัด มีความเป็นผู้นำสูง ผู้ใหญ่ให้การยอมรับ แต่ต้องระวังเรื่องทิฐิและความใจร้อน",
-      work: "หน้าที่การงานมีเกณฑ์เลื่อนขั้นปรับตำแหน่ง ได้รับผิดชอบงานที่มีเกียรติ",
-      money: "การเงินหมุนเวียนคล่องตัว มีช่องทางรายได้จากบารมีและตำแหน่งหน้าที่",
-      health: "ระวังเรื่องสายตา ความดันโลหิต หัวใจ และความร้อนในร่างกาย",
-      remedy: "ทำบุญเติมน้ำมันตะเกียง บริจาคหลอดไฟ หรือถวายสังฆทานในวันอาทิตย์"
-    },
-    2: {
-      desc: "อยู่ในช่วงพระจันทร์เสวยอายุ เปี่ยมด้วยเสน่ห์เมตตามหานิยม มีผู้ให้การช่วยเหลือเกื้อกูล อารมณ์นุ่มนวล แต่ต้องระวังความลังเลใจ",
-      work: "งานบริการ การเจรจา การประสานงาน และงานที่เกี่ยวกับผู้หญิงรุ่งเรืองมาก",
-      money: "การเงินหลั่งไหลเข้ามาเรื่อยๆ มีโชคลาภจากคนใกล้ชิดและครอบครัว",
-      health: "ระวังระบบทางเดินอาหาร ภูมิแพ้ และภาวะอารมณ์แปรปรวน",
-      remedy: "บริจาคน้ำดื่ม ทำบุญค่าน้ำวัด หรือถวายดอกมะลิสีขาวสดแด่พระพุทธรูป"
-    },
-    3: {
-      desc: "อยู่ในช่วงพระอังคารเสวยอายุ พลังแห่งความมุ่งมั่นและความกล้าหาญเต็มเปี่ยม มีพลังสู้งานหนัก ชนะการแข่งขัน แต่อย่าประมาทเรื่องโทสะ",
-      work: "โดดเด่นในงานที่ต้องใช้ความเด็ดเดี่ยว ลุยงาน แก้ปัญหาเฉพาะหน้า ปิดดีลไว",
-      money: "หาเงินเก่ง กล้าได้กล้าเสีย มีลาภผลจากการแข่งขัน แต่รายจ่ายก็ออกไว",
-      health: "ระวังอุบัติเหตุจากความเร่งรีบ ของมีคม รอยฟกช้ำ และความดัน",
-      remedy: "บริจาคโลหิต ทำบุญโรงพยาบาลทหารผ่านศึก หรือถวายผ้าไตรจีวร"
-    },
-    4: {
-      desc: "อยู่ในช่วงพระพุธเสวยอายุ วาทศิลป์ ปฏิภาณไหวพริบ และความคิดสร้างสรรค์โดดเด่น ค้าขายคล่องตัว เจรจาปิดการขายสำเร็จง่าย",
-      work: "งานสื่อสาร การตลาด นายหน้า ค้าขายออนไลน์ และเอกสารสัญญาสำเร็จงดงาม",
-      money: "กระแสเงินสดหมุนเวียนดีมาก มีรายได้เข้ามาจากหลายทิศทาง",
-      health: "ระวังระบบทางเดินหายใจ หลอดลม ปวดเมื่อยมือและนิ้วจากการทำงาน",
-      remedy: "ทำบุญหนังสือเรียน หนังสือธรรมะ หรือร่วมสนับสนุนทุนการศึกษาให้เด็กยากไร้"
-    },
-    7: {
-      desc: "อยู่ในช่วงพระเสาร์เสวยอายุ ช่วงเวลาแห่งความอดทนและการสร้างรากฐานใหญ่ ต้องเหน็ดเหนื่อยทุ่มเทก่อนจึงจะสำเร็จ มั่นคงดั่งหินผา",
-      work: "รับภาระงานชิ้นใหญ่ โครงการระยะยาว การก่อสร้าง หรืออสังหาริมทรัพย์สำเร็จมั่นคง",
-      money: "เน้นการเก็บออมและลงทุนในสินทรัพย์ถาวร ได้เงินก้อนใหญ่จากความอดทน",
-      health: "ระวังอาการปวดหลัง กระดูก เส้นเอ็น ข้อต่อ และความเครียดสะสม",
-      remedy: "ทำบุญบูรณะโบสถ์ วิหาร สร้างถนนเข้าวัด ช่วยเหลือผู้ยากไร้ ปล่อยปลาไหล"
-    },
-    5: {
-      desc: "อยู่ในช่วงพระพฤหัสบดีเสวยอายุ ช่วงเวลาทองแห่งปัญญาบารมี สิ่งศักดิ์สิทธิ์และครูบาอาจารย์คุ้มครอง มีผู้หลักผู้ใหญ่หนุนหลังอย่างมั่นคง",
-      work: "วิชาการ การศึกษา งานบริหาร ที่ปรึกษา ก้าวหน้าอย่างก้าวกระโดด ได้รับการยกย่อง",
-      money: "การเงินมั่นคง มีโชคลาภจากความรู้และการตัดสินใจที่ถูกต้อง",
-      health: "สุขภาพแข็งแรงดี ควรระวังเรื่องน้ำหนักตัวและอาการปวดเมื่อยช่วงสะโพก",
-      remedy: "ถวายสังฆทานยา บริจาคโรงพยาบาลสงฆ์ และหมั่นสวดมนต์นั่งสมาธิ"
-    },
-    8: {
-      desc: "อยู่ในช่วงพระราหูเสวยอายุ ชีวิตมีการเปลี่ยนแปลงครั้งใหญ่ ลางสังหรณ์แม่นยำ เด่นเรื่องเทคโนโลยี ออนไลน์ ต่างแดน หรือโชคลาภที่ไม่คาดคิด",
-      work: "งานต่างประเทศ วงการบันเทิง สื่อดิจิทัล และธุรกิจออนไลน์เติบโตรวดเร็ว",
-      money: "มีโชคลาภลอย หรือเงินก้อนใหญ่แบบไม่คาดฝัน ระวังอย่าหลงเชื่อคนง่าย",
-      health: "ระวังระบบประสาท นอนไม่หลับ อาการมึนศีรษะ และโรคภูมิแพ้",
-      remedy: "ไหว้พระราหูด้วยของดำ 8 อย่าง ทำบุญมูลนิธิคนตาบอด ช่วยเหลือผู้พิการ"
-    },
-    6: {
-      desc: "อยู่ในช่วงพระศุกร์เสวยอายุ ช่วงเวลาแห่งความสุขสำราญ เสน่ห์ รสนิยม ศิลปะ และความมั่งคั่ง โดดเด่นในสังคม การเงินเฟื่องฟู",
-      work: "งานด้านความงาม ออกแบบ ดนตรี อาหาร ธุรกิจบันเทิง และการค้าส่งเสริมดีมาก",
-      money: "เงินทองคล่องตัว มีกินมีใช้ไม่ขาดมือ ได้ของขวัญของมีค่าชิ้นงาม",
-      health: "ระวังสุขภาพเกี่ยวกับระบบขับถ่าย ไต และการตามใจปากเรื่องอาหารหวาน",
-      remedy: "ถวายแจกันดอกไม้สดสวยงาม น้ำอบไทย หรือทำบุญบริจาคเสื้อผ้าเครื่องนุ่งห่ม"
+    var bYear = parseInt(document.getElementById('birthYearBE')?.value, 10);
+    if (!bYear) {
+        bYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
     }
-  };
+    var bMonth = parseInt(document.getElementById('birthMonth')?.value, 10) || 4;
+    var bDay = parseInt(document.getElementById('birthDay')?.value, 10) || 30;
 
-  const majDetail = MAJOR_DETAILS[majorPlanet.id] || MAJOR_DETAILS[2];
+    var currentYearBE = 2569;
+    var currentMonth = 10;
+    var currentDay = 5;
 
-  const ageDisp = document.getElementById('taksaAgeDisp');
-  const majorDisp = document.getElementById('taksaMajorDisp');
-  const minorDisp = document.getElementById('taksaMinorDisp');
-  const effectEl = document.getElementById('taksaEffect');
-  const prayEl = document.getElementById('taksaPray');
+    var ageFull = currentYearBE - bYear;
+    if (currentMonth < bMonth || (currentMonth === bMonth && currentDay < bDay)) {
+        ageFull--;
+    }
+    var age = ageFull + 1; // อายุย่างตามหลักมหาทักษาไทย
 
-  if (ageDisp) ageDisp.textContent = `${ageYang} ปี`;
-  if (majorDisp) majorDisp.textContent = `${majorPlanet.name} (${majorPlanet.elem})`;
-  if (minorDisp) minorDisp.textContent = `${minorPlanet.name} - แทรกหนุนชะตา`;
+    var ageDisp = document.getElementById('taksaAgeDisp');
+    if (ageDisp) ageDisp.textContent = age + ' ปี';
 
-  if (effectEl) {
-    if (effectEl.previousElementSibling && effectEl.previousElementSibling.tagName === 'STRONG') {
-      effectEl.previousElementSibling.innerHTML = '<i class="fa-solid fa-book-open"></i> บทวิเคราะห์ดวงชะตามหาทักษาเจาะลึก:';
+    var TAKSA_PLANETS = [
+        { name: "พระอาทิตย์ (๑)", power: 6, effect: "ช่วงเวลานี้มีความโดดเด่นด้านเกียรติยศชื่อเสียงและอำนาจบารมี ได้รับโอกาสก้าวหน้าจากผู้ใหญ่ แต่ให้ระวังเรื่องใจร้อนวู่วาม", pray: "สวดบูชาพระอาทิตย์ ทำบุญบริจาคโลหิต หรือถวายหลอดไฟเพื่อเปิดทางสว่าง" },
+        { name: "พระจันทร์ (๒)", power: 15, effect: "ช่วงเวลาแห่งความนุ่มนวล เมตตามหานิยม มีผู้ให้ความช่วยเหลืออุปถัมภ์ การค้าขายติดต่อสัมพันธ์ราบรื่น ระวังความลังเลใจ", pray: "สวดบูชาพระจันทร์ ทำบุญน้ำดื่ม ช่วยเหลือสตรีหรือเด็ก เสริมเสน่ห์เมตตา" },
+        { name: "พระอังคาร (๓)", power: 8, effect: "พลังขับเคลื่อนสูง ลุยงานหนักได้อย่างมีประสิทธิภาพ มีความมุ่งมั่นเอาชนะอุปสรรค ระวังเรื่องอุบัติเหตุและของมีคม", pray: "สวดบูชาพระอังคาร ทำบุญโรงพยาบาลสงฆ์ หรือร่วมสร้างสะพานถนนหนทาง" },
+        { name: "พระพุธ (๔)", power: 17, effect: "การเจรจาพารวย ไหวพริบสติปัญญาเฉียบคม งานด้านเอกสาร สื่อสาร และออนไลน์โดดเด่นมาก ได้โชคจากการพูด", pray: "สวดบูชาพระพุธ ทำบุญหนังสือธรรมะ อุปกรณ์การศึกษา เสริมวาจาศักดิ์สิทธิ์" },
+        { name: "พระเสาร์ (๗)", power: 10, effect: "ช่วงเวลาแห่งความอดทนและการสร้างฐานะระยะยาว รับภาระงานชิ้นใหญ่ เหนื่อยก่อนจึงจะสำเร็จ มั่นคงดั่งหินผา", pray: "สวดบูชาพระเสาร์ ทำบุญบูรณะวัดวาอาราม ช่วยเหลือคนยากไร้ ปล่อยปลาไหล" },
+        { name: "พระพฤหัสบดี (๕)", power: 19, effect: "พลังศุภเคราะห์ใหญ่ ปัญญาญาณโดดเด่น มีศีลธรรม ผู้ใหญ่เมตตาเอ็นดู มีความสำเร็จในหน้าที่การงานและการเงิน", pray: "สวดบูชาพระพฤหัสบดี สวดมนต์นั่งสมาธิ ถวายสังฆทานยา และร่วมพิมพ์ตำรา" },
+        { name: "พระราหู (๘)", power: 12, effect: "การเปลี่ยนแปลงครั้งใหญ่ หมุนเงินก้อนโต มีโชคลาภที่ไม่คาดฝัน งานเสี่ยงหรืองานออนไลน์โดดเด่น", pray: "ไหว้พระราหูด้วยของดำ 8 อย่าง ทำบุญบริจาคโลงศพ แผ่เมตตาอุทิศส่วนกุศล" },
+        { name: "พระศุกร์ (๖)", power: 21, effect: "ช่วงเวลาแห่งความสุขสำราญ เงินทองไหลมาเทมา มีโชคด้านความรักและศิลปะบันเทิง การลงทุนประสบผลสำเร็จงดงาม", pray: "สวดบูชาพระศุกร์ ทำบุญถวายดอกไม้ของหอม เสื้อผ้าเครื่องนุ่งห่มแก่ผู้ด้อยโอกาส" }
+    ];
+
+    var remAge = (age - 1) % 108;
+    var majorIdx = 0;
+    for (var i = 0; i < TAKSA_PLANETS.length; i++) {
+        if (remAge < TAKSA_PLANETS[i].power) {
+            majorIdx = i;
+            break;
+        }
+        remAge -= TAKSA_PLANETS[i].power;
+    }
+    var minorIdx = (majorIdx + 1) % TAKSA_PLANETS.length;
+
+    var majEl = document.getElementById('taksaMajorDisp');
+    var minEl = document.getElementById('taksaMinorDisp');
+    var effEl = document.getElementById('taksaEffect');
+    var prayEl = document.getElementById('taksaPray');
+
+    if (majEl) majEl.textContent = TAKSA_PLANETS[majorIdx].name + " - เสวยอายุ";
+    if (minEl) minEl.textContent = TAKSA_PLANETS[minorIdx].name + " - แทรกให้คุณ";
+    if (effEl) effEl.innerHTML = `ช่วงอายุย่าง ${age} ปี อยู่ในเกณฑ์ของ ${TAKSA_PLANETS[majorIdx].name}: ${TAKSA_PLANETS[majorIdx].effect}`;
+    if (prayEl) prayEl.innerHTML = TAKSA_PLANETS[majorIdx].pray;
+};
+window.calcMahataksaReal = window.calcMahataksa;
+
+// 4. แก้ไขให้เปิดฟังก์ชัน ดวงตามราศี, เลขศาสตร์, เบอร์โทร, บ้านเลขที่ ได้ 100%
+window.openFeatureModal = function(name) {
+    if (name === 'member' && !currentUser) {
+        alert('กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนดำเนินการครับ');
+        openAuthModal();
+        return;
     }
 
-    effectEl.innerHTML = `
-      <div style="margin-bottom: 12px; color: #fff; line-height: 1.8;">
-        <strong>ภาพรวมชะตาช่วงอายุย่าง ${ageYang} ปี:</strong> ${majDetail.desc} โดยมี <strong>${minorPlanet.name}</strong> เข้ามาแทรก ส่งผลให้เกิดความกระตือรือร้นและจังหวะโอกาสใหม่ๆ เข้ามาเสริมกำลัง
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.86rem;">
-        <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #64b5f6;">
-          <strong style="color: #64b5f6;"><i class="fa-solid fa-briefcase"></i> ด้านการงาน:</strong>
-          <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.work}</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #ffd700;">
-          <strong style="color: #ffd700;"><i class="fa-solid fa-coins"></i> ด้านการเงิน:</strong>
-          <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.money}</p>
-        </div>
-      </div>
-      <div style="margin-top: 10px; background: rgba(255,255,255,0.03); padding: 10px 12px; border-radius: 8px; border-left: 3px solid #ff7675; font-size: 0.86rem;">
-        <strong style="color: #ff7675;"><i class="fa-solid fa-shield-heart"></i> ด้านสุขภาพที่ควรระวัง:</strong>
-        <p style="margin: 4px 0 0; color: #cbd5e1;">${majDetail.health}</p>
-      </div>
-    `;
-  }
-
-  if (prayEl) {
-    prayEl.innerHTML = `
-      <div style="color: #fff; line-height: 1.8;">
-        <strong>เคล็ดลับทำบุญเสริมบารมี:</strong> ${majDetail.remedy}<br>
-        <div style="margin-top: 8px; background: rgba(0,0,0,0.35); padding: 10px 14px; border-radius: 8px; border: 1px dashed #81c784;">
-          <strong style="color: #81c784;"><i class="fa-solid fa-hands-praying"></i> พระคาถาบูชาประจำดาวเสวยอายุ (${majorPlanet.name}):</strong><br>
-          <span style="color: #ffd700; font-size: 0.95rem; font-weight: 600;">"${majorPlanet.mantra}"</span>
-        </div>
-     </div>
-   `;
-  }
-}
-
-if (name === 'tarot' && typeof renderTarotDeck === 'function') {
-    renderTarotDeck();
-  }
-  if (name === 'mahataksa') {
-    calcMahataksa();
-  }
-}
+    var modalId = 'modal-' + name;
+    var m = document.getElementById(modalId);
+    if (m) {
+        document.body.appendChild(m);
+        m.style.setProperty('display', 'flex', 'important');
+        m.style.setProperty('z-index', '2147483647', 'important');
+        
+        if (name === 'zodiac' && typeof render12ZodiacDetails === 'function') {
+            render12ZodiacDetails();
+        }
+        if (name === 'tarot' && typeof renderTarotDeck === 'function') {
+            renderTarotDeck();
+        }
+        if (name === 'mahataksa') {
+            window.calcMahataksa();
+        }
+    }
+};
 /* ========================================================
    ระบบปาจื่อ & มหาทักษา (เช็ควันเกิดจริง + ปาจื่อ VIP จัดเต็ม)
    ======================================================== */
