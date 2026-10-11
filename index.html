@@ -8445,18 +8445,18 @@ window.calcMahataksa = function() {
           <strong style="color: #81c784;"><i class="fa-solid fa-hands-praying"></i> พระคาถาบูชาประจำดาวเสวยอายุ (${majorPlanet.name}):</strong><br>
           <span style="color: #ffd700; font-size: 0.95rem; font-weight: 600;">"${majorPlanet.mantra}"</span>
         </div>
-      </div>
-    `;
+     </div>
+   `;
   }
-};
-        if (name === 'tarot' && typeof renderTarotDeck === 'function') {
-            renderTarotDeck();
-        }
-        if (name === 'mahataksa') {
-            window.calcMahataksa();
-        }
-    }
-};
+}
+
+if (name === 'tarot' && typeof renderTarotDeck === 'function') {
+    renderTarotDeck();
+  }
+  if (name === 'mahataksa') {
+    calcMahataksa();
+  }
+}
 /* ========================================================
    ระบบปาจื่อ & มหาทักษา (เช็ควันเกิดจริง + ปาจื่อ VIP จัดเต็ม)
    ======================================================== */
