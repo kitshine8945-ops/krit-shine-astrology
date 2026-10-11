@@ -8532,12 +8532,16 @@ window.openFeatureModal = function(name) {
         if (name === 'zodiac' && typeof render12ZodiacDetails === 'function') {
             render12ZodiacDetails();
         }
-        if (name === 'tarot' && typeof renderTarotDeck === 'function') {
-            renderTarotDeck();
-        }
-        if (name === 'mahataksa') {
-            window.calcMahataksa();
-        }
+       if (name === 'tarot' && typeof renderTarotDeck === 'function') {
+    renderTarotDeck();
+  }
+  if (name === 'mahataksa') {
+    window.calcMahataksa();
+  }
+  if (name === 'chatra') {
+    if (typeof calcChatra === 'function') calcChatra();
+    if (typeof calcChatra3 === 'function') calcChatra3();
+       }
     }
 };
 /* ========================================================
