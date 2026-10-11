@@ -5492,7 +5492,8 @@ if (tDaySelect) {
       tDaySelect.appendChild(opt);
   }
 }
-      const tMonthSelect = document.getElementById('transitMonth');
+const tMonthSelect = document.getElementById('transitMonth');
+      if (tMonthSelect) tMonthSelect.innerHTML = '';
       MONTH_NAMES.forEach((m, idx) => {
         let opt = document.createElement('option');
         opt.value = idx + 1; opt.textContent = m;
