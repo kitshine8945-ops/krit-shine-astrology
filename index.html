@@ -619,7 +619,33 @@ footer {
 
     /* เพิ่มโค้ดคำสั่งสำหรับพิมพ์รายงานตรงนี้ครับ */
      
-</style>
+/* ป้องกันหน้าเว็บกว้างล้นขอบจอและแก้ขอบดำ */
+html, body {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+header, .navbar {
+  width: 100% !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+  header button, 
+  header a,
+  .navbar button,
+  .navbar a {
+    font-size: 0.72rem !important;
+    padding: 5px 8px !important;
+    margin-left: 3px !important;
+    white-space: nowrap !important;
+  }
+}
+  </style>
 </head>
 <body>
 
