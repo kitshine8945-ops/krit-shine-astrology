@@ -10266,66 +10266,72 @@ function switchWealthMode(mode) {
     }
   }
 }
-// --- ฟังก์ชันเปิด Modal แบบใหม่ ตัดปัญหาชนของเก่า ---
-function openNewPremModal(type) {
-  let modalId = '';
-  if (type === 'karmic') modalId = 'modal-karmic';
-  else if (type === 'lifeturn') modalId = 'modal-lifeturturning';
-  else if (type === 'soul') modalId = 'modal-soulelement';
-  else if (type === 'wealth') modalId = 'modal-wealthflow';
+<!-- MODAL: ดวงฉัตรสามชั้น -->
+  <div class="modal-overlay" id="modal-chatra">
+    <div class="modal-content" style="max-width: 740px;">
+      <div class="modal-close-btn" onclick="closeModal('modal-chatra')"><i class="fa-solid fa-xmark"></i></div>
+      <div class="profile-astro-badge dynamic-user-badge"></div>
+      <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:6px;"><i class="fa-solid fa-shield-halved"></i> ดูดวงฉัตรสามชั้น โบราณจารย์</h3>
+      <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:14px;">วิเคราะห์ 3 ระดับฉัตรค้ำชะตาชีวิต: ยอดฉัตร กลางฉัตร และฐานฉัตร</p>
+      <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+        <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px;">
+          <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> ๑. ชั้นยอดฉัตร (เกียรติยศ บารมี ชาติกำเนิด):</strong>
+          <p id="chatraTop" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">-</p>
+        </div>
+        <div style="background:rgba(100,181,246,0.08); border:1px solid #64b5f6; border-radius:10px; padding:14px;">
+          <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ๒. ชั้นกลางฉัตร (การสร้างฐานะ ครอบครัว และมิตรสหาย):</strong>
+          <p id="chatraMid" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">-</p>
+        </div>
+        <div style="background:rgba(129,199,132,0.08); border:1px solid #81c784; border-radius:10px; padding:14px;">
+          <strong style="color:#81c784;"><i class="fa-solid fa-monument"></i> ๓. ชั้นฐานฉัตร (ความมั่นคงในบั้นปลายชีวิตและมรดก):</strong>
+          <p id="chatraBase" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;">-</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function() {
+        function runChatraDirect() {
+          const CHATRA_TEXTS = {
+            top: [
+              "เกียรติยศชื่อเสียงโดดเด่น มีจิตวิญญาณแห่งความเป็นผู้นำ วาสนาชะตาชีวิตมักได้รับการยกย่องและมีบารมีเป็นที่พึ่งพา",
+              "มีปฏิภาณไหวพริบยอดเยี่ยม มีเสน่ห์ทางวาจา ชะตาชีวิตเริ่มต้นด้วยความพยายามและจะขึ้นสู่จุดสูงสุดด้วยความสามารถตนเอง",
+              "ดวงชะตานักต่อสู้ มุ่งมั่นเด็ดเดี่ยว ไม่ยอมแพ้ต่ออุปสรรค นำพาตนเองขึ้นเป็นหัวหน้าสายงานหรือเจ้าของกิจการที่มั่นคง"
+            ],
+            mid: [
+              "การสร้างฐานะราบรื่น มิตรสหายเกื้อหนุน การเงินหมุนเวียนคล่องตัว ครอบครัวเป็นหลักยึดเหนี่ยวที่มั่นคงและอบอุ่น",
+              "สร้างเนื้อสร้างตัวด้วยน้ำพักน้ำแรง มีคู่ครองและบริวารคอยส่งเสริมธุรกิจการงาน ขยายกิจการได้อย่างมั่นคง",
+              "รอบคอบในการบริหารสินทรัพย์ มีเกณฑ์ได้รับความช่วยเหลือจากผู้ใหญ่หรือหุ้นส่วน นำพาความมั่นคงมาสู่ครอบครัว"
+            ],
+            base: [
+              "บั้นปลายชีวิตเปี่ยมสุข มีหลักทรัพย์อสังหาริมทรัพย์และมรดกตกทอด ลูกหลานบริวารกตัญญูคอยดูแลอย่างใกล้ชิด",
+              "ฐานะการเงินมั่นคงดั่งหินผา มีทรัพย์สินงอกเงย มีชีวิตที่สุขสบาย ไร้กังวลเรื่องหนี้สิน บารมีคุ้มครองวงศ์ตระกูล",
+              "ความสมบูรณ์พูนสุขในวัยผู้ใหญ่ การวางรากฐานตั้งแต่วัยกลางคนส่งผลให้บั้นปลายเปี่ยมด้วยเกียรติและทรัพย์สมบัติ"
+            ]
+          };
 
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    document.body.appendChild(modal);
-    modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box;";
-    
-    // อัปเดตข้อความเริ่มต้น
-    const uName = AppState.userName || 'เจ้าชะตา';
-    if(type === 'karmic') document.getElementById('karmicFreeText').innerHTML = `คุณ <strong>${uName}</strong> จากพื้นดวงกำเนิดมีปมกรรมตั้งต้นเกี่ยวกับความเด็ดเดี่ยวและการเชื่อใจคนใกล้ตัว บททดสอบชีวิตคือการเรียนรู้ที่จะพึ่งพาตนเอง`;
-    if(type === 'lifeturn') document.getElementById('lifeturnFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสพลังงานดาวประจำตัวกำลังเคลื่อนเข้าสู่จังหวะปรับเปลี่ยนโครงสร้างชีวิต รอบปีนี้ควรเน้นการตั้งรับอย่างมีสติ`;
-    if(type === 'soul') document.getElementById('soulFreeText').innerHTML = `คุณ <strong>${uName}</strong> พลังงานธาตุแท้ประจำดวงจิตมีความละเอียดอ่อนและเปิดรับคลื่นความถี่เชิงบวกได้ไว`;
-    if(type === 'wealth') document.getElementById('wealthFreeText').innerHTML = `คุณ <strong>${uName}</strong> กระแสการเงินเติบโตจากการใช้ทักษะความรู้เฉพาะทางและการเจรจา มีช่องทางทำเงินเสริมไหลเข้ามา`;
-  }
-}  
-// ดักจับการเปิดหน้าต่างดวงฉัตรสามชั้นอัตโนมัติ (ไม่ว่าหน้าต่างจะเปิดด้วยวิธีไหน)
-(function() {
-  function checkAndRunChatra() {
-    const modal = document.getElementById('modal-chatra');
-    if (!modal) return;
+          const dVal = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 30) || 30;
+          const mVal = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 4) || 4;
+          const yBEVal = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
+          const bYear = yBEVal - 543;
 
-    // ตรวจสอบว่าหน้าต่างกำลังแสดงผลอยู่หรือไม่
-    const isVisible = modal.classList.contains('active') || 
-                      modal.classList.contains('show') || 
-                      modal.style.display === 'flex' || 
-                      modal.style.display === 'block' ||
-                      getComputedStyle(modal).display !== 'none';
+          const topEl = document.getElementById('chatraTop');
+          const midEl = document.getElementById('chatraMid');
+          const baseEl = document.getElementById('chatraBase');
 
-    if (isVisible) {
-      if (typeof calcChatra === 'function') calcChatra();
-      if (typeof calcChatraReal === 'function') calcChatraReal();
-    }
-  }
+          if (topEl) topEl.textContent = CHATRA_TEXTS.top[(dVal + bYear) % CHATRA_TEXTS.top.length];
+          if (midEl) midEl.textContent = CHATRA_TEXTS.mid[(mVal * 2 + bYear) % CHATRA_TEXTS.mid.length];
+          if (baseEl) baseEl.textContent = CHATRA_TEXTS.base[(dVal + mVal + bYear) % CHATRA_TEXTS.base.length];
+        }
 
-  // 1. ดักจับเมื่อผู้ใช้คลิกทุกจุดบนหน้าจอที่มีคำว่า chatra หรือเปิดหน้าต่าง
-  document.addEventListener('click', function(e) {
-    const target = e.target.closest('[onclick*="chatra"], [onclick*="Chatra"], [data-target*="chatra"], .feature-card, .menu-card');
-    if (target) {
-      setTimeout(checkAndRunChatra, 100);
-      setTimeout(checkAndRunChatra, 300);
-    }
-  });
-
-  // 2. ใช้ MutationObserver ตรวจจับการเปลี่ยนแปลงของตัว modal-chatra โดยตรง
-  window.addEventListener('DOMContentLoaded', function() {
-    const targetModal = document.getElementById('modal-chatra');
-    if (targetModal) {
-      const observer = new MutationObserver(function() {
-        checkAndRunChatra();
-      });
-      observer.observe(targetModal, { attributes: true, attributeFilter: ['class', 'style'] });
-    }
-  });
-})();
+        // สั่งรันทันทีเมื่อโหลด และดักจับทุกครั้งที่มีการคลิกเปิด
+        document.addEventListener('DOMContentLoaded', runChatraDirect);
+        window.addEventListener('load', runChatraDirect);
+        document.addEventListener('click', function() {
+          setTimeout(runChatraDirect, 50);
+        });
+      })();
+    </script>
+  </div>
 </script>
 </body>
 </html>
