@@ -11522,20 +11522,14 @@ function triggerWallpaperDownload() {
   }
 
   // --- นำโค้ดสร้าง Input ป้องกันอีเมลมาวางไว้ตรงนี้ครับ ---
-  window.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('dynamicInputContainer');
-    if (container) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = 'auspiciousNameInput';
-      input.className = 'form-control';
-      input.placeholder = 'กรอกชื่อของคุณ';
-      input.setAttribute('autocomplete', 'new-password');
-      input.setAttribute('data-lpignore', 'true');
-      input.style.cssText = 'width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;';
-      container.appendChild(input);
+ window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const inputField = document.getElementById('auspiciousNameInput');
+    if (inputField) {
+      inputField.value = ''; 
     }
-  });
+  }, 0);
+});
 </script>
 </body> 
 </html>
