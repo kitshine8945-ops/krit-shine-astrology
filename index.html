@@ -759,26 +759,26 @@ header.navbar {
   <section class="category-section" id="category-bar">
     <h3 class="category-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> ศูนย์รวมศาสตร์พยากรณ์ชั้นสูง (ศาสตร์ครบวงจร)</h3>
     <div class="category-grid">
-<!-- 4 เมนูพยากรณ์พรีเมียม -->
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('karmic');}">
+ <!-- 4 เมนูพยากรณ์พรีเมียม -->
+<div class="cat-item" onclick="openNewPremModal('karmic')">
     <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
     <div class="cat-name">รหัสกรรมข้ามภพ</div>
     <div class="cat-sub">ถอดบทเรียนชีวิต & วาสนา</div>
 </div>
 
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('lifeturturning');}">
+<div class="cat-item" onclick="openNewPremModal('lifeturn')">
     <div class="cat-icon-circle" style="background: rgba(52,152,219,0.2); border: 1px solid #3498db;"><i class="fa-solid fa-shield-halved" style="color: #5dade2;"></i></div>
     <div class="cat-name">มหาพิชัยสงคราม</div>
     <div class="cat-sub">จังหวะพลิกชีวิต 12 ฤดูกาล</div>
 </div>
 
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('soulelement');}">
+<div class="cat-item" onclick="openNewPremModal('soul')">
     <div class="cat-icon-circle" style="background: rgba(155,89,182,0.2); border: 1px solid #9b59b6;"><i class="fa-solid fa-gem" style="color: #c39bd3;"></i></div>
     <div class="cat-name">ถอดรหัสจิตวิญญาณ</div>
     <div class="cat-sub">ธาตุกายสิทธิ์เสริมออร่า</div>
 </div>
 
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('wealthflow');}">
+<div class="cat-item" onclick="openNewPremModal('wealth')">
     <div class="cat-icon-circle" style="background: rgba(46,204,113,0.2); border: 1px solid #2ecc71;"><i class="fa-solid fa-coins" style="color: #2ecc71;"></i></div>
     <div class="cat-name">ขุมทรัพย์มหาเศรษฐี</div>
     <div class="cat-sub">เปิดสายธารเงิน & รหัสรวย</div>
@@ -789,7 +789,7 @@ header.navbar {
     <div class="cat-name">คำนวณหวยมงคล</div>
     <div class="cat-sub">เลขเด่นประจำวัน & เฉพาะดวง</div>
 </div>
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('daily');}">
+<div class="cat-item" onclick="openFeatureModal('daily')">
   <div class="cat-icon-circle"><i class="fa-solid fa-sun"></i></div>
   <div class="cat-name">ดูดวงรายวัน</div>
   <div class="cat-sub">ดวงประจำวันตามลัคนา</div>
@@ -819,20 +819,20 @@ header.navbar {
       <div class="cat-item" onclick="openFeatureModal('phone')"><div class="cat-icon-circle"><i class="fa-solid fa-mobile-screen-button"></i></div><div class="cat-name">เบอร์โทรศัพท์</div><div class="cat-sub">ถอดรหัสคู่เลขรับทรัพย์</div></div>
       <div class="cat-item" onclick="openFeatureModal('house')"><div class="cat-icon-circle"><i class="fa-solid fa-house"></i></div><div class="cat-name">บ้านเลขที่</div><div class="cat-sub">พลังกำลังดาวร่มเย็น</div></div>
             
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('compatibility');}"><div class="cat-icon-circle"><i class="fa-solid fa-heart-circle-bolt"></i></div><div class="cat-name">สมพงษ์คู่ & หุ้นส่วน</div><div class="cat-sub">เช็กเกณฑ์รัก & ธุรกิจ</div></div>
+      <div class="cat-item" onclick="openFeatureModal('compatibility')"><div class="cat-icon-circle"><i class="fa-solid fa-heart-circle-bolt"></i></div><div class="cat-name">สมพงษ์คู่ & หุ้นส่วน</div><div class="cat-sub">เช็กเกณฑ์รัก & ธุรกิจ</div></div>
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('num7base');}">
     <div class="cat-icon-circle"><i class="fa-solid fa-table-cells"></i></div>
     <div class="cat-name">เลข 7 ตัว 4/9 ฐาน</div>
     <div class="cat-sub">ฟรี vs VIP คลังทำนาย</div>
 </div>
-<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('mahataksa');}"><div class="cat-icon-circle"><i class="fa-solid fa-ring"></i></div><div class="cat-name">มหาทักษาเสวยอายุ</div><div class="cat-sub">เทวดาเสวยอายุ & แทรก</div></div>
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('chatra');}"><div class="cat-icon-circle"><i class="fa-solid fa-shield-halved"></i></div><div class="cat-name">ดวงฉัตรสามชั้น</div><div class="cat-sub">วิเคราะห์ 3 ระดับชะตา</div></div>
+     <div class="cat-item" onclick="openFeatureModal('mahataksa')"><div class="cat-icon-circle"><i class="fa-solid fa-ring"></i></div><div class="cat-name">มหาทักษาเสวยอายุ</div><div class="cat-sub">เทวดาเสวยอายุ & แทรก</div></div>
+      <div class="cat-item" onclick="openFeatureModal('chatra')"><div class="cat-icon-circle"><i class="fa-solid fa-shield-halved"></i></div><div class="cat-name">ดวงฉัตรสามชั้น</div><div class="cat-sub">วิเคราะห์ 3 ระดับชะตา</div></div>
       <div class="cat-item" onclick="openFeatureModal('tarot')">
         <div class="cat-icon-circle"><i class="fa-solid fa-clone"></i></div>
         <div class="cat-name">ไพ่ทาโรต์</div>
         <div class="cat-sub">3 ใบ & Celtic Cross</div>
       </div>
-   <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('auspicious');}"><div class="cat-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="cat-name">ฤกษ์มงคลเฉพาะตน</div><div class="cat-sub">เปิดร้าน ออกรถ ไม่ชง</div></div>
+      <div class="cat-item" onclick="openFeatureModal('auspicious')"><div class="cat-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="cat-name">ฤกษ์มงคลเฉพาะตน</div><div class="cat-sub">เปิดร้าน ออกรถ ไม่ชง</div></div>
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('uranian');}">
         <div class="cat-icon-circle"><i class="fa-solid fa-atom"></i></div>
         <div class="cat-name">ยูเรเนียน</div>
@@ -7989,107 +7989,37 @@ window.askCosmicBall = function() {
 </div>
 
 <script>
-// ฟังก์ชันเปิดป๊อปอัป
+// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่มถาวร
 window.openKsPremFeature = function(modalId) {
     if (!modalId) return;
     var target = document.getElementById(modalId);
     if (target) {
         document.body.appendChild(target);
-        target.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 99999999 !important; align-items: center !important; justify-content: center !important;";
+        target.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 999999 !important; align-items: center !important; justify-content: center !important;";
     }
 };
 
-// ฟังก์ชันคำนวณผลลัพธ์ของแต่ละศาสตร์
-window.calcKarmic = function() {
-    var res = document.getElementById('karmic_result');
-    if (!res) return;
-    res.style.display = 'block';
-    res.innerHTML = `
-        <div style="color:#ffd700; font-weight:bold; margin-bottom:8px;">🔮 ผลการถอดรหัสพันธะกรรมดั้งเดิม:</div>
-        <div>• <strong>บททดสอบชีวิต:</strong> ท่านมีพันธะสัญญาทางใจในอดีตชาติ มักต้องแบกรับภาระแทนผู้อื่น หรือพบเจอเรื่องทดสอบความอดทน</div>
-        <div style="margin-top:6px;">• <strong>แนวทางตัดวิบากกรรม:</strong> หมั่นทำบุญปล่อยชีวิตสัตว์น้ำ และอธิษฐานจิตอโหสิกรรมทุกครั้งหลังสวดมนต์ จะช่วยปลดเปลื้องภาระหนักให้คลี่คลายอย่างน่าอัศจรรย์</div>
-    `;
-};
-
-window.calcLifeTurning = function() {
-    var res = document.getElementById('life_result');
-    if (!res) return;
-    res.style.display = 'block';
-    res.innerHTML = `
-        <div style="color:#5dade2; font-weight:bold; margin-bottom:8px;">⚔️ ยุทธศาสตร์รุก-รับ 4 ฤดูกาล:</div>
-        <div>• <strong>จังหวะรุก (ไตรมาส 1 & 3):</strong> จังหวะดาวส่งพลังหนุน เป็นช่วงเวลาทองแห่งการเปิดตัวธุรกิจ เจรจาลงทุน หรือขยายงาน</div>
-        <div style="margin-top:6px;">• <strong>จังหวะรับ (ไตรมาส 2 & 4):</strong> เน้นการบริหารกระแสเงินสด จัดระเบียบความเสี่ยง และสะสมเสบียงความรู้เพื่อก้าวต่อไป</div>
-    `;
-};
-
-window.calcSoulElement = function() {
-    var res = document.getElementById('soul_result');
-    if (!res) return;
-    res.style.display = 'block';
-    res.innerHTML = `
-        <div style="color:#c39bd3; font-weight:bold; margin-bottom:8px;">💎 พลังงานจิตวิญญาณและธาตุกายสิทธิ์:</div>
-        <div>• <strong>ธาตุแก่นแท้:</strong> จิตวิญญาณมีพลังแห่งการเยียวยา สัญชาตญาณไวต่อพลังงานรอบตัว และมีความคิดสร้างสรรค์สูง</div>
-        <div style="margin-top:6px;">• <strong>อัญมณีกู้ดวง:</strong> หินไหมทอง, อเมทิสต์ หรือ ควอตซ์ใส จะช่วยปรับสนามพลังออร่าให้ผ่องใส ดึงดูดผู้ใหญ่เมตตา</div>
-    `;
-};
-
-window.calcWealthFlow = function() {
-    var res = document.getElementById('wealth_result');
-    if (!res) return;
-    res.style.display = 'block';
-    res.innerHTML = `
-        <div style="color:#2ecc71; font-weight:bold; margin-bottom:8px;">💰 การเปิดสายธารเงินและคลังทรัพย์:</div>
-        <div>• <strong>กระแสเงินสด:</strong> มีแหล่งรายได้เสริมซ่อนเร้นจากความรู้และวาทศิลป์ การต่อยอดธุรกิจออนไลน์จะนำพาทรัพย์ก้อนโต</div>
-        <div style="margin-top:6px;">• <strong>จุดอุดเงินรั่ว:</strong> ระวังการใช้จ่ายตามอารมณ์ชั่ววูบหรือการช่วยเหลือผู้อื่นเกินตัว จัดการบัญชีรายรับ-รายจ่ายให้รัดกุม</div>
-    `;
-};
-
-// ผูกคลิกการ์ด 4 ป๊อปอัป โดยเช็กวันเกิดทันทีตั้งแต่คลิกแรก
+// ผูกคลิกการ์ด 4 ป๊อปอัปอัตโนมัติ
+document.addEventListener('DOMContentLoaded', function() {
+    bindKsCards();
+});
 function bindKsCards() {
     document.querySelectorAll('.cat-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
             var txt = this.innerText || '';
             var mId = '';
-            var calcFunc = null;
-
-            if (txt.includes('รหัสกรรม')) { mId = 'karmicModal'; calcFunc = window.calcKarmic; }
-            else if (txt.includes('มหาพิชัยสงคราม')) { mId = 'lifeTurningModal'; calcFunc = window.calcLifeTurning; }
-            else if (txt.includes('จิตวิญญาณ')) { mId = 'soulElementModal'; calcFunc = window.calcSoulElement; }
-            else if (txt.includes('ขุมทรัพย์')) { mId = 'wealthFlowModal'; calcFunc = window.calcWealthFlow; }
-
+            if (txt.includes('รหัสกรรม')) mId = 'karmicModal';
+            else if (txt.includes('มหาพิชัยสงคราม')) mId = 'lifeTurningModal';
+            else if (txt.includes('จิตวิญญาณ')) mId = 'soulElementModal';
+            else if (txt.includes('ขุมทรัพย์')) mId = 'wealthFlowModal';
             if (mId) {
-                var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
-
-                // 1. ถ้ายังไม่ใส่วันเกิด: ระงับการเปิดป๊อปอัป เตือนทันที และเลื่อนจอไปฟอร์ม
-                if (!bD) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
-                    if (typeof scrollToForm === 'function') {
-                        scrollToForm();
-                    } else {
-                        var formEl = document.getElementById('birth-form');
-                        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    return false;
-                }
-
-                // 2. ถ้ามีวันเกิดแล้ว: เปิด Modal และคำนวณทันที
                 e.preventDefault();
                 e.stopPropagation();
                 window.openKsPremFeature(mId);
-                if (typeof calcFunc === 'function') {
-                    calcFunc();
-                }
             }
         }, true);
     });
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    bindKsCards();
-});
 bindKsCards();
 
 // ปิดป๊อปอัปทั้งหมด
@@ -8099,7 +8029,7 @@ window.closeAllKsPremModals = function() {
         if (m) m.style.display = 'none';
     });
 };
-</script>
+
 // ตรวจสอบสถานะ VIP
 window.isKsVipUser = function() {
     try {
