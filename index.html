@@ -10168,7 +10168,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- ========================================================== -->
 <!-- 🌟 โค้ดเสริมฉบับแยกกล่องคำทำนาย ฟรี / VIP ภายในตัว (ครอบคลุมทั้ง 4 ฟีเจอร์) -->
 <!-- ========================================================== -->
-<style>
     /* ซ่อนส่วนคำพยากรณ์ VIP ทันทีเมื่อยังไม่ได้เปิดโหมด VIP หรือยังไม่เป็นสมาชิก */
     .modal-content:not(.vip-unlocked) .isolated-vip-prediction-block {
         display: none !important;
@@ -10864,11 +10863,11 @@ function switchWesternMode(mode) {
     let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุดิน' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน / ธาตุน้ำ' : 'ธาตุน้ำ / ธาตุไม้')));
     let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุทอง')));
 
-    // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
+   // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
     const FREE_BAZI_POOLS = [
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
-      `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
+      "ดิถี พื้นดวงเกิดวันที่ " + d + " พ.ศ. " + yBE + " สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล",
+      "ดิถี จากรอบวันเกิด " + d + " พ.ศ. " + yBE + " บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้า",
+      "ดิถี ดวงชะตากำเนิด " + d + " พ.ศ. " + yBE + " โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว"
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
