@@ -1206,13 +1206,14 @@ header.navbar {
   </div>
 
   <div id="wallpaperForm" style="display: flex; flex-direction: column; gap: 12px;">
-<div>
-  <div style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">ชื่อ - สกุล</div>
-  <input type="text" id="auspiciousNameInput" class="form-control" placeholder="กรอกชื่อของคุณ" autocomplete="none" name="random_unique_box_xyz" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+    
+ <div class="form-field">
+  <label>นาม-สกุล เจ้าของวอลเปเปอร์มงคล</label>
+  <input type="text" id="auspiciousNameInput" class="form-control" placeholder="กรอกชื่อ - สกุล" oninput="syncBirthDataToAllModules()" required style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
 </div>
 
     <div>
-      <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
+      <label style="display: block; font-size: 0.8rem; c(olor: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
       <select id="wpCategory" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
         <option value="auto">✨ เลือกตามความต้องการ (แนะนำ)</option>
         <option value="wealth">💰 เสริมการเงิน & ทรัพย์สิน</option>
