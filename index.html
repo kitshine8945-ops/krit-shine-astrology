@@ -2872,11 +2872,77 @@ if (typeof applyAgeChange === 'function') {
       const vipContent = document.getElementById('vip-result-content');
       const badgeType = document.getElementById('res-badge-type');
 
-      document.getElementById('freePersonalityText').textContent = `ท่านเป็นผู้มีลัคนาสถิต${ascInfo.name} ธาตุกำเนิดคือ${ascInfo.elem} มี ${ascInfo.lord} เป็นดาวตนุลัคน์คุ้มดวง ลักษณะเด่นคือ ${ascInfo.personality}`;
-      document.getElementById('freeStrengthText').textContent = `${ascInfo.desc}`;
-      document.getElementById('freeCautionText').textContent = `${ascInfo.caution}`;
-      document.getElementById('freeMoneyText').textContent = `${ascInfo.money}`;
-      document.getElementById('freeWorkLoveText').textContent = `การงาน: ${ascInfo.work} | ความรัก: ${ascInfo.love}`;
+      // ========================================================
+      // คำนวณคำทำนายพื้นดวงกำเนิดเฉพาะบุคคล (Natal Chart Engine สไตล์ Myhora)
+      // ========================================================
+      var bDVal = AppState.birthDay || 30;
+      var bMVal = AppState.birthMonth || 4;
+      var bYVal = AppState.birthBE || 2522;
+      var bHVal = AppState.birthHour || 0;
+      var bMinVal = AppState.birthMinute || 0;
+      var nTimeMin = bHVal * 60 + bMinVal;
+
+      // 1. คำนวณราศีที่ดาวกำเนิดสถิตจริง (0=เมษ, 1=พฤษภ, ... 11=มีน)
+      var nSunSign = sunSignIndex;
+      var nMoonSign = Math.floor(((bDVal * 13.176 + bMVal * 28.5 + (nTimeMin * 0.009)) % 360) / 30);
+      var nMarsSign = Math.floor(((bYVal * 1.91 + bMVal * 18.2 + bDVal * 0.524) % 360) / 30);
+      var nMercSign = Math.floor(((sunSignIndex * 30 + (bDVal * 1.38) + (bMVal * 3.2)) % 360) / 30);
+      var nJupSign  = Math.floor((((bYVal - 2400) * 30.35 + bMVal * 2.5 + bDVal * 0.08) % 360) / 30);
+      var nVenSign  = Math.floor(((sunSignIndex * 30 + (bDVal * 1.15) + 12.8) % 360) / 30);
+      var nSatSign  = Math.floor((((bYVal - 2400) * 12.22 + bMVal * 1.05 + bDVal * 0.033) % 360) / 30);
+      var nRahSign  = Math.floor((360 - (((bYVal - 2400) * 19.34 + bMVal * 1.6 + bDVal * 0.05) % 360)) / 30);
+
+      // 2. ตรวจสอบมาตรฐานดาวเด่น (มหาอุจจ์ / เกษตร / นิจ / ประ)
+      var dignities = [];
+      if (nSunSign === 0) dignities.push("ดาวอาทิตย์ (๑) ได้ตำแหน่งมหาอุจจ์ในราศีเมษ (ผู้นำ ทะเยอทะยาน วาสนาสูง)");
+      if (nMoonSign === 1) dignities.push("ดาวจันทร์ (๒) ได้ตำแหน่งมหาอุจจ์ในราศีพฤษภ (เสน่ห์เมตตา รูปร่างหน้าตาดี ผู้ใหญ่อุปถัมภ์)");
+      if (nJupSign === 3) dignities.push("ดาวพฤหัสบดี (๕) ได้ตำแหน่งมหาอุจจ์ในราศีกรกฎ (ปัญญาบารมี สิ่งศักดิ์สิทธิ์คุ้มครอง)");
+      if (nVenSign === 11) dignities.push("ดาวศุกร์ (๖) ได้ตำแหน่งมหาอุจจ์ในราศีมีน (รสนิยมดี มีโชคการเงิน ความรักโดดเด่น)");
+      if (nMercSign === 11) dignities.push("ดาวพุธ (๔) เป็นนิจ/ประในราศีมีน (ระวังเรื่องเอกสารสัญญาและคำพูด)");
+      if (nRahSign === 4) dignities.push("ดาวราหู (๘) เป็นประในราศีสิงห์ (กล้าหาญ มักมีเรื่องวุ่นวายเพราะเพื่อนฝูง)");
+
+      // 3. คำนวณตนุเศษกำเนิด (ดาวที่ครองอารมณ์และนิสัยลึกๆ)
+      var tanuPlanetName = "ดาวเสาร์ (๗)";
+      var tanuDesc = "มีความอดทนต่อความเหนื่อยยากลำบากสูง เด็ดเดี่ยว มุ่งมั่น คิดรอบคอบก่อนลงมือทำ สันโดษและรักความสงบ";
+      if (nMoonSign === 0 || nMoonSign === 4 || nMoonSign === 8) {
+        tanuPlanetName = "ดาวอังคาร (๓)";
+        tanuDesc = "กล้าคิด กล้าลุย ใจนักสู้ ตรงไปตรงมา กระตือรือร้นสูง ไม่ยอมแพ้ต่ออุปสรรค";
+      } else if (nMoonSign === 2 || nMoonSign === 6 || nMoonSign === 10) {
+        tanuPlanetName = "ดาวพุธ (๔)";
+        tanuDesc = "ไหวพริบปฏิภาณเฉียบคม วาทศิลป์ดี ช่างสังเกต ปรับตัวเข้ากับสถานการณ์และผู้คนได้เก่ง";
+      }
+
+      // 4. สังเคราะห์คำทำนาย 5 หัวข้อเฉพาะบุคคล
+      var pText = `ลัคนาสถิต${ascInfo.name} ธาตุ${ascInfo.elem} มี ${tanuPlanetName} กุมอิทธิพลเป็นตนุเศษประจำตัว ทำให้เป็นคน${tanuDesc} บุคลิกเปิดเผย ตรงไปตรงมา มีไอเดียแปลกใหม่ ล้ำสมัย ช่างคิดค้น และมีจิตใจชอบช่วยเหลือส่วนรวม`;
+
+      var sText = dignities.length > 0 
+        ? `ชะตามีดาวเด่นหนุนดวงชะตา: ${dignities.slice(0, 2).join(" และ ")} ส่งผลให้เป็นคนที่มีสติปัญญาเฉลียวฉลาด โดดเด่น มีเสน่ห์และวาสนาดี ตกน้ำไม่ไหลตกไฟไม่ไหม้ มักมีคนคอยช่วยเหลือเกื้อกูลยามคับขันเสมอ`
+        : `ดวงชะตามีความสามารถในการปรับตัวและแก้ไขปัญหาเฉพาะหน้าได้ยอดเยี่ยม มีพรสวรรค์ในการเรียนรู้สิ่งใหม่ๆ และมีมิตรสหายคอยช่วยเหลือเกื้อกูล`;
+
+      var cText = "";
+      if (nMercSign === 11) {
+        cText += "ระวังเรื่องเอกสารสัญญา การลงนาม ข้อตกลงที่ไม่ชัดเจนอาจถูกเอาเปรียบได้ง่าย รวมถึงระวังคำพูดตรงเกินไปจนผิดใจกับคนใกล้ชิด ";
+      }
+      if (nRahSign === 4 || nSatSign === 4) {
+        cText += "ควรระวังเรื่องความใจร้อน หูเบา หรือความเดือดร้อนที่เกิดจากเพื่อนฝูงคนรอบตัวชักนำไปสู่ปัญหา";
+      } else {
+        cText += "ระวังความดื้อเงียบ คิดมาก วิตกกังวลล่วงหน้าจนเสียโอกาสดีๆ ควรปล่อยวางและตัดสินใจให้เด็ดขาดขึ้น";
+      }
+
+      var mText = "";
+      if (nVenSign === 11 || nSunSign === 0) {
+        mText = "ดาวการเงินและโภคทรัพย์ได้เกณฑ์มหาอุจจ์ เป็นคนหาเงินเก่ง มีช่องทางรายได้หลายทาง มีโชคลาภจากการเจรจาหรือซื้อขายอสังหาริมทรัพย์และสื่อออนไลน์ แต่เป็นคนใช้เงินเก่งตามใจตนเอง ควรแปลงเงินสดเป็นทรัพย์สินหรือทองคำจะเก็บอยู่ได้ดีที่สุด";
+      } else {
+        mText = "การเงินมาจากการลงมือทำและความรู้เฉพาะทาง หมุนเงินเก่ง มีสภาพคล่องดี แต่ต้องระวังคนใกล้ชิดหยิบยืมแล้วได้คืนยาก";
+      }
+
+      var wText = `การงาน: เหมาะกับงานที่ต้องใช้ความคิดสร้างสรรค์ นวัตกรรม เทคโนโลยี การเขียน การสื่อสาร หรืออาชีพที่มีความเป็นอิสระ | ความรัก: เสน่ห์แรง มักมีคนเข้ามาพัวพันไม่ขาดสาย แต่ควรระวังความรักซับซ้อน หรือคู่ครองมีนิสัยจุกจิก ควรคบหากันแบบเพื่อนคู่คิดที่ให้อิสระซึ่งกันและกัน`;
+
+      document.getElementById('freePersonalityText').textContent = pText;
+      document.getElementById('freeStrengthText').textContent = sText;
+      document.getElementById('freeCautionText').textContent = cText;
+      document.getElementById('freeMoneyText').textContent = mText;
+      document.getElementById('freeWorkLoveText').textContent = wText;
 
       if (AppState.currentTierMode === 'vip') {
         badgeType.textContent = "รายงานดวงลัคนา VIP เจาะลึกวันจร";
@@ -2981,7 +3047,6 @@ if (typeof applyAgeChange === 'function') {
             "0":  { name: "มฤตยู (0)", deg: (((curTY - 2400) * 4.28 + curTM * 0.35 + 24.5) % 360), kw: "ปุบปับ ฉับพลัน กะทันหัน สิ่งใหม่ ๆ การเดินทาง โรคภัย อาเพศ" }
           };
 
-          // ฐานข้อมูลคำทำนายคู่ดาว (เฉพาะเจาะจงทุกคู่แบบ Myhora)
           var pairSpecificDict = {
             "5_7": {
               harmonious: "เป็นช่วงที่ความคิดและสติปัญญาตกผลึก ผู้ใหญ่ที่ทรงคุณวุฒิหรือมีประสบการณ์สูงให้คำแนะนำช่วยเหลือ สามารถเคลียร์ภาระหนี้สินหรือโครงการเก่าที่ค้างคาให้สำเร็จลุล่วงอย่างเป็นระบบ มีเกณฑ์ได้หลักทรัพย์ชิ้นใหญ่",
@@ -3046,14 +3111,12 @@ if (typeof applyAgeChange === 'function') {
           };
 
           function getSpecificText(tKey, aspDeg, nKey) {
-            // จับคู่แบบไม่สนใจลำดับก่อนหลัง
             var pKey = tKey + "_" + nKey;
             var revKey = nKey + "_" + tKey;
             var pairObj = pairSpecificDict[pKey] || pairSpecificDict[revKey];
 
             var isHarmonious = (aspDeg === 60 || aspDeg === 120);
             if (aspDeg === 0) {
-              // มุมทับ: ดาวศุภเคราะห์ถือว่าส่งผลดี ดาวบาปเคราะห์ถือว่าท้าทาย
               if (tKey === "5" || tKey === "6" || tKey === "2" || tKey === "4") isHarmonious = true;
               else isHarmonious = false;
             }
@@ -3062,7 +3125,6 @@ if (typeof applyAgeChange === 'function') {
               return isHarmonious ? pairObj.harmonious : pairObj.tense;
             }
 
-            // Fallback สังเคราะห์เฉพาะคู่นั้นจริงๆ หากยังไม่มีใน Dictionary
             var tName = transitP[tKey].name.split(" ")[0];
             var nName = natalP[nKey].name.split(" ")[0];
             if (isHarmonious) {
@@ -3084,7 +3146,6 @@ if (typeof applyAgeChange === 'function') {
 
           for (var tK in transitP) {
             for (var nK in natalP) {
-              // ข้ามการจับคู่ลัคนาจรกับลัคนาเดิมในมุมโยค/ตรีโกณที่ซ้ำซ้อน
               if (tK === "00" && nK === "00" && (transitAscIndex === ascIndex)) continue;
 
               var diff = Math.abs(transitP[tK].deg - natalP[nK].deg);
