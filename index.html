@@ -1196,7 +1196,7 @@ header.navbar {
 
     <!-- ขวา: กล่องคำคม & บทความ -->
     <div>
- <!-- กล่องสร้างวอลเปเปอร์มือถือมงคล (อัปเดตเวอร์ชันสมบูรณ์) -->
+<!-- กล่องสร้างวอลเปเปอร์มือถือมงคล (เวอร์ชันสมบูรณ์ไร้กล่องกวนใจ) -->
 <div style="margin-top: 20px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
   <div style="text-align: center; margin-bottom: 16px;">
     <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
@@ -1208,7 +1208,8 @@ header.navbar {
   <div id="wallpaperForm" style="display: flex; flex-direction: column; gap: 12px;">
     <div>
       <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">ชื่อ - สกุล</label>
-      <input type="password" id="wpUserName" class="form-control" placeholder="กรอกชื่อของคุณ" autocomplete="new-password" onfocus="this.type='text'" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+      <input type="text" id="wpUserName" class="form-control" placeholder="กรอกชื่อของคุณ" autocomplete="chrome-off" role="presentation" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+    </div>
 
     <div>
       <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
@@ -11441,6 +11442,7 @@ function renderTransitAspectHtml(aspectList) {
 } 
 <!-- สคริปต์ JavaScript สำหรับประมวลผล Canvas -->
 <script>
+<script>
 function generateCustomWallpaper() {
   const userNameInput = document.getElementById('wpUserName');
   const deitySelect = document.getElementById('wpDeity');
@@ -11449,7 +11451,7 @@ function generateCustomWallpaper() {
 
   if (!canvas) return;
 
-  const userName = userNameInput ? userNameInput.value : '';
+  const userName = userNameInput ? userNameInput.value.trim() : '';
   const deityChoice = deitySelect ? deitySelect.value : 'auto';
 
   if (resultArea) {
