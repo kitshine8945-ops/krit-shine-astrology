@@ -1196,7 +1196,61 @@ header.navbar {
 
     <!-- ขวา: กล่องคำคม & บทความ -->
     <div>
-      <div style="margin-bottom: 20px; overflow: hidden; border-radius: 18px; border: 1px solid var(--border-soft); box-shadow: 0 8px 25px rgba(0,0,0,0.5); cursor: pointer;" onclick="window.open('https://www.youtube.com/@kritshinestation', '_blank')">
+  <div style="margin-bottom: 20px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
+    <div style="text-align: center; margin-bottom: 16px;">
+      <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
+        ✨ ออกแบบวอลเปเปอร์มือถือ
+      </span>
+      <h4 style="color: #ffd700; font-size: 1.05rem; margin-top: 8px; font-weight: 700;">สร้างวอลเปเปอร์องค์เทพประจำตัว</h4>
+    </div>
+
+    <form id="wallpaperForm" onsubmit="generateCustomWallpaper(event)" style="display: flex; flex-direction: column; gap: 12px;">
+      <div>
+        <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">ชื่อ - สกุล</label>
+        <input type="text" id="wpUserName" class="form-control" placeholder="กรอกชื่อของคุณ" required style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+      </div>
+
+      <div>
+        <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
+        <select id="wpCategory" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+          <option value="wealth">💰 เสริมการเงิน & ทรัพย์สิน</option>
+          <option value="work">💼 เสริมการงาน & อำนาจ</option>
+          <option value="love">💖 เสริมความรัก & เมตตา</option>
+          <option value="protection">🛡️ คุ้มครองปัดเป่าภัย</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">2. เลือกองค์เทพที่ศรัทธา</label>
+        <select id="wpDeity" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
+          <option value="auto">✨ เลือกตามลัคนาเกิด (แนะนำ)</option>
+          <option value="ganesha">🐘 พระพิฆเนศ</option>
+          <option value="lakshmi">🪷 พระแม่ลักษมี</option>
+          <option value="vessavana">🏮 ท้าวเวสสุวรรณ</option>
+          <option value="naga">🐍 พญานาคราช</option>
+        </select>
+      </div>
+
+      <button type="submit" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; padding: 10px; border-radius: 10px; border: none; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); margin-top: 6px;">
+        🎨 สร้างวอลเปเปอร์
+      </button>
+    </form>
+
+    <div id="wallpaperResultArea" style="display: none; margin-top: 18px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 15px;">
+      <h5 style="color: #ffd700; font-size: 0.9rem; margin-bottom: 10px;">📱 ตัวอย่างวอลเปเปอร์</h5>
+      <div style="display: inline-block; border: 2px solid #ffd700; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.6); max-width: 200px; width: 100%;">
+        <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block;"></canvas>
+      </div>
+      <div style="margin-top: 14px; background: rgba(255,215,0,0.08); padding: 12px; border-radius: 10px; border: 1px solid rgba(234,179,8,0.3);">
+        <p style="font-size: 0.78rem; color: #fff; margin-bottom: 8px;">ชำระเงินเพื่อปลดล็อกลิงก์ดาวน์โหลด (49 บาท)</p>
+        <button type="button" onclick="openPaymentForWallpaper()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; padding: 8px 16px; border-radius: 16px; border: none; cursor: pointer; font-size: 0.8rem; box-shadow: 0 0 10px rgba(255,215,0,0.4);">
+          🪙 สแกนชำระเงินเพื่อดาวน์โหลด
+        </button>
+      </div>
+    </div>
+  </div>
+      
+     <div style="margin-bottom: 20px; overflow: hidden; border-radius: 18px; border: 1px solid var(--border-soft); box-shadow: 0 8px 25px rgba(0,0,0,0.5); cursor: pointer;" onclick="window.open('https://www.youtube.com/@kritshinestation', '_blank')">
   <img src="station-host.jpg" alt="KRIT SHINE STATION" style="width: 100%; display: block; object-fit: cover; transition: transform 0.3s ease;">
 </div>
 
@@ -11463,59 +11517,5 @@ function triggerWallpaperDownload() {
   link.click();
 }
 </script>
-  <!-- กล่องสร้างวอลเปเปอร์มือถือมงคล (แสดงผลในคอลัมน์ขวา) -->
-<div style="margin-top: 20px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
-  <div style="text-align: center; margin-bottom: 16px;">
-    <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
-      ✨ ออกแบบวอลเปเปอร์มือถือ
-    </span>
-    <h4 style="color: #ffd700; font-size: 1.05rem; margin-top: 8px; font-weight: 700;">สร้างวอลเปเปอร์องค์เทพประจำตัว</h4>
-  </div>
-
-  <form id="wallpaperForm" onsubmit="generateCustomWallpaper(event)" style="display: flex; flex-direction: column; gap: 12px;">
-    <div>
-      <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">ชื่อ - สกุล</label>
-      <input type="text" id="wpUserName" class="form-control" placeholder="กรอกชื่อของคุณ" required style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-    </div>
-
-    <div>
-      <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
-      <select id="wpCategory" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-        <option value="wealth">💰 เสริมการเงิน & ทรัพย์สิน</option>
-        <option value="work">💼 เสริมการงาน & อำนาจ</option>
-        <option value="love">💖 เสริมความรัก & เมตตา</option>
-        <option value="protection">🛡️ คุ้มครองปัดเป่าภัย</option>
-      </select>
-    </div>
-
-    <div>
-      <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">2. เลือกองค์เทพที่ศรัทธา</label>
-      <select id="wpDeity" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-        <option value="auto">✨ เลือกตามลัคนาเกิด (แนะนำ)</option>
-        <option value="ganesha">🐘 พระพิฆเนศ</option>
-        <option value="lakshmi">🪷 พระแม่ลักษมี</option>
-        <option value="vessavana">🏮 ท้าวเวสสุวรรณ</option>
-        <option value="naga">🐍 พญานาคราช</option>
-      </select>
-    </div>
-
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; padding: 10px; border-radius: 10px; border: none; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); margin-top: 6px;">
-      🎨 สร้างวอลเปเปอร์
-    </button>
-  </form>
-
-  <div id="wallpaperResultArea" style="display: none; margin-top: 18px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 15px;">
-    <h5 style="color: #ffd700; font-size: 0.9rem; margin-bottom: 10px;">📱 ตัวอย่างวอลเปเปอร์</h5>
-    <div style="display: inline-block; border: 2px solid #ffd700; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.6); max-width: 200px; width: 100%;">
-      <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block;"></canvas>
-    </div>
-    <div style="margin-top: 14px; background: rgba(255,215,0,0.08); padding: 12px; border-radius: 10px; border: 1px solid rgba(234,179,8,0.3);">
-      <p style="font-size: 0.78rem; color: #fff; margin-bottom: 8px;">ชำระเงินเพื่อปลดล็อกลิงก์ดาวน์โหลด (49 บาท)</p>
-      <button type="button" onclick="openPaymentForWallpaper()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; padding: 8px 16px; border-radius: 16px; border: none; cursor: pointer; font-size: 0.8rem; box-shadow: 0 0 10px rgba(255,215,0,0.4);">
-        🪙 สแกนชำระเงินเพื่อดาวน์โหลด
-      </button>
-    </div>
-  </div>
-</div>
 </body> 
 </html>
