@@ -11442,15 +11442,20 @@ function renderTransitAspectHtml(aspectList) {
 <!-- สคริปต์ JavaScript สำหรับประมวลผล Canvas -->
 <script>
 function generateCustomWallpaper(event) {
-  event.preventDefault();
+  event.preventDefault(); // บล็อกไม่ให้หน้าเว็บรีเฟรช
+
   const userName = document.getElementById('wpUserName').value;
   const deityChoice = document.getElementById('wpDeity').value;
   const resultArea = document.getElementById('wallpaperResultArea');
   const canvas = document.getElementById('wallpaperCanvas');
+  
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  
+
+  // แสดงกล่องผลลัพธ์ตัวอย่างวอลเปเปอร์
   resultArea.style.display = 'block';
-  
+
+  // โหลดรูปภาพองค์เทพมาเรนเดอร์บน Canvas
   let deityImgSrc = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop';
   if (deityChoice === 'ganesha') {
     deityImgSrc = 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?q=80&w=1000&auto=format&fit=crop';
@@ -11458,43 +11463,30 @@ function generateCustomWallpaper(event) {
     deityImgSrc = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop';
   } else if (deityChoice === 'vessavana') {
     deityImgSrc = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1000&auto=format&fit=crop';
-  } else if (deityChoice === 'naga') {
-    deityImgSrc = 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1000&auto=format&fit=crop';
   }
 
-  const deityImg = new Image();
-  deityImg.crossOrigin = "anonymous";
-  deityImg.src = deityImgSrc;
-  
-  deityImg.onload = function() {
-    ctx.fillStyle = '#040816';
+  const bgImg = new Image();
+  bgImg.crossOrigin = 'anonymous';
+  bgImg.src = deityImgSrc;
+
+  bgImg.onload = function() {
+    // วาดพื้นหลังแนวตั้ง 9:16 (1080x1920)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+    // ใส่ฟิลเตอร์ความมืดให้ตัวหนังสือเด่นชัดขึ้น
+    ctx.fillStyle = 'rgba(4, 7, 15, 0.45)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    const imgWidth = 900;
-    const imgHeight = 1100;
-    const imgX = (canvas.width - imgWidth) / 2;
-    const imgY = 250;
-    ctx.drawImage(deityImg, imgX, imgY, imgWidth, imgHeight);
-    
-    ctx.fillStyle = 'rgba(10, 16, 35, 0.85)';
-    ctx.fillRect(100, 1450, 880, 260);
-    
-    ctx.strokeStyle = '#f5c469';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(100, 1450, 880, 260);
-    
-    ctx.fillStyle = '#ffe49e';
-    ctx.font = 'bold 42px "Prompt", sans-serif';
+
+    // วาดข้อความชื่อผู้บูชาและชื่อเว็บไซต์ลงบนวอลเปเปอร์
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 55px Prompt, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('✨ วอลเปเปอร์เสริมดวงเฉพาะบุคคล ✨', canvas.width / 2, 1520);
-    
+    ctx.fillText(`Fulfillment : ${userName}`, canvas.width / 2, canvas.height - 250);
+
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 50px "Prompt", sans-serif';
-    ctx.fillText('เจ้าชะตา: ' + userName, canvas.width / 2, 1600);
-    
-    ctx.fillStyle = '#9bb0d3';
-    ctx.font = '32px "Prompt", sans-serif';
-    ctx.fillText('Krit Shine Astrology - เสริมพลังชีวิตและความสำเร็จ', canvas.width / 2, 1665);
+    ctx.font = '32px Prompt, sans-serif';
+    ctx.fillText('Krit Shine Astrology', canvas.width / 2, canvas.height - 180);
   };
 }
 
@@ -11511,6 +11503,7 @@ function openPaymentForWallpaper() {
 
 function triggerWallpaperDownload() {
   const canvas = document.getElementById('wallpaperCanvas');
+  if (!canvas) return;
   const link = document.createElement('a');
   link.download = 'KritShine_Auspicious_Wallpaper.png';
   link.href = canvas.toDataURL('image/png');
