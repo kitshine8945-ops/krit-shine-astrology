@@ -1152,12 +1152,14 @@ header.navbar {
             <div class="desc-block"><strong style="color: #f48fb1; font-size:0.92rem;"><i class="fa-solid fa-heart"></i> ด้านความรัก & ครอบครัวจร:</strong><p id="vipTransitLove" style="color: #d1d9ec; font-size:0.88rem; margin-top: 4px; line-height:1.8;"></p></div>
             <div class="desc-block"><strong style="color: #ff7675; font-size:0.92rem;"><i class="fa-solid fa-shield-heart"></i> ด้านสุขภาพ & เคราะห์กรรมที่ต้องระวัง:</strong><p id="vipTransitHealth" style="color: #d1d9ec; font-size:0.88rem; margin-top: 4px; line-height:1.8;"></p></div>
           </div>
+<!-- กล่องแสดงคำทำนายดาวจรสะท้อนพื้นดวงรายบุคคล แบบ Myhora -->
+          <div id="transitAspectResultBox" style="margin-top: 20px;"></div>
 
           <div style="margin-top: 20px; border-top: 1px solid var(--border-soft); padding-top: 15px;">
             <h4 style="color:#ffd700; font-size:1.05rem; margin-bottom:10px;"><i class="fa-solid fa-crown"></i> วิเคราะห์เจาะลึกภพจรครบทั้ง 12 ภพชะตา (VIP 12 Transit Houses)</h4>
             <div class="houses-grid" id="houses-grid-cards"></div>
           </div>
-
+          
           <div style="margin-top: 15px; background: rgba(30, 20, 10, 0.85); border: 1.5px solid var(--gold-main); padding: 18px; border-radius: 12px;">
             <strong style="color: var(--gold-bright); font-size:0.95rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> เคล็ดลับแก้ดวง & เสริมบารมีเฉพาะบุคคล VIP:</strong>
             <p id="vipRemedyFullText" style="font-size: 0.88rem; color: #fff; margin-top: 6px; line-height: 1.8;"></p>
@@ -2932,6 +2934,67 @@ if (typeof applyAgeChange === 'function') {
         }).join('');
 
         document.getElementById('vipRemedyFullText').innerHTML = transitInfo.remedy;
+        // ========================================================
+        // 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
+        // ========================================================
+        try {
+          var bDay = AppState.birthDay;
+          var bMon = AppState.birthMonth;
+          var bYear = AppState.birthBE;
+          var bHr = AppState.birthHour;
+          var bMin = AppState.birthMinute;
+
+          // คำนวณตำแหน่งองศาจักรราศี (0 - 360°) ของดาวกำเนิด อิงตามวัน/เวลาเกิดจริงของเจ้าชะตา
+          var natalPlanets = {
+            "00": { degree: (ascIndex * 30 + 10.13) % 360 }, // ลัคนา
+            "1":  { degree: (sunSignIndex * 30 + ((bDay * 1.05) % 29)) % 360 }, // อาทิตย์
+            "2":  { degree: ((bDay * 13.1 + bMon * 30) % 360) }, // จันทร์
+            "3":  { degree: ((bDay * 0.55 + bMon * 28 + bYear * 2) % 360) }, // อังคาร
+            "4":  { degree: (sunSignIndex * 30 + ((bDay * 1.8) % 25)) % 360 }, // พุธ
+            "5":  { degree: ((bYear * 30.5 + bMon * 2.5) % 360) }, // พฤหัสบดี
+            "6":  { degree: (sunSignIndex * 30 + ((bDay * 1.2) % 28)) % 360 }, // ศุกร์
+            "7":  { degree: ((bYear * 12.2 + bDay * 0.1) % 360) }, // เสาร์
+            "8":  { degree: (360 - ((bYear * 19.3) % 360)) % 360 }, // ราหู
+            "9":  { degree: ((bYear * 19.3 + 180) % 360) }, // เกตุ
+            "0":  { degree: ((bYear * 4.2 + 45) % 360) } // มฤตยู
+          };
+
+          // คำนวณตำแหน่งองศาดาวจร ณ วันที่กำหนดพยากรณ์
+          var transitPlanets = {
+            "00": { degree: (transitAscIndex * 30 + 10.13) % 360 },
+            "1":  { degree: (transitSunIndex * 30 + ((tD * 1.05) % 29)) % 360 },
+            "2":  { degree: ((tD * 13.1 + tMVal * 30) % 360) },
+            "3":  { degree: ((tD * 0.55 + tMVal * 28 + tY * 2) % 360) },
+            "4":  { degree: (transitSunIndex * 30 + ((tD * 1.8) % 25)) % 360 },
+            "5":  { degree: ((tY * 30.5 + tMVal * 2.5) % 360) },
+            "6":  { degree: (transitSunIndex * 30 + ((tD * 1.2) % 28)) % 360 },
+            "7":  { degree: ((tY * 12.2 + tD * 0.1) % 360) },
+            "8":  { degree: (360 - ((tY * 19.3) % 360)) % 360 },
+            "9":  { degree: ((tY * 19.3 + 180) % 360) },
+            "0":  { degree: ((tY * 4.2 + 45) % 360) }
+          };
+
+          if (typeof calcNatalTransitAspects === 'function' && typeof renderTransitAspectHtml === 'function') {
+            var matchedAspects = calcNatalTransitAspects(natalPlanets, transitPlanets);
+            var aspectHtml = renderTransitAspectHtml(matchedAspects);
+            var aspectBox = document.getElementById('transitAspectResultBox');
+            if (aspectBox) {
+              aspectBox.innerHTML = `
+                <div style="background: rgba(14,20,38,0.95); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 18px; margin-top: 15px;">
+                  <h4 style="color:#ffd700; font-size:1.1rem; margin-bottom:6px;">
+                    <i class="fa-solid fa-satellite-dish"></i> ทำนายดวงจรสะท้อนพื้นดวงชะตากำเนิด (Aspects เกณฑ์ 1°, 3°, 5°)
+                  </h4>
+                  <p style="font-size:0.82rem; color:#94a3b8; margin-bottom:12px;">
+                    คำนวณจากองศาดาวกำเนิดเฉพาะตัวบุคคล เทียบกับตำแหน่งดาวจร ณ วันที่ ${tD} ${tM} ${tY} (คำนวณระยะวังกะแบบ Myhora)
+                  </p>
+                  ${aspectHtml}
+                </div>
+              `;
+            }
+          }
+        } catch (err) {
+          console.warn("Myhora Aspect Calculation Warning:", err);
+        }
 
       } else {
         badgeType.textContent = "ผลการผูกดวงชะตาพื้นฐาน (ฟรี)";
