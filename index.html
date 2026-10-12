@@ -789,7 +789,7 @@ header.navbar {
     <div class="cat-name">คำนวณหวยมงคล</div>
     <div class="cat-sub">เลขเด่นประจำวัน & เฉพาะดวง</div>
 </div>
-<div class="cat-item" onclick="openFeatureModal('daily')">
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('daily');}">
   <div class="cat-icon-circle"><i class="fa-solid fa-sun"></i></div>
   <div class="cat-name">ดูดวงรายวัน</div>
   <div class="cat-sub">ดวงประจำวันตามลัคนา</div>
