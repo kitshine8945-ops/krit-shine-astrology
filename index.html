@@ -1196,64 +1196,7 @@ header.navbar {
 
     <!-- ขวา: กล่องคำคม & บทความ -->
     <div>
-<!-- กล่องสร้างวอลเปเปอร์มือถือมงคล (เวอร์ชันสมบูรณ์ไร้กล่องกวนใจ) -->
-<div style="margin-top: 20px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
-  <div style="text-align: center; margin-bottom: 16px;">
-    <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
-      ✨ ออกแบบวอลเปเปอร์มือถือ
-    </span>
-    <h4 style="color: #ffd700; font-size: 1.05rem; margin-top: 8px; font-weight: 700;">สร้างวอลเปเปอร์องค์เทพประจำตัว</h4>
-  </div>
-
-  <div id="wallpaperForm" style="display: flex; flex-direction: column; gap: 12px;">
-    
- <div class="form-field">
-  <label>ชื่อ-นามสกุล เจ้าของวอลเปเปอร์มงคล</label>
-  <input type="text" id="auspiciousNameInput" class="form-control" placeholder="กรอกชื่อ - สกุล" oninput="syncBirthDataToAllModules()" required style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-</div>
-
-    <div>
-      <label style="display: block; font-size: 0.8rem; c(olor: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
-      <select id="wpCategory" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-        <option value="auto">✨ เลือกตามความต้องการ (แนะนำ)</option>
-        <option value="wealth">💰 เสริมการเงิน & ทรัพย์สิน</option>
-        <option value="work">💼 เสริมการงาน & อำนาจ</option>
-        <option value="love">💖 เสริมความรัก & เมตตา</option>
-        <option value="protection">🛡️ คุ้มครองปัดเป่าภัย</option>
-      </select>
-    </div>
-
-    <div>
-      <label style="display: block; font-size: 0.8rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">2. เลือกองค์เทพที่ศรัทธา</label>
-      <select id="wpDeity" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem;">
-        <option value="auto">✨ เลือกตามลัคนาเกิด (แนะนำ)</option>
-        <option value="ganesha">🐘 พระพิฆเนศ</option>
-        <option value="lakshmi">🪷 พระแม่ลักษมี</option>
-        <option value="vessavana">🏮 ท้าวเวสสุวรรณ</option>
-        <option value="naga">🐍 พญานาคราช</option>
-      </select>
-    </div>
-
-    <button type="button" onclick="try { generateCustomWallpaper(); } catch(err) { alert('เกิดข้อผิดพลาด: ' + err.message); }" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; padding: 10px; border-radius: 10px; border: none; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); margin-top: 6px;">
-  🎨 สร้างวอลเปเปอร์
-</button>
-  </div>
-
-  <div id="wallpaperResultArea" style="display: none; margin-top: 18px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 15px;">
-    <h5 style="color: #ffd700; font-size: 0.9rem; margin-bottom: 10px;">📱 ตัวอย่างวอลเปเปอร์</h5>
-    <div style="display: inline-block; border: 2px solid #ffd700; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.6); max-width: 200px; width: 100%;">
-      <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block;"></canvas>
-    </div>
-    <div style="margin-top: 14px; background: rgba(255,215,0,0.08); padding: 12px; border-radius: 10px; border: 1px solid rgba(234,179,8,0.3);">
-      <p style="font-size: 0.78rem; color: #fff; margin-bottom: 8px;">ชำระเงินเพื่อปลดล็อกลิงก์ดาวน์โหลด (49 บาท)</p>
-      <button type="button" onclick="openPaymentForWallpaper()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; padding: 8px 16px; border-radius: 16px; border: none; cursor: pointer; font-size: 0.8rem; box-shadow: 0 0 10px rgba(255,215,0,0.4);">
-        🪙 สแกนชำระเงินเพื่อดาวน์โหลด
-      </button>
-    </div>
-  </div>
-</div>
-      
-     <div style="margin-bottom: 20px; overflow: hidden; border-radius: 18px; border: 1px solid var(--border-soft); box-shadow: 0 8px 25px rgba(0,0,0,0.5); cursor: pointer;" onclick="window.open('https://www.youtube.com/@kritshinestation', '_blank')">
+      <div style="margin-bottom: 20px; overflow: hidden; border-radius: 18px; border: 1px solid var(--border-soft); box-shadow: 0 8px 25px rgba(0,0,0,0.5); cursor: pointer;" onclick="window.open('https://www.youtube.com/@kritshinestation', '_blank')">
   <img src="station-host.jpg" alt="KRIT SHINE STATION" style="width: 100%; display: block; object-fit: cover; transition: transform 0.3s ease;">
 </div>
 
@@ -10165,9 +10108,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     bigText.innerHTML = vipText;
                 }
+</script>
 <!-- ========================================================== -->
 <!-- 🌟 โค้ดเสริมฉบับแยกกล่องคำทำนาย ฟรี / VIP ภายในตัว (ครอบคลุมทั้ง 4 ฟีเจอร์) -->
 <!-- ========================================================== -->
+<style>
     /* ซ่อนส่วนคำพยากรณ์ VIP ทันทีเมื่อยังไม่ได้เปิดโหมด VIP หรือยังไม่เป็นสมาชิก */
     .modal-content:not(.vip-unlocked) .isolated-vip-prediction-block {
         display: none !important;
@@ -10777,7 +10722,10 @@ function switchWesternMode(mode) {
               </div>
             </div>
            </div>
-    document.addEventListener('DOMContentLoaded', function() {
+    `;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
     // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
     const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
     birthInputs.forEach(id => {
@@ -10863,39 +10811,39 @@ function switchWesternMode(mode) {
     let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุดิน' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน / ธาตุน้ำ' : 'ธาตุน้ำ / ธาตุไม้')));
     let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุทอง')));
 
-   // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
+    // คลังคำทำนายโหมดฟรี (อิงวันเกิด)
     const FREE_BAZI_POOLS = [
-      "ดิถี พื้นดวงเกิดวันที่ " + d + " พ.ศ. " + yBE + " สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล",
-      "ดิถี จากรอบวันเกิด " + d + " พ.ศ. " + yBE + " บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้า",
-      "ดิถี ดวงชะตากำเนิด " + d + " พ.ศ. " + yBE + " โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว"
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) จากรอบวันเกิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} บ่งบอกถึงตัวตนที่มีเสน่ห์ รักอิสระ นำพาชีวิตก้าวหน้าด้วยพลังงาน <strong>${yongShen}</strong> ระวังธาตุให้โทษ (${jiShen})`,
+      `ดิถี ${dayMaster.name} (${dayMaster.elem}) ดวงชะตากำเนิด ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} ${yBE} โดดเด่นด้านความสุขุมรอบคอบและการวางแผนระยะยาว สร้างความมั่นคงด้วยการเปิดรับพลังงาน <strong>${yongShen}</strong>`
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-   // --- คลังคำทำนายวันจร VIP สำหรับ 5 มิติชะตาชีวิต (เปลี่ยนตามวันจร tD, tM, tY) ---
+    // --- คลังคำทำนายวันจร VIP สำหรับ 5 มิติชะตาชีวิต (เปลี่ยนตามวันจร tD, tM, tY) ---
     const VIP_5D_POOLS = [
       {
-        fin: "อิงวันเกิด (" + d + "/" + m + "/" + yBE + ") และวันจร " + tD + " " + tMName + " " + tY + ": กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ",
-        work: "อิทธิพลวันจร " + tD + " " + tMName + " " + tY + " ส่งเสริมให้ดิถี " + dayMaster.name + " โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์",
-        love: "ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน",
-        fengshui: "จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (" + yongShen + ") เพื่อดึงดูดกระแสเงินสดตลอดปี " + tY
+        fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
+        work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
+        love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน`,
+        fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
       },
       {
-        fin: "รอบวันจรพยากรณ์ " + tD + " " + tMName + " " + tY + " (อิงพื้นดวง " + d + "/" + m + "/" + yBE + "): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน",
-        work: "พลังงานดาวจร " + tD + " " + tMName + " " + tY + " เปิดทางให้ดิถี " + dayMaster.name + " สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่",
-        love: "ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่",
-        fengshui: "กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี " + tY
+        fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
+        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
+        love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่`,
+        fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
       },
       {
-        fin: "อิงวันจร " + tD + " " + tMName + " " + tY + ": การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี " + dayMaster.name + " มีเกณฑ์สะสมความมั่งคั่งระยะยาว",
-        work: "งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร " + tD + " " + tMName + " " + tY + " ปิดดีลสำเร็จลุล่วงด้วยดี",
-        love: "คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม",
-        fengshui: "เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (" + yongShen + ")"
+        fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
+        work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
+        love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
+        fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
       },
       {
-        fin: "วิเคราะห์จากพื้นดวง " + d + "/" + m + "/" + yBE + " ปะทะพลังงานวันจร " + tD + " " + tMName + " " + tY + ": มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา",
-        work: "พลังงานดาวจร " + tD + " " + tMName + " " + tY + " หนุนนำให้ดิถี " + dayMaster.name + " มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ",
-        love: "ความรักความสัมพันธ์มีความเข้าอกเข้าใจกันดี คนโสดมีเกณฑ์พบรักผ่านการเดินทางหรือสังคมการทำงาน",
-        fengshui: "กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี " + tY
+        fin: `วิเคราะห์จากพื้นดวง ${d}/${m}/${yBE} ปะทะพลังงานวันจร ${tD} ${tMName} ${tY}: มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา`,
+        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ`,
+        love: `ความรักความสัมพันธ์มีความเข้าอกเข้าใจกันดี คนโสดมีเกณฑ์พบรักผ่านการเดินทางหรือสังคมการทำงาน`,
+        fengshui: `กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี ${tY}`
       }
     ];
 
@@ -10904,11 +10852,11 @@ function switchWesternMode(mode) {
     let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
-   // --- สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY) ---
+    // --- สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY) ---
     const STRENGTH_TRANSIT_POOLS = [
-      "พลังงานแก่นแท้: " + dayMaster.desc + " | ปะทะพลังงานดาวจรวันที่ " + tD + " " + tMName + " " + tY + " ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่",
-      "พลังงานแก่นแท้: " + dayMaster.desc + " | อิทธิพลการโคจรในวันจร " + tD + " " + tMName + " " + tY + " ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม",
-      "พลังงานแก่นแท้: " + dayMaster.desc + " | กระแสพลังงานปะทะวันจร " + tD + " " + tMName + " " + tY + " เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ"
+      `พลังงานแก่นแท้: ${dayMaster.desc} | ปะทะพลังงานดาวจรวันที่ ${tD} ${tMName} ${tY} ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่`,
+      `พลังงานแก่นแท้: ${dayMaster.desc} | อิทธิพลการโคจรในวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม`,
+      `พลังงานแก่นแท้: ${dayMaster.desc} | กระแสพลังงานปะทะวันจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ`
     ];
     let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
     let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
@@ -10932,11 +10880,11 @@ function switchWesternMode(mode) {
     if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
     if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
 
-// --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) ---
+    // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) (อิงตามวันเกิด d, m, yBE โดยใช้ seed ที่มาจากวันเกิด ทำให้เมื่อเปลี่ยนวันเกิด คำทำนายจะเปลี่ยนตามทันที และล็อกไว้ไม่เปลี่ยนตามวันจรรายวัน) ---
     const LUCK_CYCLE_POOLS = [
-      "วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด " + d + "/" + m + "/" + yBE + " ดิถี " + dayMaster.name + ") กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (" + yongShen + ") ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด",
-      "ทศวรรษชะตานี้ (อิงพื้นดวง " + d + "/" + m + "/" + yBE + " ดิถี " + dayMaster.name + ") โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (" + yongShen + ") ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม",
-      "วัฏจักรชีวิตรอบนี้ (อิงวันเกิด " + d + "/" + m + "/" + yBE + " ดิถี " + dayMaster.name + ") เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (" + yongShen + ") จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต"
+      `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`,
+      `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
+      `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต`
     ];
     let luckCycleIndex = seed % LUCK_CYCLE_POOLS.length;
     let selectedLuckCycle = LUCK_CYCLE_POOLS[luckCycleIndex];
@@ -10947,30 +10895,34 @@ function switchWesternMode(mode) {
     if (AppState.currentBaziMode === 'free') {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
-
-      const freeTitle = document.getElementById('bazi-free-title');
-      const freeDesc = document.getElementById('bazi-free-desc');
-      if (freeTitle) freeTitle.textContent = "ดิถีธาตุกำเนิดของคุณ: " + dayMaster.name + " (ธาตุ" + dayMaster.elem + dayMaster.pol + ")";
-      if (freeDesc) {
-        freeDesc.innerHTML = 
-          "<strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> " + dayMaster.desc + "<br><br>" +
-          "<div style='background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;'>" +
-          "<i class='fa-solid fa-wand-magic-sparkles' style='color:#ffd700;'></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> " + (typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : 'ไม่มีข้อมูลคำทำนาย') +
-          "</div>";
-      }
+    }
+      // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
+    let luckPoolIndex = seed % LUCK_CYCLE_POOLS.length;
+    
+    const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
+    if (luckDescEl && typeof LUCK_CYCLE_POOLS !== 'undefined') {
+        luckDescEl.innerHTML = LUCK_CYCLE_POOLS[luckPoolIndex];
+    }
+      document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
+      document.getElementById('bazi-free-desc').innerHTML = `
+        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+        <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
+        </div>
+      `;
     } else {
       if (freeRes) freeRes.style.display = 'none';
       if (vipRes) vipRes.style.display = 'block';
 
       const pillarsGrid = document.getElementById('bazi-pillars-grid');
       if (pillarsGrid) {
-        pillarsGrid.innerHTML = 
-          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + yearStem + '</div></div>' +
-          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + monthStem + '</div></div>' +
-          '<div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">' + dayStem + '</div></div>' +
-          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + hourStem + '</div></div>';
+        pillarsGrid.innerHTML = `
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${yearStem}</div></div>
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${monthStem}</div></div>
+          <div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">${dayStem}</div></div>
+          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${hourStem}</div></div>
+        `;
       }
-    }
 
       // --- 1. สภาพดวงชะตา (เปลี่ยนตามวันจร และเปลี่ยนตามวันเกิดใหม่) ---
       document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
@@ -11433,130 +11385,6 @@ function renderTransitAspectHtml(aspectList) {
   html += `</div>`;
   return html;
 } 
-<!-- สคริปต์ JavaScript สำหรับประมวลผล Canvas -->
-<script>
-function generateCustomWallpaper() {
-  const userNameInput = document.getElementById('auspiciousNameInput');
-  const categorySelect = document.getElementById('wpCategory');
-  const deitySelect = document.getElementById('wpDeity');
-  const resultArea = document.getElementById('wallpaperResultArea');
-  const canvas = document.getElementById('wallpaperCanvas');
-
-  if (!canvas) {
-    alert('ไม่พบ Canvas สำหรับสร้างวอลเปเปอร์');
-    return;
-  }
-
-  const userName = userNameInput ? userNameInput.value.trim() : '';
-  
-  if (!userName) {
-    alert('⚠️ กรุณากรอกชื่อ-นามสกุล เจ้าของวอลเปเปอร์มงคลก่อนครับ');
-    if (userNameInput) userNameInput.focus();
-    return;
-  }
-
-  const deityChoice = deitySelect ? deitySelect.value : 'auto';
-  
-  // แปลงค่ารหัสองค์เทพเป็นชื่อภาษาไทยสำหรับแสดงบนภาพ
-  let deityName = 'พระพิฆเนศมหาเทพ';
-  if (deityChoice === 'lakshmi') deityName = 'พระแม่ลักษมี มหาเทวี';
-  else if (deityChoice === 'vessavana') deityName = 'ท้าวเวสสุวรรณโณ';
-  else if (deityChoice === 'naga') deityName = 'พญานาคราชธิบดี';
-
-  if (resultArea) {
-    resultArea.style.display = 'block';
-    resultArea.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  const ctx = canvas.getContext('2d');
-
-  // 1. วาดพื้นหลังโทนสีมงคล
-  const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  bgGradient.addColorStop(0, '#040816');
-  bgGradient.addColorStop(0.5, '#0f172a');
-  bgGradient.addColorStop(1, '#030712');
-  ctx.fillStyle = bgGradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // 2. วาดกรอบขอบทองมงคล
-  ctx.strokeStyle = '#f5c469';
-  ctx.lineWidth = 16;
-  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-
-  ctx.strokeStyle = 'rgba(245, 196, 105, 0.35)';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
-
-  // 3. หัวข้อเว็บไซต์
-  ctx.fillStyle = '#ffe49e';
-  ctx.font = 'bold 44px Prompt, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('✨ KRIT SHINE ASTROLOGY ✨', canvas.width / 2, 180);
-
-  // 4. ชื่อองค์เทพ
-  ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 64px Prompt, sans-serif';
-  ctx.fillText(deityName, canvas.width / 2, 300);
-
-  // 5. วงกลมเรืองแสงออร่าองค์เทพ
-  ctx.save();
-  ctx.shadowColor = '#f5c469';
-  ctx.shadowBlur = 40;
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, 680, 240, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(245, 196, 105, 0.12)';
-  ctx.fill();
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = '#ffd700';
-  ctx.stroke();
-  ctx.restore();
-
-  // ไอคอนตรงกลาง
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 110px Prompt, sans-serif';
-  ctx.fillText('🕉️', canvas.width / 2, 720);
-
-  // 6. กล่องป้ายชื่อผู้บูชา
-  ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-  ctx.fillRect(120, 1040, canvas.width - 240, 200);
-  ctx.strokeStyle = '#f5c469';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(120, 1040, canvas.width - 240, 200);
-
-  ctx.fillStyle = '#9bb0d3';
-  ctx.font = '36px Prompt, sans-serif';
-  ctx.fillText('วอลเปเปอร์มงคลเฉพาะบุคคลสำหรับ', canvas.width / 2, 1115);
-
-  ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 50px Prompt, sans-serif';
-  let displayName = userName.length > 22 ? userName.substring(0, 22) + '...' : userName;
-  ctx.fillText(displayName, canvas.width / 2, 1190);
-
-  // 7. ลายเซ็นลิขสิทธิ์ท้ายภาพ
-  ctx.fillStyle = '#9bb0d3';
-  ctx.font = '32px Prompt, sans-serif';
-  ctx.fillText('Krit Shine Astrology ลิขสิทธิ์แท้เฉพาะคุณ', canvas.width / 2, 1780);
-}
-
-function openPaymentForWallpaper() {
-  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  if (isVip) {
-    alert('ท่านเป็นสมาชิก VIP สามารถดาวน์โหลดวอลเปเปอร์ความละเอียดสูงได้ฟรีทันที!');
-    triggerWallpaperDownload();
-  } else {
-    alert('ระบบกำลังเปิดหน้าต่าง QR Code ชำระเงิน 49 บาท เมื่อชำระสำเร็จจะปลดล็อกลิงก์ดาวน์โหลดทันทีครับ');
-    setTimeout(triggerWallpaperDownload, 1000);
-  }
-}
-
-function triggerWallpaperDownload() {
-  const canvas = document.getElementById('wallpaperCanvas');
-  if (!canvas) return;
-  const link = document.createElement('a');
-  link.download = 'KritShine_Auspicious_Wallpaper.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
 </script>
-</body> 
+</body>
 </html>
