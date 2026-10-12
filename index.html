@@ -11458,7 +11458,6 @@ function generateCustomWallpaper() {
   const userName = userNameInput ? userNameInput.value.trim() : '';
   const deityChoice = deitySelect ? deitySelect.value : 'องค์เทพมงคล';
 
-  // แสดงพื้นที่ผลลัพธ์และเลื่อนจอลงมา
   if (resultArea) {
     resultArea.style.display = 'block';
     resultArea.scrollIntoView({ behavior: 'smooth' });
@@ -11466,7 +11465,7 @@ function generateCustomWallpaper() {
 
   const ctx = canvas.getContext('2d');
 
-  // 1. วาดพื้นหลังโทนสีมงคล (Midnight & Gold) ทันที
+  // วาดพื้นหลังโทนสีมงคล
   const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   bgGradient.addColorStop(0, '#080d1a');
   bgGradient.addColorStop(0.5, '#101b41');
@@ -11474,7 +11473,7 @@ function generateCustomWallpaper() {
   ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 2. วาดกรอบขอบทองมงคล
+  // วาดกรอบขอบทอง
   ctx.strokeStyle = '#f5c469';
   ctx.lineWidth = 16;
   ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
@@ -11483,26 +11482,46 @@ function generateCustomWallpaper() {
   ctx.lineWidth = 4;
   ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
 
-  // 3. วาดข้อความหัวข้อ
+  // วาดข้อความหัวข้อ
   ctx.fillStyle = '#ffe49e';
   ctx.font = 'bold 46px Prompt, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('✨ วอลเปเปอร์เสริมดวงชะตา ✨', canvas.width / 2, 220);
 
-  // 4. วาดชื่อผู้บูชา (ดึงมาจากช่องกรอกชื่อ)
+  // วาดชื่อผู้บูชา
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 64px Prompt, sans-serif';
   ctx.fillText(userName ? `คุณ ${userName}` : 'ผู้ศรัทธา', canvas.width / 2, canvas.height / 2 - 50);
 
-  // 5. วาดรายละเอียดด้าน
+  // วาดรายละเอียดด้าน
   ctx.fillStyle = '#f5c469';
   ctx.font = '38px Prompt, sans-serif';
-  ctx.fillText(`ผ่านการพิธีมงคลเฉพาะบุคคล`, canvas.width / 2, canvas.height / 2 + 50);
+  ctx.fillText('ผ่านการพิธีมงคลเฉพาะบุคคล', canvas.width / 2, canvas.height / 2 + 50);
 
-  // 6. วาดลายเซ็นชื่อเว็บไซต์ด้านล่าง
+  // วาดลายเซ็นชื่อเว็บไซต์
   ctx.fillStyle = '#9bb0d3';
   ctx.font = '30px Prompt, sans-serif';
   ctx.fillText('Krit Shine Astrology', canvas.width / 2, canvas.height - 180);
+}
+
+function openPaymentForWallpaper() {
+  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  if (isVip) {
+    alert('ท่านเป็นสมาชิก VIP สามารถดาวน์โหลดวอลเปเปอร์ความละเอียดสูงได้ฟรีทันที!');
+    triggerWallpaperDownload();
+  } else {
+    alert('ระบบกำลังเปิดหน้าต่าง QR Code ชำระเงิน 49 บาท เมื่อชำระสำเร็จจะปลดล็อกลิงก์ดาวน์โหลดทันทีครับ');
+    setTimeout(triggerWallpaperDownload, 1000);
+  }
+}
+
+function triggerWallpaperDownload() {
+  const canvas = document.getElementById('wallpaperCanvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'KritShine_Auspicious_Wallpaper.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
 }
 </script>
 </body> 
