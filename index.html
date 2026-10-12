@@ -10904,11 +10904,11 @@ function switchWesternMode(mode) {
     let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
     let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
 
-    // --- สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY) ---
+   // --- สภาพดวงชะตา (เปลี่ยนตามวันจร tD, tM, tY) ---
     const STRENGTH_TRANSIT_POOLS = [
-      `พลังงานแก่นแท้: ${dayMaster.desc} | ปะทะพลังงานดาวจรวันที่ ${tD} ${tMName} ${tY} ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่`,
-      `พลังงานแก่นแท้: ${dayMaster.desc} | อิทธิพลการโคจรในวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม`,
-      `พลังงานแก่นแท้: ${dayMaster.desc} | กระแสพลังงานปะทะวันจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ`
+      "พลังงานแก่นแท้: " + dayMaster.desc + " | ปะทะพลังงานดาวจรวันที่ " + tD + " " + tMName + " " + tY + " ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่",
+      "พลังงานแก่นแท้: " + dayMaster.desc + " | อิทธิพลการโคจรในวันจร " + tD + " " + tMName + " " + tY + " ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม",
+      "พลังงานแก่นแท้: " + dayMaster.desc + " | กระแสพลังงานปะทะวันจร " + tD + " " + tMName + " " + tY + " เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ"
     ];
     let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
     let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
