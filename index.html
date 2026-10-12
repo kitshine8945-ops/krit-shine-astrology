@@ -1292,13 +1292,15 @@ header.navbar {
                </div>
      </main>
 
-  <!-- 5. เซกชันดูดวงตามศาสตร์ยอดนิยม -->
+ <!-- 4. เซกชันดูดวงตามศาสตร์ยอดนิยม -->
   <section class="popular-astro-section">
     <div class="popular-header">
       <h3 style="color:var(--gold-bright); font-size:1.25rem;"><i class="fa-solid fa-fire"></i> ดูดวงตามศาสตร์ยอดนิยม</h3>
       <a onclick="scrollToSection('category-bar')" style="font-size:0.85rem; color:var(--gold-main); cursor:pointer;">ดูทั้งหมด <i class="fa-solid fa-chevron-right"></i></a>
     </div>
-<div class="popular-card" onclick="openLottoModal()">
+
+    <div class="popular-grid">
+      <div class="popular-card" onclick="openLottoModal()">
         <img class="popular-card-img" src="1.jpg" alt="คำนวณหวยมงคล">
         <div class="popular-card-body">
           <h4 class="popular-card-title">คำนวณหวยมงคล</h4>
@@ -1306,6 +1308,7 @@ header.navbar {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
+
       <div class="popular-card" onclick="scrollToFormVip()">
         <img class="popular-card-img" src="2.jpg" alt="ดูดวงตามลัคนา">
         <div class="popular-card-body">
@@ -1314,6 +1317,7 @@ header.navbar {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
+
       <div class="popular-card" onclick="openFeatureModal('tarot')">
         <img class="popular-card-img" src="3.jpg" alt="ไพ่ทาโรต์">
         <div class="popular-card-body">
@@ -1322,7 +1326,8 @@ header.navbar {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
-    <div class="popular-card" onclick="openFeatureModal('bazi'); calcBaziEngine();">
+
+      <div class="popular-card" onclick="openFeatureModal('bazi'); calcBaziEngine();">
         <img class="popular-card-img" src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?q=80&w=800&auto=format&fit=crop" alt="ปาจื่อ BaZi">
         <div class="popular-card-body">
           <h4 class="popular-card-title">ปาจื่อ (BaZi)</h4>
