@@ -7989,7 +7989,7 @@ window.askCosmicBall = function() {
 </div>
 
 <script>
-// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่มถาวร
+// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่ม
 window.openKsPremFeature = function(modalId) {
     if (!modalId) return;
     var target = document.getElementById(modalId);
@@ -7999,27 +7999,35 @@ window.openKsPremFeature = function(modalId) {
     }
 };
 
-// ผูกคลิกการ์ด 4 ป๊อปอัปอัตโนมัติ
-document.addEventListener('DOMContentLoaded', function() {
-    bindKsCards();
-});
+// ผูกคลิกการ์ด 4 ป๊อปอัปอัตโนมัติ (เพิ่มระบบตรวจเช็กวันเกิดทันทีตั้งแต่คลิกแรก)
 function bindKsCards() {
     document.querySelectorAll('.cat-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
             var txt = this.innerText || '';
-            var mId = '';
-            if (txt.includes('รหัสกรรม')) mId = 'karmicModal';
-            else if (txt.includes('มหาพิชัยสงคราม')) mId = 'lifeTurningModal';
-            else if (txt.includes('จิตวิญญาณ')) mId = 'soulElementModal';
-            else if (txt.includes('ขุมทรัพย์')) mId = 'wealthFlowModal';
-            if (mId) {
-                e.preventDefault();
-                e.stopPropagation();
-                window.openKsPremFeature(mId);
+            var isPrem4 = txt.includes('รหัสกรรม') || txt.includes('มหาพิชัยสงคราม') || txt.includes('จิตวิญญาณ') || txt.includes('ขุมทรัพย์');
+            
+            if (isPrem4) {
+                var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
+                
+                // 1. ถ้ายังไม่ได้เลือกวันเกิด ให้เด้ง alert เตือนและเลื่อนจอลงไปที่ฟอร์มทันที
+                if (!bD) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
+                    if (typeof scrollToForm === 'function') scrollToForm();
+                    return;
+                }
+
+                // 2. ถ้ากรอกวันเกิดแล้ว ให้เปิดหน้าต่างคำทำนายใหญ่ได้ตามปกติ
+                // (ปล่อยให้ event ไหลไปเรียก openFeatureModal ของแต่ละอันตามปกติ)
             }
         }, true);
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    bindKsCards();
+});
 bindKsCards();
 
 // ปิดป๊อปอัปทั้งหมด
@@ -8029,7 +8037,7 @@ window.closeAllKsPremModals = function() {
         if (m) m.style.display = 'none';
     });
 };
-
+</script>
 // ตรวจสอบสถานะ VIP
 window.isKsVipUser = function() {
     try {
