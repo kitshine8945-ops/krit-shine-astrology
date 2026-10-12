@@ -8003,8 +8003,6 @@ window.openKsPremFeature = function(modalId) {
 window.calcKarmic = function() {
     var res = document.getElementById('karmic_result');
     if (!res) return;
-    var bD = parseInt(document.getElementById('birthDay')?.value, 10) || 1;
-    var bM = parseInt(document.getElementById('birthMonth')?.value, 10) || 1;
     res.style.display = 'block';
     res.innerHTML = `
         <div style="color:#ffd700; font-weight:bold; margin-bottom:8px;">🔮 ผลการถอดรหัสพันธะกรรมดั้งเดิม:</div>
@@ -8060,13 +8058,13 @@ function bindKsCards() {
             else if (txt.includes('ขุมทรัพย์')) { mId = 'wealthFlowModal'; calcFunc = window.calcWealthFlow; }
 
             if (mId) {
-                e.preventDefault();
-                e.stopPropagation();
-
                 var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
 
-                // 1. ถ้ายังไม่ใส่วันเกิด: เตือนทันทีและเลื่อนจอไปฟอร์ม
+                // 1. ถ้ายังไม่ใส่วันเกิด: ระงับการเปิดป๊อปอัป เตือนทันที และเลื่อนจอไปฟอร์ม
                 if (!bD) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                     alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
                     if (typeof scrollToForm === 'function') {
                         scrollToForm();
@@ -8074,10 +8072,12 @@ function bindKsCards() {
                         var formEl = document.getElementById('birth-form');
                         if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
                     }
-                    return;
+                    return false;
                 }
 
                 // 2. ถ้ามีวันเกิดแล้ว: เปิด Modal และคำนวณทันที
+                e.preventDefault();
+                e.stopPropagation();
                 window.openKsPremFeature(mId);
                 if (typeof calcFunc === 'function') {
                     calcFunc();
