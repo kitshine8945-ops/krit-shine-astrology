@@ -819,24 +819,43 @@ header.navbar {
       <div class="cat-item" onclick="openFeatureModal('phone')"><div class="cat-icon-circle"><i class="fa-solid fa-mobile-screen-button"></i></div><div class="cat-name">เบอร์โทรศัพท์</div><div class="cat-sub">ถอดรหัสคู่เลขรับทรัพย์</div></div>
       <div class="cat-item" onclick="openFeatureModal('house')"><div class="cat-icon-circle"><i class="fa-solid fa-house"></i></div><div class="cat-name">บ้านเลขที่</div><div class="cat-sub">พลังกำลังดาวร่มเย็น</div></div>
             
-      <div class="cat-item" onclick="openFeatureModal('compatibility')"><div class="cat-icon-circle"><i class="fa-solid fa-heart-circle-bolt"></i></div><div class="cat-name">สมพงษ์คู่ & หุ้นส่วน</div><div class="cat-sub">เช็กเกณฑ์รัก & ธุรกิจ</div></div>
+     <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('compatibility');}">
+        <div class="cat-icon-circle"><i class="fa-solid fa-heart-circle-bolt"></i></div>
+        <div class="cat-name">สมพงษ์คู่ & หุ้นส่วน</div>
+        <div class="cat-sub">เช็กเกณฑ์รัก & ธุรกิจ</div>
+      </div>
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('num7base');}">
-    <div class="cat-icon-circle"><i class="fa-solid fa-table-cells"></i></div>
-    <div class="cat-name">เลข 7 ตัว 4/9 ฐาน</div>
-    <div class="cat-sub">ฟรี vs VIP คลังทำนาย</div>
+        <div class="cat-icon-circle"><i class="fa-solid fa-table-cells"></i></div>
+        <div class="cat-name">เลข 7 ตัว 4/9 ฐาน</div>
+        <div class="cat-sub">ฟรี vs VIP คลังทำนาย</div>
+      </div>
 </div>
-     <div class="cat-item" onclick="openFeatureModal('mahataksa')"><div class="cat-icon-circle"><i class="fa-solid fa-ring"></i></div><div class="cat-name">มหาทักษาเสวยอายุ</div><div class="cat-sub">เทวดาเสวยอายุ & แทรก</div></div>
-      <div class="cat-item" onclick="openFeatureModal('chatra')"><div class="cat-icon-circle"><i class="fa-solid fa-shield-halved"></i></div><div class="cat-name">ดวงฉัตรสามชั้น</div><div class="cat-sub">วิเคราะห์ 3 ระดับชะตา</div></div>
+   <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('mahataksa');}">
+        <div class="cat-icon-circle"><i class="fa-solid fa-ring"></i></div>
+        <div class="cat-name">มหาทักษาเสวยอายุ</div>
+        <div class="cat-sub">เทวดาเสวยอายุ & แทรก</div>
+      </div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('chatra');}">
+        <div class="cat-icon-circle"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="cat-name">ดวงฉัตรสามชั้น</div>
+        <div class="cat-sub">วิเคราะห์ 3 ระดับชะตา</div>
+      </div>
       <div class="cat-item" onclick="openFeatureModal('tarot')">
         <div class="cat-icon-circle"><i class="fa-solid fa-clone"></i></div>
         <div class="cat-name">ไพ่ทาโรต์</div>
         <div class="cat-sub">3 ใบ & Celtic Cross</div>
       </div>
-      <div class="cat-item" onclick="openFeatureModal('auspicious')"><div class="cat-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="cat-name">ฤกษ์มงคลเฉพาะตน</div><div class="cat-sub">เปิดร้าน ออกรถ ไม่ชง</div></div>
+      </div>
+     <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('auspicious');}">
+        <div class="cat-icon-circle"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="cat-name">ฤกษ์มงคลเฉพาะตน</div>
+        <div class="cat-sub">เปิดร้าน ออกรถ ไม่ชง</div>
+      </div>
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('uranian');}">
         <div class="cat-icon-circle"><i class="fa-solid fa-atom"></i></div>
         <div class="cat-name">ยูเรเนียน</div>
         <div class="cat-sub">ฮาร์มอนิก & ดาวทิพย์</div>
+      </div>
       </div>
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('western');}">
     <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
