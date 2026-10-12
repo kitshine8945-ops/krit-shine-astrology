@@ -1494,32 +1494,103 @@ header.navbar {
       <div class="modal-close-btn" onclick="closeModal('modal-chatra')"><i class="fa-solid fa-xmark"></i></div>
       <div class="profile-astro-badge dynamic-user-badge"></div>
       <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:6px;"><i class="fa-solid fa-shield-halved"></i> ดูดวงฉัตรสามชั้น โบราณจารย์</h3>
-      <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:14px;">วิเคราะห์ 3 ระดับฉัตรค้ำชะตาชีวิต: ยอดฉัตร กลางฉัตร และฐานฉัตร</p>
+      <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:12px;">วิเคราะห์ 3 วาระค้ำชะตาชีวิต: ยอดฉัตร (ปฐมวัย) • กลางฉัตร (มัชฌิมวัย) • ฐานฉัตร (ปัจฉิมวัย)</p>
+      
+      <!-- กล่องสถานะอายุย่างและฉัตรที่กำลังเสวยอิทธิพล ณ ปัจจุบัน -->
+      <div id="chatraCurrentStageBox" style="background: rgba(255,215,0,0.1); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; text-align: center; display: none;">
+        <span style="font-size:0.88rem; color:#fff;">สถานะปัจจุบัน: <strong id="chatraAgeText" style="color:#ffd700;">-</strong></span>
+        <div id="chatraActiveNotice" style="font-size:0.84rem; color:#81c784; margin-top:4px; font-weight:600;">-</div>
+      </div>
+
       <div style="display:grid; grid-template-columns:1fr; gap:12px;">
-        <div style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px;">
-          <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> ๑. ชั้นยอดฉัตร (เกียรติยศ บารมี ชาติกำเนิด):</strong>
-          <p id="chatraTop" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
+        <!-- ๑. ยอดฉัตร -->
+        <div id="boxChatraTop" style="background:rgba(255,215,0,0.08); border:1px solid #ffd700; border-radius:10px; padding:14px; transition:0.3s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+            <strong style="color:#ffd700;"><i class="fa-solid fa-crown"></i> ๑. ชั้นยอดฉัตร (ปฐมวัย: แรกเกิด - ๒๕ ปี)</strong>
+            <span style="font-size:0.75rem; color:#facc15; background:rgba(255,215,0,0.15); padding:2px 8px; border-radius:8px;">เกียรติยศ บารมี ชาติกำเนิด</span>
+          </div>
+          <p id="chatraTop" style="font-size:0.85rem; color:#cfd8dc; margin-top:6px; line-height:1.7;"></p>
         </div>
-        <div style="background:rgba(100,181,246,0.08); border:1px solid #64b5f6; border-radius:10px; padding:14px;">
-          <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ๒. ชั้นกลางฉัตร (การสร้างฐานะ ครอบครัว และมิตรสหาย):</strong>
-          <p id="chatraMid" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
+
+        <!-- ๒. กลางฉัตร -->
+        <div id="boxChatraMid" style="background:rgba(100,181,246,0.08); border:1px solid #64b5f6; border-radius:10px; padding:14px; transition:0.3s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+            <strong style="color:#64b5f6;"><i class="fa-solid fa-people-roof"></i> ๒. ชั้นกลางฉัตร (มัชฌิมวัย: ๒๖ - ๕๐ ปี)</strong>
+            <span style="font-size:0.75rem; color:#64b5f6; background:rgba(100,181,246,0.15); padding:2px 8px; border-radius:8px;">การสร้างฐานะ ครอบครัว มิตรสหาย</span>
+          </div>
+          <p id="chatraMid" style="font-size:0.85rem; color:#cfd8dc; margin-top:6px; line-height:1.7;"></p>
         </div>
-        <div style="background:rgba(129,199,132,0.08); border:1px solid #81c784; border-radius:10px; padding:14px;">
-          <strong style="color:#81c784;"><i class="fa-solid fa-monument"></i> ๓. ชั้นฐานฉัตร (ความมั่นคงในบั้นปลายชีวิตและมรดก):</strong>
-          <p id="chatraBase" style="font-size:0.85rem; color:#cfd8dc; margin-top:4px; line-height:1.7;"></p>
+
+        <!-- ๓. ฐานฉัตร -->
+        <div id="boxChatraBase" style="background:rgba(129,199,132,0.08); border:1px solid #81c784; border-radius:10px; padding:14px; transition:0.3s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+            <strong style="color:#81c784;"><i class="fa-solid fa-monument"></i> ๓. ชั้นฐานฉัตร (ปัจฉิมวัย: ๕๑ ปีขึ้นไป)</strong>
+            <span style="font-size:0.75rem; color:#81c784; background:rgba(129,199,132,0.15); padding:2px 8px; border-radius:8px;">ความมั่นคงบั้นปลายชีวิต มรดก</span>
+          </div>
+          <p id="chatraBase" style="font-size:0.85rem; color:#cfd8dc; margin-top:6px; line-height:1.7;"></p>
         </div>
       </div>
     </div>
-   <script>
+    <script>
       function calcChatra() {
-        var bD = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 30) || 30;
-        var bM = parseInt(document.getElementById('birthMonth')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthMonth : 4) || 4;
-        var bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthBE : 2522) || 2522;
+        var elTop = document.getElementById('chatraTop');
+        var elMid = document.getElementById('chatraMid');
+        var elBase = document.getElementById('chatraBase');
+        var stageBox = document.getElementById('chatraCurrentStageBox');
+        var ageText = document.getElementById('chatraAgeText');
+        var activeNotice = document.getElementById('chatraActiveNotice');
+
+        var boxTop = document.getElementById('boxChatraTop');
+        var boxMid = document.getElementById('boxChatraMid');
+        var boxBase = document.getElementById('boxChatraBase');
+
+        var bDayInput = document.getElementById('birthDay');
+        var bMonthInput = document.getElementById('birthMonth');
+        var bYearInput = document.getElementById('birthYearBE');
+
+        if (boxTop) boxTop.style.boxShadow = 'none';
+        if (boxMid) boxMid.style.boxShadow = 'none';
+        if (boxBase) boxBase.style.boxShadow = 'none';
+
+        var bD = bDayInput ? parseInt(bDayInput.value, 10) : null;
+        var bM = bMonthInput ? parseInt(bMonthInput.value, 10) : null;
+        var bY = bYearInput ? parseInt(bYearInput.value, 10) : null;
+
+        // ตรวจสอบข้อมูลวันเกิด หากยังไม่ระบุจะไม่ดึงค่าสำรองมาคำนวณ
+        if (!bD || !bM || !bY || isNaN(bD) || isNaN(bM) || isNaN(bY)) {
+          var alertMsg = '<span style="color:#94a3b8; font-style:italic; font-size:0.85rem;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรกเพื่อเปิดคำทำนายเฉพาะบุคคล</span>';
+          if (elTop) elTop.innerHTML = alertMsg;
+          if (elMid) elMid.innerHTML = alertMsg;
+          if (elBase) elBase.innerHTML = alertMsg;
+          if (stageBox) stageBox.style.display = 'none';
+          return;
+        }
+
         var bH = parseInt(document.getElementById('birthHour24')?.value, 10) || 0;
 
         var dObj = new Date(bY - 543, bM - 1, bD);
         if (bH < 6) dObj.setDate(dObj.getDate() - 1);
         var dayOfWeek = dObj.getDay() + 1; // 1 = อาทิตย์ ... 7 = เสาร์
+
+        // คำนวณอายุย่างปัจจุบัน
+        var tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+        var ageYang = (tY - bY) + 1;
+        if (ageYang < 1) ageYang = 1;
+
+        if (stageBox && ageText && activeNotice) {
+          stageBox.style.display = 'block';
+          ageText.textContent = `อายุย่าง ${ageYang} ปี (ประจำปี พ.ศ. ${tY})`;
+          if (ageYang <= 25) {
+            activeNotice.innerHTML = `🌟 ปัจจุบันชะตาชีวิตอยู่ในช่วง <strong>ปฐมวัย (๑. ชั้นยอดฉัตร)</strong> : กำลังสร้างชื่อเสียง บารมี และปลูกฝังรากฐานชีวิต`;
+            if (boxTop) boxTop.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.4)';
+          } else if (ageYang <= 50) {
+            activeNotice.innerHTML = `⚡ ปัจจุบันชะตาชีวิตอยู่ในช่วง <strong>มัชฌิมวัย (๒. ชั้นกลางฉัตร)</strong> : วาระแห่งการลุยสร้างฐานะ การงาน ครอบครัว และทรัพย์สิน`;
+            if (boxMid) boxMid.style.boxShadow = '0 0 15px rgba(100, 181, 246, 0.4)';
+          } else {
+            activeNotice.innerHTML = `🏛️ ปัจจุบันชะตาชีวิตอยู่ในช่วง <strong>ปัจฉิมวัย (๓. ชั้นฐานฉัตร)</strong> : วาระแห่งการเสวยสุข ความมั่นคงถาวร และมรดกตกทอด`;
+            if (boxBase) boxBase.style.boxShadow = '0 0 15px rgba(129, 199, 132, 0.4)';
+          }
+        }
 
         var topTexts = {
           1: "ยอดฉัตรกุมอำนาจสุริยัน: ชาติกำเนิดมีเกียรติยศ วาสนาเด่นด้านชื่อเสียงและการเป็นผู้นำ มีจิตใจเด็ดเดี่ยว ผู้ใหญ่ให้ความเมตตาสนับสนุนและไว้วางใจ",
@@ -1554,10 +1625,6 @@ header.navbar {
         var dKey = (dayOfWeek >= 1 && dayOfWeek <= 7) ? dayOfWeek : 1;
         var mKey = ((dKey + 2) % 7) || 7;
         var bKey = ((dKey + 4) % 7) || 7;
-
-        var elTop = document.getElementById('chatraTop');
-        var elMid = document.getElementById('chatraMid');
-        var elBase = document.getElementById('chatraBase');
 
         if (elTop) elTop.textContent = topTexts[dKey];
         if (elMid) elMid.textContent = midTexts[mKey];
