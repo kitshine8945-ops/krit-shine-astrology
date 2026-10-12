@@ -11469,6 +11469,8 @@ function generateCustomWallpaper() {
     deityImgSrc = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop';
   } else if (deityChoice === 'vessavana') {
     deityImgSrc = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1000&auto=format&fit=crop';
+  } else if (deityChoice === 'naga') {
+    deityImgSrc = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop';
   }
 
   const bgImg = new Image();
@@ -11512,24 +11514,6 @@ function triggerWallpaperDownload() {
   link.href = canvas.toDataURL('image/png');
   link.click();
 }
-function triggerWallpaperDownload() {
-    const canvas = document.getElementById('wallpaperCanvas');
-    if (!canvas) return;
-    const link = document.createElement('a');
-    link.download = 'KritShine_Auspicious_Wallpaper.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
-
-  // --- นำโค้ดสร้าง Input ป้องกันอีเมลมาวางไว้ตรงนี้ครับ ---
- window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    const inputField = document.getElementById('auspiciousNameInput');
-    if (inputField) {
-      inputField.value = ''; 
-    }
-  }, 0);
-});
 </script>
 </body> 
 </html>
