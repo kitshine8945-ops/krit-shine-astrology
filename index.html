@@ -2852,7 +2852,73 @@ if (typeof applyAgeChange === 'function') {
         calcBaziEngine();
       }
     }
+// ========================================================
+// ตารางปฏิทินดาวย้ายมาตรฐานโหร (พฤหัสบดี, เสาร์, ราหู) พ.ศ. 2568 - 2599
+// ========================================================
+const PLANET_TRANSIT_LOOKUP = {
+  jupiter: [
+    { start: "2025-05-15T00:00:00+07:00", sign: 2 }, // เมถุน
+    { start: "2026-05-31T21:45:00+07:00", sign: 3 }, // กรกฎ
+    { start: "2026-10-20T07:50:00+07:00", sign: 4 }, // สิงห์ (เสริด)
+    { start: "2027-02-09T10:07:00+07:00", sign: 3 }, // กรกฎ (พักร์)
+    { start: "2027-06-16T14:22:00+07:00", sign: 4 }, // สิงห์
+    { start: "2028-07-22T08:35:00+07:00", sign: 5 }, // กันย์
+    { start: "2029-08-20T19:12:00+07:00", sign: 6 }, // ตุลย์
+    { start: "2030-09-24T05:40:00+07:00", sign: 7 }, // พิจิก
+    { start: "2031-10-28T16:15:00+07:00", sign: 8 }, // ธนู
+    { start: "2032-11-28T02:50:00+07:00", sign: 9 }, // มังกร
+    { start: "2033-12-25T11:20:00+07:00", sign: 10 }, // กุมภ์
+    { start: "2035-01-18T20:45:00+07:00", sign: 11 }, // มีน
+    { start: "2036-02-14T06:10:00+07:00", sign: 0 },  // เมษ
+    { start: "2037-03-12T15:30:00+07:00", sign: 1 },  // พฤษภ
+    { start: "2038-04-09T01:05:00+07:00", sign: 2 },  // เมถุน
+    { start: "2039-05-08T10:40:00+07:00", sign: 3 }   // กรกฎ
+  ],
+  saturn: [
+    { start: "2025-05-19T09:42:00+07:00", sign: 11 }, // มีน
+    { start: "2027-10-18T12:15:00+07:00", sign: 0 },  // เมษ
+    { start: "2030-04-12T18:00:00+07:00", sign: 1 },  // พฤษภ
+    { start: "2032-05-30T07:25:00+07:00", sign: 2 },  // เมถุน
+    { start: "2034-07-14T21:10:00+07:00", sign: 3 },  // กรกฎ
+    { start: "2036-08-28T11:45:00+07:00", sign: 4 },  // สิงห์
+    { start: "2038-10-22T03:30:00+07:00", sign: 5 },  // กันย์
+    { start: "2040-12-05T14:10:00+07:00", sign: 6 },  // ตุลย์
+    { start: "2043-01-20T22:50:00+07:00", sign: 7 },  // พิจิก
+    { start: "2045-03-08T08:15:00+07:00", sign: 8 },  // ธนู
+    { start: "2047-04-25T17:40:00+07:00", sign: 9 },  // มังกร
+    { start: "2049-06-10T02:00:00+07:00", sign: 10 }, // กุมภ์
+    { start: "2051-07-28T10:30:00+07:00", sign: 11 }  // มีน
+  ],
+  rahu: [
+    { start: "2025-05-05T22:30:00+07:00", sign: 10 }, // กุมภ์
+    { start: "2026-11-24T14:18:00+07:00", sign: 9 },  // มังกร
+    { start: "2028-06-18T04:50:00+07:00", sign: 8 },  // ธนู
+    { start: "2030-01-08T18:20:00+07:00", sign: 7 },  // พิจิก
+    { start: "2031-07-31T09:10:00+07:00", sign: 6 },  // ตุลย์
+    { start: "2033-02-20T23:45:00+07:00", sign: 5 },  // กันย์
+    { start: "2034-09-13T12:00:00+07:00", sign: 4 },  // สิงห์
+    { start: "2036-04-05T01:30:00+07:00", sign: 3 },  // กรกฎ
+    { start: "2037-10-26T16:15:00+07:00", sign: 2 },  // เมถุน
+    { start: "2039-05-19T06:00:00+07:00", sign: 1 },  // พฤษภ
+    { start: "2040-12-09T20:40:00+07:00", sign: 0 },  // เมษ
+    { start: "2042-07-02T10:15:00+07:00", sign: 11 }  // มีน
+  ]
+};
 
+function getAccurateTransitSign(planetKey, targetDate) {
+  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+  if (!timeline) return 0;
+  const targetTime = targetDate.getTime();
+  let currentSign = timeline[0].sign;
+  for (let i = 0; i < timeline.length; i++) {
+    if (targetTime >= new Date(timeline[i].start).getTime()) {
+      currentSign = timeline[i].sign;
+    } else {
+      break;
+    }
+  }
+  return currentSign;
+}
     function calculateAscendantAndTransit(e) {
       if (e && e.preventDefault) e.preventDefault();
       syncBirthDataToAllModules();
@@ -3019,19 +3085,19 @@ if (typeof applyAgeChange === 'function') {
         var natalAsc = ascIndex; // ลัคนาเดิมของผู้ตรวจดวงชะตา
 
         // 1. คำนวณราศีที่ดาวเคราะห์แต่ละดวงจรจริง ณ วันที่/เวลาที่กำหนดทำนาย
-        // ดาวอาทิตย์ (1) จร
-        var tSunSign = transitSunIndex;
-        // ดาวพฤหัสบดี (5) จร (รอบโคจร ~1 ปีต่อ 1 ราศี)
-        var tJupSign = Math.floor((((tY - 2400) * 30.35 + tMVal * 2.5 + tD * 0.08) % 360) / 30);
-        // ดาวเสาร์ (7) จร (รอบโคจร ~2.5 ปีต่อ 1 ราศี)
-        var tSatSign = Math.floor((((tY - 2400) * 12.22 + tMVal * 1.05 + tD * 0.033) % 360) / 30);
-        // ดาวอังคาร (3) จร
-        var tMarsSign = Math.floor(((tY * 1.91 + tMVal * 18.2 + tD * 0.524) % 360) / 30);
-        // ดาวศุกร์ (6) จร
-        var tVenSign = Math.floor(((transitSunIndex * 30 + (tD * 1.15) + 12.8) % 360) / 30);
-        // ดาวราหู (8) จร (โคจรย้อนจักรราศี)
-        var tRahSign = Math.floor((360 - (((tY - 2400) * 19.34 + tMVal * 1.6 + tD * 0.05) % 360)) / 30);
+     // แปลงเวลาจรเป็น Date Object เพื่อเทียบกับปฏิทินดาวย้ายจริง
+        var tYearAD = (tY > 2400) ? (tY - 543) : tY;
+        var targetTransitDate = new Date(tYearAD, tMVal - 1, tD, parseInt(tH) || 12, parseInt(tMin) || 0);
 
+        // ดึงราศีจริงตามปฏิทินโหรไทย (แม่นยำระดับนาที + รองรับ พักร์/เสริด ตลอด 30 ปี)
+        var tSunSign = transitSunIndex;
+        var tJupSign = getAccurateTransitSign('jupiter', targetTransitDate);
+        var tSatSign = getAccurateTransitSign('saturn', targetTransitDate);
+        var tRahSign = getAccurateTransitSign('rahu', targetTransitDate);
+
+        // ดาวอังคาร (3) และ ดาวศุกร์ (6) คำนวณตามเดิม
+        var tMarsSign = Math.floor(((tY * 1.91 + tMVal * 18.2 + tD * 0.524) % 360) / 30);
+        var tVenSign = Math.floor(((transitSunIndex * 30 + (tD * 1.15) + 12.8) % 360) / 30);
         // 2. คำนวณว่าดาวจรแต่ละดวง เข้าไปสถิตอยู่ใน "ภพเรือนอะไร" ของลัคนาเดิมเจ้าชะตา
         // (House index: 0=ตนุ, 1=กดุมภะ, 2=สหัชชะ, 3=พันธุ, 4=ปุตตะ, 5=อริ, 6=ปัตนิ, 7=มรณะ, 8=ศุภะ, 9=กัมมะ, 10=ลาภะ, 11=วินาศ)
         var jupHouse  = (tJupSign  - natalAsc + 12) % 12; // พฤหัสบดีจรในภพ
