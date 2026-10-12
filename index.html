@@ -7989,17 +7989,64 @@ window.askCosmicBall = function() {
 </div>
 
 <script>
-// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่ม
+// ฟังก์ชันเปิดป๊อปอัป
 window.openKsPremFeature = function(modalId) {
     if (!modalId) return;
     var target = document.getElementById(modalId);
     if (target) {
         document.body.appendChild(target);
-        target.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 999999 !important; align-items: center !important; justify-content: center !important;";
+        target.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 99999999 !important; align-items: center !important; justify-content: center !important;";
     }
 };
 
-// ผูกคลิกการ์ด 4 ป๊อปอัปอัตโนมัติ โดยเช็กวันเกิดทันทีตั้งแต่คลิกแรก
+// ฟังก์ชันคำนวณผลลัพธ์ของแต่ละศาสตร์
+window.calcKarmic = function() {
+    var res = document.getElementById('karmic_result');
+    if (!res) return;
+    var bD = parseInt(document.getElementById('birthDay')?.value, 10) || 1;
+    var bM = parseInt(document.getElementById('birthMonth')?.value, 10) || 1;
+    res.style.display = 'block';
+    res.innerHTML = `
+        <div style="color:#ffd700; font-weight:bold; margin-bottom:8px;">🔮 ผลการถอดรหัสพันธะกรรมดั้งเดิม:</div>
+        <div>• <strong>บททดสอบชีวิต:</strong> ท่านมีพันธะสัญญาทางใจในอดีตชาติ มักต้องแบกรับภาระแทนผู้อื่น หรือพบเจอเรื่องทดสอบความอดทน</div>
+        <div style="margin-top:6px;">• <strong>แนวทางตัดวิบากกรรม:</strong> หมั่นทำบุญปล่อยชีวิตสัตว์น้ำ และอธิษฐานจิตอโหสิกรรมทุกครั้งหลังสวดมนต์ จะช่วยปลดเปลื้องภาระหนักให้คลี่คลายอย่างน่าอัศจรรย์</div>
+    `;
+};
+
+window.calcLifeTurning = function() {
+    var res = document.getElementById('life_result');
+    if (!res) return;
+    res.style.display = 'block';
+    res.innerHTML = `
+        <div style="color:#5dade2; font-weight:bold; margin-bottom:8px;">⚔️ ยุทธศาสตร์รุก-รับ 4 ฤดูกาล:</div>
+        <div>• <strong>จังหวะรุก (ไตรมาส 1 & 3):</strong> จังหวะดาวส่งพลังหนุน เป็นช่วงเวลาทองแห่งการเปิดตัวธุรกิจ เจรจาลงทุน หรือขยายงาน</div>
+        <div style="margin-top:6px;">• <strong>จังหวะรับ (ไตรมาส 2 & 4):</strong> เน้นการบริหารกระแสเงินสด จัดระเบียบความเสี่ยง และสะสมเสบียงความรู้เพื่อก้าวต่อไป</div>
+    `;
+};
+
+window.calcSoulElement = function() {
+    var res = document.getElementById('soul_result');
+    if (!res) return;
+    res.style.display = 'block';
+    res.innerHTML = `
+        <div style="color:#c39bd3; font-weight:bold; margin-bottom:8px;">💎 พลังงานจิตวิญญาณและธาตุกายสิทธิ์:</div>
+        <div>• <strong>ธาตุแก่นแท้:</strong> จิตวิญญาณมีพลังแห่งการเยียวยา สัญชาตญาณไวต่อพลังงานรอบตัว และมีความคิดสร้างสรรค์สูง</div>
+        <div style="margin-top:6px;">• <strong>อัญมณีกู้ดวง:</strong> หินไหมทอง, อเมทิสต์ หรือ ควอตซ์ใส จะช่วยปรับสนามพลังออร่าให้ผ่องใส ดึงดูดผู้ใหญ่เมตตา</div>
+    `;
+};
+
+window.calcWealthFlow = function() {
+    var res = document.getElementById('wealth_result');
+    if (!res) return;
+    res.style.display = 'block';
+    res.innerHTML = `
+        <div style="color:#2ecc71; font-weight:bold; margin-bottom:8px;">💰 การเปิดสายธารเงินและคลังทรัพย์:</div>
+        <div>• <strong>กระแสเงินสด:</strong> มีแหล่งรายได้เสริมซ่อนเร้นจากความรู้และวาทศิลป์ การต่อยอดธุรกิจออนไลน์จะนำพาทรัพย์ก้อนโต</div>
+        <div style="margin-top:6px;">• <strong>จุดอุดเงินรั่ว:</strong> ระวังการใช้จ่ายตามอารมณ์ชั่ววูบหรือการช่วยเหลือผู้อื่นเกินตัว จัดการบัญชีรายรับ-รายจ่ายให้รัดกุม</div>
+    `;
+};
+
+// ผูกคลิกการ์ด 4 ป๊อปอัป โดยเช็กวันเกิดทันทีตั้งแต่คลิกแรก
 function bindKsCards() {
     document.querySelectorAll('.cat-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
@@ -8018,7 +8065,7 @@ function bindKsCards() {
 
                 var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
 
-                // 1. ถ้ายังไม่ได้เลือกวันเกิด ให้เด้งเตือนและพาไปกรอกทันที
+                // 1. ถ้ายังไม่ใส่วันเกิด: เตือนทันทีและเลื่อนจอไปฟอร์ม
                 if (!bD) {
                     alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
                     if (typeof scrollToForm === 'function') {
@@ -8030,7 +8077,7 @@ function bindKsCards() {
                     return;
                 }
 
-                // 2. ถ้ากรอกวันเกิดแล้ว เปิดหน้าต่างพร้อมคำนวณผลลัพธ์ทันที
+                // 2. ถ้ามีวันเกิดแล้ว: เปิด Modal และคำนวณทันที
                 window.openKsPremFeature(mId);
                 if (typeof calcFunc === 'function') {
                     calcFunc();
