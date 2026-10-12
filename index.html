@@ -8209,9 +8209,15 @@ window.calcKarmic = function() {
     var res = document.getElementById('karmic_result');
     if (!res) return;
 
-    if (!bdate) {
+   if (!bdate) {
         alert("⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนทำการถอดรหัสชะตากรรมครับ");
         window.closeAllKsPremModals();
+        if (typeof scrollToForm === 'function') {
+            scrollToForm();
+        } else {
+            var bForm = document.getElementById('birth-form');
+            if (bForm) bForm.scrollIntoView({ behavior: 'smooth' });
+        }
         return;
     }
 
@@ -8302,9 +8308,15 @@ window.calcLifeTurning = function() {
     var res = document.getElementById('life_result');
     if (!res) return;
 
-    if (!bdate) {
+   if (!bdate) {
         alert("⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนตรวจจังหวะรุก-รับครับ");
         window.closeAllKsPremModals();
+        if (typeof scrollToForm === 'function') {
+            scrollToForm();
+        } else {
+            var bForm = document.getElementById('birth-form');
+            if (bForm) bForm.scrollIntoView({ behavior: 'smooth' });
+        }
         return;
     }
 
@@ -8368,9 +8380,15 @@ window.calcSoulElement = function() {
     var res = document.getElementById('soul_result');
     if (!res) return;
 
-    if (!bdate) {
+   if (!bdate) {
         alert("⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนสแกนพลังจิตวิญญาณครับ");
         window.closeAllKsPremModals();
+        if (typeof scrollToForm === 'function') {
+            scrollToForm();
+        } else {
+            var bForm = document.getElementById('birth-form');
+            if (bForm) bForm.scrollIntoView({ behavior: 'smooth' });
+        }
         return;
     }
 
@@ -8464,9 +8482,15 @@ window.calcWealthFlow = function() {
     var res = document.getElementById('wealth_result');
     if (!res) return;
 
-    if (!bdate) {
+if (!bdate) {
         alert("⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนเปิดคลังทรัพย์ครับ");
         window.closeAllKsPremModals();
+        if (typeof scrollToForm === 'function') {
+            scrollToForm();
+        } else {
+            var bForm = document.getElementById('birth-form');
+            if (bForm) bForm.scrollIntoView({ behavior: 'smooth' });
+        }
         return;
     }
 
