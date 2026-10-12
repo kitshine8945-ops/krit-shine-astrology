@@ -10932,7 +10932,7 @@ function switchWesternMode(mode) {
     if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
     if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
 
-   // --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) ---
+// --- มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) ---
     const LUCK_CYCLE_POOLS = [
       "วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด " + d + "/" + m + "/" + yBE + " ดิถี " + dayMaster.name + ") กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (" + yongShen + ") ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด",
       "ทศวรรษชะตานี้ (อิงพื้นดวง " + d + "/" + m + "/" + yBE + " ดิถี " + dayMaster.name + ") โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (" + yongShen + ") ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม",
@@ -10947,34 +10947,30 @@ function switchWesternMode(mode) {
     if (AppState.currentBaziMode === 'free') {
       if (freeRes) freeRes.style.display = 'block';
       if (vipRes) vipRes.style.display = 'none';
-    }
-      // --- สั่งคำนวณและพิมพ์คำทำนายมหาวัฏจักรโชคชะตา 10 ปี VIP ---
-    let luckPoolIndex = seed % LUCK_CYCLE_POOLS.length;
-    
-    const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
-    if (luckDescEl && typeof LUCK_CYCLE_POOLS !== 'undefined') {
-        luckDescEl.innerHTML = LUCK_CYCLE_POOLS[luckPoolIndex];
-    }
-      document.getElementById('bazi-free-title').textContent = `ดิถีธาตุกำเนิดของคุณ: ${dayMaster.name} (ธาตุ${dayMaster.elem}${dayMaster.pol})`;
-      document.getElementById('bazi-free-desc').innerHTML = `
-        <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
-        <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
-          <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> ${FREE_BAZI_POOLS[freePoolIndex]}
-        </div>
-      `;
+
+      const freeTitle = document.getElementById('bazi-free-title');
+      const freeDesc = document.getElementById('bazi-free-desc');
+      if (freeTitle) freeTitle.textContent = "ดิถีธาตุกำเนิดของคุณ: " + dayMaster.name + " (ธาตุ" + dayMaster.elem + dayMaster.pol + ")";
+      if (freeDesc) {
+        freeDesc.innerHTML = 
+          "<strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> " + dayMaster.desc + "<br><br>" +
+          "<div style='background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;'>" +
+          "<i class='fa-solid fa-wand-magic-sparkles' style='color:#ffd700;'></i> <strong>วิเคราะห์เชิงลึกตามรอบวันเกิด:</strong> " + (typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : 'ไม่มีข้อมูลคำทำนาย') +
+          "</div>";
+      }
     } else {
       if (freeRes) freeRes.style.display = 'none';
       if (vipRes) vipRes.style.display = 'block';
 
       const pillarsGrid = document.getElementById('bazi-pillars-grid');
       if (pillarsGrid) {
-        pillarsGrid.innerHTML = `
-          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${yearStem}</div></div>
-          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${monthStem}</div></div>
-          <div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">${dayStem}</div></div>
-          <div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">${hourStem}</div></div>
-        `;
+        pillarsGrid.innerHTML = 
+          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาปี (รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + yearStem + '</div></div>' +
+          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสาเดือน (งาน/พ่อแม่)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + monthStem + '</div></div>' +
+          '<div style="background: rgba(255,215,0,0.12); padding: 10px; border-radius: 8px; border:1px solid #ffd700;"><div style="font-size:0.75rem; color:#ffd700;">เสาวัน (ดิถี/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">' + dayStem + '</div></div>' +
+          '<div style="background: rgba(255,255,255,0.06); padding: 10px; border-radius: 8px;"><div style="font-size:0.75rem; color:var(--gold-main);">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + hourStem + '</div></div>';
       }
+    }
 
       // --- 1. สภาพดวงชะตา (เปลี่ยนตามวันจร และเปลี่ยนตามวันเกิดใหม่) ---
       document.getElementById('bazi-vip-strength-title').textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
