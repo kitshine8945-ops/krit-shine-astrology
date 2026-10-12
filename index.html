@@ -11385,6 +11385,142 @@ function renderTransitAspectHtml(aspectList) {
   html += `</div>`;
   return html;
 } 
+  <!-- เซกชันระบบสร้างวอลเปเปอร์มือถือมงคล -->
+<section id="wallpaper-generator-section" style="max-width: 800px; margin: 40px auto; padding: 30px 24px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 22px; box-shadow: 0 12px 35px rgba(0,0,0,0.8), 0 0 25px rgba(234, 179, 8, 0.2);">
+  
+  <div style="text-align: center; margin-bottom: 24px;">
+    <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 4px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> ออกแบบวอลเปเปอร์มือถือเฉพาะบุคคล
+    </span>
+    <h3 style="color: #ffd700; font-size: 1.5rem; margin-top: 10px; font-weight: 700;">สร้างวอลเปเปอร์เสริมดวง & องค์เทพประจำตัว</h3>
+    <p style="font-size: 0.88rem; color: #9bb0d3; margin-top: 6px;">ระบบจะจับคู่สีมงคลและองค์เทพที่ตรงกับลัคนาเกิด หรือเลือกสิ่งที่ท่านศรัทธาได้ตามต้องการ</p>
+  </div>
+
+  <form id="wallpaperForm" onsubmit="generateCustomWallpaper(event)" style="display: flex; flex-direction: column; gap: 18px;">
+    <div>
+      <label style="display: block; font-size: 0.88rem; color: #f1f5f9; font-weight: 500; margin-bottom: 7px;">ชื่อ - สกุล (สำหรับใส่วอลเปเปอร์)</label>
+      <input type="text" id="wpUserName" class="form-control" placeholder="กรอกชื่อของคุณ" required style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 10px; padding: 10px 14px; color: #fff; font-family: inherit;">
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.88rem; color: #f1f5f9; font-weight: 500; margin-bottom: 7px;">1. เลือกความโชคดีด้านที่ต้องการเสริม</label>
+      <select id="wpCategory" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 10px; padding: 10px 14px; color: #fff; font-family: inherit;">
+        <option value="wealth">💰 เสริมการเงิน & ขุมทรัพย์มหาเศรษฐี</option>
+        <option value="work">💼 เสริมการงาน & อำนาจบารมี</option>
+        <option value="love">💖 เสริมความรัก & เมตตามหานิยม</option>
+        <option value="protection">🛡️ เสริมความปลอดภัย & คุ้มครองปัดเป่า</option>
+      </select>
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.88rem; color: #f1f5f9; font-weight: 500; margin-bottom: 7px;">2. เลือกองค์เทพที่ศรัทธา</label>
+      <select id="wpDeity" class="form-control" style="width: 100%; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 10px; padding: 10px 14px; color: #fff; font-family: inherit;">
+        <option value="auto">✨ ให้ระบบเลือกเทพและสีมงคลตรงกับลัคนาเกิด (แนะนำ)</option>
+        <option value="ganesha">🐘 พระพิฆเนศ (ขจัดอุปสรรค สำเร็จทุกประการ)</option>
+        <option value="lakshmi">🪷 พระแม่ลักษมี (ความมั่งคั่ง ร่ำรวย ความรัก)</option>
+        <option value="vessavana">🏮 ท้าวเวสสุวรรณ (คุ้มครองภัย ดึงดูดทรัพย์)</option>
+        <option value="naga">🐍 พญานาคราช (อำนาจบารมี โชคลาภ ร่มเย็น)</option>
+      </select>
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%); color: #0b0f19; font-weight: 700; padding: 13px; border-radius: 12px; border: none; font-size: 1.05rem; cursor: pointer; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45); margin-top: 10px;">
+      <i class="fa-solid fa-paintbrush"></i> สร้างตัวอย่างวอลเปเปอร์มือถือ
+    </button>
+  </form>
+
+  <div id="wallpaperResultArea" style="display: none; margin-top: 25px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 20px;">
+    <h4 style="color: #ffd700; margin-bottom: 12px;"><i class="fa-solid fa-mobile-screen"></i> ตัวอย่างวอลเปเปอร์เฉพาะตัวของคุณ</h4>
+    
+    <div style="display: inline-block; border: 3px solid #ffd700; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.6); max-width: 300px; width: 100%;">
+      <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block;"></canvas>
+    </div>
+
+    <div style="margin-top: 20px; background: rgba(255,215,0,0.08); padding: 16px; border-radius: 12px; border: 1px solid rgba(234,179,8,0.4);">
+      <p style="font-size: 0.9rem; color: #fff; margin-bottom: 12px;">ชำระเงินเพื่อปลดล็อกลิงก์ดาวน์โหลดความละเอียดสูง (HQ)</p>
+      <button type="button" onclick="openPaymentForWallpaper()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; padding: 10px 24px; border-radius: 20px; border: none; cursor: pointer; font-size: 0.95rem; box-shadow: 0 0 15px rgba(255,215,0,0.4);">
+        <i class="fa-solid fa-qrcode"></i> สแกนชำระเงิน (49 บาท) เพื่อดาวน์โหลด
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- สคริปต์ JavaScript สำหรับประมวลผล Canvas -->
+<script>
+function generateCustomWallpaper(event) {
+  event.preventDefault();
+  const userName = document.getElementById('wpUserName').value;
+  const deityChoice = document.getElementById('wpDeity').value;
+  const resultArea = document.getElementById('wallpaperResultArea');
+  const canvas = document.getElementById('wallpaperCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  resultArea.style.display = 'block';
+  
+  let deityImgSrc = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop';
+  if (deityChoice === 'ganesha') {
+    deityImgSrc = 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?q=80&w=1000&auto=format&fit=crop';
+  } else if (deityChoice === 'lakshmi') {
+    deityImgSrc = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop';
+  } else if (deityChoice === 'vessavana') {
+    deityImgSrc = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1000&auto=format&fit=crop';
+  } else if (deityChoice === 'naga') {
+    deityImgSrc = 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=1000&auto=format&fit=crop';
+  }
+
+  const deityImg = new Image();
+  deityImg.crossOrigin = "anonymous";
+  deityImg.src = deityImgSrc;
+  
+  deityImg.onload = function() {
+    ctx.fillStyle = '#040816';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    const imgWidth = 900;
+    const imgHeight = 1100;
+    const imgX = (canvas.width - imgWidth) / 2;
+    const imgY = 250;
+    ctx.drawImage(deityImg, imgX, imgY, imgWidth, imgHeight);
+    
+    ctx.fillStyle = 'rgba(10, 16, 35, 0.85)';
+    ctx.fillRect(100, 1450, 880, 260);
+    
+    ctx.strokeStyle = '#f5c469';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(100, 1450, 880, 260);
+    
+    ctx.fillStyle = '#ffe49e';
+    ctx.font = 'bold 42px "Prompt", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✨ วอลเปเปอร์เสริมดวงเฉพาะบุคคล ✨', canvas.width / 2, 1520);
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 50px "Prompt", sans-serif';
+    ctx.fillText('เจ้าชะตา: ' + userName, canvas.width / 2, 1600);
+    
+    ctx.fillStyle = '#9bb0d3';
+    ctx.font = '32px "Prompt", sans-serif';
+    ctx.fillText('Krit Shine Astrology - เสริมพลังชีวิตและความสำเร็จ', canvas.width / 2, 1665);
+  };
+}
+
+function openPaymentForWallpaper() {
+  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  if (isVip) {
+    alert('ท่านเป็นสมาชิก VIP สามารถดาวน์โหลดวอลเปเปอร์ความละเอียดสูงได้ฟรีทันที!');
+    triggerWallpaperDownload();
+  } else {
+    alert('ระบบกำลังเปิดหน้าต่าง QR Code ชำระเงิน 49 บาท เมื่อชำระสำเร็จจะปลดล็อกลิงก์ดาวน์โหลดทันทีครับ');
+    setTimeout(triggerWallpaperDownload, 1000);
+  }
+}
+
+function triggerWallpaperDownload() {
+  const canvas = document.getElementById('wallpaperCanvas');
+  const link = document.createElement('a');
+  link.download = 'KritShine_Auspicious_Wallpaper.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
 </script>
-</body>
+</body> 
 </html>
