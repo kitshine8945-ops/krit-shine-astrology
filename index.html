@@ -2935,66 +2935,144 @@ if (typeof applyAgeChange === 'function') {
 
         document.getElementById('vipRemedyFullText').innerHTML = transitInfo.remedy;
         
-// 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
+// ========================================================
+        // 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
+        // ========================================================
         try {
-          var bDay = parseInt(document.getElementById('birthDay').value, 10) || AppState.birthDay || 30;
-          var bMon = parseInt(document.getElementById('birthMonth').value, 10) || AppState.birthMonth || 4;
-          var bYear = parseInt(document.getElementById('birthYearBE').value, 10) || AppState.birthBE || 2522;
-          
+          var bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
+          var bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
+          var bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
+
           var curTD = parseInt(document.getElementById('transitDay')?.value, 10) || 12;
           var curTM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
           var curTY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
 
-          // คำนวณตำแหน่งองศาดาวกำเนิด
-          var natalPlanets = {
-            "00": { degree: (ascIndex * 30 + 10.13) % 360 },
-            "1":  { degree: (sunSignIndex * 30 + ((bDay * 1.05) % 29)) % 360 },
-            "2":  { degree: ((bDay * 13.1 + bMon * 30) % 360) },
-            "3":  { degree: ((bDay * 0.55 + bMon * 28 + bYear * 2) % 360) },
-            "4":  { degree: (sunSignIndex * 30 + ((bDay * 1.8) % 25)) % 360 },
-            "5":  { degree: ((bYear * 30.5 + bMon * 2.5) % 360) },
-            "6":  { degree: (sunSignIndex * 30 + ((bDay * 1.2) % 28)) % 360 },
-            "7":  { degree: ((bYear * 12.2 + bDay * 0.1) % 360) },
-            "8":  { degree: (360 - ((bYear * 19.3) % 360)) % 360 },
-            "9":  { degree: ((bYear * 19.3 + 180) % 360) },
-            "0":  { degree: ((bYear * 4.2 + 45) % 360) }
+          // ตำแหน่งองศาดาวกำเนิดเฉพาะบุคคล (0 - 360°)
+          var natalP = {
+            "00": { name: "ลัคนา (ล)", deg: (ascIndex * 30 + 10.13) % 360 },
+            "1":  { name: "อาทิตย์ (๑)", deg: (sunSignIndex * 30 + ((bD * 1.05) % 29)) % 360 },
+            "2":  { name: "จันทร์ (๒)", deg: ((bD * 13.1 + bM * 30) % 360) },
+            "3":  { name: "อังคาร (๓)", deg: ((bD * 0.55 + bM * 28 + bY * 2) % 360) },
+            "4":  { name: "พุธ (๔)", deg: (sunSignIndex * 30 + ((bD * 1.8) % 25)) % 360 },
+            "5":  { name: "พฤหัสบดี (๕)", deg: ((bY * 30.5 + bM * 2.5) % 360) },
+            "6":  { degree: (sunSignIndex * 30 + ((bD * 1.2) % 28)) % 360, name: "ศุกร์ (๖)", deg: (sunSignIndex * 30 + ((bD * 1.2) % 28)) % 360 },
+            "7":  { name: "เสาร์ (๗)", deg: ((bY * 12.2 + bD * 0.1) % 360) },
+            "8":  { name: "ราหู (๘)", deg: (360 - ((bY * 19.3) % 360)) % 360 },
+            "9":  { name: "เกตุ (๙)", deg: ((bY * 19.3 + 180) % 360) },
+            "0":  { name: "มฤตยู (๐)", deg: ((bY * 4.2 + 45) % 360) }
           };
 
-          // คำนวณตำแหน่งองศาดาวจร
-          var transitPlanets = {
-            "00": { degree: (transitAscIndex * 30 + 10.13) % 360 },
-            "1":  { degree: (transitSunIndex * 30 + ((curTD * 1.05) % 29)) % 360 },
-            "2":  { degree: ((curTD * 13.1 + curTM * 30) % 360) },
-            "3":  { degree: ((curTD * 0.55 + curTM * 28 + curTY * 2) % 360) },
-            "4":  { degree: (transitSunIndex * 30 + ((curTD * 1.8) % 25)) % 360 },
-            "5":  { degree: ((curTY * 30.5 + curTM * 2.5) % 360) },
-            "6":  { degree: (transitSunIndex * 30 + ((curTD * 1.2) % 28)) % 360 },
-            "7":  { degree: ((curTY * 12.2 + curTD * 0.1) % 360) },
-            "8":  { degree: (360 - ((curTY * 19.3) % 360)) % 360 },
-            "9":  { degree: ((curTY * 19.3 + 180) % 360) },
-            "0":  { degree: ((curTY * 4.2 + 45) % 360) }
+          // ตำแหน่งองศาดาวจร ณ วันที่กำหนดพยากรณ์
+          var transitP = {
+            "00": { name: "ลัคนา (ล)", deg: (transitAscIndex * 30 + 10.13) % 360 },
+            "1":  { name: "อาทิตย์ (1)", deg: (transitSunIndex * 30 + ((curTD * 1.05) % 29)) % 360 },
+            "2":  { name: "จันทร์ (2)", deg: ((curTD * 13.1 + curTM * 30) % 360) },
+            "3":  { name: "อังคาร (3)", deg: ((curTD * 0.55 + curTM * 28 + curTY * 2) % 360) },
+            "4":  { name: "พุธ (4)", deg: (transitSunIndex * 30 + ((curTD * 1.8) % 25)) % 360 },
+            "5":  { name: "พฤหัสบดี (5)", deg: ((curTY * 30.5 + curTM * 2.5) % 360) },
+            "6":  { name: "ศุกร์ (6)", deg: (transitSunIndex * 30 + ((curTD * 1.2) % 28)) % 360 },
+            "7":  { name: "เสาร์ (7)", deg: ((curTY * 12.2 + curTD * 0.1) % 360) },
+            "8":  { name: "ราหู (8)", deg: (360 - ((curTY * 19.3) % 360)) % 360 },
+            "9":  { name: "เกตุ (9)", deg: ((curTY * 19.3 + 180) % 360) },
+            "0":  { name: "มฤตยู (0)", deg: ((curTY * 4.2 + 45) % 360) }
           };
 
-          if (typeof calcNatalTransitAspects === 'function' && typeof renderTransitAspectHtml === 'function') {
-            var matchedAspects = calcNatalTransitAspects(natalPlanets, transitPlanets);
-            var aspectHtml = renderTransitAspectHtml(matchedAspects);
-            var aspectBox = document.getElementById('transitAspectResultBox');
-            if (aspectBox) {
-              aspectBox.innerHTML = `
-                <div style="background: rgba(14,20,38,0.95); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 18px; margin-top: 15px; margin-bottom: 15px;">
-                  <h4 style="color:#ffd700; font-size:1.1rem; margin-bottom:6px;">
-                    <i class="fa-solid fa-satellite-dish"></i> ทำนายดวงจรสะท้อนพื้นดวงชะตากำเนิด (Aspects เกณฑ์ 1°, 3°, 5°)
-                  </h4>
-                  <p style="font-size:0.82rem; color:#94a3b8; margin-bottom:12px;">
-                    คำนวณจากองศาดาวกำเนิดเฉพาะตัวบุคคล เทียบกับตำแหน่งดาวจร ณ วันที่ ${curTD}/${curTM}/${curTY} (คำนวณระยะวังกะแบบ Myhora)
-                  </p>
-                  ${aspectHtml}
-                </div>
-              `;
+          // ฐานข้อมูลคำทำนายคู่ดาว Myhora
+          var myhoraDict = {
+            "3_0_5": { title: "อังคาร (3) จร ทับ (0°) พฤหัสบดี (๕) กำเนิด", kw1: "อังคาร : ขยัน ลุย ภาระ ต่อสู้", kw2: "พฤหัสบดี : คุณธรรม ความรู้ ผู้ใหญ่ ระบบ", desc: "เป็นช่วงที่ต้องมุ่งมั่นตั้งใจจริงในการทำงานจึงจะสำเร็จ มีการขยับขยายเรื่องงาน มีเรื่องเหน็ดเหนื่อย ระวังคนผิวดำแดงนำปัญหาเข้ามาให้แก้ไข" },
+            "7_0_6": { title: "เสาร์ (7) จร ทับ (0°) ศุกร์ (๖) กำเนิด !!!", kw1: "เสาร์ : เหนื่อยยาก ทุกข์ อดทน ล่าช้า", kw2: "ศุกร์ : ความรัก เงิน ความสุข ศิลปะ", desc: "ระวังปัญหาเรื่องการเงิน ตระหนี่กับตนเองแต่หมดเปลืองกับคนรักหรือผู้อื่น หาเงินเก่งแต่ไม่เหลือเก็บ ความรักมีเรื่องให้ผิดหวังหรือพลัดพราก" },
+            "4_120_00": { title: "พุธ (4) จร ตรีโกณ (120°) ลัคนา (ล) กำเนิด", kw1: "พุธ : เจรจา สื่อสาร เอกสาร ไหวพริบ", kw2: "ลัคนา : สภาพแวดล้อม ตัวตน สิ่งที่จะเกิด", desc: "อาจได้รับข่าวสารดีเรื่องงานและการเงิน มีไอเดียใหม่ๆ เข้ามาเยอะ เหมาะแก่การต่อยอด อยู่ไม่นิ่งมีเหตุให้ต้องเดินทางพบปะผู้คนตลอด" },
+            "2_0_2": { title: "จันทร์ (2) จร ทับ (0°) จันทร์ (๒) กำเนิด", kw1: "จันทร์ : อ่อนโยน จุกจิก เรื่องภายใน", kw2: "จันทร์ : อ่อนโยน จุกจิก เรื่องภายใน", desc: "มีเรื่องต้องติดต่อกับผู้หญิงหรือพบปะคนหมู่มาก อารมณ์อ่อนไหวง่าย มีโอกาสได้โชคลาภหรือมีคนนำลาภผลมาให้ สุขภาพใจปลอดโปร่งขึ้น" },
+            "1_180_6": { title: "อาทิตย์ (1) จร เล็ง (180°) ศุกร์ (๖) กำเนิด", kw1: "อาทิตย์ : ตัวตน รวดเร็ว อำนาจ บริหาร", kw2: "ศุกร์ : สวยงาม ความรัก การเงิน ความสุข", desc: "มีการติดต่อกับคนรัก เสน่ห์โดดเด่น ความรักสดชื่น การงานกลมกลืนสามัคคีดี มีโชคลาภจากเพื่อนสนิทและการค้าขายได้กำไรงาม" },
+            "0_90_8": { title: "มฤตยู (0) จร ฉาก (90°) ราหู (๘) กำเนิด !!", kw1: "มฤตยู : ปุบปับ สิ่งใหม่ การเปลี่ยนแปลง", kw2: "ราหู : เล่ห์เหลี่ยม อบายมุข พลิกแพลง", desc: "อารมณ์หงุดหงิดฉุนเฉียวง่าย อาจเกิดการเปลี่ยนแปลงเรื่องสังคมเพื่อนฝูง ย้ายกลุ่ม เรื่องเดิมอาจถูกรื้อฟื้นขึ้นมา ระวังภัยจากคนพาล" },
+            "6_0_0": { title: "ศุกร์ (6) จร ทับ (0°) มฤตยู (๐) กำเนิด", kw1: "ศุกร์ : ความรัก เงินทอง สุนทรีย์", kw2: "มฤตยู : ฉับพลัน กะทันหัน แปลกใหม่", desc: "พบความรักอย่างกะทันหัน อารมณ์แปรปรวนง่าย ระวังเอาแต่ใจตัวเอง มีโอกาสได้เดินทางไปยังสถานที่แปลกตาหรือไม่คุ้นเคย" },
+            "9_90_00": { title: "เกตุ (9) จร ฉาก (90°) ลัคนา (ล) กำเนิด", kw1: "เกตุ : ลางสังหรณ์ สิ่งศักดิ์สิทธิ์ ต่างแดน", kw2: "ลัคนา : ตัวตน สภาพแวดล้อม", desc: "มีเรื่องตื่นเต้นตกใจ ขี้หลงขี้ลืม ควรระวังการขาดสติทำอะไรไม่ทันระวัง มีโอกาสได้ไปสถานที่ศักดิ์สิทธิ์หรือพิธีกรรมความเชื่อ" }
+          };
+
+          var aspRules = [
+            { deg: 0, name: "ทับ (0°)" },
+            { deg: 60, name: "โยค (60°)" },
+            { deg: 90, name: "ฉาก (90°)" },
+            { deg: 120, name: "ตรีโกณ (120°)" },
+            { deg: 180, name: "เล็ง (180°)" }
+          ];
+
+          var aspectResults = [];
+
+          for (var tK in transitP) {
+            for (var nK in natalP) {
+              var diff = Math.abs(transitP[tK].deg - natalP[nK].deg);
+              if (diff > 180) diff = 360 - diff;
+
+              for (var a = 0; a < aspRules.length; a++) {
+                var orb = Math.abs(diff - aspRules[a].deg);
+                if (orb <= 5.0) {
+                  var pairKey = tK + "_" + aspRules[a].deg + "_" + nK;
+                  var itemInfo = myhoraDict[pairKey] || {
+                    title: transitP[tK].name + " จร " + aspRules[a].name + " " + natalP[nK].name + " กำเนิด",
+                    kw1: transitP[tK].name,
+                    kw2: natalP[nK].name,
+                    desc: "ส่งผลกระทบถึงเรือนชะตาและวิถีชีวิต มีการขยับขยายและเปลี่ยนแปลงตามพลังงานของดวงดาวทั้งสองดวง"
+                  };
+                  aspectResults.push({
+                    title: itemInfo.title,
+                    orb: orb.toFixed(2),
+                    tier: orb <= 1.0 ? 1 : (orb <= 3.0 ? 3 : 5),
+                    kw1: itemInfo.kw1,
+                    kw2: itemInfo.kw2,
+                    desc: itemInfo.desc
+                  });
+                  break;
+                }
+              }
             }
           }
+
+          aspectResults.sort(function(x, y) { return parseFloat(x.orb) - parseFloat(y.orb); });
+
+          // เรนเดอร์ลงกล่อง HTML
+          var targetBox = document.getElementById('transitAspectResultBox');
+          if (!targetBox) {
+            // หากไม่เจอกล่อง ให้สร้างกล่องแทรกไว้เหนือ 12 ภพจรทันที
+            var housesContainer = document.getElementById('houses-grid-cards');
+            if (housesContainer && housesContainer.parentElement) {
+              targetBox = document.createElement('div');
+              targetBox.id = 'transitAspectResultBox';
+              housesContainer.parentElement.insertBefore(targetBox, housesContainer);
+            }
+          }
+
+          if (targetBox) {
+            var tiers = [
+              { tier: 1, name: "เกณฑ์ 1 องศา (ระยะวังกะ 0 - 1°)", color: "#ef4444", note: "กำลังส่งผลรุนแรงสูงสุดในปัจจุบัน" },
+              { tier: 3, name: "เกณฑ์ 3 องศา (ระยะวังกะ 2 - 3°)", color: "#f59e0b", note: "มีอิทธิพลต่อเนื่องและเห็นผลชัดเจน" },
+              { tier: 5, name: "เกณฑ์ 5 องศา (ระยะวังกะ 3 - 5°)", color: "#38bdf8", note: "เริ่มก่อตัวและส่งกระแสพลังงานเข้ามา" }
+            ];
+
+            var innerHtml = '<div style="background: rgba(14,20,38,0.98); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 18px; margin: 18px 0;">';
+            innerHtml += '<h4 style="color:#ffd700; font-size:1.15rem; margin-bottom:4px;"><i class="fa-solid fa-satellite-dish"></i> ทำนายดวงจรสะท้อนพื้นดวงกำเนิด (Natal vs Transit Aspects)</h4>';
+            innerHtml += '<p style="font-size:0.8rem; color:#94a3b8; margin-bottom:14px;">คำนวณตำแหน่งองศาดาวกำเนิดเฉพาะบุคคล (' + bD + '/' + bM + '/' + bY + ') เทียบมุมสัมพันธ์กับดาวจร ณ วันที่ ' + curTD + '/' + curTM + '/' + curTY + '</p>';
+
+            tiers.forEach(function(tr) {
+              var items = aspectResults.filter(function(r) { return r.tier === tr.tier; });
+              if (items.length > 0) {
+                innerHtml += '<div style="border-top:1px dashed #334155; margin-top:14px; padding-top:10px;"><strong style="color:' + tr.color + '; font-size:0.95rem;">• ' + tr.name + '</strong> <span style="font-size:0.75rem; color:#64748b;">(' + tr.note + ')</span></div>';
+                items.forEach(function(it) {
+                  innerHtml += '<div style="background:rgba(255,255,255,0.03); border-left:3px solid ' + tr.color + '; padding:10px 14px; margin:8px 0; border-radius:4px;">';
+                  innerHtml += '<div style="font-weight:bold; color:#fde047; font-size:0.92rem;">' + it.title + ' <span style="font-size:0.75rem; color:#94a3b8; font-weight:normal;">(วังกะ ' + it.orb + '°)</span></div>';
+                  innerHtml += '<div style="font-size:0.78rem; color:#94a3b8; margin:3px 0;">' + it.kw1 + ' | ' + it.kw2 + '</div>';
+                  innerHtml += '<div style="font-size:0.86rem; color:#e2e8f0; line-height:1.6; margin-top:4px;">' + it.desc + '</div>';
+                  innerHtml += '</div>';
+                });
+              }
+            });
+
+            innerHtml += '</div>';
+            targetBox.innerHTML = innerHtml;
+            targetBox.style.display = 'block';
+          }
         } catch (err) {
-          console.warn("Myhora Aspect Calculation Warning:", err);
+          console.error("Aspect calculation error:", err);
         }
 
       } else {
