@@ -7989,7 +7989,7 @@ window.askCosmicBall = function() {
 </div>
 
 <script>
-// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่มถาวร
+// ฟังก์ชันเปิดป๊อปอัป และผูกปุ่ม
 window.openKsPremFeature = function(modalId) {
     if (!modalId) return;
     var target = document.getElementById(modalId);
@@ -7999,25 +7999,26 @@ window.openKsPremFeature = function(modalId) {
     }
 };
 
-// ดักจับการคลิกที่ 4 ฟีเจอร์นี้โดยตรง ตรวจวันเกิดตั้งแต่คลิกแรก
+// ผูกคลิกการ์ด 4 ป๊อปอัปอัตโนมัติ โดยเช็กวันเกิดทันทีตั้งแต่คลิกแรก
 function bindKsCards() {
     document.querySelectorAll('.cat-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
             var txt = this.innerText || '';
             var mId = '';
-            if (txt.includes('รหัสกรรม')) mId = 'karmicModal';
-            else if (txt.includes('มหาพิชัยสงคราม')) mId = 'lifeTurningModal';
-            else if (txt.includes('จิตวิญญาณ')) mId = 'soulElementModal';
-            else if (txt.includes('ขุมทรัพย์')) mId = 'wealthFlowModal';
+            var calcFunc = null;
+
+            if (txt.includes('รหัสกรรม')) { mId = 'karmicModal'; calcFunc = window.calcKarmic; }
+            else if (txt.includes('มหาพิชัยสงคราม')) { mId = 'lifeTurningModal'; calcFunc = window.calcLifeTurning; }
+            else if (txt.includes('จิตวิญญาณ')) { mId = 'soulElementModal'; calcFunc = window.calcSoulElement; }
+            else if (txt.includes('ขุมทรัพย์')) { mId = 'wealthFlowModal'; calcFunc = window.calcWealthFlow; }
 
             if (mId) {
-                // หยุดการทำงานเดิมทันที ไม่ให้เปิดกล่องเล็กขึ้นมาขวาง
                 e.preventDefault();
                 e.stopPropagation();
 
                 var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
 
-                // 1. ถ้ายังไม่ได้เลือกวันเกิด ให้ Alert เตือนทันที แล้วเลื่อนจอไปที่ฟอร์มกรอกวันเกิด
+                // 1. ถ้ายังไม่ได้เลือกวันเกิด ให้เด้งเตือนและพาไปกรอกทันที
                 if (!bD) {
                     alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
                     if (typeof scrollToForm === 'function') {
@@ -8029,8 +8030,11 @@ function bindKsCards() {
                     return;
                 }
 
-                // 2. ถ้ามีวันเกิดแล้ว ถึงจะเปิดป๊อปอัปขึ้นมาใช้งานตามปกติ
+                // 2. ถ้ากรอกวันเกิดแล้ว เปิดหน้าต่างพร้อมคำนวณผลลัพธ์ทันที
                 window.openKsPremFeature(mId);
+                if (typeof calcFunc === 'function') {
+                    calcFunc();
+                }
             }
         }, true);
     });
