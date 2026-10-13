@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Charmonman:wght@700&family=Charm:wght@700&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -29,6 +30,57 @@
       background: transparent;
       cursor: not-allowed;
     }
+
+    /* ปุ่มกากบาทปิดมุมบน */
+    .btn-close-page {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      color: #ffd700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      z-index: 20;
+    }
+    .btn-close-page:hover, .btn-close-page:active {
+      background: rgba(234, 179, 8, 0.25);
+      transform: scale(1.08);
+      color: #fff;
+    }
+
+    /* ปุ่มย้อนกลับมุมซ้ายบน */
+    .btn-back-home {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      color: #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      z-index: 20;
+    }
+    .btn-back-home:hover, .btn-back-home:active {
+      color: #ffd700;
+      border-color: #ffd700;
+      background: rgba(234, 179, 8, 0.15);
+    }
   </style>
 </head>
 <body oncontextmenu="return false;">
@@ -37,14 +89,25 @@
 <div class="font-preload" style="font-family: 'Charm'; font-weight: 700;">โอม ศรี คเณศายะ นะมะฮา</div>
 
 <!-- ================= โค้ดส่วนแสดงผล (HTML) ================= -->
-<div style="max-width: 500px; margin: 20px auto; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
-  <div style="text-align: center; margin-bottom: 16px;">
+<div style="max-width: 500px; margin: 15px auto; position: relative; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 22px 16px 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
+  
+  <!-- 1. ปุ่มย้อนกลับมุมซ้ายบน -->
+  <a href="index.html" class="btn-back-home" title="กลับหน้าแรก">
+    <i class="fa-solid fa-chevron-left"></i> หน้าแรก
+  </a>
+
+  <!-- 2. ปุ่มกากบาทปิด (✕) มุมขวาบน -->
+  <a href="index.html" class="btn-close-page" title="ปิดหน้านี้">
+    <i class="fa-solid fa-xmark"></i>
+  </a>
+
+  <div style="text-align: center; margin-top: 14px; margin-bottom: 16px;">
     <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
       ✨ ออกแบบวอลเปเปอร์มือถือ
     </span>
     <h4 style="color: #ffd700; font-size: 1.35rem; margin: 8px 0 6px 0; font-weight: 700; font-family: 'Charmonman', cursive;">สร้างวอลเปเปอร์องค์เทพประจำตัว</h4>
     
-    <!-- ป้ายบอกราคา 59 บาท สวยงาม ชัดเจน -->
+    <!-- ป้ายบอกราคา 59 บาท -->
     <div style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.1)); border: 1px solid rgba(234, 179, 8, 0.6); padding: 4px 14px; border-radius: 20px;">
       <span style="color: #94a3b8; font-size: 0.8rem;">ค่าบูชาครูและดาวน์โหลดไฟล์แท้</span>
       <span style="color: #ffd700; font-weight: 700; font-size: 0.95rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">59.-</span>
@@ -490,3 +553,4 @@
 </script>
 </body>
 </html>
+
