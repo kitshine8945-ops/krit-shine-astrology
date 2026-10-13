@@ -729,53 +729,47 @@ header.navbar {
 
   /* ปรับระยะห่างแถบบนให้กระชับ ไม่ดันล้นจอ */
   header.navbar {
-    padding: 6px 8px !important;
+    padding: 6px 6px !important;
   }
 
-  /* จัดกลุ่มปุ่มฝั่งขวาให้อยู่แถวเดียวกัน */
+  /* รวมปุ่มด้านขวาให้อยู่แนวเดียวกัน ไม่ขึ้นบรรทัดใหม่ */
   .nav-actions {
     display: flex !important;
     align-items: center !important;
-    gap: 3px !important;
+    gap: 2px !important;
     flex-shrink: 0 !important;
     flex-wrap: nowrap !important;
   }
 
-  /* ล็อกขนาดป้าย VIP บนมือถือให้เป็นแนวนอนและไม่ล้น */
-  .vip-active-badge {
-    font-size: 0.62rem !important;
-    padding: 3px 6px !important;
-    white-space: nowrap !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* ปรับขนาดปุ่มทั้งหมดใน Navbar ให้เล็กลงพอดีกับหน้าจอมือถือ */
+  /* ปรับขนาดปุ่มทั้งหมด (เข้าสู่ระบบ, VIP, ดาวน์โหลดแอป) ให้กะทัดรัดพอดีจอมือถือ */
   header.navbar button, 
-  header.navbar a {
-    font-size: 0.65rem !important;
-    padding: 4px 6px !important;
-    margin-left: 2px !important;
+  header.navbar a,
+  .vip-active-badge {
+    font-size: 0.60rem !important;
+    padding: 4px 5px !important;
+    margin-left: 1px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
+    border-radius: 14px !important;
   }
 
-  /* ซ่อนปุ่มดาวน์โหลดแอปบนแถบบนเฉพาะมือถือ เพื่อไม่ให้เบียดปุ่มสมัครและเข้าสู่ระบบ */
+  /* แสดงปุ่มดาวน์โหลดแอปบนมือถือตามปกติ */
   header.navbar a[download] {
-    display: none !important;
+    display: inline-flex !important;
   }
 
-  /* ปรับขนาดโลโก้และข้อความฝั่งซ้ายไม่ให้กินพื้นที่ */
+  /* ปรับขนาดโลโก้ฝั่งซ้ายให้พอดี ไม่กินพื้นที่ปุ่ม */
   header.navbar .brand {
-    gap: 6px !important;
+    gap: 4px !important;
   }
   header.navbar .brand-icon {
-    font-size: 1.4rem !important;
+    font-size: 1.25rem !important;
   }
   header.navbar .brand-info h1 {
-    font-size: 0.85rem !important;
+    font-size: 0.78rem !important;
   }
   header.navbar .brand-info span {
-    font-size: 0.58rem !important;
+    font-size: 0.52rem !important;
   }
 }
   </style>
