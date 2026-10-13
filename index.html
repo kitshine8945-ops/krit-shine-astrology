@@ -754,16 +754,19 @@ header.navbar {
     margin-right: 4px !important;
   }
 
-/* ป้าย VIP บนมือถือ: ล็อกความกว้างเพื่อให้วันที่ตัดลงมาอยู่บรรทัดล่างอัตโนมัติ */
+/* ป้าย VIP บนมือถือ: ซ่อนเป็นค่าเริ่มต้น และตัด 2 บรรทัดเมื่อถูกสั่งเปิด */
   .vip-active-badge {
     order: 1 !important;
     font-size: 0.58rem !important;
-    padding: 3px 5px !important;
-    white-space: normal !important; /* อนุญาตให้ขึ้นบรรทัดใหม่ */
-    max-width: 86px !important;     /* ล็อกความกว้างไว้ วันที่จะหล่นลงบรรทัดล่างเองทันที */
+    padding: 2px 5px !important;
+    white-space: normal !important;
+    max-width: 86px !important;
     text-align: center !important;
     line-height: 1.15 !important;
-    display: inline-block !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    /* ห้ามใส่ display: flex/inline-block !important เด็ดขาด เพื่อให้ระบบซ่อนได้ */
   }
 
   /* ให้ปุ่มเข้าสู่ระบบ / ออกจากระบบ อยู่ใต้ป้าย VIP */
@@ -2565,8 +2568,7 @@ const password = document.getElementById('authPassword').value;
       }
     }
 
- // --- 4. ตรวจสอบสถานะผู้ใช้และวันหมดอายุ VIP ---
-    async function checkUserSession() {
+async function checkUserSession() {
       const { data: { session } } = await _supabase.auth.getSession();
       const mainAuthBtn = document.getElementById('main-auth-btn');
       const logoutBtn = document.getElementById('logout-btn');
@@ -2575,50 +2577,42 @@ const password = document.getElementById('authPassword').value;
       if (session && session.user) {
         currentUser = session.user;
 
-        const { data: profile, error: profErr } = await _supabase
+        const { data: profile } = await _supabase
           .from('profiles')
           .select('*')
           .eq('id', currentUser.id)
           .maybeSingle();
 
-        console.log('ข้อมูลโปรไฟล์ที่ดึงได้:', profile, 'Error:', profErr);
-
         currentProfile = profile;
         if (mainAuthBtn) mainAuthBtn.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
 
         const now = new Date();
         const isStillVip = profile && (profile.is_vip === true || profile.is_vip === 'true') && 
           (!profile.vip_expire_date || new Date(profile.vip_expire_date).getTime() > now.getTime());
 
         if (isStillVip) {
+          // ข้อ 3: เป็นสมาชิก VIP จริง -> แสดงป้าย VIP (2 แถวสวยงาม)
           if (typeof AppState !== 'undefined') AppState.isVipUser = true;
           localStorage.setItem('ks_vip_active', 'true');
-          if (profile.vip_expire_date) {
-            localStorage.setItem('ks_vip_expire', profile.vip_expire_date);
-          }
-          // แสดงป้าย VIP เมื่อเป็นสมาชิกจริง
-          if (vipBadge) vipBadge.style.display = 'inline-flex';
-          if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
+          if (vipBadge) vipBadge.style.setProperty('display', 'flex', 'important');
         } else {
+          // ข้อ 2: เข้าสู่ระบบแล้วแต่ "ยังไม่เป็น VIP / หมดอายุ" -> ต้องไม่โชว์ป้าย VIP
           if (typeof AppState !== 'undefined') AppState.isVipUser = false;
           localStorage.removeItem('ks_vip_active');
           localStorage.removeItem('ks_vip_expire');
-          // ซ่อนป้าย VIP เมื่อหมดอายุ
-          if (vipBadge) vipBadge.style.display = 'none';
-          if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
+          if (vipBadge) vipBadge.style.setProperty('display', 'none', 'important');
         }
       } else {
-        // ยังไม่ได้เข้าสู่ระบบ -> ต้องซ่อนป้าย VIP เสมอ
+        // ข้อ 1: ก่อนเข้าสู่ระบบ -> ต้องไม่โชว์ป้าย VIP
         currentUser = null;
         currentProfile = null;
         if (typeof AppState !== 'undefined') AppState.isVipUser = false;
         localStorage.removeItem('ks_vip_active');
         localStorage.removeItem('ks_vip_expire');
-        if (mainAuthBtn) mainAuthBtn.style.display = 'inline-block';
+        if (mainAuthBtn) mainAuthBtn.style.display = 'inline-flex';
         if (logoutBtn) logoutBtn.style.display = 'none';
-        if (vipBadge) vipBadge.style.display = 'none';
-        if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
+        if (vipBadge) vipBadge.style.setProperty('display', 'none', 'important');
       }
     }
     // --- 5. ฟังก์ชันออกจากระบบ ---
