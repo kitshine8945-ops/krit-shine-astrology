@@ -754,15 +754,16 @@ header.navbar {
     margin-right: 4px !important;
   }
 
-  /* ให้ป้าย VIP อยู่บน */
+/* ป้าย VIP บนมือถือ: ล็อกความกว้างเพื่อให้วันที่ตัดลงมาอยู่บรรทัดล่างอัตโนมัติ */
   .vip-active-badge {
     order: 1 !important;
-    font-size: 0.60rem !important;
-    padding: 3px 6px !important;
-    white-space: nowrap !important;
+    font-size: 0.58rem !important;
+    padding: 3px 5px !important;
+    white-space: normal !important; /* อนุญาตให้ขึ้นบรรทัดใหม่ */
+    max-width: 86px !important;     /* ล็อกความกว้างไว้ วันที่จะหล่นลงบรรทัดล่างเองทันที */
     text-align: center !important;
-    justify-content: center !important;
-    line-height: 1.1 !important;
+    line-height: 1.15 !important;
+    display: inline-block !important;
   }
 
   /* ให้ปุ่มเข้าสู่ระบบ / ออกจากระบบ อยู่ใต้ป้าย VIP */
