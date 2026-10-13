@@ -743,6 +743,7 @@ header.navbar {
       <li><a onclick="openFeatureModal('compatibility')">สมพงษ์คู่</a></li>
       <li><a onclick="openFeatureModal('auspicious')">ฤกษ์มงคล</a></li>
       <li><a onclick="openFeatureModal('dream')">ทำนายฝัน</a></li>
+      <li><a href="wallpaper.html" target="_blank" style="color: #ffd700; font-weight: 600;"><i class="fa-solid fa-mobile-screen"></i> วอลเปเปอร์มงคล</a></li>
     </ul>
     <div class="nav-actions">
       <span class="vip-active-badge" id="nav-vip-badge" style="display: none;"><i class="fa-solid fa-crown"></i> สมาชิก VIP</span>
@@ -784,6 +785,14 @@ header.navbar {
   <section class="category-section" id="category-bar">
     <h3 class="category-section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> ศูนย์รวมศาสตร์พยากรณ์ชั้นสูง (ศาสตร์ครบวงจร)</h3>
     <div class="category-grid">
+      <!-- เมนูวอลเปเปอร์มงคล -->
+<div class="cat-item" onclick="window.location.href='wallpaper.html'">
+  <div class="cat-icon-circle" style="background: rgba(245,158,11,0.25); border: 1.5px solid #ffd700;">
+    <i class="fa-solid fa-mobile-screen-button" style="color: #ffd700;"></i>
+  </div>
+  <div class="cat-name" style="color: #ffd700;">วอลเปเปอร์มงคล</div>
+  <div class="cat-sub">ออกแบบเสริมดวงเฉพาะคุณ</div>
+</div>
      <!-- 4 เมนูพยากรณ์พรีเมียม -->
       <div class="cat-item" onclick="if(typeof window.getKsUserBirthData === 'function' ? !window.getKsUserBirthData() : !document.getElementById('birthDay').value){alert('⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนทำการถอดรหัสชะตากรรมครับ'); if(typeof scrollToForm==='function')scrollToForm(); else document.getElementById('birth-form').scrollIntoView({behavior:'smooth'});}else{openNewPremModal('karmic');}">
         <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
