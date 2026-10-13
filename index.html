@@ -2568,7 +2568,8 @@ const password = document.getElementById('authPassword').value;
       }
     }
 
-async function checkUserSession() {
+// --- 4. ตรวจสอบสถานะผู้ใช้และวันหมดอายุ VIP ---
+    async function checkUserSession() {
       const { data: { session } } = await _supabase.auth.getSession();
       const mainAuthBtn = document.getElementById('main-auth-btn');
       const logoutBtn = document.getElementById('logout-btn');
@@ -2577,11 +2578,13 @@ async function checkUserSession() {
       if (session && session.user) {
         currentUser = session.user;
 
-        const { data: profile } = await _supabase
+        const { data: profile, error: profErr } = await _supabase
           .from('profiles')
           .select('*')
           .eq('id', currentUser.id)
           .maybeSingle();
+
+        console.log('ข้อมูลโปรไฟล์ที่ดึงได้:', profile, 'Error:', profErr);
 
         currentProfile = profile;
         if (mainAuthBtn) mainAuthBtn.style.display = 'none';
@@ -2592,19 +2595,38 @@ async function checkUserSession() {
           (!profile.vip_expire_date || new Date(profile.vip_expire_date).getTime() > now.getTime());
 
         if (isStillVip) {
-          // ข้อ 3: เป็นสมาชิก VIP จริง -> แสดงป้าย VIP (2 แถวสวยงาม)
           if (typeof AppState !== 'undefined') AppState.isVipUser = true;
           localStorage.setItem('ks_vip_active', 'true');
+
+          // --- คำนวณวันที่ภาษาไทยและใส่ลงในป้าย VIP พร้อมตัดบรรทัดให้อัตโนมัติ ---
+          if (profile && profile.vip_expire_date) {
+            localStorage.setItem('ks_vip_expire', profile.vip_expire_date);
+            const expDate = new Date(profile.vip_expire_date);
+            const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const expText = `${expDate.getDate()} ${thMonths[expDate.getMonth()]} ${(expDate.getFullYear() + 543).toString().slice(-2)}`;
+            
+            if (vipBadge) {
+              vipBadge.innerHTML = `<i class="fa-solid fa-crown"></i> สมาชิก VIP<br><span style="font-size: 0.54rem; font-weight: normal; opacity: 0.9;">(ถึง ${expText})</span>`;
+            }
+          } else {
+            if (vipBadge) {
+              vipBadge.innerHTML = `<i class="fa-solid fa-crown"></i> สมาชิก VIP`;
+            }
+          }
+
+          // แสดงป้าย VIP
           if (vipBadge) vipBadge.style.setProperty('display', 'flex', 'important');
+          if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
         } else {
-          // ข้อ 2: เข้าสู่ระบบแล้วแต่ "ยังไม่เป็น VIP / หมดอายุ" -> ต้องไม่โชว์ป้าย VIP
+          // เข้าสู่ระบบแล้วแต่ยังไม่เป็น VIP หรือหมดอายุ -> ซ่อนป้าย VIP
           if (typeof AppState !== 'undefined') AppState.isVipUser = false;
           localStorage.removeItem('ks_vip_active');
           localStorage.removeItem('ks_vip_expire');
           if (vipBadge) vipBadge.style.setProperty('display', 'none', 'important');
+          if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
         }
       } else {
-        // ข้อ 1: ก่อนเข้าสู่ระบบ -> ต้องไม่โชว์ป้าย VIP
+        // ยังไม่ได้เข้าสู่ระบบ -> ซ่อนป้าย VIP
         currentUser = null;
         currentProfile = null;
         if (typeof AppState !== 'undefined') AppState.isVipUser = false;
@@ -2613,6 +2635,7 @@ async function checkUserSession() {
         if (mainAuthBtn) mainAuthBtn.style.display = 'inline-flex';
         if (logoutBtn) logoutBtn.style.display = 'none';
         if (vipBadge) vipBadge.style.setProperty('display', 'none', 'important');
+        if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
       }
     }
     // --- 5. ฟังก์ชันออกจากระบบ ---
