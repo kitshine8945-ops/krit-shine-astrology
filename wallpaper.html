@@ -7,11 +7,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Charmonman:wght@700&family=Charm:wght@700&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body { background: #030712; margin: 0; padding: 10px; font-family: 'Prompt', sans-serif; color: #fff; }
     .font-preload { position: absolute; top: -9999px; left: -9999px; font-size: 32px; visibility: hidden; }
     
-    /* ป้องกันการคลิกขวา เซฟรูป หรือลากภาพ */
+    /* ป้องกันการคลิกขวา เซฟรูป หรือลากภาพตัวอย่าง */
     .protected-canvas-container {
       position: relative;
       display: inline-block;
@@ -144,7 +148,12 @@
 
 <!-- ================= โค้ดส่วนการทำงาน (JavaScript) ================= -->
 <script>
-  let isPaidCurrentWallpaper = false; // ตัวแปรล็อกสิทธิ์ ป้องกันการใช้ซ้ำ
+  let isPaidCurrentWallpaper = false;
+
+  // เชื่อมต่อ Supabase ตรงจากโปรเจกต์ของคุณ
+  const SUPABASE_URL = 'https://kgezsjtngfhxpmkpwjym.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_MyJ0NWN85VCJp6rT9j3fjw_TngpqEhy';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
   const WALLPAPER_ASSETS = {
     ganesha: { name: "องค์พระพิฆเนศวร มหาเทพแห่งความสำเร็จ", mantra: "โอม ศรี คเณศายะ นะมะฮา", image: "deity_ganesha.png", defaultBg: "bg_cosmic_purple.jpg" },
@@ -175,7 +184,6 @@
     }
   }
 
-  // ฟังก์ชันวาดองค์ประกอบหลัก (ใช้ร่วมกันทั้งแบบมีลายน้ำและไม่มีลายน้ำ)
   async function drawWallpaperLayers(ctx, canvas, isPreview) {
     const nameInput = document.getElementById('auspiciousNameInput');
     const categorySelect = document.getElementById('wpCategory');
@@ -198,15 +206,11 @@
       fetchImage(deityData.image)
     ]);
 
-    // 1. วาด BG
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1.0;
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-
-    // 2. วาดองค์เทพโปร่งใส
     ctx.drawImage(deityImg, 0, 0, canvas.width, canvas.height);
 
-    // 3. เงาดำโปร่งแสงด้านล่าง
     const bottomShadow = ctx.createLinearGradient(0, 1300, 0, canvas.height);
     bottomShadow.addColorStop(0, 'rgba(4, 7, 18, 0)');
     bottomShadow.addColorStop(0.25, 'rgba(4, 7, 18, 0.75)');
@@ -215,7 +219,6 @@
     ctx.fillStyle = bottomShadow;
     ctx.fillRect(0, 1300, canvas.width, 620);
 
-    // 4. กรอบทองลายไทยซ้อน 2 ชั้น
     ctx.strokeStyle = 'rgba(245, 196, 105, 0.6)';
     ctx.lineWidth = 8;
     ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70);
@@ -224,7 +227,6 @@
     ctx.lineWidth = 2;
     ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
 
-    // 5. เส้นคั่นประกายทอง
     ctx.strokeStyle = 'rgba(245, 196, 105, 0.85)';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
@@ -237,7 +239,6 @@
     ctx.arc(canvas.width / 2, 1595, 6, 0, Math.PI * 2);
     ctx.fill();
 
-    // 6. วาดชื่อเจ้าชะตา
     ctx.textAlign = 'center';
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 64px "Charmonman", "Charm", cursive';
@@ -245,14 +246,12 @@
     ctx.shadowBlur = 18;
     ctx.fillText(userName ? `ดวงชะตา : คุณ ${userName}` : 'ดวงชะตามหาเศรษฐี ผู้มีจิตศรัทธา', canvas.width / 2, 1545);
 
-    // 7. วาดบทสวดพระคาถา
     ctx.fillStyle = '#ffe066';
     ctx.font = 'bold 54px "Charm", "Charmonman", cursive';
     ctx.shadowColor = 'rgba(245, 196, 105, 0.9)';
     ctx.shadowBlur = 16;
     ctx.fillText(`“ ${deityData.mantra} ”`, canvas.width / 2, 1680);
 
-    // 8. ข้อความกำกับและแบรนด์
     ctx.fillStyle = '#cbd5e1';
     ctx.font = '400 28px "Prompt", sans-serif';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
@@ -264,9 +263,7 @@
     ctx.shadowBlur = 0;
     ctx.fillText('Krit Shine Astrology', canvas.width / 2, 1825);
 
-    // ==============================================================
-    // ปิดช่องโหว่ข้อ 2: ใส่ลายน้ำตัวอย่างขนาดใหญ่ทแยงมุม ป้องกันการขโมยเซฟรูป
-    // ==============================================================
+    // วาดลายน้ำคุ้มครองเฉพาะภาพตัวอย่าง (isPreview = true)
     if (isPreview) {
       ctx.save();
       ctx.translate(canvas.width / 2, canvas.height / 2 - 100);
@@ -284,13 +281,11 @@
     }
   }
 
-  // สร้างภาพตัวอย่าง (ใส่ลายน้ำ + บล็อกการดาวน์โหลดเดิม)
   async function generateCustomWallpaper() {
     const resultArea = document.getElementById('wallpaperResultArea');
     const canvas = document.getElementById('wallpaperCanvas');
     const btnGen = document.getElementById('btnGenWallpaper');
 
-    // ปิดช่องโหว่ข้อ 1: ทุกครั้งที่กดสร้างใหม่ ล็อกสิทธิ์ทันที ต้องจ่ายใหม่
     resetPaymentStatus();
 
     if (btnGen) {
@@ -300,7 +295,6 @@
 
     try {
       const ctx = canvas.getContext('2d');
-      // วาดพร้อมเปิดลายน้ำ isPreview = true
       await drawWallpaperLayers(ctx, canvas, true);
 
       if (resultArea) {
@@ -351,7 +345,7 @@
     if (modal) modal.style.display = 'none';
   }
 
-  // ตรวจสอบสลิป 59 บาท พร้อมระบบเช็คสลิปซ้ำ
+  // ตรวจสอบสลิป 59 บาท และเช็คฐานข้อมูล Supabase ตาราง used_slips แบบเรียลไทม์
   async function verifyWallpaperSlip(input) {
     const file = input.files[0];
     if (!file) return;
@@ -371,40 +365,53 @@
       const base64Image = e.target.result;
 
       try {
+        // 1. ส่งตรวจกับระบบ SlipOK ผ่าน API เดิม
         const res = await fetch('/api/verify-slip', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            imageBase64: base64Image,
-            serviceType: 'wallpaper_59' // ระบุประเภทบริการเพื่อป้องกันสลับสลิป
-          })
+          body: JSON.stringify({ imageBase64: base64Image })
         });
 
         const result = await res.json();
 
-        if (res.ok && result.success) {
-          const amount = parseFloat(result.data.amount);
-          const transRef = result.data.transRef || '';
+        if (res.ok && result.success && result.data) {
+          const transRef = result.data.transRef;
+          const amount = parseFloat(result.data.amount || 0);
 
-          // ตรวจสอบสลิปซ้ำในประวัติเครื่องเบื้องต้น (Client-side Check)
-          const usedSlips = JSON.parse(localStorage.getItem('used_slips_wallpaper') || '[]');
-          if (transRef && usedSlips.includes(transRef)) {
-            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> สลิปนี้ถูกใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้</span>`;
-            return;
-          }
-
+          // 2. เช็กยอดเงินโอน 59 บาท
           if (amount < 59) {
-            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ยอดเงินในสลิป (${amount} บาท) ไม่ถูกต้อง (ต้อง 59 บาท)</span>`;
+            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ยอดเงินในสลิป (${amount} บาท) ไม่ตรงกับค่าบูชา 59 บาท</span>`;
             return;
           }
 
-          // สลิปถูกต้อง
-          isPaidCurrentWallpaper = true;
-          if (transRef) {
-            usedSlips.push(transRef);
-            localStorage.setItem('used_slips_wallpaper', JSON.stringify(usedSlips));
+          // 3. ตรวจสอบกับ Supabase ตาราง used_slips ว่าเคยใช้ไปหรือยัง
+          if (supabaseClient && transRef) {
+            const { data: existingSlip, error: checkError } = await supabaseClient
+              .from('used_slips')
+              .select('trans_ref')
+              .eq('trans_ref', transRef)
+              .maybeSingle();
+
+            if (existingSlip) {
+              statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> สลิปนี้ได้มีการใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้</span>`;
+              return;
+            }
+
+            // 4. บันทึกสลิปลงตาราง used_slips ทันที
+            const { error: insertError } = await supabaseClient
+              .from('used_slips')
+              .insert([{
+                trans_ref: transRef,
+                amount: amount
+              }]);
+
+            if (insertError) {
+              console.warn('Supabase Insert Warning:', insertError);
+            }
           }
 
+          // ผ่านการตรวจสอบสำเร็จ ปลดล็อกดาวน์โหลดภาพจริง
+          isPaidCurrentWallpaper = true;
           statusEl.innerHTML = `<span style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ตรวจสอบสลิปถูกต้องแล้ว (${amount} บาท)</span>`;
           labelEl.innerHTML = `<i class="fa-solid fa-check"></i> สลิปผ่านการตรวจสอบ`;
           labelEl.style.borderColor = '#22c55e';
@@ -418,7 +425,7 @@
           btnDownload.style.boxShadow = '0 0 15px rgba(255,215,0,0.5)';
 
         } else {
-          statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ${result.message || 'สลิปนี้ถูกใช้งานไปแล้ว หรือข้อมูลไม่ถูกต้อง'}</span>`;
+          statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ${result.message || 'สลิปไม่ถูกต้อง หรือไม่พบข้อมูลสลิปนี้'}</span>`;
         }
       } catch (err) {
         statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถเชื่อมต่อระบบตรวจสลิปได้</span>`;
@@ -428,14 +435,13 @@
     reader.readAsDataURL(file);
   }
 
-  // ดาวน์โหลดภาพจริงแบบ "ไร้ลายน้ำ" เมื่อจ่ายเงินถูกต้องเท่านั้น
+  // เรนเดอร์และดาวน์โหลดภาพแท้แบบไร้ลายน้ำ
   async function triggerWallpaperDownload() {
     if (!isPaidCurrentWallpaper) {
       alert('กรุณาชำระเงินและแนบสลิปก่อนดาวน์โหลดภาพแท้');
       return;
     }
 
-    // สร้าง Canvas ลับในหน่วยความจำเพื่อเรนเดอร์ภาพแท้ (ไม่มีลายน้ำ)
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = 1080;
     exportCanvas.height = 1920;
@@ -444,7 +450,7 @@
     const btnDownload = document.getElementById('btnDownloadWallpaperFinal');
     btnDownload.innerText = '⏳ กำลังบันทึกไฟล์ภาพแท้...';
 
-    // วาดภาพฉบับสมบูรณ์ ไร้ลายน้ำ (isPreview = false)
+    // วาดภาพจริงไม่มีลายน้ำ (isPreview = false)
     await drawWallpaperLayers(exportCtx, exportCanvas, false);
 
     const link = document.createElement('a');
@@ -452,7 +458,7 @@
     link.href = exportCanvas.toDataURL('image/png');
     link.click();
 
-    // เมื่อดาวน์โหลดเสร็จแล้ว ล็อกสิทธิ์ทันที
+    // ล็อกสิทธิ์ทันทีหลังโหลดเสร็จ
     resetPaymentStatus();
     closePaymentModal();
     alert('ดาวน์โหลดวอลเปเปอร์มงคลเรียบร้อยแล้ว ขอให้บารมีองค์เทพคุ้มครองและประทานพรครับ');
