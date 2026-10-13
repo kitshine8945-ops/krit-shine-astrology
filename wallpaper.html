@@ -10,13 +10,11 @@
   
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
   <style>
     body { background: #030712; margin: 0; padding: 10px; font-family: 'Prompt', sans-serif; color: #fff; }
     .font-preload { position: absolute; top: -9999px; left: -9999px; font-size: 32px; visibility: hidden; }
     
-    /* ป้องกันการคลิกขวา เซฟรูป หรือลากภาพตัวอย่าง */
     .protected-canvas-container {
       position: relative;
       display: inline-block;
@@ -100,7 +98,6 @@
   <div id="wallpaperResultArea" style="display: none; margin-top: 18px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 15px;">
     <h5 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 10px; font-family: 'Charmonman', cursive;">📱 ตัวอย่างวอลเปเปอร์ (มีลายน้ำคุ้มครอง)</h5>
     
-    <!-- กล่องป้องกันการคลิกขวาและเซฟรูปภาพตัวอย่าง -->
     <div class="protected-canvas-container" style="border: 2px solid #ffd700; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.7); max-width: 240px; width: 100%;">
       <div class="protected-overlay" oncontextmenu="return false;"></div>
       <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block; pointer-events: none;"></canvas>
@@ -151,7 +148,6 @@
 <script>
   let isPaidCurrentWallpaper = false;
 
-  // เชื่อมต่อ Supabase ตรงจากโปรเจกต์ของคุณ
   const SUPABASE_URL = 'https://kgezsjtngfhxpmkpwjym.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_MyJ0NWN85VCJp6rT9j3fjw_TngpqEhy';
   const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -264,7 +260,6 @@
     ctx.shadowBlur = 0;
     ctx.fillText('Krit Shine Astrology', canvas.width / 2, 1825);
 
-    // วาดลายน้ำคุ้มครองเฉพาะภาพตัวอย่าง (isPreview = true)
     if (isPreview) {
       ctx.save();
       ctx.translate(canvas.width / 2, canvas.height / 2 - 100);
@@ -346,7 +341,16 @@
     if (modal) modal.style.display = 'none';
   }
 
-  // ตรวจสอบสลิป 59 บาท และเช็คฐานข้อมูล Supabase ตาราง used_slips แบบเรียลไทม์
+  // ฟังก์ชันคำนวณ Hash สลิปเพื่อดักจับสลิปซ้ำในเบราว์เซอร์ล่วงหน้า
+  function computeSimpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return 'slip_hash_' + Math.abs(hash);
+  }
+
   async function verifyWallpaperSlip(input) {
     const file = input.files[0];
     if (!file) return;
@@ -365,8 +369,18 @@
     reader.onload = async function(e) {
       const base64Image = e.target.result;
 
+      // 1. ดักจับระดับเบราว์เซอร์: ถ้าเอารูปสลิปไฟล์เดิมมาอัปโหลดซ้ำในเครื่อง จะบล็อกทันที ไม่ยิงเข้า SlipOK
+      const imageFingerprint = computeSimpleHash(base64Image.substring(0, 1500));
+      const localUsedSlips = JSON.parse(localStorage.getItem('ks_used_wallpaper_slips') || '[]');
+
+      if (localUsedSlips.includes(imageFingerprint)) {
+        statusEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> สลิปนี้เคยถูกใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้!</span>`;
+        alert('สลิปนี้เคยถูกใช้งานในระบบไปแล้ว ไม่สามารถนำมาใช้ซ้ำได้ครับ!');
+        return;
+      }
+
       try {
-        // 1. ส่งตรวจกับระบบ SlipOK ผ่าน API เดิม
+        // 2. ส่งตรวจกับระบบ SlipOK
         const res = await fetch('/api/verify-slip', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -376,42 +390,57 @@
         const result = await res.json();
 
         if (res.ok && result.success && result.data) {
-          const transRef = result.data.transRef;
+          const transRef = result.data.transRef || result.data.data?.transRef;
           const amount = parseFloat(result.data.amount || 0);
 
-          // 2. เช็กยอดเงินโอน 59 บาท
-          if (amount < 59) {
-            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ยอดเงินในสลิป (${amount} บาท) ไม่ตรงกับค่าบูชา 59 บาท</span>`;
+          // เช็กซ้ำใน local list ด้วย transRef จริง
+          if (transRef && localUsedSlips.includes(transRef)) {
+            statusEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> สลิปนี้เคยถูกใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้!</span>`;
+            alert('สลิปนี้เคยถูกใช้งานในระบบไปแล้ว ไม่สามารถนำมาใช้ซ้ำได้ครับ!');
             return;
           }
 
-          // 3. ตรวจสอบกับ Supabase ตาราง used_slips ว่าเคยใช้ไปหรือยัง
+          // 3. ตรวจสอบกับตาราง used_slips ใน Supabase
           if (supabaseClient && transRef) {
-            const { data: existingSlip, error: checkError } = await supabaseClient
+            const { data: existingSlip } = await supabaseClient
               .from('used_slips')
               .select('trans_ref')
               .eq('trans_ref', transRef)
               .maybeSingle();
 
             if (existingSlip) {
-              statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> สลิปนี้ได้มีการใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้</span>`;
+              // บันทึกจำไว้ในเครื่องทันที จะได้ไม่หลุดไปยิง SlipOK อีก
+              localUsedSlips.push(imageFingerprint);
+              localUsedSlips.push(transRef);
+              localStorage.setItem('ks_used_wallpaper_slips', JSON.stringify(localUsedSlips));
+
+              statusEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> สลิปนี้เคยถูกใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้!</span>`;
+              alert('สลิปนี้เคยถูกใช้งานในระบบไปแล้ว ไม่สามารถนำมาใช้ซ้ำได้ครับ!');
               return;
             }
+          }
 
-            // 4. บันทึกสลิปลงตาราง used_slips ทันที
-            const { error: insertError } = await supabaseClient
+          // 4. ตรวจสอบยอดเงินโอน 59 บาท
+          if (amount < 59) {
+            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ยอดเงินในสลิป (${amount} บาท) ไม่ตรงกับค่าบูชา 59 บาท</span>`;
+            return;
+          }
+
+          // 5. บันทึกลง Supabase และจำค่าไว้ทันที
+          localUsedSlips.push(imageFingerprint);
+          if (transRef) localUsedSlips.push(transRef);
+          localStorage.setItem('ks_used_wallpaper_slips', JSON.stringify(localUsedSlips));
+
+          if (supabaseClient && transRef) {
+            await supabaseClient
               .from('used_slips')
               .insert([{
                 trans_ref: transRef,
                 amount: amount
               }]);
-
-            if (insertError) {
-              console.warn('Supabase Insert Warning:', insertError);
-            }
           }
 
-          // ผ่านการตรวจสอบสำเร็จ ปลดล็อกดาวน์โหลดภาพจริง
+          // ผ่านการตรวจสอบสำเร็จ
           isPaidCurrentWallpaper = true;
           statusEl.innerHTML = `<span style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ตรวจสอบสลิปถูกต้องแล้ว (${amount} บาท)</span>`;
           labelEl.innerHTML = `<i class="fa-solid fa-check"></i> สลิปผ่านการตรวจสอบ`;
@@ -436,7 +465,6 @@
     reader.readAsDataURL(file);
   }
 
-  // เรนเดอร์และดาวน์โหลดภาพแท้แบบไร้ลายน้ำ
   async function triggerWallpaperDownload() {
     if (!isPaidCurrentWallpaper) {
       alert('กรุณาชำระเงินและแนบสลิปก่อนดาวน์โหลดภาพแท้');
@@ -451,7 +479,6 @@
     const btnDownload = document.getElementById('btnDownloadWallpaperFinal');
     btnDownload.innerText = '⏳ กำลังบันทึกไฟล์ภาพแท้...';
 
-    // วาดภาพจริงไม่มีลายน้ำ (isPreview = false)
     await drawWallpaperLayers(exportCtx, exportCanvas, false);
 
     const link = document.createElement('a');
@@ -459,7 +486,6 @@
     link.href = exportCanvas.toDataURL('image/png');
     link.click();
 
-    // ล็อกสิทธิ์ทันทีหลังโหลดเสร็จ
     resetPaymentStatus();
     closePaymentModal();
     alert('ดาวน์โหลดวอลเปเปอร์มงคลเรียบร้อยแล้ว ขอให้บารมีองค์เทพคุ้มครองและประทานพรครับ');
