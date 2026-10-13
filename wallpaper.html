@@ -91,12 +91,12 @@
 <!-- ================= โค้ดส่วนแสดงผล (HTML) ================= -->
 <div style="max-width: 500px; margin: 15px auto; position: relative; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 22px 16px 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
   
-  <!-- 1. ปุ่มย้อนกลับมุมซ้ายบน (ย้อนกลับประวัติเดิม ไม่รีเฟรชหน้าหลัก) -->
+  <!-- 1. ปุ่มย้อนกลับมุมซ้ายบน -->
   <a href="javascript:void(0)" onclick="goBackWithoutRefresh()" class="btn-back-home" title="กลับหน้าแรก">
     <i class="fa-solid fa-chevron-left"></i> หน้าแรก
   </a>
 
-  <!-- 2. ปุ่มกากบาทปิด (✕) มุมขวาบน (ย้อนกลับประวัติเดิม ไม่รีเฟรชหน้าหลัก) -->
+  <!-- 2. ปุ่มกากบาทปิด (✕) มุมขวาบน -->
   <a href="javascript:void(0)" onclick="goBackWithoutRefresh()" class="btn-close-page" title="ปิดหน้านี้">
     <i class="fa-solid fa-xmark"></i>
   </a>
@@ -141,7 +141,7 @@
         <option value="naga">🐍 พญานาคราช (อำนาจ วาสนา บารมีสายน้ำ)</option>
         <option value="sivali">📿 พระสีวลี (มหาลาภ ค้าขายคล่อง เงินทองไหลมา)</option>
         <option value="thorani">🌊 พระแม่ธรณี (ชนะศัตรู ชนะอุปสรรค ปลดหนี้)</option>
-        <option value="brahma">✨ ท้าวมหาพรหม (ลิขิตชะตา เมตตา พร 4 ทิศ)</option>
+        <option value="brahma">✨ ท้าวมหาพรหม ลิขิตชีวิต ประทานพรครบ 4 ทิศ</option>
         <option value="guanyin">🕊️ พระโพธิสัตว์กวนอิม (มหาเมตตา สุขภาพ คุ้มครอง)</option>
       </select>
     </div>
@@ -221,13 +221,19 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_MyJ0NWN85VCJp6rT9j3fjw_TngpqEhy';
   const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-  // ฟังก์ชันย้อนกลับไปหน้าเดิมโดยไม่สั่งรีเฟรชหน้าเว็บ
+  // ฟังก์ชันปิดแท็บ/ย้อนกลับ เพื่อป้องกันไม่ให้หน้าหลักรีเฟรช
   function goBackWithoutRefresh() {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = 'index.html';
-    }
+    // 1. ลองสั่งปิดแท็บทันที (กรณีเปิดมาจาก target="_blank")
+    window.close();
+
+    // 2. หากเบราว์เซอร์ไม่ยอมให้ปิดแท็บ (เปิดในหน้าเดิม) ให้ย้อนกลับตามประวัติ
+    setTimeout(function() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }, 100);
   }
 
   const WALLPAPER_ASSETS = {
