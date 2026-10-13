@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สร้างวอลเปเปอร์องค์เทพมงคล</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Charmonman:wght@700&family=Charm:wght@700&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { background: #030712; margin: 0; padding: 10px; font-family: 'Prompt', sans-serif; color: #fff; }
+    /* กล่องทดสอบเพื่อให้เบราว์เซอร์ Activate ฟอนต์เข้าหน่วยความจำ */
+    .font-preload {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      font-size: 32px;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<div class="font-preload" style="font-family: 'Charmonman'; font-weight: 700;">ดวงชะตามหาเศรษฐี กฤศ สุขรา</div>
+<div class="font-preload" style="font-family: 'Charm'; font-weight: 700;">โอม ศรี คเณศายะ นะมะฮา</div>
+
+<!-- ================= โค้ดส่วนแสดงผล (HTML) ================= -->
+<div style="max-width: 500px; margin: 20px auto; background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.6); border-radius: 18px; padding: 20px 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5);">
+  <div style="text-align: center; margin-bottom: 16px;">
+    <span style="background: rgba(245,196,105,0.15); color: #ffe49e; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">
+      ✨ ออกแบบวอลเปเปอร์มือถือ
+    </span>
+    <h4 style="color: #ffd700; font-size: 1.35rem; margin-top: 8px; font-weight: 700; font-family: 'Charmonman', cursive;">สร้างวอลเปเปอร์องค์เทพประจำตัว</h4>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div>
+      <label style="display: block; font-size: 0.85rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">ชื่อ-นามสกุล เจ้าของวอลเปเปอร์มงคล</label>
+      <input type="text" id="auspiciousNameInput" placeholder="กรอกชื่อ - นามสกุล" style="width: 100%; box-sizing: border-box; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none;">
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.85rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">1. ด้านที่ต้องการเสริมดวง</label>
+      <select id="wpCategory" style="width: 100%; box-sizing: border-box; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none;">
+        <option value="auto">✨ เลือกตามความต้องการ (แนะนำ)</option>
+        <option value="wealth">💰 เสริมการเงิน โชคลาภ & ค้าขายร่ำรวย</option>
+        <option value="work">💼 เสริมการงาน ความสำเร็จ & ปัญญา</option>
+        <option value="love">💖 เสริมความรัก เมตตามหานิยม & เสน่ห์</option>
+        <option value="protection">🛡️ คุ้มครองแคล้วคลาด ปัดเป่าภัย & ปราบมาร</option>
+      </select>
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.85rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">2. เลือกองค์เทพที่ศรัทธา</label>
+      <select id="wpDeity" style="width: 100%; box-sizing: border-box; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none;">
+        <option value="auto">✨ เลือกองค์เทพ (แนะนำตามด้านเสริมดวง)</option>
+        <option value="ganesha">🐘 พระพิฆเนศ (ความสำเร็จ ปัญญา บารมี)</option>
+        <option value="lakshmi">🪷 พระแม่ลักษมี (ความร่ำรวย โชคลาภ เสน่ห์)</option>
+        <option value="vessavana">🏮 ท้าวเวสสุวรรณ (ขจัดอุปสรรค คุ้มครอง ดึงดูดทรัพย์)</option>
+        <option value="naga">🐍 พญานาคราช (อำนาจ วาสนา บารมีสายน้ำ)</option>
+        <option value="sivali">📿 พระสีวลี (มหาลาภ ค้าขายคล่อง เงินทองไหลมา)</option>
+        <option value="thorani">🌊 พระแม่ธรณี (ชนะศัตรู ชนะอุปสรรค ปลดหนี้)</option>
+        <option value="brahma">✨ ท้าวมหาพรหม (ลิขิตชะตา เมตตา พร 4 ทิศ)</option>
+        <option value="guanyin">🕊️ พระโพธิสัตว์กวนอิม (มหาเมตตา สุขภาพ คุ้มครอง)</option>
+      </select>
+    </div>
+
+    <div>
+      <label style="display: block; font-size: 0.85rem; color: #f1f5f9; font-weight: 500; margin-bottom: 4px;">3. เลือกพื้นหลัง / สีมงคลเสริมธาตุ</label>
+      <select id="wpBackground" style="width: 100%; box-sizing: border-box; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 8px 12px; color: #fff; font-family: inherit; font-size: 0.85rem; outline: none;">
+        <option value="auto">✨ เลือกอัตโนมัติตามองค์เทพ (แนะนำ)</option>
+        <option value="bg_gold_wealth.jpg">🟡 โทนทองจักรพรรดิ (ทรัพย์สิน โชคลาภ ความรุ่งเรือง)</option>
+        <option value="bg_green_mercy.jpg">🟢 โทนเขียวมรกต (การค้า เจรจา เมตตามหานิยม)</option>
+        <option value="bg_cosmic_purple.jpg">🟣 โทนม่วงจักรวาล (ญาณหยั่งรู้ ปัญญา อำนาจเร้นลับ)</option>
+        <option value="bg_red_fire.jpg">🔴 โทนเพลิงทับทิม (พลังใจ อำนาจบารมี ขจัดมาร)</option>
+        <option value="bg_blue_ocean.jpg">🔵 โทนครามสมุทร (ความสงบสุข การค้าราบรื่น ธาตุน้ำ)</option>
+        <option value="bg_white_celestial.jpg">⚪ โทนขาวมุกรุ้ง (ความบริสุทธิ์ บุญบารมี สงบเย็น)</option>
+      </select>
+    </div>
+
+    <button type="button" id="btnGenWallpaper" onclick="generateCustomWallpaper()" style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; padding: 12px; border-radius: 10px; border: none; font-size: 1.15rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); margin-top: 6px; font-family: 'Charmonman', cursive;">
+      🎨 สร้างวอลเปเปอร์มงคล
+    </button>
+  </div>
+
+  <div id="wallpaperResultArea" style="display: none; margin-top: 18px; text-align: center; border-top: 1px dashed rgba(234,179,8,0.4); padding-top: 15px;">
+    <h5 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 10px; font-family: 'Charmonman', cursive;">📱 ตัวอย่างวอลเปเปอร์มงคลเฉพาะคุณ</h5>
+    <div style="display: inline-block; border: 2px solid #ffd700; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.7); max-width: 240px; width: 100%;">
+      <canvas id="wallpaperCanvas" width="1080" height="1920" style="width: 100%; height: auto; display: block;"></canvas>
+    </div>
+    <div style="margin-top: 14px; background: rgba(255,215,0,0.08); padding: 12px; border-radius: 10px; border: 1px solid rgba(234,179,8,0.3);">
+      <p style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">ชำระเงินเพื่อปลดล็อกลิงก์ดาวน์โหลดความละเอียดสูง (59 บาท)</p>
+      <button type="button" onclick="openPaymentForWallpaper()" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; padding: 9px 18px; border-radius: 16px; border: none; cursor: pointer; font-size: 1.05rem; box-shadow: 0 0 12px rgba(255,215,0,0.4); font-family: 'Charmonman', cursive;">
+        🪙 สแกนชำระเงินเพื่อดาวน์โหลด
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Modal QR Code & แนบสลิปตรวจสอบอัตโนมัติ (59 บาท) ================= -->
+<div id="qrPaymentModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 99999; justify-content: center; align-items: center; padding: 15px;">
+  <div style="background: #0f172a; border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; max-width: 360px; width: 100%; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); font-family: 'Prompt', sans-serif;">
+    <h4 style="color: #ffd700; margin: 0 0 6px 0; font-size: 1.25rem; font-weight: 700;">สแกนชำระเงิน 59 บาท</h4>
+    <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0 0 10px 0;">ค่าบูชาครูและปลดล็อกดาวน์โหลดภาพมงคลความละเอียดสูง</p>
+    
+    <div style="background: #fff; padding: 8px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 10px;">
+      <img src="qr-wallpaper.jpg" alt="QR Code ชำระเงิน 59 บาท" style="width: 100%; max-width: 210px; height: auto; display: block; border-radius: 8px;">
+    </div>
+
+    <!-- ส่วนแนบสลิปโอนเงิน -->
+    <div style="padding: 10px; background: rgba(255,255,255,0.04); border: 1px dashed rgba(234, 179, 8, 0.5); border-radius: 10px; margin-bottom: 12px;">
+      <input type="file" id="wallpaperSlipInput" accept="image/*" onchange="verifyWallpaperSlip(this)" style="display: none;">
+      <label for="wallpaperSlipInput" id="wallpaperSlipLabel" style="display: inline-block; padding: 7px 16px; background: rgba(234, 179, 8, 0.15); color: #ffd700; border: 1px solid #ffd700; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
+        <i class="fa-solid fa-cloud-arrow-up"></i> แนบสลิปโอนเงินเพื่อตรวจยอด
+      </label>
+      <div id="wallpaperSlipStatus" style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">
+        โอนยอด 59.00 บาท แล้วแนบสลิปที่นี่
+      </div>
+    </div>
+    
+    <div style="display: flex; gap: 8px; justify-content: center;">
+      <button type="button" id="btnDownloadWallpaperFinal" onclick="triggerWallpaperDownload()" disabled style="flex: 1; background: #444; color: #888; font-weight: 700; padding: 10px; border-radius: 10px; border: none; cursor: not-allowed; font-size: 0.85rem; transition: 0.3s;">
+        🔒 รอการตรวจสอบสลิป...
+      </button>
+      <button type="button" onclick="closePaymentModal()" style="background: rgba(255,255,255,0.1); color: #fff; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; font-size: 0.85rem;">
+        ปิด
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= โค้ดส่วนการทำงาน (JavaScript) ================= -->
+<script>
+  // รายการ Asset ชี้ไปยังไฟล์ PNG โปร่งใสจริง
+  const WALLPAPER_ASSETS = {
+    ganesha: {
+      name: "องค์พระพิฆเนศวร มหาเทพแห่งความสำเร็จ",
+      mantra: "โอม ศรี คเณศายะ นะมะฮา",
+      image: "deity_ganesha.png",
+      defaultBg: "bg_cosmic_purple.jpg"
+    },
+    lakshmi: {
+      name: "พระแม่ลักษมี มหาเทวีแห่งโชคลาภและความรัก",
+      mantra: "โอม ศรี มหาลักษมี เจ นะมะฮา",
+      image: "deity_lakshmi.png",
+      defaultBg: "bg_gold_wealth.jpg"
+    },
+    vessavana: {
+      name: "ท้าวเวสสุวรรณโณ ผู้พิทักษ์ทรัพย์และคุ้มครองภัย",
+      mantra: "เวสสะ พุทสะ ภะเวนาสุขัง นะโมพุทธายะ",
+      image: "deity_vessavana.png",
+      defaultBg: "bg_red_fire.jpg"
+    },
+    naga: {
+      name: "พญานาคราชเจ้า บารมีแห่งสายน้ำและสมบัติบาดาล",
+      mantra: "กายะ วาจา จิตตัง อะหังวันทา นาคาธิบดี",
+      image: "deity_naga.png",
+      defaultBg: "bg_green_mercy.jpg"
+    },
+    sivali: {
+      name: "พระสีวลีมหาเถระ มหาลาภโภคทรัพย์ ค้าขายร่ำรวย",
+      mantra: "นะโมพุทธายะ สีวะลี จะ มหาเถโร ลาภะ ลาโภ ภะวันตุ เม",
+      image: "deity_sivali.png",
+      defaultBg: "bg_gold_wealth.jpg"
+    },
+    thorani: {
+      name: "พระแม่ธรณีบีบมวยผม ปราบมาร ขจัดอุปสรรค ปลดหนี้สิน",
+      mantra: "ตัสสา เกสีสะโต ยะถาคังคา สะวันติ นะมามิหัง",
+      image: "deity_thorani.png",
+      defaultBg: "bg_blue_ocean.jpg"
+    },
+    brahma: {
+      name: "ท้าวมหาพรหม ลิขิตชีวิต ประทานพรครบ 4 ทิศ",
+      mantra: "โอม พรหมมายะ นะมะฮา มหาลาโภ ภะวันตุ เม",
+      image: "deity_brahma.png",
+      defaultBg: "bg_gold_wealth.jpg"
+    },
+    guanyin: {
+      name: "พระโพธิสัตว์กวนอิม มหาเมตตาบารมี สุขภาพ แคล้วคลาด",
+      mantra: "นำมอ กวงสี่อิมผ่อสัก มหาเมตตา บารมี",
+      image: "deity_guanyin.png",
+      defaultBg: "bg_white_celestial.jpg"
+    }
+  };
+
+  const CATEGORY_MAP = {
+    wealth: 'lakshmi',
+    work: 'ganesha',
+    love: 'guanyin',
+    protection: 'vessavana',
+    auto: 'ganesha'
+  };
+
+  function fetchImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(src);
+      img.src = src;
+    });
+  }
+
+  // ฟังก์ชันดักรอให้ฟอนต์พร้อมวาดบน Canvas
+  async function waitForFonts() {
+    if (document.fonts) {
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 100));
+    }
+  }
+
+  async function generateCustomWallpaper() {
+    const nameInput = document.getElementById('auspiciousNameInput');
+    const categorySelect = document.getElementById('wpCategory');
+    const deitySelect = document.getElementById('wpDeity');
+    const bgSelect = document.getElementById('wpBackground');
+    const resultArea = document.getElementById('wallpaperResultArea');
+    const canvas = document.getElementById('wallpaperCanvas');
+    const btnGen = document.getElementById('btnGenWallpaper');
+
+    if (!canvas) {
+      alert('ไม่พบ Canvas สำหรับสร้างวอลเปเปอร์');
+      return;
+    }
+
+    const userName = nameInput ? nameInput.value.trim() : '';
+    const selectedCategory = categorySelect ? categorySelect.value : 'auto';
+    let selectedDeity = deitySelect ? deitySelect.value : 'auto';
+    let selectedBg = bgSelect ? bgSelect.value : 'auto';
+
+    if (selectedDeity === 'auto') {
+      selectedDeity = CATEGORY_MAP[selectedCategory] || 'ganesha';
+    }
+
+    const deityData = WALLPAPER_ASSETS[selectedDeity] || WALLPAPER_ASSETS.ganesha;
+
+    if (selectedBg === 'auto') {
+      selectedBg = deityData.defaultBg;
+    }
+
+    if (btnGen) {
+      btnGen.innerText = '⏳ กำลังประกอบวอลเปเปอร์มงคล...';
+      btnGen.disabled = true;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    try {
+      // 1. รอฟอนต์พร้อม
+      await waitForFonts();
+
+      // 2. โหลดภาพพื้นหลัง (.jpg) และภาพองค์เทพโปร่งใส (.png)
+      const [bgImg, deityImg] = await Promise.all([
+        fetchImage(selectedBg),
+        fetchImage(deityData.image)
+      ]);
+
+      // 3. วาดภาพพื้นหลัง (Background) เต็มหน้าจอ 1080x1920
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+      // 4. วาดภาพองค์เทพโปร่งใส (PNG) ซ้อนทับลงไปตรงกลาง
+      ctx.drawImage(deityImg, 0, 0, canvas.width, canvas.height);
+
+      // 5. เงาดำโปร่งแสงด้านล่าง สำหรับรองรับข้อความ
+      const bottomShadow = ctx.createLinearGradient(0, 1300, 0, canvas.height);
+      bottomShadow.addColorStop(0, 'rgba(4, 7, 18, 0)');
+      bottomShadow.addColorStop(0.25, 'rgba(4, 7, 18, 0.75)');
+      bottomShadow.addColorStop(0.65, 'rgba(4, 7, 18, 0.96)');
+      bottomShadow.addColorStop(1, 'rgba(2, 4, 12, 1)');
+      ctx.fillStyle = bottomShadow;
+      ctx.fillRect(0, 1300, canvas.width, 620);
+
+      // 6. กรอบทองลายไทยซ้อน 2 ชั้น
+      ctx.strokeStyle = 'rgba(245, 196, 105, 0.6)';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(35, 35, canvas.width - 70, canvas.height - 70);
+
+      ctx.strokeStyle = 'rgba(255, 215, 0, 0.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
+
+      // 7. เส้นคั่นประกายทอง
+      ctx.strokeStyle = 'rgba(245, 196, 105, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2 - 260, 1595);
+      ctx.lineTo(canvas.width / 2 + 260, 1595);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffd700';
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, 1595, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ==========================================
+      // 8. วาดชื่อเจ้าชะตา: ฟอนต์ Charmonman ลายกนกไทย
+      // ==========================================
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 64px "Charmonman", "Charm", "TH Sarabun New", cursive';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+      ctx.shadowBlur = 18;
+      ctx.fillText(userName ? `ดวงชะตา : คุณ ${userName}` : 'ดวงชะตามหาเศรษฐี ผู้มีจิตศรัทธา', canvas.width / 2, 1545);
+
+      // ==========================================
+      // 9. วาดบทสวดพระคาถา: ฟอนต์ Charm ลายไทยตวัดปลายทอง
+      // ==========================================
+      ctx.fillStyle = '#ffe066';
+      ctx.font = 'bold 54px "Charm", "Charmonman", "TH Sarabun New", cursive';
+      ctx.shadowColor = 'rgba(245, 196, 105, 0.9)';
+      ctx.shadowBlur = 16;
+      ctx.fillText(`“ ${deityData.mantra} ”`, canvas.width / 2, 1680);
+
+      // 10. ข้อความกำกับและแบรนด์
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '400 28px "Prompt", sans-serif';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.fillText('ปลุกเสกพลังมงคลเฉพาะดวงชะตาบุคคล', canvas.width / 2, 1745);
+
+      ctx.fillStyle = 'rgba(245, 196, 105, 0.95)';
+      ctx.font = 'bold 28px "Charmonman", "Charm", cursive';
+      ctx.shadowBlur = 0;
+      ctx.fillText('Krit Shine Astrology', canvas.width / 2, 1825);
+
+      if (resultArea) {
+        resultArea.style.display = 'block';
+        resultArea.scrollIntoView({ behavior: 'smooth' });
+      }
+    } catch (failedSrc) {
+      alert(`ไม่สามารถโหลดรูปภาพได้ (${failedSrc}) กรุณาตรวจสอบว่ามีไฟล์นี้อยู่ในโฟลเดอร์เดียวกันหรือไม่`);
+    } finally {
+      if (btnGen) {
+        btnGen.innerText = '🎨 สร้างวอลเปเปอร์มงคล';
+        btnGen.disabled = false;
+      }
+    }
+  }
+
+  function openPaymentForWallpaper() {
+    const modal = document.getElementById('qrPaymentModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closePaymentModal() {
+    const modal = document.getElementById('qrPaymentModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // ฟังก์ชันตรวจสอบสลิป 59 บาทผ่าน Backend verify-slip.js
+  async function verifyWallpaperSlip(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const statusEl = document.getElementById('wallpaperSlipStatus');
+    const btnDownload = document.getElementById('btnDownloadWallpaperFinal');
+    const labelEl = document.getElementById('wallpaperSlipLabel');
+
+    statusEl.innerHTML = `<span style="color:#ffd700;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบยอดเงิน 59 บาท...</span>`;
+    btnDownload.disabled = true;
+    btnDownload.style.background = '#444';
+    btnDownload.style.color = '#888';
+    btnDownload.style.cursor = 'not-allowed';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Image = e.target.result;
+
+      try {
+        const res = await fetch('/api/verify-slip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64Image })
+        });
+
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+          const amount = parseFloat(result.data.amount);
+          if (amount < 59) {
+            statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ยอดเงินในสลิป (${amount} บาท) ไม่ตรงกับค่าบูชา 59 บาท</span>`;
+            return;
+          }
+
+          // ผ่านสำเร็จ
+          statusEl.innerHTML = `<span style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> ตรวจสอบสลิปถูกต้อง (${amount} บาท)</span>`;
+          labelEl.innerHTML = `<i class="fa-solid fa-check"></i> สลิปถูกต้องแล้ว`;
+          labelEl.style.borderColor = '#22c55e';
+          labelEl.style.color = '#22c55e';
+
+          // ปลดล็อกปุ่มดาวน์โหลด
+          btnDownload.disabled = false;
+          btnDownload.innerText = '📥 ดาวน์โหลดวอลเปเปอร์ได้ทันที';
+          btnDownload.style.background = 'linear-gradient(135deg, #ffd700, #ff8c00)';
+          btnDownload.style.color = '#1a0f00';
+          btnDownload.style.cursor = 'pointer';
+          btnDownload.style.boxShadow = '0 0 15px rgba(255,215,0,0.5)';
+
+        } else {
+          statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> ${result.message || 'สลิปไม่ถูกต้อง หรือไม่พบข้อมูลสลิปนี้'}</span>`;
+        }
+      } catch (err) {
+        statusEl.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถเชื่อมต่อระบบตรวจสลิปได้</span>`;
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function triggerWallpaperDownload() {
+    const canvas = document.getElementById('wallpaperCanvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'KritShine_Auspicious_Wallpaper.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+</script>
+</body>
+</html>
