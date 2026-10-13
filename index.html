@@ -64,7 +64,7 @@
     a { text-decoration: none; color: inherit; transition: 0.25s; }
     button { font-family: inherit; }
 
-    /* Navbar */
+/* Navbar */
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 4%; background: rgba(4, 7, 18, 0.95); backdrop-filter: blur(14px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-soft); }
     .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .brand-icon { font-size: 2rem; color: var(--gold-main); filter: drop-shadow(0 0 10px rgba(245, 196, 105, 0.6)); animation: rotateDharma 35s linear infinite; }
@@ -76,7 +76,20 @@
     .nav-links li a:hover, .nav-links li a.active { color: var(--gold-bright); }
     .btn-user-login { background: var(--gold-gradient); color: #120e03; font-weight: 600; padding: 6px 16px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.82rem; cursor: pointer; border: none; transition: 0.3s; }
     .btn-user-login:hover { box-shadow: var(--aura-glow); transform: translateY(-1px); }
-    .vip-active-badge { display: none; background: var(--vip-gradient); color: #1a0f00; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; }
+    
+    /* ป้ายสถานะ VIP แนวนอน ไม่ตัดบรรทัดยืดลงล่าง */
+    .vip-active-badge { 
+      display: none; 
+      background: var(--vip-gradient); 
+      color: #1a0f00; 
+      font-weight: 700; 
+      font-size: 0.75rem; 
+      padding: 5px 12px; 
+      border-radius: 12px; 
+      white-space: nowrap !important; 
+      flex-shrink: 0 !important;
+      line-height: 1.2 !important;
+    }
 
     /* Hero Section */
     .hero {
@@ -691,6 +704,16 @@ header.navbar {
   list-style: none !important;
 }
 
+/* ล็อกป้ายสถานะ VIP ไม่ให้ตัดคำลงล่าง และไม่ให้โดนบีบ */
+.vip-active-badge {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  line-height: 1 !important;
+}
+
 /* 5. ปรับแต่งสำหรับจอมือถือและจอพับ (Fold / iPhone) */
 @media (max-width: 900px) {
   /* ซ่อนเมนูตัวหนังสือยาวๆ ไม่ให้ดันจอจนกินพื้นที่ครึ่งจอ */
@@ -703,6 +726,16 @@ header.navbar {
     display: flex !important;
     align-items: center !important;
     gap: 4px !important;
+    flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+  }
+
+  /* ปรับแต่งป้าย VIP บนจอมือถือให้พอดีแถบและเป็นแนวนอนเสมอ */
+  .vip-active-badge {
+    font-size: 0.65rem !important;
+    padding: 4px 8px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   header.navbar button, 
@@ -711,6 +744,7 @@ header.navbar {
     padding: 5px 8px !important;
     margin-left: 2px !important;
     white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   /* ขนาดตัวหนังสือโลโก้ฝั่งซ้าย */
