@@ -704,55 +704,78 @@ header.navbar {
   list-style: none !important;
 }
 
-/* ล็อกป้ายสถานะ VIP ไม่ให้ตัดคำลงล่าง และไม่ให้โดนบีบ */
+/* ล็อกป้ายสถานะ VIP (ให้ JS เป็นตัวคุม display ห้ามใส่ !important ที่ display) */
 .vip-active-badge {
+  display: none; /* เริ่มต้นซ่อนไว้เสมอ */
+  background: var(--vip-gradient);
+  color: #1a0f00;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 12px;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  line-height: 1 !important;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
 }
 
-/* 5. ปรับแต่งสำหรับจอมือถือและจอพับ (Fold / iPhone) */
+/* ปรับแต่งสำหรับจอมือถือและจอพับ */
 @media (max-width: 900px) {
-  /* ซ่อนเมนูตัวหนังสือยาวๆ ไม่ให้ดันจอจนกินพื้นที่ครึ่งจอ */
+  /* ซ่อนเมนูตัวหนังสือยาวๆ */
   .nav-links {
     display: none !important;
   }
 
-  /* ปุ่มด้านขวา (เข้าสู่ระบบ, VIP, โหลดแอป) ให้ชิดกันสวยงาม ไม่ตกขอบ */
+  /* ปรับระยะห่างแถบบนให้กระชับ ไม่ดันล้นจอ */
+  header.navbar {
+    padding: 6px 8px !important;
+  }
+
+  /* จัดกลุ่มปุ่มฝั่งขวาให้อยู่แถวเดียวกัน */
   .nav-actions {
     display: flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 3px !important;
     flex-shrink: 0 !important;
     flex-wrap: nowrap !important;
   }
 
-  /* ปรับแต่งป้าย VIP บนจอมือถือให้พอดีแถบและเป็นแนวนอนเสมอ */
+  /* ล็อกขนาดป้าย VIP บนมือถือให้เป็นแนวนอนและไม่ล้น */
   .vip-active-badge {
-    font-size: 0.65rem !important;
-    padding: 4px 8px !important;
+    font-size: 0.62rem !important;
+    padding: 3px 6px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
   }
 
+  /* ปรับขนาดปุ่มทั้งหมดใน Navbar ให้เล็กลงพอดีกับหน้าจอมือถือ */
   header.navbar button, 
   header.navbar a {
-    font-size: 0.68rem !important;
-    padding: 5px 8px !important;
+    font-size: 0.65rem !important;
+    padding: 4px 6px !important;
     margin-left: 2px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
   }
 
-  /* ขนาดตัวหนังสือโลโก้ฝั่งซ้าย */
-  header.navbar .brand h1 {
-    font-size: 0.95rem !important;
+  /* ซ่อนปุ่มดาวน์โหลดแอปบนแถบบนเฉพาะมือถือ เพื่อไม่ให้เบียดปุ่มสมัครและเข้าสู่ระบบ */
+  header.navbar a[download] {
+    display: none !important;
   }
-  header.navbar .brand span {
-    font-size: 0.65rem !important;
+
+  /* ปรับขนาดโลโก้และข้อความฝั่งซ้ายไม่ให้กินพื้นที่ */
+  header.navbar .brand {
+    gap: 6px !important;
+  }
+  header.navbar .brand-icon {
+    font-size: 1.4rem !important;
+  }
+  header.navbar .brand-info h1 {
+    font-size: 0.85rem !important;
+  }
+  header.navbar .brand-info span {
+    font-size: 0.58rem !important;
   }
 }
   </style>
@@ -2458,7 +2481,7 @@ const password = document.getElementById('authPassword').value;
       }
     }
 
-    // --- 4. ตรวจสอบสถานะผู้ใช้และวันหมดอายุ VIP ---
+ // --- 4. ตรวจสอบสถานะผู้ใช้และวันหมดอายุ VIP ---
     async function checkUserSession() {
       const { data: { session } } = await _supabase.auth.getSession();
       const mainAuthBtn = document.getElementById('main-auth-btn');
@@ -2490,31 +2513,30 @@ const password = document.getElementById('authPassword').value;
           if (profile.vip_expire_date) {
             localStorage.setItem('ks_vip_expire', profile.vip_expire_date);
           }
+          // แสดงป้าย VIP เมื่อเป็นสมาชิกจริง
+          if (vipBadge) vipBadge.style.display = 'inline-flex';
           if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
         } else {
-          const localActive = localStorage.getItem('ks_vip_active') === 'true';
-          const localExp = localStorage.getItem('ks_vip_expire');
-          if (localActive && localExp && new Date(localExp).getTime() > now.getTime()) {
-            if (typeof AppState !== 'undefined') AppState.isVipUser = true;
-            if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
-          } else {
-            if (typeof AppState !== 'undefined') AppState.isVipUser = false;
-            localStorage.removeItem('ks_vip_active');
-            localStorage.removeItem('ks_vip_expire');
-            if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
-          }
+          if (typeof AppState !== 'undefined') AppState.isVipUser = false;
+          localStorage.removeItem('ks_vip_active');
+          localStorage.removeItem('ks_vip_expire');
+          // ซ่อนป้าย VIP เมื่อหมดอายุ
+          if (vipBadge) vipBadge.style.display = 'none';
+          if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
         }
       } else {
+        // ยังไม่ได้เข้าสู่ระบบ -> ต้องซ่อนป้าย VIP เสมอ
         currentUser = null;
         currentProfile = null;
         if (typeof AppState !== 'undefined') AppState.isVipUser = false;
         localStorage.removeItem('ks_vip_active');
+        localStorage.removeItem('ks_vip_expire');
         if (mainAuthBtn) mainAuthBtn.style.display = 'inline-block';
         if (logoutBtn) logoutBtn.style.display = 'none';
         if (vipBadge) vipBadge.style.display = 'none';
+        if (typeof updateVipBadgeState === 'function') updateVipBadgeState();
       }
     }
-
     // --- 5. ฟังก์ชันออกจากระบบ ---
     async function handleLogout() {
       if (typeof _supabase !== 'undefined') {
