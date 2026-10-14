@@ -11551,13 +11551,13 @@ function renderTransitAspectHtml(aspectList) {
     { tier: 5, title: "เกณฑ์ 5 องศา (ระยะวังกะ 3 - 5°)", color: "#3b82f6", note: "ทำนายเหตุการณ์ที่มีแนวโน้มจะส่งผลในระยะใกล้" }
   ];
 
-  let html = `<div class="myhora-transit-report" style="font-family:inherit; line-height:1.6;">`;
+  let html = `<div class="myhora-transit-report" style="width:100% !important; max-width:100% !important; margin:0 !important; padding:0 !important; font-family:inherit; line-height:1.6; box-sizing:border-box !important;">`;
 
   tiers.forEach(t => {
     let items = aspectList.filter(x => x.tier === t.tier);
     if (items.length > 0) {
       html += `
-        <div style="margin-top:20px; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:6px;">
+        <div style="margin-top:20px; margin-bottom:12px; border-bottom:1px solid #334155; padding-bottom:6px; width:100% !important; box-sizing:border-box !important;">
           <h4 style="color:${t.color}; margin:0; font-size:1.05rem;">
             <i class="fa-solid fa-compass"></i> ${t.title}
           </h4>
@@ -11567,18 +11567,18 @@ function renderTransitAspectHtml(aspectList) {
 
       items.forEach(item => {
         html += `
-          <div style="background:rgba(255,255,255,0.03); border-left:3px solid ${t.color}; border-radius:4px; padding:12px; margin-bottom:12px;">
-            <div style="font-weight:bold; color:#fde047; font-size:0.95rem;">
+          <div style="background:rgba(255,255,255,0.03); border-left:4px solid ${t.color} !important; border-top:none !important; border-right:none !important; border-bottom:none !important; border-radius:6px; padding:14px; margin-bottom:14px; width:100% !important; box-sizing:border-box !important;">
+            <div style="font-weight:bold; color:#fde047; font-size:1rem; margin-bottom:4px;">
               ${item.title}
             </div>
-            <div style="font-size:0.8rem; color:#64748b; margin:2px 0 6px 0;">
+            <div style="font-size:0.82rem; color:#64748b; margin:2px 0 8px 0;">
               ระยะวังกะ ${item.orb}°
             </div>
-            <div style="font-size:0.82rem; color:#94a3b8; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-bottom:8px;">
+            <div style="font-size:0.85rem; color:#94a3b8; background:rgba(0,0,0,0.25); padding:8px 10px; border-radius:4px; margin-bottom:10px; line-height:1.5;">
               <div>• ${item.kw1}</div>
               <div>• ${item.kw2}</div>
             </div>
-            <div style="font-size:0.88rem; color:#e2e8f0;">
+            <div style="font-size:0.92rem; color:#e2e8f0; line-height:1.65;">
               ${item.desc}
             </div>
           </div>
@@ -11591,34 +11591,54 @@ function renderTransitAspectHtml(aspectList) {
   return html;
 }
 </script>
-  <style>
-/* ขยายกล่องคำทำนายให้กว้างเต็มจอ และลบเส้นขอบทองที่ซ้อนกัน 3-4 ชั้น */
+
+<style>
+/* =========================================================
+   ล้างกรอบซ้อนด้านข้าง และขยายกล่องคำทำนายให้กว้างเต็มจอ
+   ========================================================= */
+
+/* ปลดล็อกคอนเทนเนอร์ชั้นนอกทั้งหมดที่ครอบคำทำนาย */
 #uranianVipContent,
-#uranianVipBox {
+#uranianVipBox,
+.uranian-results-container,
+.transit-results-wrapper,
+.myhora-transit-report {
   width: 100% !important;
   max-width: 900px !important;
   margin: 0 auto !important;
-  padding: 8px 4px !important;
+  padding: 10px 8px !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
 }
 
-/* ลบกรอบซ้อนด้านนอก */
+/* ล้างเส้นขอบทองซ้อนแนวตั้งซ้าย-ขวาทุกชั้น */
+#uranianVipContent div,
+#uranianVipBox div,
+.transit-results-wrapper div {
+  box-sizing: border-box !important;
+}
+
+/* ล้าง border ด้านข้างของกล่องที่ซ้อนกัน ยกเว้นแถบสีนำหน้าคำทำนาย */
 #uranianVipContent > div,
 #uranianVipBox > div {
-  border: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
   box-shadow: none !important;
-  padding-left: 4px !important;
-  padding-right: 4px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-/* ปรับให้การ์ดคำทำนายแต่ละข้อกว้างเต็มพื้นที่ อ่านสบายตา */
-div[style*="border-left:3px solid"],
-div[style*="border-left: 3px solid"] {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin-bottom: 12px !important;
+/* มือถือ: ให้ขยายเต็มหน้าจอ ไม่ถูกบีบ */
+@media (max-width: 768px) {
+  #uranianVipContent,
+  #uranianVipBox,
+  .myhora-transit-report {
+    width: 100% !important;
+    padding: 6px 4px !important;
+  }
 }
 </style>
 </body>
