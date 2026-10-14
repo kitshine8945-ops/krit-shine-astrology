@@ -11653,6 +11653,65 @@ div[style*="border-left: 3px solid"] {
     padding: 0 4px !important;
   }
 }
+  /* =========================================================
+   แก้ไขกราฟชีวิต และ ปาจื่อ 4 เสาหลัก ให้พอดีหน้าจอมือถือแนวตั้ง
+   ========================================================= */
+
+/* 1. กราฟชีวิต: ป้องกันกราฟล้นทะลุจอ และอนุญาตให้ใช้นิ้วเลื่อนดูชาร์ตแนวนอนได้ */
+.life-graph-container,
+div[id*="life-graph"],
+div[class*="life-graph"],
+div[id*="chart-container"],
+div[id*="graph-container"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important; /* ให้เลื่อนซ้าย-ขวาได้ ถือจอแนวตั้งกราฟไม่ล้นทะลุกรอบ */
+  -webkit-overflow-scrolling: touch !important;
+  box-sizing: border-box !important;
+}
+
+/* ควบคุมขนาดแท็ก canvas หรือ svg ของกราฟชีวิต */
+.life-graph-container canvas,
+.life-graph-container svg,
+div[id*="life-graph"] canvas,
+div[id*="life-graph"] svg {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* 2. ปาจื่อ (BaZi) 4 เสาหลัก: บีบเสาให้ย่อขนาดพอดี 4 คอลัมน์บนจอแนวตั้ง */
+@media (max-width: 600px) {
+  /* คอนเทนเนอร์รวม 4 เสา */
+  div[style*="display: flex"][style*="justify-content"],
+  .bazi-pillars-container,
+  .bazi-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 4px !important;            /* ลดระยะห่างระหว่างเสาลง */
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 4px 0 !important;
+  }
+
+  /* เสาแต่ละต้น (เสาปี, เสาเดือน, เสาวัน, เสาเวลา) */
+  div[style*="display: flex"] > div[style*="border-radius"],
+  .bazi-pillar-card {
+    flex: 1 1 0 !important;        /* กระจายขนาดเท่ากันทั้ง 4 เสาพอดีเป๊ะ */
+    min-width: 0 !important;        /* ปลดล็อกไม่ให้ดันล้นออกข้างขวา */
+    padding: 6px 2px !important;    /* ปรับระยะขอบด้านในให้กะทัดรัด */
+    box-sizing: border-box !important;
+  }
+
+  /* ปรับขนาดตัวอักษรจีนและคำอธิบายในเสาให้ไม่ตกบรรทัด */
+  div[style*="display: flex"] > div[style*="border-radius"] h3,
+  div[style*="display: flex"] > div[style*="border-radius"] div,
+  div[style*="display: flex"] > div[style*="border-radius"] span {
+    font-size: 0.75rem !important;
+    letter-spacing: -0.2px !important;
+    word-break: break-word !important;
+  }
+}
 </style>
 </body>
 </html>
