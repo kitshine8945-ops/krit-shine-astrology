@@ -11593,7 +11593,17 @@ function renderTransitAspectHtml(aspectList) {
 </script>
 
 <style>
-/* 1. สั่งให้กล่องผลลัพธ์คำทำนายขยายกว้างเต็ม 100% ไม่โดนจำกัดด้วยกรอบด้านข้าง */
+/* 1. ขยายกล่องฟอร์มและการ์ดหลักให้กว้างเต็มพื้นที่ ไม่โดนล็อก max-width แคบๆ */
+.card-form-astro,
+#birth-form {
+  max-width: 1000px !important; /* ขยายให้กว้างจุใจบนคอม */
+  width: 95% !important;
+  margin: 15px auto !important;
+  padding: 16px 14px !important;
+  box-sizing: border-box !important;
+}
+
+/* 2. สั่งให้กล่องผลลัพธ์คำทำนายขยาย 100% เต็มความกว้างของการ์ดหลัก */
 #result-view-box {
   width: 100% !important;
   max-width: 100% !important;
@@ -11604,38 +11614,43 @@ function renderTransitAspectHtml(aspectList) {
   box-sizing: border-box !important;
 }
 
-/* 2. สั่งปิดเส้นขอบและการบีบพื้นที่ของกล่องด้านในทุกตัว */
-#result-view-box > div,
-#result-view-box .card-form-astro,
-#result-view-box [class*="card"] {
+/* 3. ลบเส้นขอบทองซ้อนด้านใน และ padding ที่ดันเข้ามา */
+#result-view-box div {
+  box-sizing: border-box !important;
+}
+
+#result-view-box > div {
   border-left: none !important;
   border-right: none !important;
-  border-top: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
-  padding-left: 4px !important;
-  padding-right: 4px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-/* 3. จัดการให้การ์ดคำทำนายแต่ละข้อ กว้างเต็มจอ อ่านสบายตา */
+/* 4. ให้การ์ดคำทำนายแต่ละกล่องขยายกว้างเต็มกล่อง */
 .myhora-transit-report,
-.myhora-transit-report > div {
+div[style*="border-left:4px solid"],
+div[style*="border-left: 4px solid"],
+div[style*="border-left:3px solid"],
+div[style*="border-left: 3px solid"] {
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
-/* 4. เมื่อเปิดในมือถือ (จอเล็ก) ให้ขยายชิดขอบเต็มจอ ไม่ให้มี padding คอยดัน */
+/* 5. บนมือถือ: ปลดให้ชิดขอบจอเกือบ 100% อ่านง่ายสบายตา */
 @media (max-width: 768px) {
-  .card-form-astro {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+  .card-form-astro,
+  #birth-form {
+    width: 98% !important;
+    max-width: 100% !important;
+    padding: 12px 6px !important;
   }
-  #result-view-box {
-    padding: 0 !important;
+  
+  /* ปลดกรอบของ main-grid ไม่ให้บีบพื้นที่ */
+  .main-grid {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 4px !important;
   }
 }
 </style>
