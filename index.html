@@ -723,18 +723,26 @@ header.navbar {
   line-height: 1;
 }
 
-/* ปรับแต่งสำหรับจอมือถือและจอพับ: แบ่งปุ่มเป็น 2 คอลัมน์บน-ล่าง */
+/* ปรับแต่งสำหรับจอมือถือและจอพับ */
 @media (max-width: 900px) {
-  /* ซ่อนเมนูลิงก์ตัวหนังสือ */
   .nav-links {
-    display: none !important;
+    display: flex !important;
+    order: 3 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-top: 6px !important;
+    padding-top: 4px !important;
+    border-top: 1px solid rgba(245, 196, 105, 0.2) !important;
   }
 
-  /* ปรับความสูง Navbar ให้รองรับปุ่ม 2 ชั้นพอดี */
   header.navbar {
-    height: 64px !important;
-    padding: 6px 10px !important;
+    height: auto !important; /* ปลดล็อกความสูง 64px เพื่อให้โชว์ 2 แถวได้ครบ */
+    padding: 6px 10px 8px !important;
+    flex-wrap: wrap !important;
   }
+}
 
   /* ปรับระยะดันเนื้อหาข้างล่างให้พอดีกับ Navbar ใหม่ */
   body {
