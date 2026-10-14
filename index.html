@@ -2773,27 +2773,17 @@ const password = document.getElementById('authPassword').value;
       const uNameInput = document.getElementById('userName');
       if (uNameInput) AppState.userName = uNameInput.value || "";
 
-    // 1. ดึงค่าจากฟอร์ม ถ้าฟอร์มยังว่างให้ดึงจากค่าที่เคยบันทึกไว้ในระบบ
-      let bDayVal = document.getElementById('birthDay')?.value;
-      let bMonthVal = document.getElementById('birthMonth')?.value;
-      let bYearVal = document.getElementById('birthYearBE')?.value;
+ const bDayVal = document.getElementById('birthDay').value;
+      const bMonthVal = document.getElementById('birthMonth').value;
+      const bYearVal = document.getElementById('birthYearBE').value;
 
-      if (!bDayVal || !bMonthVal || !bYearVal) {
-        bDayVal = bDayVal || localStorage.getItem('saved_birthDay');
-        bMonthVal = bMonthVal || localStorage.getItem('saved_birthMonth');
-        bYearVal = bYearVal || localStorage.getItem('saved_birthBE');
-
-        // นำค่ากลับไปใส่ในช่องเลือกของฟอร์มให้ด้วย
-        if (bDayVal && document.getElementById('birthDay')) document.getElementById('birthDay').value = bDayVal;
-        if (bMonthVal && document.getElementById('birthMonth')) document.getElementById('birthMonth').value = bMonthVal;
-        if (bYearVal && document.getElementById('birthYearBE')) document.getElementById('birthYearBE').value = bYearVal;
-      }
-
-      // ตรวจสอบว่ามีข้อมูลวันเกิดหรือไม่ ถ้าไม่มีจริงๆ ค่อยขึ้นเตือนสีเทา
+      // ตรวจสอบว่าผู้ใช้เลือก วัน / เดือน / ปีเกิด ครบถ้วนหรือยัง
       if (!bDayVal || !bMonthVal || !bYearVal) {
         document.querySelectorAll('.dynamic-user-badge').forEach(badge => {
           badge.innerHTML = `<div style="color: var(--text-muted); text-align: center; width: 100%;"><i class="fa-solid fa-circle-info"></i> กรุณากรอก วัน/เดือน/ปีเกิด ในหน้าแรกเพื่อเปิดการทำนายเฉพาะบุคคล</div>`;
         });
+        return;
+      }
 
         // 2. เคลียร์กราฟชีวิตและบทกลอนให้ว่าง
        if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) { 
