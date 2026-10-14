@@ -7341,13 +7341,16 @@ function calcNumerologyReal() {
   if (boxEl) boxEl.style.display = 'block';
 }
 // ==========================================
-// ฟังก์ชันอัปเดตดวงชะตารายวันเฉพาะบุคคลแบบไดนามิก (แก้ไขตรวจสอบวันเกิดแล้ว)
+// ฟังก์ชันอัปเดตดวงชะตารายวันเฉพาะบุคคลแบบไดนามิก (แก้ไขซิงค์วันเกิดและไม่ล้างคำทำนาย)
 // ==========================================
 function renderDailyHoroscope(customSign) {
-    // 1. ตรวจสอบว่าผู้ใช้กรอก วัน / เดือน / ปีเกิด ในฟอร์มหน้าแรกหรือยัง
-    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
-    const bMonthVal = document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : '';
-    const bYearVal = document.getElementById('birthYearBE') ? document.getElementById('birthYearBE').value : '';
+    const bDayEl = document.getElementById('birthDay');
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
+
+    const bDayVal = bDayEl ? bDayEl.value : '';
+    const bMonthVal = bMonthEl ? bMonthEl.value : '';
+    const bYearVal = bYearEl ? bYearEl.value : '';
 
     const dateEl = document.getElementById('daily-current-date-str');
     const ascEl = document.getElementById('daily-ascendant-label');
@@ -7360,8 +7363,8 @@ function renderDailyHoroscope(customSign) {
     const colorEl = document.getElementById('dailyLuckyColor');
     const dirEl = document.getElementById('dailyLuckyDirection');
 
-    // ถ้ายังไม่ได้กรอกวันเกิด ให้เคลียร์ค่าทั้งหมดและแสดงข้อความบังคับเตือนทันที
-    if (!bDayVal || !bMonthVal || !bYearVal || AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined) {
+    // 1. ถ้าในฟอร์มหน้าแรกยังไม่ได้เลือกวันเกิดจริง ๆ ให้แจ้งเตือนและเคลียร์ค่า
+    if (!bDayVal || !bMonthVal || !bYearVal) {
         if (dateEl) dateEl.textContent = '-';
         if (ascEl) ascEl.textContent = 'ยังไม่ได้เลือกวันเกิด';
         if (sumEl) sumEl.textContent = '⚠️ กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรก แล้วกด "ดูดวงลัคนาเลย" ก่อนเปิดดูดวงรายวันเฉพาะบุคคลครับ';
@@ -7375,16 +7378,27 @@ function renderDailyHoroscope(customSign) {
         return;
     }
 
-    // 2. ดึงวันที่ปัจจุบันภาษาไทย
+    // 2. ถ้าในฟอร์มมีวันเกิด แต่ระบบยังไม่ได้คำนวณลัคนา ให้สั่งซิงค์ทันที
+    if (typeof AppState !== 'undefined' && (AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined)) {
+        if (typeof syncBirthDataToAllModules === 'function') {
+            syncBirthDataToAllModules();
+        }
+    }
+
+    // 3. ดึงวันที่ปัจจุบันภาษาไทย
     const now = new Date();
     const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
     const dateStr = `${now.getDate()} ${thMonths[now.getMonth()]} พ.ศ. ${now.getFullYear() + 543}`;
 
-    // 3. ระบุราศีตามลัคนาจริงของผู้ใช้
-    let ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[AppState.currentCalculatedAscIndex]) ? ZODIAC_DATA[AppState.currentCalculatedAscIndex] : null;
-    let sign = customSign || (ascInfo ? ascInfo.name : "ราศีกุมภ์");
+    // 4. ระบุราศีตามลัคนาจริงของผู้ใช้
+    let ascIndex = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null && AppState.currentCalculatedAscIndex !== undefined)
+                   ? AppState.currentCalculatedAscIndex 
+                   : null;
 
-    // ฐานข้อมูลดวงรายวันแบบยาวตามเดิมของคุณกฤศ
+    let ascInfo = (ascIndex !== null && typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[ascIndex]) ? ZODIAC_DATA[ascIndex] : null;
+    let sign = customSign || (ascInfo ? ascInfo.name : "ราศีกันย์");
+
+    // ฐานข้อมูลดวงรายวัน
     const ZODIAC_DAILY = {
       "ราศีเมษ": {
         summary: "พลังแห่งการขับเคลื่อนเด่นชัด ความกระตือรือร้นและไฟในการริเริ่มสิ่งใหม่กำลังเปิดกว้าง เป็นจังหวะดีที่จะก้าวไปข้างหน้าอย่างมั่นใจ",
@@ -7514,9 +7528,9 @@ function renderDailyHoroscope(customSign) {
     const dayOffset = (now.getDate() + now.getDay()) % zodiacKeys.length;
     const targetSign = zodiacKeys[(baseIndex + dayOffset) % zodiacKeys.length];
 
-    const data = ZODIAC_DAILY[targetSign] || ZODIAC_DAILY[sign] || ZODIAC_DAILY["ราศีเมษ"];
+    const data = ZODIAC_DAILY[targetSign] || ZODIAC_DAILY[sign] || ZODIAC_DAILY["ราศีกันย์"];
 
-    // 4. แสดงผลลงใน Element ตาม ID ที่มีอยู่ใน Modal
+    // 5. แสดงผลลง Element ตาม ID
     if (dateEl) dateEl.textContent = dateStr;
     if (ascEl) ascEl.textContent = sign;
     if (sumEl) sumEl.textContent = data.summary;
@@ -7528,6 +7542,10 @@ function renderDailyHoroscope(customSign) {
     if (colorEl) colorEl.textContent = data.luckyColor;
     if (dirEl) dirEl.textContent = data.luckyDir;
 }
+
+// ผูกฟังก์ชันชื่อเดิมให้ชี้มาที่นี่เพื่อความเข้ากันได้
+window.updateDailyHoroscopeView = renderDailyHoroscope;
+window.renderDailyHoroscope = renderDailyHoroscope;
 // ฟังก์ชันคำนวณมหาทักษาเทวดาเสวยอายุ & แทรก (คลังคำทำนายละเอียดจัดเต็ม)
 function calcMahataksa() {
   const bD = parseInt(document.getElementById('birthDay')?.value, 10) || (typeof AppState !== 'undefined' ? AppState.birthDay : 1) || 1;
