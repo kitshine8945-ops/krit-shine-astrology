@@ -11673,36 +11673,5 @@ div[style*="border-left: 3px solid"] {
   }
 }
 </style>
-  /* ป้องกันโซนกราฟชีวิต VIP ล้นทะลุหน้าจอมือถือแนวตั้ง */
-[id*="vip-graph"],
-.vip-graph-container,
-#vip-graph-aspects-content {
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-    }
-  }
-</script>
-
-<style>
-/* ล็อกตัวแสดงผลกราฟ/แคนวาส/SVG ให้เลื่อนในกรอบ ไม่ดันกรอบทองแตก */
-[id*="vip-graph"] svg,
-[id*="vip-graph"] canvas,
-.vip-graph-container svg,
-.vip-graph-container canvas {
-  max-width: 100% !important;
-  height: auto !important;
-}
-
-/* ตัวครอบกราฟหลัก ให้กว้างพอดีจอแนวตั้ง */
-div:has(> #vip-graph-aspects-content),
-div:has(> [id*="vip-graph"]) {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: auto !important; /* ถ้าแกนปียาว ใช้นิ้วปัดดูได้โดยไม่ล้นขอบ */
-  box-sizing: border-box !important;
-}
-</style>
-
 </body>
 </html>
