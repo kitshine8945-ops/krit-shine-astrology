@@ -11591,5 +11591,35 @@ function renderTransitAspectHtml(aspectList) {
   return html;
 }
 </script>
+  <style>
+/* ขยายกล่องคำทำนายให้กว้างเต็มจอ และลบเส้นขอบทองที่ซ้อนกัน 3-4 ชั้น */
+#uranianVipContent,
+#uranianVipBox {
+  width: 100% !important;
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  padding: 8px 4px !important;
+  border: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+/* ลบกรอบซ้อนด้านนอก */
+#uranianVipContent > div,
+#uranianVipBox > div {
+  border: none !important;
+  box-shadow: none !important;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+/* ปรับให้การ์ดคำทำนายแต่ละข้อกว้างเต็มพื้นที่ อ่านสบายตา */
+div[style*="border-left:3px solid"],
+div[style*="border-left: 3px solid"] {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 12px !important;
+}
+</style>
 </body>
 </html>
