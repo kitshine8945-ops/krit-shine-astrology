@@ -3341,101 +3341,66 @@ function getAccurateTransitSign(planetKey, targetDate) {
 
         document.getElementById('vipTransitSummaryBigText').innerHTML = vipSynthesisText;
 
-// ฟังก์ชันดึงวันย้ายราศีครั้งถัดไปจากปฏิทินดาวย้ายจริง
-        function getNextTransitDate(planetKey, targetDate) {
-          if (typeof PLANET_TRANSIT_LOOKUP === 'undefined' || !PLANET_TRANSIT_LOOKUP[planetKey]) return '';
-          var timeline = PLANET_TRANSIT_LOOKUP[planetKey];
-          var targetTime = targetDate.getTime();
-          var thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-          
-          for (var i = 0; i < timeline.length; i++) {
-            var sTime = new Date(timeline[i].start).getTime();
-            if (sTime > targetTime) {
-              var nDate = new Date(timeline[i].start);
-              return nDate.getDate() + ' ' + thMonths[nDate.getMonth()] + ' ' + (nDate.getFullYear() + 543);
-            }
-          }
-          return '';
-        }
-
-        // ดึงวันหมดเขตย้ายราศีของแต่ละดาว
-        var satEnd = getNextTransitDate('saturn', targetTransitDate);
-        var jupEnd = getNextTransitDate('jupiter', targetTransitDate);
-
-        var satBadge = satEnd ? ` <span style="color:#f59e0b; font-size:0.78rem; font-weight:normal;">(มีผลถึงประมาณ ${satEnd})</span>` : '';
-        var jupBadge = jupEnd ? ` <span style="color:#f59e0b; font-size:0.78rem; font-weight:normal;">(พฤหัสฯ มีผลถึง ${jupEnd})</span>` : '';
-
-        // ข. ด้านการงาน & ธุรกิจจร (อ่านจากดาวเสาร์ ๗)
-        var workText = `ดาวเสาร์ (๗) จรสถิตเรือน${houseNamesThai[satHouse]}${satBadge}: `;
-        if (satHouse === 9) {
+        // ข. ด้านการงาน & ธุรกิจจร (อ่านจากดาวเสาร์ ๗ และภพที่พฤหัสบดี ๕ ส่งผลถึงงาน)
+        var workText = `ดาวเสาร์ (๗) จรสถิตเรือน${houseNamesThai[satHouse]}: `;
+        if (satHouse === 9) { // เสาร์ทับกัมมะ (งานหนัก รับผิดชอบใหญ่)
           workText += `มีเกณฑ์ได้รับมอบหมายภาระงานชิ้นใหญ่ มีความรับผิดชอบระดับสูง ต้องลงแรงและทุ่มเทอย่างหนัก แม้จะเหนื่อยยากแต่ผลงานจะสร้างความมั่นคงและชื่อเสียงในระยะยาว`;
-        } else if (satHouse === 0 || satHouse === 6) {
+        } else if (satHouse === 0 || satHouse === 6) { // เสาร์เล็งหรือทับลัคนา
           workText += `การงานมีแรงกดดันจากรอบข้างหรือคู่แข่ง ต้องใช้ความอดทนและความรอบคอบในการประสานงาน ระวังความล่าช้าในโครงการ ควรเน้นการทำทีละขั้นอย่างมีระเบียบ`;
-        } else if (jupHouse === 9 || jupHouse === 10) {
+        } else if (jupHouse === 9 || jupHouse === 10) { // พฤหัสหนุนงาน
           workText += `หน้าที่การงานและการค้าเติบโตโดดเด่น ได้รับการเลื่อนขั้น ได้รับความไว้วางใจจากผู้ใหญ่ การเจรจาขยายสาขาหรือปิดสัญญาธุรกิจสำเร็จลุล่วงด้วยดี`;
-        } else if (satHouse === 5 || satHouse === 11) {
+        } else if (satHouse === 5 || satHouse === 11) { // เสาร์อยู่อริ/วินาศ
           workText += `ต้องระวังข้อพิพาทหรือข้อขัดแย้งในสายงาน มีอุปสรรคให้คอยตามสะสาง ไม่ควรริเริ่มงานที่มีความเสี่ยงสูง ควรทำงานเบื้องหลังจะปลอดภัยที่สุด`;
         } else {
           workText += `การงานดำเนินไปอย่างมั่นคงสม่ำเสมอ เป็นช่วงเวลาที่เหมาะแก่การปรับปรุงระบบงาน วางแผนระยะยาว และพัฒนาความรู้ความสามารถเฉพาะทาง`;
         }
         document.getElementById('vipTransitWork').innerHTML = workText;
 
-        // ค. ด้านการเงิน & โชคลาภจร (อ่านจากดาวพฤหัสบดี ๕ และ ราหู ๘)
-        var moneyText = `ดาวพฤหัสบดี (๕) สถิตเรือน${houseNamesThai[jupHouse]} และดาวราหู (๘) สถิตเรือน${houseNamesThai[rahHouse]}${jupBadge}: `;
-        if (jupHouse === 1 || jupHouse === 10) {
+        // ค. ด้านการเงิน & โชคลาภจร (อ่านจากดาวพฤหัสบดี ๕ และ ราหู ๘ ในเรือนการเงิน)
+        var moneyText = `ดาวพฤหัสบดี (๕) สถิตเรือน${houseNamesThai[jupHouse]} และดาวราหู (๘) สถิตเรือน${houseNamesThai[rahHouse]}: `;
+        if (jupHouse === 1 || jupHouse === 10) { // พฤหัสทับกดุมภะหรือลาภะ
           moneyText += `การเงินคล่องตัวสูง มีเกณฑ์รับทรัพย์ก้อนโต ได้ผลกำไรจากการลงทุน ค้าขายมีผลตอบแทนงดงาม หรือได้รับโชคลาภที่ไม่คาดฝันจากผู้ใหญ่`;
-        } else if (rahHouse === 1 || rahHouse === 10) {
+        } else if (rahHouse === 1 || rahHouse === 10) { // ราหูทับการเงิน (เสี่ยงโชค/หมุนเงิน)
           moneyText += `กระแสเงินสดหมุนเวียนเร็วมาก มีโชคจากการเสี่ยงหรือการพลิกแพลงทางธุรกิจ แต่ระวังการใช้จ่ายตามอารมณ์และอย่าหลงเชื่อคำชักชวนลงทุนที่ไม่ชัดเจน`;
-        } else if (jupHouse === 5 || rahHouse === 11) {
+        } else if (jupHouse === 5 || rahHouse === 11) { // เงินตกอริ/วินาศ
           moneyText += `ควรวางแผนการใช้จ่ายอย่างรัดกุม มีเกณฑ์เสียเงินไปกับการซ่อมแซมสิ่งของหรือรายจ่ายฉุกเฉิน งดการให้ผู้อื่นกู้ยืมหรือค้ำประกันเด็ดขาด`;
         } else {
           moneyText += `สถานะการเงินมั่นคง มีรายรับเข้ามาตามเป้าหมายจากการทำงานประจำ ควรจัดสรรเงินเก็บออมหรือแปลงเป็นสินทรัพย์ถาวรเพื่อความมั่นคง`;
         }
         document.getElementById('vipTransitMoney').innerHTML = moneyText;
 
-        // ง. ด้านความรัก & ครอบครัวจร (อ่านจากดาวศุกร์ ๖)
-        var venExpD = new Date(targetTransitDate.getTime());
-        venExpD.setDate(venExpD.getDate() + 25);
-        var thMonthsList = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-        var venEnd = venExpD.getDate() + ' ' + thMonthsList[venExpD.getMonth()] + ' ' + (venExpD.getFullYear() + 543);
-        var venBadge = ` <span style="color:#f59e0b; font-size:0.78rem; font-weight:normal;">(มีผลถึงประมาณ ${venEnd})</span>`;
-
-        var loveText = `ดาวศุกร์ (๖) เจ้าการความรักจรเข้าสู่เรือน${houseNamesThai[venHouse]}${venBadge}: `;
-        if (venHouse === 6) {
+        // ง. ด้านความรัก & ครอบครัวจร (อ่านจากดาวศุกร์ ๖ จรในภพของลัคนาเดิม)
+        var loveText = `ดาวศุกร์ (๖) เจ้าการความรักจรเข้าสู่เรือน${houseNamesThai[venHouse]}: `;
+        if (venHouse === 6) { // ศุกร์ทับปัตนิ
           loveText += `ความรักโดดเด่นและหวานชื่นเป็นพิเศษ คนโสดมีเกณฑ์พบเจอเนื้อคู่หรือคนที่ถูกใจเข้ามาสานสัมพันธ์ คนมีคู่มีความเข้าใจกันดี ร่วมมือกันสร้างอนาคตอย่างอบอุ่น`;
-        } else if (venHouse === 0) {
+        } else if (venHouse === 0) { // ศุกร์ทับตนุ
           loveText += `มีเสน่ห์ดึงดูดใจต่อผู้พบเห็น มีคนเข้ามาสนใจและเมตตาเอ็นดู บรรยากาศรอบตัวสดชื่นแจ่มใส เหมาะแก่การกระชับความสัมพันธ์กับคนรัก`;
-        } else if (venHouse === 5 || venHouse === 7 || venHouse === 11) {
+        } else if (venHouse === 5 || venHouse === 7 || venHouse === 11) { // ศุกร์ตกอริ/มรณะ/วินาศ
           loveText += `ความรักมีความเปราะบาง อาจมีเรื่องเข้าใจผิดหรือเกิดความห่างเหิน ควรระวังอารมณ์น้อยใจและความขี้หึง หลีกเลี่ยงการปะทะคารม`;
         } else {
           loveText += `ความสัมพันธ์ดำเนินไปอย่างราบรื่น มั่นคง ให้เกียรติและเป็นที่ปรึกษาให้แก่กันได้ดี บรรยากาศในครอบครัวมีความสงบสุข`;
         }
         document.getElementById('vipTransitLove').innerHTML = loveText;
 
-        // จ. ด้านสุขภาพ & เคราะห์กรรมที่ต้องระวัง (อ่านจากดาวอังคาร ๓)
+       // จ. ด้านสุขภาพ & เคราะห์กรรมที่ต้องระวัง (อ่านจากดาวอังคาร ๓ จร และภพเคราะห์)
         var tYearAD = (tY > 2400) ? (tY - 543) : tY;
         var marsDays = (tYearAD - 2000) * 365.25 + (tMVal * 30.4) + tD;
         var tMarsSign = Math.floor(((marsDays / 687) * 360 % 360) / 30);
         if (tMarsSign < 0) tMarsSign = (tMarsSign + 12) % 12;
         var realMarsHouse = (tMarsSign - natalAsc + 12) % 12;
 
-        var marsExpD = new Date(targetTransitDate.getTime());
-        marsExpD.setDate(marsExpD.getDate() + 35);
-        var marsEnd = marsExpD.getDate() + ' ' + thMonthsList[marsExpD.getMonth()] + ' ' + (marsExpD.getFullYear() + 543);
-        var marsBadge = ` <span style="color:#f59e0b; font-size:0.78rem; font-weight:normal;">(มีผลถึงประมาณ ${marsEnd})</span>`;
-
-        var healthText = `ดาวอังคาร (๓) จรสถิตเรือน${houseNamesThai[realMarsHouse]}${marsBadge}: `;
-        if (realMarsHouse === 0 || realMarsHouse === 6) {
+       var healthText = `ดาวอังคาร (๓) จรสถิตเรือน${houseNamesThai[realMarsHouse]}: `;
+        if (realMarsHouse === 0 || realMarsHouse === 6) { // กุมหรือเล็งลัคนา
           healthText += `ระวังอุบัติเหตุจากความเร่งรีบ ความใจร้อน ของมีคม หรือกล้ามเนื้ออักเสบ ควรควบคุมอารมณ์และขับขี่ด้วยความระมัดระวัง`;
-        } else if (realMarsHouse === 5 || realMarsHouse === 7 || realMarsHouse === 11) {
+        } else if (realMarsHouse === 5 || realMarsHouse === 7 || realMarsHouse === 11) { // อริ/มรณะ/วินาศ
           healthText += `ควรระวังโรคเก่ากำเริบ ระบบทางเดินอาหาร การขับถ่าย ความดันโลหิต หรืออาการไมเกรน และไม่ควรโหมงานหนักจนเกินไป`;
-        } else if (realMarsHouse === 3 || realMarsHouse === 9) {
+        } else if (realMarsHouse === 3 || realMarsHouse === 9) { // พันธุ/กัมมะ
           healthText += `ระวังอาการออฟฟิศซินโดรม ปวดหลัง คอบ่าไหล่ และความเครียดสะสมจากการรับผิดชอบงานหนัก`;
-        } else if (realMarsHouse === 8) {
+        } else if (realMarsHouse === 8) { // ศุภะ
           healthText += `สุขภาพโดยรวมจัดว่าดีและฟื้นตัวไว ระวังเพียงอาการเคล็ดขัดยอกช่วงสะโพก ขา หรือกล้ามเนื้อตึงจากการเดินทางไกลหรือกิจกรรมกลางแจ้ง`;
-        } else if (realMarsHouse === 1 || realMarsHouse === 2) {
+        } else if (realMarsHouse === 1 || realMarsHouse === 2) { // กดุมภะ/สหัชชะ
           healthText += `ระวังอาการร้อนใน เจ็บคอ ปัญหากล้ามเนื้อแขนหรือมือจากการใช้อุปกรณ์สื่อสาร ควรพักสายตาเป็นระยะ`;
-        } else {
+        } else { // ปุตตะ / ลาภะ
           healthText += `พละกำลังสดชื่น มีความกระตือรือร้นสูง ระวังเพียงการบาดเจ็บจากการออกกำลังกายหรือการทำกิจกรรมร่วมกับผู้อื่น`;
         }
         document.getElementById('vipTransitHealth').innerHTML = healthText;
@@ -3588,12 +3553,6 @@ function getAccurateTransitSign(planetKey, targetDate) {
             }
           }
 
-var PLANET_SPEED = {
-            "00": 360, "1": 0.9856, "2": 13.176, "3": 0.524,
-            "4": 1.2, "5": 0.083, "6": 1.15, "7": 0.033,
-            "8": 0.052, "9": 0.055, "0": 0.011
-          };
-
           var aspRules = [
             { deg: 0, name: "ทับ (0°)" },
             { deg: 60, name: "โยค (60°)" },
@@ -3615,29 +3574,13 @@ var PLANET_SPEED = {
                 var orb = Math.abs(diff - aspRules[a].deg);
                 if (orb <= 4.5) {
                   var descText = getSpecificText(tK, aspRules[a].deg, nK);
-
-                  // คำนวณวันสิ้นสุดอิทธิพลวังกะตามความเร็วของดาวจรแต่ละดวง
-                  var pSpeed = PLANET_SPEED[tK] || 0.5;
-                  var maxOrbTier = (orb <= 1.0) ? 1.0 : (orb <= 3.0 ? 3.0 : 4.5);
-                  var degRemaining = Math.max(0.05, maxOrbTier - orb);
-                  var daysRemaining = Math.ceil(degRemaining / pSpeed);
-                  if (daysRemaining < 1) daysRemaining = 1;
-
-                  var targetADYear = (curTY > 2400) ? (curTY - 543) : curTY;
-                  var expDate = new Date(targetADYear, curTM - 1, curTD);
-                  expDate.setDate(expDate.getDate() + daysRemaining);
-
-                  var thMList = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                  var endDateStr = expDate.getDate() + ' ' + thMList[expDate.getMonth()] + ' ' + (expDate.getFullYear() + 543);
-
                   aspectResults.push({
                     title: transitP[tK].name + " จร " + aspRules[a].name + " " + natalP[nK].name + " กำเนิด",
                     orb: orb.toFixed(2),
                     tier: orb <= 1.0 ? 1 : (orb <= 3.0 ? 3 : 5),
                     kw1: transitP[tK].name + " : " + transitP[tK].kw,
                     kw2: natalP[nK].name + " : " + natalP[nK].kw,
-                    desc: descText,
-                    endDateStr: endDateStr
+                    desc: descText
                   });
                   break;
                 }
@@ -3668,7 +3611,7 @@ var PLANET_SPEED = {
                   innerHtml += '<div style="border-top:1px dashed #334155; margin-top:14px; padding-top:10px;"><strong style="color:' + tr.color + '; font-size:0.95rem;">• ' + tr.name + '</strong> <span style="font-size:0.75rem; color:#64748b;">(' + tr.note + ')</span></div>';
                   items.forEach(function(it) {
                     innerHtml += '<div style="background:rgba(255,255,255,0.03); border-left:3px solid ' + tr.color + '; padding:10px 14px; margin:8px 0; border-radius:4px;">';
-                    innerHtml += '<div style="font-weight:bold; color:#fde047; font-size:0.92rem;">' + it.title + ' <span style="font-size:0.75rem; color:#94a3b8; font-weight:normal;">(ระยะวังกะ ' + it.orb + '° • มีผลถึงประมาณ ' + it.endDateStr + ')</span></div>';
+                    innerHtml += '<div style="font-weight:bold; color:#fde047; font-size:0.92rem;">' + it.title + ' <span style="font-size:0.75rem; color:#94a3b8; font-weight:normal;">(ระยะวังกะ ' + it.orb + '°)</span></div>';
                     innerHtml += '<div style="font-size:0.78rem; color:#94a3b8; margin:3px 0; background:rgba(0,0,0,0.25); padding:6px; border-radius:4px;"><div>• ' + it.kw1 + '</div><div>• ' + it.kw2 + '</div></div>';
                     innerHtml += '<div style="font-size:0.86rem; color:#e2e8f0; line-height:1.6; margin-top:6px;">' + it.desc + '</div>';
                     innerHtml += '</div>';
