@@ -725,25 +725,42 @@ header.navbar {
 
 /* ปรับแต่งสำหรับจอมือถือและจอพับ */
 @media (max-width: 900px) {
+  .na/* 1. สำหรับจอคอมพิวเตอร์: ดึงเมนูทั้งหมดให้อยู่แถวเดียวกันพอดี ไม่ล้นไปแถว 3 */
+.nav-links {
+  order: 3 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: nowrap !important; /* ห้ามปัดตกบรรทัด */
+  gap: 10px !important; /* ลดช่องว่างระหว่างเมนูลงเล็กน้อย */
+  margin: 6px 0 2px 0 !important;
+  padding: 4px 0 0 0 !important;
+  list-style: none !important;
+  border-top: 1px solid rgba(245, 196, 105, 0.25) !important;
+}
+
+.nav-links a {
+  font-size: 0.85rem !important; /* ขนาดพอดี ไม่ดันเมนูตก */
+  white-space: nowrap !important;
+}
+
+/* 2. สำหรับจอมือถือ: ซ่อนเมนูตัวหนังสือ เพื่อไม่ให้บังหน้าจอ */
+@media (max-width: 768px) {
   .nav-links {
-    display: flex !important;
-    order: 3 !important;
-    width: 100% !important;
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 12px !important;
-    margin-top: 6px !important;
-    padding-top: 4px !important;
-    border-top: 1px solid rgba(245, 196, 105, 0.2) !important;
+    display: none !important; /* ปิดเมนูบนมือถือ ไม่ให้ไหลลงมาบังจอ */
   }
 
   header.navbar {
-    height: auto !important; /* ปลดล็อกความสูง 64px เพื่อให้โชว์ 2 แถวได้ครบ */
-    padding: 6px 10px 8px !important;
-    flex-wrap: wrap !important;
+    height: 58px !important;
+    padding: 6px 12px !important;
+  }
+
+  body {
+    padding-top: 58px !important; /* ดันเนื้อหาบนมือถือแค่ระดับแถวเดียว */
   }
 }
-
   /* ปรับระยะดันเนื้อหาข้างล่างให้พอดีกับ Navbar ใหม่ */
   body {
     padding-top: 64px !important;
