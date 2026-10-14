@@ -11593,51 +11593,49 @@ function renderTransitAspectHtml(aspectList) {
 </script>
 
 <style>
-/* =========================================================
-   ล้างกรอบซ้อนด้านข้าง และขยายกล่องคำทำนายให้กว้างเต็มจอ
-   ========================================================= */
-
-/* ปลดล็อกคอนเทนเนอร์ชั้นนอกทั้งหมดที่ครอบคำทำนาย */
-#uranianVipContent,
-#uranianVipBox,
-.uranian-results-container,
-.transit-results-wrapper,
-.myhora-transit-report {
+/* 1. สั่งให้กล่องผลลัพธ์คำทำนายขยายกว้างเต็ม 100% ไม่โดนจำกัดด้วยกรอบด้านข้าง */
+#result-view-box {
   width: 100% !important;
-  max-width: 900px !important;
-  margin: 0 auto !important;
-  padding: 10px 8px !important;
+  max-width: 100% !important;
+  margin: 15px 0 0 0 !important;
+  padding: 0 !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
 }
 
-/* ล้างเส้นขอบทองซ้อนแนวตั้งซ้าย-ขวาทุกชั้น */
-#uranianVipContent div,
-#uranianVipBox div,
-.transit-results-wrapper div {
-  box-sizing: border-box !important;
-}
-
-/* ล้าง border ด้านข้างของกล่องที่ซ้อนกัน ยกเว้นแถบสีนำหน้าคำทำนาย */
-#uranianVipContent > div,
-#uranianVipBox > div {
+/* 2. สั่งปิดเส้นขอบและการบีบพื้นที่ของกล่องด้านในทุกตัว */
+#result-view-box > div,
+#result-view-box .card-form-astro,
+#result-view-box [class*="card"] {
   border-left: none !important;
   border-right: none !important;
   border-top: none !important;
   border-bottom: none !important;
   box-shadow: none !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* มือถือ: ให้ขยายเต็มหน้าจอ ไม่ถูกบีบ */
+/* 3. จัดการให้การ์ดคำทำนายแต่ละข้อ กว้างเต็มจอ อ่านสบายตา */
+.myhora-transit-report,
+.myhora-transit-report > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. เมื่อเปิดในมือถือ (จอเล็ก) ให้ขยายชิดขอบเต็มจอ ไม่ให้มี padding คอยดัน */
 @media (max-width: 768px) {
-  #uranianVipContent,
-  #uranianVipBox,
-  .myhora-transit-report {
-    width: 100% !important;
-    padding: 6px 4px !important;
+  .card-form-astro {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  #result-view-box {
+    padding: 0 !important;
   }
 }
 </style>
