@@ -1935,20 +1935,7 @@ header.navbar {
     </div>
   </div>
  <script>
-  // ดักจับจังหวะที่มีการกดปุ่มคำนวณ หรือเปิด modal เพื่อให้เรนเดอร์โหมดฟรีทันที
-  document.addEventListener('click', (e) => {
-    const target = e.target.closest('button, [onclick*="uranian"], [onclick*="Modal"]');
-    if (target) {
-      setTimeout(() => {
-        const uranModal = document.getElementById('modal-uranian');
-        if (uranModal && uranModal.style.display === 'block') {
-          if (typeof switchUranianMode === 'function') {
-            switchUranianMode('free');
-          }
-        }
-      }, 100);
-    }
-  });
+   
 // ฟังก์ชันสลับโหมดโหราศาสตร์สากล (VIP เปลี่ยนคำทำนายตามทั้งวันเกิดและวันจรแบบไดนามิก - ล็อกส่วนอื่นสมบูรณ์)
     function switchWesternMode(mode) {
         AppState.currentWesternMode = mode;
@@ -6042,9 +6029,13 @@ function openAllArticlesModal() {
     function scrollToFormVip() { switchTierMode('vip'); document.getElementById('birth-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 
 function updateDailyHoroscopeView(targetDateOverride) {
-    // 1. ตรวจสอบว่าผู้ใช้กรอกวันเกิดหรือยัง (ตรวจสอบจาก AppState หรือช่อง input)
-    const bDayVal = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
-    const ascIndex = AppState.currentCalculatedAscIndex;
+    const bDayEl = document.getElementById('birthDay');
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
+
+    const bDayVal = bDayEl ? bDayEl.value : '';
+    const bMonthVal = bMonthEl ? bMonthEl.value : '';
+    const bYearVal = bYearEl ? bYearEl.value : '';
 
     const dateEl = document.getElementById('daily-current-date-str');
     const ascEl = document.getElementById('daily-ascendant-label');
@@ -6057,8 +6048,8 @@ function updateDailyHoroscopeView(targetDateOverride) {
     const luckyColorEl = document.getElementById('dailyLuckyColor');
     const luckyDirEl = document.getElementById('dailyLuckyDirection');
 
-    // ถ้ายังไม่ได้กรอกวันเกิด หรือยังไม่ได้คำนวณลัคนา ให้เคลียร์ข้อความแจ้งเตือนตามที่คุณต้องการ
-    if (!bDayVal || ascIndex === null || ascIndex === undefined) {
+    // ถ้าในช่องฟอร์มหน้าแรกว่างเปล่าจริงๆ ถึงจะเคลียร์ค่า
+    if (!bDayVal || !bMonthVal || !bYearVal) {
         if (dateEl) dateEl.textContent = '-';
         if (ascEl) ascEl.textContent = '-';
         if (sumEl) sumEl.textContent = 'กรุณากรอก วัน/เดือน/ปีเกิด และกดผูกดวงที่หน้าแรกก่อนครับ';
@@ -6069,9 +6060,15 @@ function updateDailyHoroscopeView(targetDateOverride) {
         if (luckyNumEl) luckyNumEl.textContent = '-';
         if (luckyColorEl) luckyColorEl.textContent = '-';
         if (luckyDirEl) luckyDirEl.textContent = '-';
-        return; // หยุดการทำงานทันที
+        return;
     }
 
+    // ถ้ามีวันเกิด แต่ระบบยังไม่ได้คำนวณ ให้เรียกซิงค์คำนวณทันที
+    if (typeof AppState !== 'undefined' && (AppState.currentCalculatedAscIndex === null || AppState.currentCalculatedAscIndex === undefined)) {
+        if (typeof syncBirthDataToAllModules === 'function') {
+            syncBirthDataToAllModules();
+        }
+    }
     // 2. หากกรอกวันเกิดแล้ว ดึงข้อมูลตามลัคนาจริง และคำนวณเปลี่ยนคำทำนายตามวันจริงอัตโนมัติ
     const ascInfo = ZODIAC_DATA[ascIndex] || ZODIAC_DATA[10];
     
@@ -10759,23 +10756,26 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
       });
     });
 // ฟังก์ชันเปิด Modal กลางของระบบ
-    function openFeatureModal(name) {
-      const modal = document.getElementById('modal-' + name);
-      if (modal) {
-        document.body.appendChild(modal);
-        modal.style.setProperty('display', 'flex', 'important');
-        modal.style.setProperty('z-index', '999999', 'important');
-      } else {
-        console.warn('ไม่พบ Modal: modal-' + name);
-      }
-      if (name === 'uranian' && typeof switchUranianMode === 'function') {
-        switchUranianMode('free');
-      }
-      // เพิ่มบรรทัดนี้เพื่อบังคับให้ปาจื่อคำนวณและอัปเดตใหม่ทันทีที่เปิดหน้าต่าง
-      if (name === 'bazi' && typeof calcBaziEngine === 'function') {
-        calcBaziEngine();
-      }
-    }
+  function openFeatureModal(name) {
+  if (typeof syncBirthDataToAllModules === 'function') {
+    syncBirthDataToAllModules();
+  }
+  const modal = document.getElementById('modal-' + name);
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.style.setProperty('z-index', '999999', 'important');
+  } else {
+    console.warn('ไม่พบ Modal: modal-' + name);
+  }
+  if (name === 'uranian' && typeof switchUranianMode === 'function') {
+    switchUranianMode('free');
+  }
+  // เพิ่มบรรทัดนี้เพื่อบังคับให้ปาจื่อคำนวณและอัปเดตใหม่ทันทีที่เปิดหน้าต่าง
+  if (name === 'bazi' && typeof calcBaziEngine === 'function') {
+    calcBaziEngine();
+  }
+}
 // ฟังก์ชันสลับโหมดโหราศาสตร์สากลแบบสมบูรณ์
 function switchWesternMode(mode) {
     const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
