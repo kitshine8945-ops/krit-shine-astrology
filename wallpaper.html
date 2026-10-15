@@ -525,7 +525,7 @@
     reader.readAsDataURL(file);
   }
 
-  async function triggerWallpaperDownload() {
+async function triggerWallpaperDownload() {
     if (!isPaidCurrentWallpaper) {
       alert('กรุณาชำระเงินและแนบสลิปก่อนดาวน์โหลดภาพแท้');
       return;
@@ -541,14 +541,44 @@
 
     await drawWallpaperLayers(exportCtx, exportCanvas, false);
 
-    const link = document.createElement('a');
-    link.download = 'KritShine_Auspicious_Wallpaper.png';
-    link.href = exportCanvas.toDataURL('image/png');
-    link.click();
+    // แปลง Canvas เป็น Blob เพื่อให้ส่งออกไฟล์ได้สมบูรณ์
+    exportCanvas.toBlob(async function(blob) {
+      const fileName = 'KritShine_Auspicious_Wallpaper.png';
+      const file = new File([blob], fileName, { type: 'image/png' });
 
-    resetPaymentStatus();
-    closePaymentModal();
-    alert('ดาวน์โหลดวอลเปเปอร์มงคลเรียบร้อยแล้ว ขอให้บารมีองค์เทพคุ้มครองและประทานพรครับ');
+      // ตรวจสอบว่าเป็น iPhone/iPad หรือเบราว์เซอร์ที่รองรับ Web Share API หรือไม่
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'วอลเปเปอร์มงคล',
+            text: 'วอลเปเปอร์องค์เทพมงคลเฉพาะดวงชะตา Krit Shine Astrology'
+          });
+          resetPaymentStatus();
+          closePaymentModal();
+          return;
+        } catch (err) {
+          // หากผู้ใช้กดยกเลิกหน้าต่างแชร์ ให้คงหน้าเดิมไว้
+          if (err.name !== 'AbortError') {
+            console.error('Share error:', err);
+          } else {
+            btnDownload.innerText = '📥 ดาวน์โหลดภาพแท้ (ไร้ลายน้ำ)';
+            return;
+          }
+        }
+      }
+
+      // สำหรับคอมพิวเตอร์ หรืออุปกรณ์ที่ไม่รองรับ Web Share ให้ดาวน์โหลดแบบปกติ
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+      resetPaymentStatus();
+      closePaymentModal();
+      alert('ดาวน์โหลดวอลเปเปอร์มงคลเรียบร้อยแล้ว ขอให้บารมีองค์เทพคุ้มครองและประทานพรครับ');
+    }, 'image/png');
   }
 </script>
 </body>
