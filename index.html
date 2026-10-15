@@ -982,26 +982,34 @@ header.navbar {
         <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
       </div>
 
- <div class="cat-item" onclick="
-        var bD=document.getElementById('birthDay').value; 
+<div class="cat-item" onclick="
+        var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
         if(!bD){
-          alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); 
-          scrollToForm();
+          alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
+          if(typeof scrollToForm === 'function') scrollToForm();
         } else {
-          openFeatureModal('bazi'); 
+          var mBazi = document.getElementById('modal-bazi');
+          if(mBazi){
+            document.body.appendChild(mBazi);
+            mBazi.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
+          }
+          if(typeof openFeatureModal === 'function'){
+            openFeatureModal('bazi');
+          }
           setTimeout(function(){
             if(typeof window.renderBaziDirect === 'function'){
               window.renderBaziDirect();
             } else if(typeof calcBaziEngine === 'function'){
               calcBaziEngine();
             }
-          }, 150);
+          }, 100);
         }
       ">
         <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
         <div class="cat-name">ปาจื่อ (BaZi)</div>
         <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
       </div>
+      
      <div class="cat-item" onclick="
         var bD=document.getElementById('birthDay').value; 
         if(!bD){
@@ -9737,7 +9745,7 @@ window.calcBaziEngine = function() {
                 <i class="fa-solid fa-calendar-xmark" style="font-size: 2.2rem; margin-bottom: 12px; display: block;"></i>
                 <h4 style="font-size: 1.15rem; margin-bottom: 8px; color: #fff;">ยังไม่ได้ระบุวันเดือนปีเกิด</h4>
                 <p style="font-size: 0.88rem; color: #cbd5e1; margin: 0 0 16px; line-height: 1.6;">กรุณากรอก วัน / เดือน / ปีเกิด และเวลาเกิด ที่หน้าแรก เพื่อถอดรหัส 4 เสาหลักดวงจีนปาจื่อเฉพาะบุคคล</p>
-                <button type="button" onclick="closeModal('modal-bazi'); scrollToForm();" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
+                <button type="button" onclick="if(typeof closeModal==='function') closeModal('modal-bazi'); var mb=document.getElementById('modal-bazi'); if(mb) mb.style.display='none'; if(typeof scrollToForm==='function') scrollToForm();" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 10px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
                     <i class="fa-solid fa-pen-to-square"></i> ไปกรอกวันเกิดที่หน้าแรก
                 </button>
             </div>
