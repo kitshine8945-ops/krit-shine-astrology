@@ -3139,31 +3139,30 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-// --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย ---
-      // 1. ตรวจสอบข้อมูลวันเกิด
+// --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย (แก้อันโตนาทีสามัญและสมผุสอาทิตย์) ---
       let calcDay = AppState.birthDay;
       let calcMonth = AppState.birthMonth;
       let calcYearBE = AppState.birthBE;
       let cHour = AppState.birthHour;
       let cMin = AppState.birthMinute;
 
-      // 2. คำนวณอันโตนาที (นาทีต่อราศี: เมษ ถึง มีน)
-      const ANTANATI_REAL = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
+      // 1. อันโตนาทีสามัญมาตรฐานสุริยยาตร์ (120, 96, 72, 120, 144, 168, 168, 144, 120, 72, 96, 120)
+      const ANTANATI_REAL = [120, 96, 72, 120, 144, 168, 168, 144, 120, 72, 96, 120];
 
-      // วันที่อาทิตย์ยกราศีเฉลี่ย (เมษ=0 ... มีน=11)
+      // 2. วันที่อาทิตย์ยกราศีสุริยยาตร์ (เมษ=0 ถึง มีน=11)
       const SUN_INGRESS = [
-        { m: 4, d: 13.5 }, // เมษ
-        { m: 5, d: 14.5 }, // พฤษภ
-        { m: 6, d: 15.0 }, // เมถุน
-        { m: 7, d: 16.5 }, // กรกฎ
-        { m: 8, d: 16.5 }, // สิงห์
-        { m: 9, d: 16.5 }, // กันย์
-        { m: 10, d: 17.5 }, // ตุลย์
-        { m: 11, d: 16.5 }, // พิจิก
-        { m: 12, d: 15.5 }, // ธนู
-        { m: 1, d: 14.5 }, // มังกร
-        { m: 2, d: 13.5 }, // กุมภ์
-        { m: 3, d: 14.5 }  // มีน
+        { m: 4, d: 13.5 }, // เมษ (13-14 เม.ย.)
+        { m: 5, d: 14.5 }, // พฤษภ (14-15 พ.ค.)
+        { m: 6, d: 15.0 }, // เมถุน (15 มิ.ย.)
+        { m: 7, d: 16.5 }, // กรกฎ (16-17 ก.ค.)
+        { m: 8, d: 16.5 }, // สิงห์ (16-17 ส.ค.)
+        { m: 9, d: 16.5 }, // กันย์ (16-17 ก.ย.)
+        { m: 10, d: 17.5 }, // ตุลย์ (17-18 ต.ค.)
+        { m: 11, d: 16.5 }, // พิจิก (16-17 พ.ย.)
+        { m: 12, d: 15.5 }, // ธนู (15-16 ธ.ค.)
+        { m: 1, d: 14.5 }, // มังกร (14-15 ม.ค.)
+        { m: 2, d: 13.5 }, // กุมภ์ (13-14 ก.พ.)
+        { m: 3, d: 14.5 }  // มีน (14-15 มี.ค.)
       ];
 
       // 3. หาสมผุสอาทิตย์ (ราศีและองศาอาทิตย์กำเนิด)
@@ -3189,12 +3188,12 @@ const password = document.getElementById('authPassword').value;
       if (sunDeg < 0) sunDeg = 0;
       if (sunDeg > 30) sunDeg = 29.99;
 
-      // 4. เวลาเกิดเทียบกับเวลาอาทิตย์อุทัยเฉลี่ย (06:00 น.)
+      // 4. เวลาเกิดเทียบกับเวลาอาทิตย์อุทัย (06:00 น.)
       let birthTotalMinutes = (cHour >= 6)
         ? ((cHour - 6) * 60 + cMin)
         : ((18 + cHour) * 60 + cMin);
 
-      // 5. คำนวณอันโตนาทีคงเหลือของราศีที่อาทิตย์สถิต
+      // 5. คำนวณอันโตนาทีอนาคตอุทัยในราศีแรกที่อาทิตย์สถิต
       let antanatiCurrentSign = ANTANATI_REAL[sunSign];
       let remainingMinutesInFirstSign = antanatiCurrentSign * ((30 - sunDeg) / 30);
 
@@ -3213,7 +3212,7 @@ const password = document.getElementById('authPassword').value;
         }
       }
 
-      // กำหนดผลลัพธ์ที่ถูกต้อง พร้อมส่งต่อตัวแปรให้ระบบอื่นทำงานต่อได้ทันที
+      // กำหนดผลลัพธ์ที่ถูกต้อง
       AppState.currentCalculatedAscIndex = ascSign;
       AppState.currentCalculatedSunIndex = sunSign;
       let ascIndex = ascSign;
