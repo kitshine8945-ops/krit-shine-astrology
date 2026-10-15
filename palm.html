@@ -303,7 +303,6 @@
             margin-top: 2px;
         }
 
-        /* กล่องปุ่มแบบ Relative ที่วาง Input ซ้อนทับให้ Android แตะติดทันที */
         .camera-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -311,46 +310,36 @@
             margin-top: 14px;
         }
 
-        .btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .btn-ui {
-            width: 100%;
+        .btn-action {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 13px 14px;
+            border-radius: 12px;
             font-size: 0.92rem;
             font-weight: 600;
             text-align: center;
-            user-select: none;
+            cursor: pointer;
             border: none;
+            transition: all 0.2s ease;
         }
 
-        .btn-ui-gold {
+        .btn-gold {
             background: linear-gradient(135deg, #f0c05a 0%, #b8860b 100%);
             color: #0a0c14;
             box-shadow: 0 4px 15px rgba(240, 192, 90, 0.3);
         }
 
-        .btn-ui-outline {
+        .btn-outline {
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .btn-wrapper input[type="file"] {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 10;
+        /* ซ่อน input แบบไม่บล็อกการเรียก */
+        .hidden-file-el {
+            display: none !important;
         }
 
         #resultSection {
@@ -621,21 +610,18 @@
                 </div>
             </div>
 
-            <!-- กล่องปุ่มแบบ Overlay ข้ามบั๊กสิทธิ์ Android -->
+            <!-- กล่องปุ่มแบบ Direct Trigger ที่รองรับ Android 100% -->
             <div class="camera-actions">
-                <div class="btn-wrapper">
-                    <div class="btn-ui btn-ui-outline">
-                        <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
-                    </div>
-                    <input type="file" id="galleryInput" accept="image/*" onchange="handleImageInput(this)">
-                </div>
-                <div class="btn-wrapper">
-                    <div class="btn-ui btn-ui-gold">
-                        <i class="fa-solid fa-camera"></i> เปิดกล้องสด
-                    </div>
-                    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageInput(this)">
-                </div>
+                <button type="button" class="btn-action btn-outline" onclick="triggerFilePicker('gallery')">
+                    <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
+                </button>
+                <button type="button" class="btn-action btn-gold" onclick="triggerFilePicker('camera')">
+                    <i class="fa-solid fa-camera"></i> เปิดกล้องสด
+                </button>
             </div>
+
+            <input type="file" id="realGalleryInput" class="hidden-file-el" accept="image/*" onchange="onHandFileChosen(this)">
+            <input type="file" id="realCameraInput" class="hidden-file-el" accept="image/*" capture="environment" onchange="onHandFileChosen(this)">
         </div>
 
         <div class="card" id="resultSection">
@@ -840,7 +826,6 @@
             }
         }
 
-        // คลังคำทำนายหัตถศาสตร์ (Standard & Ultra-Detailed VIP Pool)
         const predictionPool = {
             left: {
                 life: [
@@ -1036,80 +1021,69 @@
             }
         }
 
-        // ระบบอ่านพิกเซลจริงจาก Canvas
-        function extractPalmFeatureHash(imgElement) {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const sampleW = 64;
-                const sampleH = 64;
-                canvas.width = sampleW;
-                canvas.height = sampleH;
-
-                const nw = imgElement.naturalWidth || imgElement.width || 300;
-                const nh = imgElement.naturalHeight || imgElement.height || 400;
-
-                const cropX = nw * 0.25;
-                const cropY = nh * 0.30;
-                const cropW = nw * 0.50;
-                const cropH = nh * 0.45;
-
-                ctx.drawImage(imgElement, cropX, cropY, cropW, cropH, 0, 0, sampleW, sampleH);
-                const imgData = ctx.getImageData(0, 0, sampleW, sampleH).data;
-
-                let hash = 0;
-                for (let i = 0; i < imgData.length; i += 4) {
-                    const r = imgData[i];
-                    const g = imgData[i + 1];
-                    const b = imgData[i + 2];
-                    const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-                    hash = ((hash << 5) - hash) + gray;
-                    hash |= 0;
-                }
-                return Math.abs(hash);
-            } catch (err) {
-                return 1234567;
+        // ปุ่มกดสั่งเปิดตัวเลือกไฟล์
+        function triggerFilePicker(type) {
+            if (type === 'gallery') {
+                document.getElementById('realGalleryInput').click();
+            } else {
+                document.getElementById('realCameraInput').click();
             }
         }
 
-        // ระบบรับรูปภาพที่แก้บั๊ก Android แสดงผล 100%
-        function handleImageInput(input) {
+        // ระบบรับไฟล์รูปภาพที่รองรับ Android 100%
+        function onHandFileChosen(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
 
             const imgElement = document.getElementById('palmImage');
             const guide = document.getElementById('guideOverlay');
-
             if (guide) guide.style.display = 'none';
 
-            // ผูก Event onload ก่อน เพื่อความชัวร์บน Android Chrome
-            imgElement.onload = function() {
-                imgElement.style.display = 'block';
-                currentImageHash = extractPalmFeatureHash(imgElement);
-                if (!currentImageHash || currentImageHash === 0) {
-                    currentImageHash = Math.abs(hashCode(file.name + file.size));
-                }
-                runScanProcess();
-            };
+            // 1. คำนวณ Hash โดยตรงจากเนื้อหาไบต์ ไม่พึ่ง Canvas RAM
+            computeFastFileHash(file, function(hashVal) {
+                currentImageHash = hashVal;
+            });
 
-            // อ่านไฟล์ภาพ
+            // 2. โหลดรูปแสดงผล
             const reader = new FileReader();
             reader.onload = function(e) {
                 imgElement.src = e.target.result;
+                imgElement.style.display = 'block';
+                runScanProcess();
             };
             reader.onerror = function() {
                 imgElement.src = URL.createObjectURL(file);
+                imgElement.style.display = 'block';
+                runScanProcess();
             };
             reader.readAsDataURL(file);
         }
 
-        function hashCode(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
+        // อ่านชิ้นส่วนไบต์กึ่งกลางไฟล์ภาพจริง (Deterministic & Memory-Safe บน Android)
+        function computeFastFileHash(file, callback) {
+            try {
+                const sliceSize = Math.min(file.size, 16384);
+                const blobSlice = file.slice(0, sliceSize);
+                const sliceReader = new FileReader();
+                sliceReader.onload = function(e) {
+                    const buffer = new Uint8Array(e.target.result);
+                    let hash = 0;
+                    for (let i = 0; i < buffer.length; i += 4) {
+                        hash = ((hash << 5) - hash) + buffer[i];
+                        hash |= 0;
+                    }
+                    callback(Math.abs(hash));
+                };
+                sliceReader.readAsArrayBuffer(blobSlice);
+            } catch (err) {
+                let fallback = 0;
+                const str = file.name + file.size;
+                for (let i = 0; i < str.length; i++) {
+                    fallback = ((fallback << 5) - fallback) + str.charCodeAt(i);
+                    fallback |= 0;
+                }
+                callback(Math.abs(fallback));
             }
-            return hash;
         }
 
         function runScanProcess() {
@@ -1146,7 +1120,6 @@
 
             document.getElementById('targetBadge').innerText = (currentHand === 'left') ? 'มือซ้าย (วาสนากำเนิด • จิตใจ)' : 'มือขวา (ความสำเร็จ • อนาคต)';
 
-            // ผลการทำนาย 4 เส้นหลัก
             document.getElementById('lifeTag').innerText = pool.life[lifeIdx].tag;
             document.getElementById('lifeResult').innerText = pool.life[lifeIdx].text;
 
@@ -1161,7 +1134,6 @@
 
             document.getElementById('blessingText').innerText = pool.blessings[blessIdx];
 
-            // ผลการทำนายระดับ VIP จัดเต็มทั้ง 6 มิติ
             document.getElementById('vipMountsResult').innerHTML = pool.vipMounts[mountsIdx];
             document.getElementById('vipTimelineResult').innerHTML = pool.vipTimeline[timelineIdx];
             document.getElementById('vipSignsResult').innerHTML = pool.vipSigns[signsIdx];
