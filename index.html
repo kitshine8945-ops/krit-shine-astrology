@@ -12018,13 +12018,18 @@ function renderBaziDirect() {
     let mOrderFromYin = (monthBranchIdx - 2 + 12) % 12;
     let monthStemIdx = (monthStemStart[yearStemIdx] + mOrderFromYin) % 10;
 
-    // 3. เสาวัน (Day Pillar) - 60 กะจื้อ Julian Day Number
-    let refDate = new Date(Date.UTC(2008, 7, 8)); // 庚辰 (ลำดับที่ 16)
-    let curDate = new Date(Date.UTC(yCE, m - 1, d));
-    let diffDays = Math.round((curDate - refDate) / (1000 * 60 * 60 * 24));
-    let dayCycleIdx = (16 + diffDays) % 60;
+    // 3. เสาวัน (Day Pillar) - 60 กะจื้อ Julian Day Number (ชดเชย +51 ตรงกับ 丁巳 100%)
+    let a = Math.floor((14 - m) / 12);
+    let y = yCE + 4800 - a;
+    let mm = m + 12 * a - 3;
+    let jdn = d + Math.floor((153 * mm + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+
+    if (hHour >= 23) {
+      jdn += 1;
+    }
+
+    let dayCycleIdx = (jdn + 51) % 60;
     if (dayCycleIdx < 0) dayCycleIdx += 60;
-    if (hHour >= 23) dayCycleIdx = (dayCycleIdx + 1) % 60;
 
     let dayStemIdx = dayCycleIdx % 10;
     let dayBranchIdx = dayCycleIdx % 12;
@@ -12059,6 +12064,7 @@ function renderBaziDirect() {
     let fengshuiDir = "";
     let fengshuiColor = "";
     let fengshuiItem = "";
+    let fengshuiDesc = "";
 
     if (dayMaster.elem === 'ไฟ') {
       if (isStrong) {
@@ -12067,12 +12073,14 @@ function renderBaziDirect() {
         fengshuiDir = "ทิศตะวันตก, ทิศตะวันตกเฉียงเหนือ หรือ ทิศเหนือ";
         fengshuiColor = "สีทอง, สีขาวมุก, สีน้ำเงินคราม, สีดำสนิท";
         fengshuiItem = "วัตถุโลหะมันวาว, นาฬิกาโลหะ, น้ำพุจำลองน้ำใสสะอาดตั้งโต๊ะทำงาน";
+        fengshuiDesc = "เพื่อปรับสมดุลและลดทอนความร้อนแรงของธาตุไฟ";
       } else {
         yongShen = "ธาตุไม้ (Wood) & ธาตุไฟ (Fire)";
         jiShen = "ธาตุน้ำ (Water) & ธาตุทอง (Metal)";
         fengshuiDir = "ทิศตะวันออก, ทิศตะวันออกเฉียงใต้ หรือ ทิศใต้";
         fengshuiColor = "สีเขียวมรกต, สีแดงสดใส, สีส้มอิฐ";
         fengshuiItem = "ต้นไม้มงคลขนาดเล็ก, โคมไฟสีวอร์มไลท์";
+        fengshuiDesc = "เพื่อเสริมพลังชีวิตและความสว่างไสวให้แก่ดวงชะตา";
       }
     } else if (dayMaster.elem === 'ไม้') {
       yongShen = isStrong ? "ธาตุไฟ & ธาตุดิน" : "ธาตุน้ำ & ธาตุไม้";
@@ -12080,12 +12088,14 @@ function renderBaziDirect() {
       fengshuiDir = isStrong ? "ทิศใต้ หรือ ตะวันตกเฉียงใต้" : "ทิศเหนือ หรือ ตะวันออก";
       fengshuiColor = isStrong ? "สีแดง, สีส้ม, สีเหลือง" : "สีดำ, สีน้ำเงิน, สีเขียว";
       fengshuiItem = isStrong ? "หินโรสควอตซ์, หินทับทิม" : "น้ำพุจำลอง, พืชใบเขียวมงคล";
+      fengshuiDesc = isStrong ? "เพื่อถ่ายเทและสร้างสรรค์โอกาสทางธุรกิจ" : "เพื่อเสริมรากฐานพลังชีวิต";
     } else {
       yongShen = isStrong ? "ธาตุถ่ายเทและควบคุมตามดวง" : "ธาตุเกื้อหนุนตามดวง";
       jiShen = isStrong ? "ธาตุเดิมที่ล้นเกิน" : "ธาตุพิฆาต";
       fengshuiDir = "ทิศมงคลปรับสมดุลประจำดวง";
       fengshuiColor = "โทนสีสว่างปรับสมดุลธาตุ";
       fengshuiItem = "เครื่องประดับหินธรรมชาติประจำดวง";
+      fengshuiDesc = "เพื่อปรับสมดุลและเสริมมงคล";
     }
 
     let birthSeed = (d * 37) + (m * 19) + (yBE * 11) + (hHour * 13) + (dayStemIdx * 17);
@@ -12202,7 +12212,7 @@ function renderBaziDirect() {
             '<strong style="color:#ffd700; font-size:0.92rem;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ธาตุปรับดวงเฉพาะบุคคล (Yong Shen):</strong>' +
             '<div style="font-size:0.86rem; color:#fff; margin-top:6px; line-height:1.7;">' +
               '• <strong>ทิศรับทรัพย์มงคล:</strong> จัดโต๊ะทำงานหรือเตียงนอนหันหน้าไปทาง <strong>' + fengshuiDir + '</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>' +
-              '• <strong>โทนสีและหินนำโชค:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุให้คุณ (' + yongShen + ') ควบคู่เสื้อผ้าโทน <strong>' + fengshuiColor + '</strong> เพื่อลดทอนความร้อนแรงของธาตุไฟ<br>' +
+              '• <strong>โทนสีและหินนำโชค:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุให้คุณ (' + yongShen + ') ควบคู่เสื้อผ้าโทน <strong>' + fengshuiColor + '</strong> ' + fengshuiDesc + '<br>' +
               '• <strong>สิ่งมงคลตั้งโต๊ะ:</strong> จัดวาง <strong>' + fengshuiItem + '</strong> ทางมุมโต๊ะทำงาน ช่วยเหนี่ยวนำความมั่งคั่งในรอบวันจร ' + tD + ' ' + tMName + ' ' + tY +
             '</div>' +
           '</div>' +
