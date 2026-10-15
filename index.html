@@ -3139,18 +3139,17 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-// --- ระบบคำนวณลัคนามาตรฐานสุริยยาตร์ไทยแท้ (Myhora Accurate Engine) ---
+// --- ระบบคำนวณลัคนามาตรฐานสุริยยาตร์ไทยแท้ (Suriyayat Engine) ---
       let tbDay = AppState.birthDay;
       let tbMonth = AppState.birthMonth;
       let tbYearBE = AppState.birthBE;
       let tbHour = AppState.birthHour;
       let tbMin = AppState.birthMinute;
 
-      // 1. อันโตนาทีสุริยยาตร์สำหรับประเทศไทย (นาทีต่อราศี: เมษ ถึง มีน รวม 1,440 นาที)
-      // เมษ=100, พฤษภ=112, เมถุน=128, กรกฎ=136, สิงห์=134, กันย์=126, ตุลย์=122, พิจิก=128, ธนู=134, มังกร=126, กุมภ์=102, มีน=92
-      const SURİYAYAT_ANTANATI = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
+      // 1. อันโตนาทีสุริยยาตร์ (ASCII ล้วน: เมษ ถึง มีน รวม 1,440 นาที)
+      const SURIYAYAT_ANTANATI = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
 
-      // วันที่อาทิตย์ยกเข้าแต่ละราศี (เฉลี่ยตามปฏิทินสุริยยาตร์)
+      // วันที่อาทิตย์ยกเข้าแต่ละราศี
       const SUN_ENTRY = [
         { m: 4, d: 13.7 }, // เมษ (0)
         { m: 5, d: 14.8 }, // พฤษภ (1)
@@ -3166,7 +3165,7 @@ const password = document.getElementById('authPassword').value;
         { m: 3, d: 14.8 }   // มีน (11)
       ];
 
-      // 2. หาสมผุสอาทิตย์ (ราศีและองศาของดวงอาทิตย์ ณ วันเกิด)
+      // 2. หาสมผุสอาทิตย์
       let sunSign = 0;
       let entryDay = 13.7;
       for (let i = 0; i < 12; i++) {
@@ -3197,7 +3196,7 @@ const password = document.getElementById('authPassword').value;
         totalMinutesFromSunrise = (18 + tbHour) * 60 + tbMin;
       }
 
-      // 4. เวลาคงเหลือของราศีที่อาทิตย์สถิตอยู่ ณ รุ่งเช้า
+      // 4. เวลาคงเหลือของราศีที่อาทิตย์สถิตอยู่
       let firstSignDuration = SURIYAYAT_ANTANATI[sunSign];
       let remainingFirstSignMin = firstSignDuration * ((30 - sunDegree) / 30);
 
