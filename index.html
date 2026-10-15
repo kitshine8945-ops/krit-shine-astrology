@@ -3139,96 +3139,100 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-// --- ระบบคำนวณลัคนามาตรฐานโหรไทย (ตัดวันเวลาอาทิตย์อุทัย 06:00 น.) ---
-      let rawDay = AppState.birthDay;
-      let rawMonth = AppState.birthMonth;
-      let rawYear = AppState.birthBE;
-      let rawHour = AppState.birthHour;
-      let rawMin = AppState.birthMinute;
+// --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย (เทียบเคียงระบบ Myhora) ---
+      let rawD = parseInt(AppState.birthDay, 10);
+      let rawM = parseInt(AppState.birthMonth, 10);
+      let rawY = parseInt(AppState.birthBE, 10);
+      let rawH = parseInt(AppState.birthHour, 10) || 0;
+      let rawMin = parseInt(AppState.birthMinute, 10) || 0;
 
-      // 1. กฎโหรไทย: ถ้าเกิด 00:00 - 05:59 น. ให้นับอาทิตย์อุทัยของวันก่อนหน้า (ลด 1 วัน)
-      let calcD = rawDay;
-      let calcM = rawMonth;
-      let calcY = rawYear;
+      // 1. ตารางเวลาพระอาทิตย์ขึ้นโดยเฉลี่ยตามละติจูดประเทศไทย (นาทีจากเที่ยงคืน)
+      // ม.ค.(06:40), ก.พ.(06:40), มี.ค.(06:30), เม.ย.(06:08), พ.ค.(05:50), มิ.ย.(05:48)
+      // ก.ค.(05:55), ส.ค.(06:05), ก.ย.(06:08), ต.ค.(06:10), พ.ย.(06:20), ธ.ค.(06:30)
+      const SUNRISE_TABLE = [400, 400, 390, 368, 350, 348, 355, 365, 368, 370, 380, 390];
+      let sunriseMin = SUNRISE_TABLE[rawM - 1];
 
-      if (rawHour < 6) {
-        let prevDate = new Date(calcY - 543, calcM - 1, calcD - 1);
-        calcD = prevDate.getDate();
-        calcM = prevDate.getMonth() + 1;
-        calcY = prevDate.getFullYear() + 543;
+      let birthMinsOfDay = rawH * 60 + rawMin;
+
+      // 2. กฎการตัดวันโหรไทย: ถ้าเกิดก่อนเวลาอาทิตย์ขึ้น ให้ทดวันกลับไป 1 วัน
+      let curD = rawD;
+      let curM = rawM;
+      let curY = rawY;
+      let elapsedFromSunrise = 0;
+
+      if (birthMinsOfDay < sunriseMin) {
+        // เกิดก่อนอาทิตย์ขึ้น: ใช้อาทิตย์ของวันวาน
+        let prevDate = new Date(curY - 543, curM - 1, curD - 1);
+        curD = prevDate.getDate();
+        curM = prevDate.getMonth() + 1;
+        curY = prevDate.getFullYear() + 543;
+        elapsedFromSunrise = (1440 - sunriseMin) + birthMinsOfDay;
+      } else {
+        elapsedFromSunrise = birthMinsOfDay - sunriseMin;
       }
 
-      // 2. อันโตนาทีสามัญมาตรฐานสุริยยาตร์ (นาทีต่อราศี: เมษ ถึง มีน)
-      const SUR_ANTANATI = [120, 114, 118, 134, 138, 132, 126, 120, 114, 108, 110, 116];
+      // 3. อันโตนาทีมาตรฐานสุริยยาตร์ไทย (เมษ=120, พฤษภ=96, เมถุน=72, กรกฎ=120, สิงห์=144, กันย์=168, ตุลย์=168, พิจิก=144, ธนู=120, มังกร=72, กุมภ์=96, มีน=120)
+      const SUR_ANTANATI = [120, 96, 72, 120, 144, 168, 168, 144, 120, 72, 96, 120];
 
-      // วันที่อาทิตย์ยกเข้าแต่ละราศี (0=เมษ ถึง 11=มีน)
-      const SUN_ENTRY_DAYS = [
-        { m: 4, d: 14 }, // เมษ
-        { m: 5, d: 15 }, // พฤษภ
-        { m: 6, d: 15 }, // เมถุน
-        { m: 7, d: 17 }, // กรกฎ
-        { m: 8, d: 17 }, // สิงห์
-        { m: 9, d: 17 }, // กันย์
-        { m: 10, d: 18 }, // ตุลย์
-        { m: 11, d: 17 }, // พิจิก
-        { m: 12, d: 16 }, // ธนู
-        { m: 1, d: 15 },  // มังกร
-        { m: 2, d: 14 },  // กุมภ์
-        { m: 3, d: 15 }   // มีน
+      // วันที่อาทิตย์ยกเข้าราศีแบบสุริยยาตร์ (0=เมษ ถึง 11=มีน)
+      const INGRESS_DATES = [
+        { m: 4, d: 13.5 }, // เมษ
+        { m: 5, d: 14.5 }, // พฤษภ
+        { m: 6, d: 15.0 }, // เมถุน
+        { m: 7, d: 16.5 }, // กรกฎ
+        { m: 8, d: 16.5 }, // สิงห์
+        { m: 9, d: 16.5 }, // กันย์
+        { m: 10, d: 17.5 }, // ตุลย์
+        { m: 11, d: 16.5 }, // พิจิก
+        { m: 12, d: 15.5 }, // ธนู
+        { m: 1, d: 14.5 },  // มังกร
+        { m: 2, d: 13.5 },  // กุมภ์
+        { m: 3, d: 14.5 }   // มีน
       ];
 
-      // 3. หาสมผุสอาทิตย์ ณ วันตัดแบบไทย
+      // 4. หาสมผุสอาทิตย์ ณ วันตัดแบบไทย
       let sunSign = 0;
-      let baseEntryDay = 14;
+      let baseEntry = 13.5;
       for (let i = 0; i < 12; i++) {
-        if (calcM === SUN_ENTRY_DAYS[i].m) {
-          if (calcD >= SUN_ENTRY_DAYS[i].d) {
+        if (curM === INGRESS_DATES[i].m) {
+          if (curD >= Math.floor(INGRESS_DATES[i].d)) {
             sunSign = i;
-            baseEntryDay = SUN_ENTRY_DAYS[i].d;
+            baseEntry = INGRESS_DATES[i].d;
           } else {
             sunSign = (i + 11) % 12;
-            baseEntryDay = SUN_ENTRY_DAYS[sunSign].d;
+            baseEntry = INGRESS_DATES[sunSign].d;
           }
           break;
         }
       }
 
-      // คำนวณองศาอาทิตย์ (0 - 30 องศา)
-      let sunDeg = (calcD >= baseEntryDay) 
-        ? (calcD - baseEntryDay) 
-        : (30 - (baseEntryDay - calcD));
-      if (sunDeg < 0) sunDeg = 0;
-      if (sunDeg >= 30) sunDeg = 29.9;
-
-      // 4. คำนวณเวลาที่ผ่านไปจาก 06:00 น.
-      let elapsedMins = 0;
-      if (rawHour >= 6) {
-        elapsedMins = (rawHour - 6) * 60 + rawMin;
-      } else {
-        // เกิดหลังเที่ยงคืน = ผ่านจาก 06:00 น. ของวันวานมาแล้ว 18 ชม. + ชั่วโมงเกิด
-        elapsedMins = (18 + rawHour) * 60 + rawMin;
-      }
+      // องศาดวงอาทิตย์ (0 - 30 องศา)
+      let sunDegree = (curD >= baseEntry)
+        ? (curD - baseEntry)
+        : (30 - (baseEntry - curD));
+      if (sunDegree < 0) sunDegree = 0;
+      if (sunDegree >= 30) sunDegree = 29.99;
 
       // 5. รอนาทีหาลัคนา
-      let firstSignMins = SUR_ANTANATI[sunSign];
-      let remFirstSign = firstSignMins * ((30 - sunDeg) / 30);
+      let firstSignDuration = SUR_ANTANATI[sunSign];
+      let remainingFirstSign = firstSignDuration * ((30 - sunDegree) / 30);
 
       let ascSign = sunSign;
-      let leftTime = elapsedMins;
+      let leftMins = elapsedFromSunrise;
 
-      if (leftTime <= remFirstSign) {
+      if (leftMins <= remainingFirstSign) {
         ascSign = sunSign;
       } else {
-        leftTime -= remFirstSign;
+        leftMins -= remainingFirstSign;
         ascSign = (ascSign + 1) % 12;
 
-        while (leftTime > SUR_ANTANATI[ascSign]) {
-          leftTime -= SUR_ANTANATI[ascSign];
+        while (leftMins > SUR_ANTANATI[ascSign]) {
+          leftMins -= SUR_ANTANATI[ascSign];
           ascSign = (ascSign + 1) % 12;
         }
       }
 
-      // กำหนดค่ากลับเข้าสู่ระบบ
+      // 6. กำหนดค่ากลับเข้าสู่ระบบให้ทุกส่วนทำงานตรงกัน
       AppState.currentCalculatedAscIndex = ascSign;
       AppState.currentCalculatedSunIndex = sunSign;
       let ascIndex = ascSign;
