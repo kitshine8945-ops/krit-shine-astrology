@@ -4197,128 +4197,155 @@ function switchNum7Mode(mode) {
 
 function calcNum7Base() {
   try {
-    const bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
-    const bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
-    const bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
-    const bH = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
+    // 1. ดึงวันเดือนปีเกิดจริงจากฟอร์ม
+    const bDEl = document.getElementById('birthDay');
+    const bMEl = document.getElementById('birthMonth');
+    const bYEl = document.getElementById('birthYearBE');
+    const bHEl = document.getElementById('birthHour24');
 
-    const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 15;
-    const tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
-    const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+    const bD = bDEl && bDEl.value ? parseInt(bDEl.value, 10) : (AppState.birthDay || 30);
+    const bM = bMEl && bMEl.value ? parseInt(bMEl.value, 10) : (AppState.birthMonth || 4);
+    const bY = bYEl && bYEl.value ? parseInt(bYEl.value, 10) : (AppState.birthBE || 2522);
+    const bH = bHEl && bHEl.value ? parseInt(bHEl.value, 10) : (AppState.birthHour || 0);
+
+    // 2. ดึงวันเดือนปี "จร" สดๆ จาก Dropdown วันจร (VIP)
+    const tDEl = document.getElementById('transitDay');
+    const tMEl = document.getElementById('transitMonth');
+    const tYEl = document.getElementById('transitYearBE');
+
+    const tD = tDEl && tDEl.value ? parseInt(tDEl.value, 10) : 15;
+    const tM = tMEl && tMEl.value ? parseInt(tMEl.value, 10) : 10;
+    const tY = tYEl && tYEl.value ? parseInt(tYEl.value, 10) : 2569;
 
     const isVip = (AppState.currentNum7Mode === 'vip');
 
+    // คำนวณอายุย่าง ณ วันจรจริง
     let ageYang = (tY - bY) + 1;
     if (ageYang < 1) ageYang = 1;
 
-    let d = (bD % 7) || 7;
-    let m = (bM % 7) || 7;
-    let y = (bY % 7) || 7;
+    // วันทางสุริยยาตร์ (ตัด 06:00 น.)
+    let dObj = new Date(bY - 543, bM - 1, bD);
+    if (bH < 6) dObj.setDate(dObj.getDate() - 1);
+    let dayNum = dObj.getDay() + 1; // 1=อาทิตย์ ... 7=เสาร์
+    let monthNum = ((bM + 1) % 12) || 12; // เดือนไทย
+    let yearNum = ((bY - 2400) % 12) || 12; // ปีนักษัตร
 
-    let row1 = [], row2 = [], row3 = [], row4 = [];
-    let row5 = [], row6 = [], row7 = [], row8 = [], row9 = [];
-
+    // คำนวณฐาน 1 ถึง 4
+    let r1 = [], r2 = [], r3 = [], r4 = [];
     for (let i = 0; i < 7; i++) {
-      let v1 = ((d + i - 1) % 7) + 1;
-      let v2 = ((m + i - 1) % 7) + 1;
-      let v3 = ((y + i - 1) % 7) + 1;
+      let v1 = ((dayNum + i - 1) % 7) + 1;
+      let v2 = ((monthNum + i - 1) % 7) + 1;
+      let v3 = ((yearNum + i - 1) % 7) + 1;
       let v4 = v1 + v2 + v3;
-      row1.push(v1); row2.push(v2); row3.push(v3); row4.push(v4);
-
-      if (isVip) {
-        let transitFactor = (tY % 7) + (tM * 3) + (tD % 5) + (ageYang % 7);
-        let v5 = (v1 + v2 + (transitFactor % 3)) % 21 || 21;
-        let v6 = (v2 + v3 + (tY % 5)) % 21 || 21;
-        let v7 = (v1 + v3 + (ageYang % 4)) % 21 || 21;
-        let v8 = (v4 + 7 + (tD % 3)) % 21 || 21;
-        let v9 = ((v4 * 2) + (tY % 9) + tD) % 21 || 21;
-        row5.push(v5); row6.push(v6); row7.push(v7); row8.push(v8); row9.push(v9);
-      }
+      r1.push(v1); r2.push(v2); r3.push(v3); r4.push(v4);
     }
 
-    let transitHouseIndex = ((ageYang - 1) % 7);
-    let activeVipNum = isVip ? (row9[transitHouseIndex] || row9[0]) : row4[0];
+    // คำนวณฐาน 5 ถึง 9 (ระบบ 9 ฐานพิสดาร อิงตัวแปรจรสด)
+    let r5 = [], r6 = [], r7 = [], r8 = [], r9 = [];
+    for (let i = 0; i < 7; i++) {
+      let v5 = (r1[i] + r2[i] + (tM % 3)) % 21 || 21;
+      let v6 = (r2[i] + r3[i] + (tY % 5)) % 21 || 21;
+      let v7 = (r1[i] + r3[i] + (ageYang % 4)) % 21 || 21;
+      let v8 = (r4[i] + 7 + (tD % 3)) % 21 || 21;
+      let v9 = ((r4[i] * 2) + (tY % 7) + tD) % 21 || 21;
+      r5.push(v5); r6.push(v6); r7.push(v7); r8.push(v8); r9.push(v9);
+    }
 
-    // สร้างตารางเลข 7 ตัว
-    let html = `<table class="fortune-table" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.86rem; margin-bottom:15px; color:#fff;"><thead><tr style="border-bottom:1.5px solid #ffd700; color:#ffd700;"><th style="padding:6px; text-align:left;">เรือน/ฐาน</th><th>อัตตะ</th><th>หินะ</th><th>ธนัง</th><th>ปิตา</th><th>มาตา</th><th>โภคา</th><th>มัชฌิมา</th></tr></thead><tbody>`;
-    html += `<tr style="background:rgba(255,255,255,0.02);"><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๑ (วันเกิด)</td>${row1.map(v => `<td>${v}</td>`).join('')}</tr>`;
-    html += `<tr><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๒ (เดือนเกิด)</td>${row2.map(v => `<td>${v}</td>`).join('')}</tr>`;
-    html += `<tr style="background:rgba(255,255,255,0.02);"><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๓ (ปีเกิด)</td>${row3.map(v => `<td>${v}</td>`).join('')}</tr>`;
-    html += `<tr style="border-top:1.5px dashed #ffd700; font-weight:700; color:#ffd700;"><td style="text-align:left; padding:6px;">ฐาน ๔ (กำลังรวม)</td>${row4.map(v => `<td>${v}</td>`).join('')}</tr>`;
-    
+    // 1. เรนเดอร์ตาราง
+    const colNames = ["อัตตะ", "หินะ", "ธนัง", "ปิตา", "มาตา", "โภคา", "มัชฌิมา"];
+    let tableHtml = `
+      <table class="fortune-table" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.86rem; margin-bottom:15px; color:#fff;">
+        <thead>
+          <tr style="border-bottom:1.5px solid #ffd700; color:#ffd700;">
+            <th style="padding:6px; text-align:left;">เรือน/ฐาน</th>
+            ${colNames.map(c => `<th style="padding:6px;">${c}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:rgba(255,255,255,0.02);"><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๑ (วันเกิด)</td>${r1.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๒ (เดือนเกิด)</td>${r2.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="background:rgba(255,255,255,0.02);"><td style="text-align:left; padding:5px; color:#cbd5e1;">ฐาน ๓ (ปีเกิด)</td>${r3.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="border-top:1.5px dashed #ffd700; font-weight:700; color:#ffd700;"><td style="text-align:left; padding:6px;">ฐาน ๔ (กำลังรวม)</td>${r4.map(v => `<td>${v}</td>`).join('')}</tr>
+    `;
+
     if (isVip) {
-      html += `<tr style="color:#64b5f6;"><td style="text-align:left; padding:5px;">ฐาน ๕ (อินทภาส)</td>${row5.map(v => `<td>${v}</td>`).join('')}</tr>`;
-      html += `<tr style="color:#81c784;"><td style="text-align:left; padding:5px;">ฐาน ๖ (บาทจันทร์)</td>${row6.map(v => `<td>${v}</td>`).join('')}</tr>`;
-      html += `<tr style="color:#f48fb1;"><td style="text-align:left; padding:5px;">ฐาน ๗ (จักขุญาณ)</td>${row7.map(v => `<td>${v}</td>`).join('')}</tr>`;
-      html += `<tr style="color:#ffb74d;"><td style="text-align:left; padding:5px;">ฐาน ๘ (กำลังเทวา)</td>${row8.map(v => `<td>${v}</td>`).join('')}</tr>`;
-      html += `<tr style="border-top:1.5px solid #ffd700; font-weight:700; color:#ffd700; background:rgba(255,215,0,0.12);"><td style="text-align:left; padding:6px;">ฐาน ๙ (มหาโชค VIP)</td>${row9.map(v => `<td>${v}</td>`).join('')}</tr>`;
+      tableHtml += `
+          <tr style="color:#64b5f6;"><td style="text-align:left; padding:5px;">ฐาน ๕ (อินทภาส)</td>${r5.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="color:#81c784;"><td style="text-align:left; padding:5px;">ฐาน ๖ (บาทจันทร์)</td>${r6.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="color:#f48fb1;"><td style="text-align:left; padding:5px;">ฐาน ๗ (จักขุญาณ)</td>${r7.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="color:#ffb74d;"><td style="text-align:left; padding:5px;">ฐาน ๘ (กำลังเทวา)</td>${r8.map(v => `<td>${v}</td>`).join('')}</tr>
+          <tr style="border-top:1.5px solid #ffd700; font-weight:700; color:#ffd700; background:rgba(255,215,0,0.12);"><td style="text-align:left; padding:6px;">ฐาน ๙ (มหาโชค VIP)</td>${r9.map(v => `<td>${v}</td>`).join('')}</tr>
+      `;
     }
-    html += `</tbody></table>`;
-    
+    tableHtml += `</tbody></table>`;
+
     const tableWrapper = document.getElementById('num7TableWrapper');
-    if (tableWrapper) tableWrapper.innerHTML = html;
+    if (tableWrapper) tableWrapper.innerHTML = tableHtml;
 
     const analysisTitle = document.getElementById('num7AnalysisTitle');
     const analysisBody = document.getElementById('num7AnalysisBody');
 
     // ----------------------------------------------------------------------
-    // คลังคำบรรยายที่ผันแปรตามตัวเลขจริง
+    // พจนานุกรมคำทำนายเฉพาะดาวและเฉพาะฐาน (แยกขาดจากกัน ไม่ต่อข้อความมั่ว)
     // ----------------------------------------------------------------------
-    const houseNames = ["อัตตะ", "หินะ", "ธนัง", "ปิตา", "มาตา", "โภคา", "มัชฌิมา"];
-    let curHouseName = houseNames[transitHouseIndex];
-
-    // คำทำนายดวงจรปีตามรหัสมหาโชค ฐาน ๙
-    let vipTransitTexts = {
-      1: "เป็นปีแห่งการริเริ่ม บุกเบิก และสร้างชื่อเสียงด้วยตนเอง การติดต่อประสานงานกับผู้ใหญ่จะให้ผลบวก มีเกณฑ์ได้รับตำแหน่งสำคัญหรือเปิดธุรกิจใหม่",
-      2: "เป็นปีแห่งเสน่ห์ เมตตามหานิยม และการเงินคล่องตัว มิตรสหายและเพศตรงข้ามจะนำพาโอกาสและรายได้เข้ามาเกื้อหนุน",
-      3: "เป็นปีแห่งการต่อสู้ แข่งขัน และลุยงานหนัก ชัยชนะจะมาจากความกล้าหาญและความเด็ดขาด งานสายช่าง อุตสาหกรรม หรือธุรกิจแข่งขันจะสำเร็จงดงาม",
-      4: "เป็นปีทองแห่งการเจรจา วาทศิลป์ การค้าขาย และงานเอกสาร ปฏิภาณไหวพริบจะช่วยปลดล็อกหนี้สินและสร้างกำไรเป็นกอบเป็นกำ",
-      5: "เป็นปีแห่งปัญญา บารมีธรรม และโชคลาภใหญ่ มีเกณฑ์ได้รับการสนับสนุนจากผู้หลักผู้ใหญ่ การลงทุนในความรู้หรืออสังหาฯ จะรุ่งโรจน์สูงสุด",
-      6: "เป็นปีแห่งโภคทรัพย์ ความสุข และความสำเร็จทางธุรกิจ ศิลปะ ความงาม หรืองานบริการจะสร้างรายได้หลั่งไหลเข้ามาไม่ขาดสาย",
-      7: "เป็นปีแห่งความเพียรและสร้างรากฐานระยะยาว แม้มีแรงกดดันแต่จะสามารถสร้างหลักทรัพย์ ที่ดิน หรือมรดกตกทอดที่ถาวรได้อย่างมั่นคง",
-      8: "เป็นปีแห่งไหวพริบ พลิกแพลง และโชคลาภที่ไม่คาดฝัน มีเกณฑ์รับทรัพย์ก้อนโตจากการเก็งกำไร ธุรกิจออนไลน์ หรือคอนเนกชันแดนไกล",
-      9: "เป็นปีแห่งญาณสัมผัส สิ่งศักดิ์สิทธิ์คุ้มครอง มรดกเก่า และการต่างประเทศ มีโชคลาภจากความฝันและลางสังหรณ์ที่แม่นยำ",
-      10: "เป็นปีแห่งการขยายสาขา การคุมอำนาจ และความสำเร็จในตำแหน่งหน้าที่การงาน ได้รับความเคารพนับถือจากคนหมู่มากอย่างกว้างขวาง"
+    // คำทำนาย อัตตะ (ตัวตน/วาสนา) ตามดาวกำเนิดแถวที่ 1
+    const ATTA_DICT = {
+      1: "มีวาสนาความเป็นผู้นำสูง ใจเด็ดเดี่ยว รักศักดิ์ศรี ยึดมั่นในความถูกต้อง มักต้องเป็นที่พึ่งพาให้แก่คนในครอบครัวและบริวาร สร้างตัวได้ด้วยเกียรติยศ",
+      2: "มีเสน่ห์เมตตามหานิยม วาทศิลป์นุ่มนวล เข้ากับคนง่าย จิตใจอ่อนโยนแต่ปรับตัวเก่ง วาสนาเจริญรุ่งเรืองด้วยงานบริการและการสนับสนุนจากคนรอบข้าง",
+      3: "จิตใจนักสู้ กล้าได้กล้าเสีย มีความทรหดอดทนสูง ไม่ยอมแพ้ต่ออุปสรรค เหมาะกับการบุกเบิก ลุยงานหนัก และชนะศัตรูคู่แข่งด้วยความเด็ดขาด",
+      4: "ปัญญาเฉียบแหลม วาทศิลป์ยอดเยี่ยม เจรจาค้าขายคล่อง ไหวพริบปฏิภาณทันคน สร้างหลักฐานความมั่นคงได้ด้วยความรู้และการติดต่อสื่อสาร",
+      5: "เปี่ยมด้วยคุณธรรม สติปัญญา และความรอบคอบ สิ่งศักดิ์สิทธิ์และครูบาอาจารย์คุ้มครอง ผู้ใหญ่เมตตาเอ็นดู มีวาสนาทางวิชาการและที่ปรึกษา",
+      6: "รสนิยมดี มีเสน่ห์ทางวาจา รักศิลปะ ความสุขสบาย และความงาม วาสนาเด่นด้านการเงิน โชคลาภ และการค้าขายสินค้าพรีเมียมหรือบริการ",
+      7: "หนักแน่น อดทน มั่นคงดั่งหินผา ชีวิตมักเริ่มต้นจากความเหนื่อยยากแต่บั้นปลายจะครอบครองหลักทรัพย์ขนาดใหญ่ สร้างฐานะมั่นคงถาวร"
     };
-    let activeVipKey = (activeVipNum % 10) || 10;
-    let transitDesc = vipTransitTexts[activeVipKey] || "เป็นปีแห่งการจัดระเบียบชีวิตและเปิดรับโอกาสใหม่ๆ ที่จะนำพาความสำเร็จและความมั่นคงมาให้";
 
-    // คำทำนายวาสนา (อัตตะ) ตามกำลังรวมฐาน ๔
-    let attaSum = row4[0];
-    let attaDesc = "";
-    if (attaSum <= 8) {
-      attaDesc = "เป็นคนมีความอดทนสูง วาสนาตั้งต้นสร้างขึ้นมาจากสองมือตนเอง จิตใจมุ่งมั่น ไม่ยอมแพ้ต่ออุปสรรค เป็นผู้นำที่เข้มแข็งและพึ่งพาตนเองได้ดีเยี่ยม";
-    } else if (attaSum <= 14) {
-      attaDesc = "เป็นคนมีปฏิภาณไหวพริบ สติปัญญาเฉียบคม ปรับตัวเก่ง มีวาทศิลป์ในการจูงใจคน มักได้รับการยอมรับและมีบารมีในแวดวงสังคม";
-    } else {
-      attaDesc = "เป็นคนมีอำนาจบารมีสูงส่ง จิตใจหนักแน่นดั่งหินผา ผู้ใหญ่ให้ความเมตตาเอ็นดู มีวาสนาคุมคนและบริหารจัดการองค์กรขนาดใหญ่ได้สำเร็จ";
-    }
+    // คำทำนาย ธนัง (การเงิน) ตามดาวแถวที่ 1 ช่อง 3
+    const DHANA_DICT = {
+      1: "กระแสการเงินผูกติดกับอำนาจและเกียรติยศ รายได้หลักมาจากตำแหน่งหน้าที่การงานและการบริหาร ยิ่งมีชื่อเสียงยิ่งดึงดูดทรัพย์เข้ามา",
+      2: "เงินทองหมุนเวียนคล่องตัว มีลาภลอยเข้ามาเรื่อยๆ จากความเสน่หาและการค้าขาย รายรับเข้าต่อเนื่องไม่ขาดมือแต่ต้องระวังใจอ่อนใช้เงินตามอารมณ์",
+      3: "การเงินมาจากน้ำพักน้ำแรงและการแข่งขัน ยิ่งขยันลงมือทำยิ่งมีเงินก้อนโต มีจังหวะได้เงินจากการแก้ไขวิกฤตหรืองานเร่งด่วน",
+      4: "รายได้มาจากการเจรจา การเป็นตัวแทน นายหน้า และการค้าออนไลน์ ใช้สมองและข้อมูลสร้างผลกำไรได้อย่างคล่องตัว",
+      5: "การเงินมั่นคงและมีเสถียรภาพสูง ได้รับผลตอบแทนจากการลงทุนระยะยาว ดอกเบี้ย หรือคำปรึกษา เป็นทรัพย์สินที่งอกเงยอย่างปลอดภัย",
+      6: "โภคทรัพย์มั่งคั่ง มีโชคลาภทางการเงินและเสน่ห์ดึงดูดเงินทอง หาเงินง่าย มีลาภลอยจากการเสี่ยงโชค แต่ควรระวังรายจ่ายเพื่อความเพลิดเพลิน",
+      7: "การเงินเก็บเป็นทรัพย์สินชิ้นใหญ่ เช่น ที่ดิน อสังหาริมทรัพย์ หรือเงินฝากประจำ เงินเข้ามาช้าแต่เข้ามาเป็นก้อนใหญ่และมั่นคงยั่งยืน"
+    };
 
-    // คำทำนายการเงิน (ธนัง) ตามกำลังรวมฐาน ๔
-    let dhanaSum = row4[2];
-    let dhanaDesc = "";
-    if (dhanaSum % 2 === 0) {
-      dhanaDesc = "กระแสการเงินหมุนเวียนคล่องตัว มีช่องทางรายได้เข้ามาหลายสาย ยิ่งใช้เทคโนโลยีและการวางแผนในการต่อยอด ยิ่งทวีคูณความมั่งคั่ง";
-    } else {
-      dhanaDesc = "สายธารการเงินเน้นความมั่นคงถาวร ได้รับผลตอบแทนเป็นกอบเป็นกำจากน้ำพักน้ำแรง เหมาะแก่การลงทุนในสินทรัพย์ถาวร เช่น ที่ดินและทองคำ";
-    }
+    // คำทำนายเรือนจรตามอายุย่าง (Transit House)
+    const TRANSIT_HOUSE_DICT = {
+      0: "ตกเรือน อัตตะจร: เป็นปีที่ชีวิตตนเองเป็นจุดศูนย์กลางของการตัดสินใจ มีโอกาสเริ่มต้นสิ่งใหม่ หรือรับบทบาทใหม่ที่ท้าทาย",
+      1: "ตกเรือน หินะจร: เป็นปีที่ต้องใช้ความระมัดระวังรอบคอบเป็นพิเศษ ระวังความขัดแย้งหรือการถูกหักหลัง ไม่ควรไว้ใจใครจนเกินไป",
+      2: "ตกเรือน ธนังจร: เป็นปีแห่งโอกาสทางการเงิน การลงทุนเปิดกว้าง มีจังหวะรับทรัพย์ก้อนโตและขยายสภาพคล่องทางธุรกิจ",
+      3: "ตกเรือน ปิตาจร: เป็นปีที่ได้รับการอุปถัมภ์จากผู้ใหญ่ เพศชาย หรือผู้มีอำนาจคอยหนุนหลัง ช่วยชี้แนะทิศทางให้ราบรื่น",
+      4: "ตกเรือน มาตาจร: เป็นปีแห่งการเกื้อกูล ความอบอุ่นในครอบครัว และการสนับสนุนจากผู้ใหญ่เพศหญิง ได้รับความเมตตาช่วยเหลือ",
+      5: "ตกเรือน โภคาจร: เป็นปีแห่งการสร้างรากฐาน มีเกณฑ์ได้บ้าน ที่ดิน รถ ยานพาหนะ หรือการปรับปรุงเคหสถานให้มั่นคงขึ้น",
+      6: "ตกเรือน มัชฌิมาจร: เป็นปีแห่งความสมดุล การประคองชีวิตให้อยู่ในจุดที่ราบรื่น การเดินทางสายกลางจะนำพาความสำเร็จมาให้"
+    };
 
-    // เคล็ดลับเสริมดวงประจำปี
-    let remedyTexts = [
-      "แนะนำให้ทำบุญถวายค่าน้ำ-ค่าไฟวัด และปล่อยสัตว์น้ำ จะส่งผลให้ฐาน ๙ มหาโชคเปิดรับทรัพย์เต็มกำลัง",
-      "แนะนำให้ทำบุญบริจาคหลอดไฟ เติมน้ำมันตะเกียง หรือร่วมซื้อเครื่องมือแพทย์ เพื่อเสริมประกายบารมีและขจัดอุปสรรค",
-      "แนะนำให้สวดบทมหาจักรพรรดิ หรือคาถาเงินล้านเป็นประจำ พร้อมทั้งจัดหิ้งพระหันรับทิศตะวันออกเฉียงเหนือเพื่อรับพลังชี่มงคล"
-    ];
-    let remedyDesc = remedyTexts[(tY + ageYang) % remedyTexts.length];
+    // คำทำนายฐาน ๙ มหาโชค (ตามเศษรหัส VIP)
+    const BASE9_DICT = {
+      1: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังอาทิตย์: เด่นด้านเกียรติยศ การสอบแข่งขัน การเลื่อนตำแหน่ง และการได้รับความไว้วางใจจากผู้ใหญ่ระดับสูง",
+      2: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังจันทร์: เด่นด้านเสน่ห์เมตตามหานิยม การค้าขายคล่องตัว ได้รับความเอ็นดูจากลูกค้าและมิตรสหาย",
+      3: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังอังคาร: เด่นด้านความรวดเร็ว ชัยชนะเหนือคู่แข่ง การปิดดีลเร่งด่วน และการแก้ปัญหาเฉพาะหน้าสำเร็จลุล่วง",
+      4: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังพุธ: เด่นด้านวาทศิลป์ การค้าขายออนไลน์ งานเอกสารสัญญา และการเจรจาต่อรองผลประโยชน์",
+      5: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังพฤหัสบดี: เด่นด้านโชคลาภใหญ่ ปัญญาบารมี การลงทุนอสังหาฯ และการคุ้มครองจากสิ่งศักดิ์สิทธิ์",
+      6: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังศุกร์: เด่นด้านเงินสดไหลเวียน ลาภลอย ความสุขสำราญ และการปิดยอดขายสินค้าชิ้นใหญ่",
+      7: "พลังมหาโชคฐาน ๙ ขับเคลื่อนพลังเสาร์: เด่นด้านความมั่นคงระยะยาว การถือครองที่ดิน อาคาร หรือการได้รับมรดกตกทอดชิ้นโต"
+    };
 
+    let transitHouseIdx = (ageYang - 1) % 7;
+    let b9Key = (r9[transitHouseIdx] % 7) || 7;
+
+    // ----------------------------------------------------------------------
+    // สลับการแสดงผล โหมดฟรี vs VIP
+    // ----------------------------------------------------------------------
     if (!isVip) {
       if (analysisTitle) analysisTitle.innerHTML = `<i class="fa-solid fa-book-open" style="color:#ffd700;"></i> บทวิเคราะห์เลข 7 ตัว 4 ฐาน (เวอร์ชันฟรี - พื้นดวงกำเนิด)`;
       if (analysisBody) {
         analysisBody.innerHTML = `
           <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:10px; border-left:4px solid #ffd700; line-height:1.8;">
-            <strong>• วาสนาประจำตัว (อัตตะ ฐาน ๔ ได้เลข ${row4[0]}):</strong> ${attaDesc}<br>
-            <strong>• ขุมทรัพย์การเงิน (ธนัง ฐาน ๔ ได้เลข ${row4[2]}):</strong> ${dhanaDesc}<br>
-            <strong>• บารมีผู้สนับสนุน (ปิตา-มาตา & โภคา):</strong> มีผู้ใหญ่และคนในครอบครัวคอยค้ำจุนยามวิกฤต บั้นปลายชีวิตมีความมั่นคงในเคหสถาน
+            <strong>• วาสนาประจำตัว (อัตตะ ดาว ${r1[0]} ฐาน ๔ ได้กำลัง ${r4[0]}):</strong> ${ATTA_DICT[r1[0]]}<br>
+            <strong>• ขุมทรัพย์การเงิน (ธนัง ดาว ${r1[2]} ฐาน ๔ ได้กำลัง ${r4[2]}):</strong> ${DHANA_DICT[r1[2]]}<br>
+            <strong>• รากฐานครอบครัว (ปิตา-มาตา & โภคา):</strong> ผู้ใหญ่และวงศ์ตระกูลคอยหนุนหลัง มีความมั่นคงในเคหสถานตามเกณฑ์กำลังดาว
             <div style="margin-top:12px; font-size:0.82rem; color:#f59e0b; border-top:1px dashed rgba(245,158,11,0.3); padding-top:8px;">
               <i class="fa-solid fa-crown"></i> <em>ต้องการปลดล็อกการวิเคราะห์ฐาน 5-9 แบบพิสดาร, เจาะลึกดวงจรปี พ.ศ. ${tY}, และเคล็ดลับเสริมดวง กรุณาสลับไปที่โหมด VIP</em>
             </div>
@@ -4328,64 +4355,58 @@ function calcNum7Base() {
       return;
     }
 
-    // โหมด VIP
+    // โหมด VIP: เจาะลึกตามวันเกิด + วันจรจริง 100%
     if (analysisTitle) {
-      analysisTitle.innerHTML = `<i class="fa-solid fa-crown" style="color:#ffd700;"></i> มหาคัมภีร์พยากรณ์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP รายงานเจาะลึก 6 มิติ - ประจำปี พ.ศ. ${tY})`;
+      analysisTitle.innerHTML = `<i class="fa-solid fa-crown" style="color:#ffd700;"></i> มหาคัมภีร์พยากรณ์เลข 7 ตัว 9 ฐานฉบับพิสดาร (VIP รายงานเจาะลึก 5 มิติ - ประจำปี พ.ศ. ${tY})`;
     }
 
     if (analysisBody) {
       analysisBody.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:14px;">
 
-          <!-- 1. ภาพรวมดวงจรรายปี & วันจร -->
+          <!-- 1. ภาพรวมดวงจรรายปี & วันจร (เปลี่ยนตามวันจรและอายุย่างจริง) -->
           <div style="background:rgba(255,215,0,0.08); border:1.5px solid #ffd700; border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <strong style="color:#ffd700; font-size:1rem;"><i class="fa-solid fa-compass"></i> ดวงจรรายปี & วันจร (อายุย่าง ${ageYang} ปี อิงวันจร ${tD}/${tM}/${tY}):</strong>
-              <span style="background:#ffd700; color:#000; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:8px;">รอบปีทอง</span>
+              <strong style="color:#ffd700; font-size:1rem;"><i class="fa-solid fa-compass"></i> ดวงจรรายปี & วันจร ณ วันที่ ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี):</strong>
+              <span style="background:#ffd700; color:#000; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:8px;">เรือนจรที่ ${transitHouseIdx + 1}</span>
             </div>
             <p style="margin:0; font-size:0.88rem; color:#fff; line-height:1.8;">
-              ในรอบปี พ.ศ. ${tY} ชะตาชีวิตเคลื่อนตก <strong>เรือนที่ ${transitHouseIndex + 1} (${curHouseName})</strong> ได้รับพลังงานหนุนนำจาก <strong>ฐาน ๙ (มหาโชค VIP ได้รหัสจักรวาล ${activeVipNum})</strong> ส่งผลให้: ${transitDesc}
+              • <strong>เกณฑ์เสวยอายุจร:</strong> ${TRANSIT_HOUSE_DICT[transitHouseIdx]}<br>
+              • <strong>อิทธิพลฐาน ๙ มหาโชค (รหัส ${r9[transitHouseIdx]}):</strong> ${BASE9_DICT[b9Key]}
             </p>
           </div>
 
           <!-- 2. มิติวาสนา & อำนาจบารมี -->
           <div style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; border-radius:10px; padding:14px;">
-            <strong style="color:#64b5f6; font-size:0.95rem;"><i class="fa-solid fa-crown"></i> ๑. มิติวาสนา อำนาจ บารมี (อัตตะ ตกกำลังรวม ${row4[0]} หนุนด้วยฐาน ๙ ได้เลข ${row9[0]}):</strong>
-            <div style="margin-top:6px; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
-              ${attaDesc} อิทธิพลของฐาน ๙ มหาโชคหนุนให้คำพูดและการตัดสินใจของคุณในปี ${tY} มีน้ำหนักสูง ได้รับความเกรงใจและไว้วางใจจากบริวารและคู่ค้า
-            </div>
+            <strong style="color:#64b5f6; font-size:0.95rem;"><i class="fa-solid fa-crown"></i> ๑. มิติวาสนา อำนาจ บารมี (อัตตะ ดาว ${r1[0]} กำลังรวม ${r4[0]} หนุนด้วยฐาน ๙ ได้เลข ${r9[0]}):</strong>
+            <p style="margin:6px 0 0 0; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
+              ${ATTA_DICT[r1[0]]} ในรอบปี พ.ศ. ${tY} นี้ ฐานรองรับแข็งแกร่ง ส่งผลให้มีความน่าเชื่อถือสูง เหมาะแก่การรับตำแหน่งสำคัญหรือเป็นแกนนำในการขับเคลื่อนโครงการ
+            </p>
           </div>
 
           <!-- 3. มิติการเงิน & คลังสมบัติ -->
           <div style="background:rgba(255,255,255,0.03); border-left:4px solid #ffd700; border-radius:10px; padding:14px;">
-            <strong style="color:#ffd54f; font-size:0.95rem;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน คลังสมบัติ & โชคลาภ (ธนัง ตกกำลังรวม ${row4[2]} หนุนด้วยฐาน ๙ ได้เลข ${row9[2]}):</strong>
-            <div style="margin-top:6px; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
-              ${dhanaDesc} มีเกณฑ์ได้รับเงินก้อนจากการเจรจาหรือส่วนแบ่งผลประโยชน์ แต่ควรจัดสรรเป็นสินทรัพย์ถาวรเพื่อปิดช่องโหว่รายจ่ายจร
-            </div>
+            <strong style="color:#ffd54f; font-size:0.95rem;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน คลังสมบัติ & โชคลาภ (ธนัง ดาว ${r1[2]} กำลังรวม ${r4[2]} หนุนด้วยฐาน ๙ ได้เลข ${r9[2]}):</strong>
+            <p style="margin:6px 0 0 0; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
+              ${DHANA_DICT[r1[2]]} การบริหารจัดการรายรับรายจ่ายในปี พ.ศ. ${tY} ควรกำหนดเป้าหมายการออมที่ชัดเจน หลีกเลี่ยงการให้บุคคลอื่นยืมเงินโดยไม่มีสัญญาค้ำประกัน
+            </p>
           </div>
 
-          <!-- 4. มิติการงาน & ธุรกิจ -->
+          <!-- 4. มิติหน้าที่การงาน & ความก้าวหน้า -->
           <div style="background:rgba(255,255,255,0.03); border-left:4px solid #81c784; border-radius:10px; padding:14px;">
-            <strong style="color:#81c784; font-size:0.95rem;"><i class="fa-solid fa-briefcase"></i> ๓. มิติหน้าที่การงาน ความก้าวหน้า & หุ้นส่วน (กัมมะ & ปัตนิ):</strong>
-            <div style="margin-top:6px; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
-              งานที่เกี่ยวข้องกับการวางแผน การบริหาร และนวัตกรรมดิจิทัลจะเติบโตอย่างก้าวกระโดด ได้รับความร่วมมืออันดีจากคู่ค้าและพันธมิตร มีเกณฑ์ขยายขอบเขตความรับผิดชอบที่กว้างขึ้น
-            </div>
+            <strong style="color:#81c784; font-size:0.95rem;"><i class="fa-solid fa-briefcase"></i> ๓. มิติการงาน หุ้นส่วน & ความสัมพันธ์ (ปิตา/มาตา & ปัตนิ):</strong>
+            <p style="margin:6px 0 0 0; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
+              ความร่วมมือกับหุ้นส่วนหรือทีมงานในปีนี้ต้องอาศัยความโปร่งใสเป็นหลัก การแบ่งหน้าที่รับผิดชอบอย่างชัดเจนจะช่วยป้องกันความเข้าใจผิดและผลักดันงานให้สำเร็จตามเป้าหมาย
+            </p>
           </div>
 
-          <!-- 5. มิติเคหสถาน & ครอบครัว -->
-          <div style="background:rgba(255,255,255,0.03); border-left:4px solid #f48fb1; border-radius:10px; padding:14px;">
-            <strong style="color:#f48fb1; font-size:0.95rem;"><i class="fa-solid fa-house-chimney"></i> ๔. มิติเคหสถาน ทรัพย์สิน & สุขภาพ (โภคา & มัชฌิมา):</strong>
-            <div style="margin-top:6px; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
-              โภคาตกตำแหน่งส่งเสริมความมั่นคง มีเกณฑ์ได้ซื้อ ปรับปรุง หรือต่อเติมที่อยู่อาศัย ยานพาหนะ ครอบครัวร่มเย็นเป็นปึกแผ่น สุขภาพควรระวังอาการปวดเมื่อยคอบ่าไหล่และสายตาล้า
-            </div>
-          </div>
-
-          <!-- 6. เคล็ดลับเสริมดวงประจำฐาน VIP -->
+          <!-- 5. เคล็ดลับเสริมดวงเปิดขุมทรัพย์ฐาน ๙ -->
           <div style="background:rgba(30,20,10,0.95); border:1.5px solid #ffd700; border-radius:12px; padding:16px;">
-            <strong style="color:#ffd700; font-size:0.95rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> ๕. เคล็ดลับเสริมดวงเปิดขุมทรัพย์ฐาน ๙ (VIP Secret - ประจำปี พ.ศ. ${tY}):</strong>
+            <strong style="color:#ffd700; font-size:0.95rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> ๔. เคล็ดลับเสริมดวงเฉพาะตัว (VIP Secret ประจำปี พ.ศ. ${tY}):</strong>
             <div style="margin-top:6px; font-size:0.86rem; color:#fff; line-height:1.8;">
-              • <strong>การทำบุญเปิดทาง:</strong> ${remedyDesc}<br>
-              • <strong>ทิศรับทรัพย์มงคล:</strong> หันหน้าโต๊ะทำงานไปทาง <strong>ทิศตะวันออกเฉียงเหนือ</strong> หรือ <strong>ทิศเหนือ</strong> เพื่อรับพลังงานชี่มงคล
+              • <strong>การทำบุญเปิดทาง:</strong> แนะนำให้ทำบุญตามกำลังวันเกิด เช่น การปล่อยสัตว์น้ำ ถวายค่าน้ำ-ค่าไฟวัด หรือบริจาคอุปกรณ์ทางการแพทย์ เพื่อหนุนพลังฐาน ๙ ให้ทำงานเต็มกำลัง<br>
+              • <strong>ทิศมงคลรับทรัพย์:</strong> หันโต๊ะทำงานหรือเตียงนอนไปทาง <strong>ทิศตะวันออกเฉียงเหนือ</strong> หรือ <strong>ทิศเหนือ</strong> เพื่อรับกระแสชี่มงคล<br>
+              • <strong>บทสวดเจริญจิตตภาวนา:</strong> สวดบทมหาจักรพรรดิ หรือคาถาเงินล้านเป็นประจำ จะช่วยให้จิตใจสงบนิ่งและมีสติในการบริหารการเงิน
             </div>
           </div>
 
@@ -11155,18 +11176,21 @@ function switchWesternMode(mode) {
        }
      }
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
-    const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
-    birthInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', function() {
-                if (typeof calcBaziEngine === 'function') {
-                    calcBaziEngine();
-                }
-            });
-        }
+ // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
+const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'];
+birthInputs.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', function() {
+      if (typeof calcBaziEngine === 'function') {
+        calcBaziEngine();
+      }
+      if (typeof calcNum7Base === 'function') {
+        calcNum7Base();
+      }
     });
+  }
+});
 
     // 1.2 ดักจับเพิ่มเติมเมื่อมีการเปลี่ยนข้อมูลในฟอร์ม "วันจร VIP" เพื่อให้คำทำนายเปลี่ยนตามทันที
     const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE'];
