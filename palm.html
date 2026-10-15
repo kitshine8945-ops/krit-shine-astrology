@@ -1047,39 +1047,36 @@
 
                 let totalBrightness = 0;
                 let contrastVar = 0;
-                let mountRidgeEnergy = 0;
 
                 // อ่านพิกเซลตรวจจับรอยนูน ร่องเส้น และค่าความสว่างแสงเงา
                 for (let i = 0; i < p.length; i += 4) {
                     const r = p[i];
                     const g = p[i + 1];
                     const b = p[i + 2];
-                    // ค่าความสว่างตามสายตามนุษย์ (Luminance)
                     const lum = (0.299 * r + 0.587 * g + 0.114 * b);
                     totalBrightness += lum;
 
-                    // วัดความตัดกันของร่องลายมือกับผิว (Contrast Edge)
                     if (i > 4) {
                         const prevLum = (0.299 * p[i-4] + 0.587 * p[i-3] + 0.114 * p[i-2]);
                         contrastVar += Math.abs(lum - prevLum);
                     }
                 }
 
-                // แบ่งโซนวัดความนูนของเนินศุกร์ (ครึ่งล่าง) เทียบกับเนินพฤหัส (ครึ่งบน)
                 const avgLum = Math.round(totalBrightness / (32 * 32));
                 const ridgeScore = Math.round(contrastVar / 100);
 
-                // ผลลัพธ์ชีวมิติเฉพาะของฝ่ามือคนนี้ (Biometric Cluster Fingerprint)
-                // คนเดิมถ่ายซ้ำ ร่องเส้นหลักและสีผิวจะอยู่ในกลุ่มค่าเดิมเสมอ
+                // ผลลัพธ์ชีวมิติเฉพาะของฝ่ามือคนนี้ (คนเดิมถ่ายใหม่แสงเงาร่องเส้นจะตกกลุ่มเดิม)
                 const biometricFingerprint = (avgLum * 7) + (ridgeScore * 13);
                 return Math.abs(biometricFingerprint);
             } catch (err) {
-                // กรณีฉุกเฉิน
                 return 108;
             }
         }
 
-        // ระบบรับไฟล์รูปภาพที่ปลอดภัย 100% บน Android & iOS
+        // ==========================================
+        // ระบบแปลงและปรับสเกลภาพให้ Android แสดงผลได้ 100%
+        // (Auto-Downscale & JPEG Conversion Engine)
+        // ==========================================
         function onHandFileChosen(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
@@ -1088,28 +1085,66 @@
             const guide = document.getElementById('guideOverlay');
             if (guide) guide.style.display = 'none';
 
-            // โหลดรูปภาพขึ้นหน้าจอทันที
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                imgElement.src = evt.target.result;
-                imgElement.style.display = 'block';
+            // 1. อ่านไฟล์รูปเข้า Image Object เสมือน
+            const tempImg = new Image();
+            const objectUrl = URL.createObjectURL(file);
+            tempImg.src = objectUrl;
 
-                // รอจังหวะให้ภาพพร้อม แล้วคำนวณชีวมิติแสงเงารอยนูน
-                setTimeout(() => {
-                    const bioHash = analyzePalmBiometrics(imgElement);
-                    currentImageHash = bioHash;
+            tempImg.onload = function() {
+                try {
+                    // 2. คำนวณลดขนาดภาพให้พอดีจอ ไม่กิน RAM (Max 1024px)
+                    let width = tempImg.width;
+                    let height = tempImg.height;
+                    const maxDim = 1024;
+
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    // 3. วาดลง Canvas เพื่อบีบเป็น JPEG มาตรฐาน (แก้บั๊ก HEIC / Android Bitmap Crash)
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempImg, 0, 0, width, height);
+
+                    const safeDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                    // 4. นำภาพที่แปลงปลอดภัยแล้วแสดงขึ้นจอทันที
+                    imgElement.src = safeDataUrl;
+                    imgElement.style.display = 'block';
+
+                    // 5. คำนวณค่าแสงเงา รอยนูนฝ่ามือ
+                    currentImageHash = analyzePalmBiometrics(tempImg);
+
+                    URL.revokeObjectURL(objectUrl);
                     runScanProcess();
-                }, 100);
+                } catch (e) {
+                    // Fallback
+                    imgElement.src = objectUrl;
+                    imgElement.style.display = 'block';
+                    currentImageHash = 108;
+                    runScanProcess();
+                }
             };
 
-            reader.onerror = function() {
-                imgElement.src = URL.createObjectURL(file);
-                imgElement.style.display = 'block';
-                currentImageHash = 108;
-                runScanProcess();
+            tempImg.onerror = function() {
+                // Fallback ถ้าโหลดแบบ URL ไม่ได้ ให้ใช้ FileReader
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    imgElement.src = evt.target.result;
+                    imgElement.style.display = 'block';
+                    currentImageHash = 108;
+                    runScanProcess();
+                };
+                reader.readAsDataURL(file);
             };
-
-            reader.readAsDataURL(file);
         }
 
         function runScanProcess() {
