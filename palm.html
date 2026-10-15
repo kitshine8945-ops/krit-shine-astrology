@@ -43,7 +43,6 @@
             padding-bottom: 60px;
         }
 
-        /* Top Navigation Bar */
         .top-nav {
             width: 100%;
             max-width: 640px;
@@ -100,7 +99,6 @@
             cursor: pointer;
         }
 
-        /* Container */
         .main-container {
             width: 100%;
             max-width: 580px;
@@ -128,7 +126,6 @@
             line-height: 1.5;
         }
 
-        /* Card */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-gold);
@@ -138,7 +135,6 @@
             backdrop-filter: blur(8px);
         }
 
-        /* Selection */
         .selection-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -180,7 +176,6 @@
             margin-top: 2px;
         }
 
-        /* Viewport */
         .scanner-container {
             position: relative;
             width: 100%;
@@ -202,7 +197,6 @@
             z-index: 2;
         }
 
-        /* Guide & Danger Overlay */
         .hand-silhouette-guide {
             position: absolute;
             inset: 0;
@@ -266,7 +260,6 @@
             50% { transform: scale(1.05); opacity: 0.8; }
         }
 
-        /* Scanner Laser */
         .scanner-laser {
             position: absolute;
             top: 25%;
@@ -290,7 +283,6 @@
             100% { top: 25%; }
         }
 
-        /* Biometrics Notice */
         .privacy-alert-box {
             margin-top: 12px;
             background: rgba(255, 46, 84, 0.08);
@@ -311,7 +303,7 @@
             margin-top: 2px;
         }
 
-        /* Action Buttons */
+        /* กล่องปุ่มแบบ Relative ที่วาง Input ซ้อนทับให้ Android แตะติดทันที */
         .camera-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -319,36 +311,48 @@
             margin-top: 14px;
         }
 
-        .btn-label {
+        .btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .btn-ui {
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 13px 14px;
-            border-radius: 12px;
             font-size: 0.92rem;
             font-weight: 600;
-            cursor: pointer;
             text-align: center;
             user-select: none;
-            transition: all 0.25s ease;
+            border: none;
         }
 
-        .btn-label-gold {
+        .btn-ui-gold {
             background: linear-gradient(135deg, #f0c05a 0%, #b8860b 100%);
             color: #0a0c14;
             box-shadow: 0 4px 15px rgba(240, 192, 90, 0.3);
         }
 
-        .btn-label-outline {
+        .btn-ui-outline {
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        input[type="file"] { display: none !important; }
+        .btn-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
 
-        /* Result Section */
         #resultSection {
             display: none;
             flex-direction: column;
@@ -424,7 +428,6 @@
             line-height: 1.5;
         }
 
-        /* VIP Locked Banner */
         .vip-locked-banner {
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 24, 40, 0.95) 100%);
             border: 1.5px dashed var(--gold-primary);
@@ -453,9 +456,6 @@
             transition: transform 0.2s ease;
         }
 
-        .btn-unlock-vip:hover { transform: translateY(-2px); }
-
-        /* VIP Unlocked Section - Cosmic Deep Report */
         .vip-unlocked-section {
             display: none;
             flex-direction: column;
@@ -495,7 +495,6 @@
             color: #facc15;
         }
 
-        /* Modal PromptPay Styles */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -557,7 +556,6 @@
 </head>
 <body>
 
-    <!-- Header Navigation -->
     <header class="top-nav">
         <a href="index.html" class="back-btn">
             <i class="fa-solid fa-chevron-left"></i> หน้าหลัก
@@ -569,13 +567,11 @@
     </header>
 
     <div class="main-container">
-        <!-- Banner -->
         <div class="hero-banner">
             <h1><i class="fa-solid fa-hand"></i> สแกนวิเคราะห์ลายมือ AI</h1>
             <p>ตรวจชะตาวาสนา สุขภาพ สติปัญญา และโชคลาภ ผ่าน 4 เส้นเอกแห่งฝ่ามือ</p>
         </div>
 
-        <!-- Input Selection -->
         <div class="card">
             <p style="font-size: 0.85rem; color: var(--gold-primary); margin-bottom: 8px; font-weight: 600;">
                 <i class="fa-solid fa-sliders"></i> กำหนดมือที่ต้องการวิเคราะห์
@@ -593,7 +589,6 @@
                 </div>
             </div>
 
-            <!-- Viewport & Guide -->
             <div class="scanner-container" id="scannerViewport">
                 <img id="palmImage" alt="รูปฝ่ามือ">
                 <div class="scanner-laser" id="laserBar"></div>
@@ -618,7 +613,6 @@
                 </div>
             </div>
 
-            <!-- คำเตือนคุ้มครองลายนิ้วมือ -->
             <div class="privacy-alert-box">
                 <i class="fa-solid fa-shield-halved"></i>
                 <div>
@@ -627,28 +621,29 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- กล่องปุ่มแบบ Overlay ข้ามบั๊กสิทธิ์ Android -->
             <div class="camera-actions">
-                <label for="galleryInput" class="btn-label btn-label-outline">
-                    <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
-                </label>
-                <label for="cameraInput" class="btn-label btn-label-gold">
-                    <i class="fa-solid fa-camera"></i> เปิดกล้องสด
-                </label>
+                <div class="btn-wrapper">
+                    <div class="btn-ui btn-ui-outline">
+                        <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
+                    </div>
+                    <input type="file" id="galleryInput" accept="image/*" onchange="handleImageInput(this)">
+                </div>
+                <div class="btn-wrapper">
+                    <div class="btn-ui btn-ui-gold">
+                        <i class="fa-solid fa-camera"></i> เปิดกล้องสด
+                    </div>
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageInput(this)">
+                </div>
             </div>
-
-            <input type="file" id="galleryInput" accept="image/*" onchange="handleImageInput(this)">
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageInput(this)">
         </div>
 
-        <!-- Result Box -->
         <div class="card" id="resultSection">
             <div class="result-header">
                 <h3><i class="fa-solid fa-feather-pointed"></i> ผลการอ่านหัตถศาสตร์ AI</h3>
                 <span id="targetBadge" style="font-size: 0.75rem; background: rgba(240, 192, 90, 0.2); color: var(--gold-primary); padding: 4px 8px; border-radius: 6px;">มือซ้าย</span>
             </div>
 
-            <!-- 4 เส้นหลักพื้นฐาน -->
             <div class="line-card life">
                 <div class="line-title">
                     <span style="color: #43e97b;"><i class="fa-solid fa-heart-pulse"></i> เส้นชีวิต (Life Line)</span>
@@ -681,7 +676,6 @@
                 <div class="line-desc" id="fateResult"></div>
             </div>
 
-            <!-- กล่องล็อก VIP สำหรับผู้ใช้ทั่วไป -->
             <div class="vip-locked-banner" id="vipLockedBanner">
                 <i class="fa-solid fa-crown" style="font-size: 2rem; color: #ffd700;"></i>
                 <div>
@@ -695,14 +689,12 @@
                 </button>
             </div>
 
-            <!-- กล่องแสดงผลเฉพาะสมาชิก VIP (จัดหนัก จัดเต็ม 6 หัวข้อใหญ่) -->
             <div class="vip-unlocked-section" id="vipUnlockedSection">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
                     <strong style="color: #ffd700; font-size: 0.98rem;"><i class="fa-solid fa-crown"></i> คัมภีร์หัตถศาสตร์พยากรณ์ชั้นสูงเฉพาะสมาชิก VIP</strong>
                     <span style="font-size: 0.72rem; background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight:700; padding: 2px 8px; border-radius: 8px;">VIP Privilege</span>
                 </div>
 
-                <!-- 1. เจาะลึก 5 เนินมหาโชค -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-mountain" style="color: #f59e0b;"></i> ๑. ถอดรหัส 5 เนินมหาโชคบนฝ่ามือ (The 5 Divine Mounts)
@@ -710,7 +702,6 @@
                     <div class="vip-deep-body" id="vipMountsResult"></div>
                 </div>
 
-                <!-- 2. ไทม์ไลน์ 4 ช่วงอายุ -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-timeline" style="color: #60a5fa;"></i> ๒. ไทม์ไลน์ช่วงอายุแห่งความสำเร็จ 4 วาระชีวิต (Age Matrix 20-70 ปี)
@@ -718,7 +709,6 @@
                     <div class="vip-deep-body" id="vipTimelineResult"></div>
                 </div>
 
-                <!-- 3. สัญลักษณ์มงคลและสัมผัสพิเศษ -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-gem" style="color: #ec4899;"></i> ๓. ตรวจจับสัญลักษณ์มงคลและรหัสลับ (Mystic Signs & Geometry)
@@ -726,7 +716,6 @@
                     <div class="vip-deep-body" id="vipSignsResult"></div>
                 </div>
 
-                <!-- 4. ทิศทางอาชีพและการเงิน -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-briefcase" style="color: #34d399;"></i> ๔. ทิศทางอาชีพ ธุรกิจ และสายธารเงินล้าน (Career & Wealth Flow)
@@ -734,7 +723,6 @@
                     <div class="vip-deep-body" id="vipCareerResult"></div>
                 </div>
 
-                <!-- 5. ชะตาความรักและคู่ครอง -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-heart-circle-bolt" style="color: #f43f5e;"></i> ๕. เจาะลึกคู่ครอง มิตรภาพ และหุ้นส่วน (Soulmate & Partnership)
@@ -742,7 +730,6 @@
                     <div class="vip-deep-body" id="vipLoveResult"></div>
                 </div>
 
-                <!-- 6. เคล็ดลับฮวงจุ้ยและพิธีกรรมเสริมบารมี VIP -->
                 <div class="vip-deep-card">
                     <div class="vip-deep-title">
                         <i class="fa-solid fa-wand-magic-sparkles" style="color: #a78bfa;"></i> ๖. คัมภีร์เสริมบารมีเฉพาะบุคคล VIP (Remedy & Protection)
@@ -751,7 +738,6 @@
                 </div>
             </div>
 
-            <!-- เคล็ดทำบุญมาตรฐาน -->
             <div class="blessing-card">
                 <h4><i class="fa-solid fa-hands-praying"></i> เคล็ดเสริมดวงมงคลเฉพาะบุคคล</h4>
                 <p id="blessingText"></p>
@@ -759,7 +745,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL ชำระเงิน VIP ================= -->
+    <!-- Modal ชำระเงิน VIP -->
     <div class="modal-overlay" id="modal-member">
         <div class="modal-content">
             <div class="modal-close-btn" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></div>
@@ -799,7 +785,6 @@
                 </div>
             </div>
 
-            <!-- อัปโหลดสลิป -->
             <div style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(234, 179, 8, 0.4); border-radius: 10px;">
                 <div style="font-size: 0.82rem; margin-bottom: 6px; color: #fff; font-weight: 600;">
                     <i class="fa-solid fa-file-invoice-dollar" style="color: #ffd700;"></i> แนบสลิปเพื่อยืนยันสิทธิ์ VIP
@@ -887,7 +872,6 @@
                     'แนะนำให้ทำบุญปล่อยปลา ไถ่ชีวิตสัตว์ หรือบริจาคทานแก่คนชรา จะช่วยหนุนนำพลังชีวิตให้ยืนยาว แคล้วคลาดปลอดภัย และมีสุขภาพสมบูรณ์แข็งแรง',
                     'แนะนำให้ร่วมบุญสร้างโบสถ์ วิหาร หรือถาวรวัตถุ เพื่อเป็นการวางรากฐานบุญ หนุนให้เส้นวาสนาเดิมมั่นคง แข็งแกร่ง ไม่มีวันตกอับ'
                 ],
-                // ================= เนื้อหาเจาะลึกเฉพาะ VIP (จัดเต็มความยาวและมิติ) =================
                 vipMounts: [
                     `• <strong>เนินพฤหัสบดี (ใต้นิ้วชี้ - อำนาจบารมี):</strong> เนินอิ่มเอิบเต็มพื้นที่ ไร้รอยแหว่งเว้า สะท้อนถึงวาสนาทางธรรมและภาวะผู้นำ มีความเด็ดเดี่ยว ผู้ใหญ่ในสายงานให้ความไว้วางใจ<br>
                      • <strong>เนินเสาร์ (ใต้นิ้วกลาง - ความมั่งคั่งและหลักทรัพย์):</strong> ผิวสัมผัสราบเรียบแต่มั่นคง ชี้ว่าความสำเร็จต้องแลกมาด้วยความเพียร แต่เมื่อตั้งตัวได้แล้วจะถือครองทรัพย์สินขนาดใหญ่ถาวร<br>
@@ -979,7 +963,6 @@
                     'แนะนำให้ทำบุญบริจาคโลงศพ หรือช่วยเหลืองานศพไร้ญาติ จะช่วยแก้เคล็ดตัดเคราะห์ เสริมบารมีให้หน้าที่การงานไร้อุปสรรคขัดขวาง',
                     'แนะนำให้ทำทานแก่ผู้ยากไร้ และหมั่นกตัญญูเลี้ยงดูบุพการี จะเป็นพลังมหาศาลช่วยผลักดันให้เส้นวาสนาเปิดรับทรัพย์และลาภลอยอย่างต่อเนื่อง'
                 ],
-                // ================= เนื้อหาเจาะลึกเฉพาะ VIP (มือขวา - ปัจจุบันและอนาคต) =================
                 vipMounts: [
                     `• <strong>เนินพฤหัสบดี (อำนาจและตำแหน่งปัจจุบัน):</strong> กำลังเปล่งประกายเด่นชัด ชี้ถึงวาระแห่งการก้าวขึ้นสู่จุดที่มีอำนาจตัดสินใจ ได้รับมอบหมายภารกิจระดับคีย์แมน<br>
                      • <strong>เนินเสาร์ (ทรัพย์สินและฐานะการเงิน):</strong> เนินเต็มกระชับ บ่งบอกว่าการลงทุนที่ผ่านมาเริ่มผลิดอกออกผล มีเกณฑ์สะสมทรัพย์สินถาวรและปลดเปลื้องหนี้สินได้ในเร็ววัน<br>
@@ -1053,7 +1036,7 @@
             }
         }
 
-        // ระบบวิเคราะห์พิกเซลร่องลายมือจริง (Deterministic Feature Extraction)
+        // ระบบอ่านพิกเซลจริงจาก Canvas
         function extractPalmFeatureHash(imgElement) {
             try {
                 const canvas = document.createElement('canvas');
@@ -1089,6 +1072,7 @@
             }
         }
 
+        // ระบบรับรูปภาพที่แก้บั๊ก Android แสดงผล 100%
         function handleImageInput(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
@@ -1096,26 +1080,25 @@
             const imgElement = document.getElementById('palmImage');
             const guide = document.getElementById('guideOverlay');
 
+            if (guide) guide.style.display = 'none';
+
+            // ผูก Event onload ก่อน เพื่อความชัวร์บน Android Chrome
+            imgElement.onload = function() {
+                imgElement.style.display = 'block';
+                currentImageHash = extractPalmFeatureHash(imgElement);
+                if (!currentImageHash || currentImageHash === 0) {
+                    currentImageHash = Math.abs(hashCode(file.name + file.size));
+                }
+                runScanProcess();
+            };
+
+            // อ่านไฟล์ภาพ
             const reader = new FileReader();
             reader.onload = function(e) {
                 imgElement.src = e.target.result;
-                imgElement.style.display = 'block';
-                guide.style.display = 'none';
-
-                imgElement.onload = function() {
-                    currentImageHash = extractPalmFeatureHash(imgElement);
-                    if (!currentImageHash || currentImageHash === 0) {
-                        currentImageHash = Math.abs(hashCode(file.name + file.size));
-                    }
-                    runScanProcess();
-                };
             };
             reader.onerror = function() {
                 imgElement.src = URL.createObjectURL(file);
-                imgElement.style.display = 'block';
-                guide.style.display = 'none';
-                currentImageHash = Math.abs(hashCode(file.name + file.size));
-                runScanProcess();
             };
             reader.readAsDataURL(file);
         }
@@ -1148,7 +1131,6 @@
         function renderPrediction() {
             const pool = predictionPool[currentHand];
             
-            // คำนวณ Index จาก Image Hash ล้วนๆ (ภาพเดิม = ผลเดิมเสมอ)
             const lifeIdx = currentImageHash % pool.life.length;
             const headIdx = (currentImageHash + 2) % pool.head.length;
             const heartIdx = (currentImageHash + 4) % pool.heart.length;
