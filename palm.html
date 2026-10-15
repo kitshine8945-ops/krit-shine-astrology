@@ -189,16 +189,15 @@
             justify-content: center;
         }
 
-       #palmImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 2;
-}
+        #palmImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+            display: block;
+            z-index: 2;
+        }
 
         .hand-silhouette-guide {
             position: absolute;
@@ -340,7 +339,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* ซ่อน input แบบไม่บล็อกการเรียก */
         .hidden-file-el {
             display: none !important;
         }
@@ -613,7 +611,6 @@
                 </div>
             </div>
 
-            <!-- กล่องปุ่มแบบ Direct Trigger ที่รองรับ Android 100% -->
             <div class="camera-actions">
                 <button type="button" class="btn-action btn-outline" onclick="triggerFilePicker('gallery')">
                     <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
@@ -1024,7 +1021,6 @@
             }
         }
 
-        // ปุ่มกดสั่งเปิดตัวเลือกไฟล์
         function triggerFilePicker(type) {
             if (type === 'gallery') {
                 document.getElementById('realGalleryInput').click();
@@ -1033,64 +1029,43 @@
             }
         }
 
-        // ระบบรับไฟล์รูปภาพที่รองรับ Android 100%
-function onHandFileChosen(input) {
-    if (!input.files || !input.files[0]) return;
-    const file = input.files[0];
+        // ระบบรับไฟล์รูปภาพที่เสถียรที่สุดบน Android & iOS
+        function onHandFileChosen(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
 
-    const imgElement = document.getElementById('palmImage');
-    const guide = document.getElementById('guideOverlay');
-    
-    // ซ่อนกรอบเล็งทันที
-    if (guide) guide.style.display = 'none';
+            const imgElement = document.getElementById('palmImage');
+            const guide = document.getElementById('guideOverlay');
+            
+            if (guide) guide.style.display = 'none';
 
-    // 1. นำภาพขึ้นแสดงผลบนหน้าจอทันทีผ่าน ObjectURL (เร็วที่สุดบน Android)
-    const tempUrl = URL.createObjectURL(file);
-    imgElement.src = tempUrl;
-    imgElement.style.opacity = '1';
-
-    // 2. คำนวณรหัสผลทำนายจากข้อมูลไฟล์โดยตรง (ไม่กิน RAM)
-    computeFastFileHash(file, function(hashVal) {
-        currentImageHash = hashVal;
-        runScanProcess();
-    });
-
-    // 3. Fallback กรณีเบราว์เซอร์บางรุ่นต้องใช้ FileReader
-    imgElement.onerror = function() {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            imgElement.src = e.target.result;
-            imgElement.style.opacity = '1';
-        };
-        reader.readAsDataURL(file);
-    };
-}
-
-        // อ่านชิ้นส่วนไบต์กึ่งกลางไฟล์ภาพจริง (Deterministic & Memory-Safe บน Android)
-        function computeFastFileHash(file, callback) {
-            try {
-                const sliceSize = Math.min(file.size, 16384);
-                const blobSlice = file.slice(0, sliceSize);
-                const sliceReader = new FileReader();
-                sliceReader.onload = function(e) {
-                    const buffer = new Uint8Array(e.target.result);
-                    let hash = 0;
-                    for (let i = 0; i < buffer.length; i += 4) {
-                        hash = ((hash << 5) - hash) + buffer[i];
-                        hash |= 0;
-                    }
-                    callback(Math.abs(hash));
-                };
-                sliceReader.readAsArrayBuffer(blobSlice);
-            } catch (err) {
-                let fallback = 0;
-                const str = file.name + file.size;
-                for (let i = 0; i < str.length; i++) {
-                    fallback = ((fallback << 5) - fallback) + str.charCodeAt(i);
-                    fallback |= 0;
-                }
-                callback(Math.abs(fallback));
+            // คำนวณ Hash เพื่อล็อกคำทำนายตามลักษณะไฟล์
+            currentImageHash = Math.abs(hashCode(file.name + file.size + file.type));
+            if (!currentImageHash || currentImageHash === 0) {
+                currentImageHash = 9876543;
             }
+
+            // แสดงภาพผ่าน FileReader แบบ Direct DataURL
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                imgElement.src = evt.target.result;
+                runScanProcess();
+            };
+            reader.onerror = function() {
+                // หากอ่านไม่ได้ ให้สลับใช้ ObjectURL สำรอง
+                imgElement.src = URL.createObjectURL(file);
+                runScanProcess();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash;
         }
 
         function runScanProcess() {
