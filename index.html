@@ -11138,19 +11138,30 @@ function switchWesternMode(mode) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
-    const birthInputs = ['birthDay', 'birthMonth', 'birthYearBE', 'birthHour24'];
-    birthInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', function() {
-                if (typeof calcBaziEngine === 'function') {
-                    calcBaziEngine();
-                }
-            });
-        }
-    });
+  // ดักจับทั้ง วันเกิด และ วันจร ครบทุกช่อง
+  const allInputs = [
+    'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24',
+    'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24',
+    'transitDayVIP', 'transitMonthVIP', 'transitYearVIP'
+  ];
 
+  allInputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', function() {
+        if (typeof syncBirthDataToAllModules === 'function') {
+          syncBirthDataToAllModules();
+        }
+        if (typeof renderBaziDirect === 'function') {
+          renderBaziDirect();
+        }
+        if (typeof renderSajuDirect === 'function') {
+          renderSajuDirect();
+        }
+      });
+    }
+  });
+});
     // 1.2 ดักจับเพิ่มเติมเมื่อมีการเปลี่ยนข้อมูลในฟอร์ม "วันจร VIP" เพื่อให้คำทำนายเปลี่ยนตามทันที
     const transitInputs = ['transitDay', 'transitMonth', 'transitYearBE'];
     transitInputs.forEach(id => {
@@ -12196,7 +12207,12 @@ function openBaziModal() {
   if (typeof AppState !== 'undefined') {
     AppState.currentBaziMode = AppState.currentBaziMode || 'free';
   }
-  setTimeout(renderBaziDirect, 120);
+  if (typeof renderBaziDirect === 'function') {
+    renderBaziDirect();
+  }
+  setTimeout(function() {
+    if (typeof renderBaziDirect === 'function') renderBaziDirect();
+  }, 100);
 }
 window.openBaziModal = openBaziModal;
 
