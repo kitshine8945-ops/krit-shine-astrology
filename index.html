@@ -1076,9 +1076,11 @@ header.navbar {
     <!-- ฝั่งซ้าย: รูปดูดวงฟรี + การ์ดติดตาม Facebook -->
         <div style="display: flex; flex-direction: column; gap: 14px; width: 100%; align-self: start;">
           
-         <!-- กล่องที่ 1: รูปดูดวงฟรี (คลิกแล้วเลื่อนลงฟอร์ม) -->
-<div onclick="scrollToForm()" style="cursor: pointer; width: 100%; border-radius: 18px; border: 1.5px solid rgba(234, 179, 8, 0.7); box-shadow: 0 0 15px rgba(234, 179, 8, 0.25), 0 8px 25px rgba(0,0,0,0.5); overflow: hidden; line-height: 0;">
-  <img src="free-zodiac.jpg" alt="ดูดวงฟรี" style="width: 100%; height: auto; display: block;">
+        <!-- กล่องที่ 1: แบนเนอร์สแกนดูลายมือฟรี ลิงก์ตรงไปหน้า palm.html -->
+<div onclick="window.location.href='palm.html'" style="cursor: pointer; width: 100%; border-radius: 18px; border: 1.5px solid rgba(234, 179, 8, 0.7); box-shadow: 0 0 15px rgba(234, 179, 8, 0.25), 0 8px 25px rgba(0,0,0,0.5); overflow: hidden; line-height: 0; transition: transform 0.25s ease, border-color 0.25s ease;"
+     onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='#ffd700';"
+     onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(234, 179, 8, 0.7)';">
+  <img src="palm-banner.png" alt="ดูลายมือฟรี สแกนลายมือ AI" style="width: 100%; height: auto; display: block;">
 </div>
           <!-- กล่องที่ 2: กล่องติดตามเพจ Facebook Krit Shine Station -->
           <div onclick="window.open('https://www.facebook.com/share/1C2G1vMWC2/', '_blank')" style="cursor: pointer; background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(8, 14, 28, 0.95)); border: 1.5px solid rgba(234, 179, 8, 0.5); border-radius: 18px; padding: 18px 16px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.4); transition: transform 0.2s ease, border-color 0.2s ease;">
