@@ -5267,22 +5267,6 @@ const STEMS = [
       };
    }
 
- function switchBaziMode(mode) {
-      if (typeof AppState !== 'undefined') {
-        AppState.currentBaziMode = mode;
-      }
-      const btnFree = document.getElementById('btn-bazi-free');
-      const btnVip = document.getElementById('btn-bazi-vip');
-      if (btnFree) btnFree.classList.toggle('active', mode === 'free');
-      if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
-
-      const freeRes = document.getElementById('bazi-free-result');
-      const vipRes = document.getElementById('bazi-vip-result');
-      if (freeRes) freeRes.style.display = (mode === 'free') ? 'block' : 'none';
-      if (vipRes) vipRes.style.display = (mode === 'vip') ? 'block' : 'none';
-
-      calcBaziEngine();
-  }
   window.switchBaziMode = switchBaziMode;
     const FULL_TAROT_DECK = [
       { name: "0. The Fool", th: "ผู้ไร้เดียงสา", desc: "การเริ่มต้นใหม่ การเดินทางด้วยความหวัง อิสรภาพ ความกล้าที่จะเสี่ยง" },
@@ -5652,12 +5636,27 @@ const STEMS = [
       document.getElementById('vip-graph-full-details').style.display = (mode === 'vip') ? 'block' : 'none';
     }
 
-    function switchBaziMode(mode) {
-      AppState.currentBaziMode = mode;
-      document.getElementById('btn-bazi-free').classList.toggle('active', mode === 'free');
-      document.getElementById('btn-bazi-vip').classList.toggle('active', mode === 'vip');
-      calcBaziEngine();
-    }
+   function switchBaziMode(mode) {
+  if (typeof AppState !== 'undefined') {
+    AppState.currentBaziMode = mode;
+  }
+  const btnFree = document.getElementById('btn-bazi-free');
+  const btnVip = document.getElementById('btn-bazi-vip');
+  if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+  if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+  const freeRes = document.getElementById('bazi-free-result');
+  const vipRes = document.getElementById('bazi-vip-result');
+  if (freeRes) freeRes.style.display = (mode === 'free') ? 'block' : 'none';
+  if (vipRes) vipRes.style.display = (mode === 'vip') ? 'block' : 'none';
+
+  if (typeof window.renderBaziDirect === 'function') {
+    window.renderBaziDirect();
+  } else if (typeof calcBaziEngine === 'function') {
+    calcBaziEngine();
+  }
+}
+window.switchBaziMode = switchBaziMode;
 
     function render12ZodiacDetails() {
       const container = document.getElementById('zodiacListContainer');
@@ -11746,6 +11745,7 @@ function renderBaziDirect() {
 
     const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
     let tMName = thMonths[tM - 1] || 'ตุลาคม';
+    let bMName = thMonths[m - 1] || 'เมษายน';
 
     const stems = [
       { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
@@ -11777,18 +11777,28 @@ function renderBaziDirect() {
     let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุน้ำ และ ธาตุไฟ' : (dayMaster.elem === 'ไฟ' ? 'ธาตุไม้ และ ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไฟ และ ธาตุทอง' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน และ ธาตุน้ำ' : 'ธาตุทอง (Metal) & ธาตุน้ำ (Water)')));
     let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุไม้ (Wood) & ธาตุไฟ (Fire)')));
 
-    let transitSeed = (tY * 997) + (tM * 101) + (tD * 31) + seed;
+    // ดัชนีผูกตามวันเกิด + วันจรแบบไดนามิก ป้องกันการตกช่องซ้ำ
+    let birthSeed = (d * 37) + (m * 19) + (yBE * 11) + (hHour * 13);
+    let transitSeed = (tY * 883) + (tM * 79) + (tD * 47) + birthSeed;
 
+    // คำทำนายโหมดฟรี (Free Mode)
+    const FREE_POOLS = [
+      `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: เปรียบเสมือน${dayMaster.desc} เป็นคนมีวิสัยทัศน์เด็ดเดี่ยว มีความอดทนสูง วาสนาตั้งต้นสร้างขึ้นจากความสามารถเฉพาะตัว เสริมพลังชะตาด้วย <strong>${yongShen}</strong> และพึงระวังผลกระทบจาก <strong>${jiShen}</strong>`,
+      `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: สถิตพลังงานแห่งปัญญาและความสุขุมรอบคอบ เป็นนักคิดนักวางแผนที่มองการณ์ไกล ปรับตัวเข้ากับยุคสมัยได้รวดเร็ว รับกระแสโชคลาภด้วย <strong>${yongShen}</strong> ควรเลี่ยงการตัดสินใจใจเร็วในสภาวะ <strong>${jiShen}</strong>`,
+      `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: โครงสร้างชะตาโดดเด่นด้านมนุษยสัมพันธ์และเสน่ห์เมตตา มีไหวพริบในการคว้าโอกาสทางธุรกิจใหม่ๆ ได้อย่างแม่นยำ ธาตุเกื้อหนุนมงคลคือ <strong>${yongShen}</strong>`
+    ];
+
+    // คำทำนายโหมด VIP 4 มิติ
     const WORK = [
       "<strong>• โครงสร้าง 10 เทพ (เจิ้งกวน & เจิ้งอิ้น):</strong> อิทธิพลดวงเกิด (" + d + "/" + m + "/" + yBE + ") หนุนนำให้ดิถี " + dayMaster.name + " (" + dayMaster.elem + ") มีสติปัญญาและอำนาจการบริหารที่เฉียบคม โดดเด่นในสายงานวางแผน การบริหารจัดการ ธุรกิจดิจิทัล และการประสานงานระดับสูง<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสธาตุจรส่งเสริมให้เกิดความก้าวหน้าครั้งสำคัญ ได้รับการทาบทามให้คุมโปรเจกต์ใหญ่ การเจรจาต่อรอง สัญญาร่วมทุน หรือการประมูลงานมีเกณฑ์ปิดดีลสำเร็จลุล่วงอย่างงดงาม ได้รับความไว้วางใจจากผู้ใหญ่และบริวารร่วมมือเต็มที่<br><strong>• ข้อควรระวัง:</strong> ระวังการแบกรับภาระงานหลายด้านพร้อมกันจนเกินกำลัง และควรทำข้อตกลงเป็นลายลักษณ์อักษรเสมอเพื่อป้องกันความคลาดเคลื่อน",
-      "<strong>• โครงสร้าง 10 เทพ (ชีซา & ซางกวน):</strong> พลังงานดวงชะตากำเนิดเด่นด้านความคิดสร้างสรรค์ การคิดนอกกรอบ และการแก้ปัญหาเฉพาะหน้า ไม่ชอบการทำงานที่ซ้ำซากจำเจ มีความเป็นผู้นำสูง พร้อมบุกเบิกสิ่งใหม่<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> เป็นห้วงเวลาของการบุกเบิกตลาดใหม่ ขยายฐานลูกค้า หรือเปิดตัวธุรกิจส่วนตัว ผลงานเป็นที่ยอมรับและสร้างชื่อเสียงในวงกว้าง ผู้ใหญ่และหุ้นส่วนพร้อมเปิดทางสนับสนุนอย่างเต็มกำลัง<br><strong>• ข้อควรระวัง:</strong> ระวังความใจร้อนหรือคำพูดที่ตรงไปตรงมาเกินไปจนทำให้เพื่อนร่วมงานตามไม่ทัน ควรเน้นการประนีประนอมและการประสานไมตรีเป็นหลัก",
-      "<strong>• โครงสร้าง 10 เทพ (เจิ้งกวน & เพียนกวน):</strong> ดวงชะตามีบารมีในการปกครองคน บริวารและทีมงานให้ความเคารพยำเกรง เหมาะกับงานบริหารองค์กร ข้าราชการ หรืองานอุตสาหกรรมขนาดใหญ่ที่ต้องอาศัยระเบียบวินัย<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> วงจรการงานเข้าสู่จุดสมดุลและมีความมั่นคงสูงสุด มีเกณฑ์ได้รับการเลื่อนขั้นปรับตำแหน่ง หรือขยับขยายขอบเขตอำนาจหน้าที่การรับผิดชอบที่กว้างขวางขึ้นอย่างชัดเจน<br><strong>• ข้อควรระวัง:</strong> ระวังความขัดแย้งในเชิงผลประโยชน์กับคู่แข่งในสายงาน ควรตรวจสอบระบบบัญชีและเอกสารสัญญาให้รัดกุมรอบคอบทุกขั้นตอน"
+      "<strong>• โครงสร้าง 10 เทพ (ชีซา & ซางกวน):</strong> พลังงานดวงชะตากำเนิด (" + d + "/" + m + "/" + yBE + ") เด่นด้านความคิดสร้างสรรค์ การคิดนอกกรอบ และการแก้ปัญหาเฉพาะหน้า ไม่ชอบการทำงานที่ซ้ำซากจำเจ มีความเป็นผู้นำสูง พร้อมบุกเบิกสิ่งใหม่<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> เป็นห้วงเวลาของการบุกเบิกตลาดใหม่ ขยายฐานลูกค้า หรือเปิดตัวธุรกิจส่วนตัว ผลงานเป็นที่ยอมรับและสร้างชื่อเสียงในวงกว้าง ผู้ใหญ่และหุ้นส่วนพร้อมเปิดทางสนับสนุนอย่างเต็มกำลัง<br><strong>• ข้อควรระวัง:</strong> ระวังความใจร้อนหรือคำพูดที่ตรงไปตรงมาเกินไปจนทำให้เพื่อนร่วมงานตามไม่ทัน ควรเน้นการประนีประนอมและการประสานไมตรีเป็นหลัก",
+      "<strong>• โครงสร้าง 10 เทพ (เจิ้งกวน & เพียนกวน):</strong> ดวงชะตากำเนิด (" + d + "/" + m + "/" + yBE + ") มีบารมีในการปกครองคน บริวารและทีมงานให้ความเคารพยำเกรง เหมาะกับงานบริหารองค์กร ข้าราชการ หรืองานอุตสาหกรรมขนาดใหญ่ที่ต้องอาศัยระเบียบวินัย<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> วงจรการงานเข้าสู่จุดสมดุลและมีความมั่นคงสูงสุด มีเกณฑ์ได้รับการเลื่อนขั้นปรับตำแหน่ง หรือขยับขยายขอบเขตอำนาจหน้าที่การรับผิดชอบที่กว้างขวางขึ้นอย่างชัดเจน<br><strong>• ข้อควรระวัง:</strong> ระวังความขัดแย้งในเชิงผลประโยชน์กับคู่แข่งในสายงาน ควรตรวจสอบระบบบัญชีและเอกสารสัญญาให้รัดกุมรอบคอบทุกขั้นตอน"
     ];
 
     const MONEY = [
-      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (เจิ้งไฉ & เพียนไฉ):</strong> พื้นดวงเกิดระบุชัดเจนว่าสายธารเงินทองเปิดกว้าง มีกระแสเงินสดหมุนเวียนเข้ามาจากหลายทิศทาง ทั้งงานประจำ ธุรกิจส่วนตัว และการต่อยอดในสินทรัพย์นำสมัย<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภลอยจากการเจรจาธุรกิจ ปิดการขายอสังหาริมทรัพย์ หรือได้รับผลตอบแทนจากการลงทุนระยะยาวที่เคยหว่านพืชไว้ เป็นช่วงเวลาทองในการสร้างความมั่งคั่งและสะสมหลักทรัพย์<br><strong>• การบริหารความเสี่ยง:</strong> แม้กระแสเงินจะเข้าคล่องตัว แต่ควรจัดสรรเป็นสินทรัพย์ถาวร งดเว้นการให้ผู้อื่นหยิบยืมเงินหรือค้ำประกันโดยเด็ดขาดเพื่อป้องกันหนี้สูญ",
-      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (เพียนไฉเด่น):</strong> ชะตาชีวิตมีโชคด้านการหมุนเงินเร็วและการค้าขาย มีไหวพริบในการจับทิศทางตลาดและการลงทุนก่อนผู้อื่น หาเงินเก่งและมีช่องทางสร้างรายได้พิเศษอยู่เสมอ<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสเงินสดหลั่งไหลเข้ามาอย่างต่อเนื่อง การค้าขายออนไลน์หรือการเป็นคนกลางเชื่อมโยงธุรกิจสร้างผลกำไรเกินคาด มีเกณฑ์ได้รับเงินปันผลหรือโบนัสก้อนใหญ่เข้ามาหมุนเวียน<br><strong>• การบริหารความเสี่ยง:</strong> ระวังรายจ่ายจรที่เกิดจากความใจใหญ่หรือการใช้จ่ายเพื่อรักษาหน้าตา ควรตั้งงบประมาณสำรองฉุกเฉินไว้อย่างเคร่งครัดและอย่าเพิ่งขยายการลงทุนเกินตัว",
-      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (คลังมั่นคง):</strong> วาสนาการเงินเน้นความมั่นคงถาวรดั่งขุนเขา ทรัพย์สินงอกเงยจากการสะสมที่ดิน อาคาร หรือการลงทุนในสินทรัพย์ที่มีมูลค่าเพิ่มตามกาลเวลาอย่างเป็นระบบ<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> มีจังหวะดีในการปลดเปลื้องภาระหนี้สิน การขอสินเชื่อธุรกิจ หรือการปรับโครงสร้างการเงินที่ให้ผลลัพธ์เป็นคุณและสภาพคล่องไหลลื่นขึ้นอย่างมาก<br><strong>• การบริหารความเสี่ยง:</strong> ควรระมัดระวังการเซ็นสัญญาผูกพันทางการเงินระยะยาว ตรวจสอบข้อกฎหมายและเงื่อนไขอย่างละเอียดถี่ถ้วนก่อนลงนาม"
+      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (เจิ้งไฉ & เพียนไฉ):</strong> พื้นดวงเกิด (" + d + "/" + m + "/" + yBE + ") ชี้ชัดว่าสายธารเงินทองเปิดกว้าง มีกระแสเงินสดหมุนเวียนเข้ามาจากหลายทิศทาง ทั้งงานประจำ ธุรกิจส่วนตัว และการต่อยอดในสินทรัพย์นำสมัย<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภลอยจากการเจรจาธุรกิจ ปิดการขายอสังหาริมทรัพย์ หรือได้รับผลตอบแทนจากการลงทุนระยะยาวที่เคยหว่านพืชไว้ เป็นช่วงเวลาทองในการสร้างความมั่งคั่งและสะสมหลักทรัพย์<br><strong>• การบริหารความเสี่ยง:</strong> แม้กระแสเงินจะเข้าคล่องตัว แต่ควรจัดสรรเป็นสินทรัพย์ถาวร งดเว้นการให้ผู้อื่นหยิบยืมเงินหรือค้ำประกันโดยเด็ดขาดเพื่อป้องกันหนี้สูญ",
+      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (เพียนไฉเด่น):</strong> ชะตาชีวิตรอบวันเกิด (" + d + "/" + m + "/" + yBE + ") มีโชคด้านการหมุนเงินเร็วและการค้าขาย มีไหวพริบในการจับทิศทางตลาดและการลงทุนก่อนผู้อื่น หาเงินเก่งและมีช่องทางสร้างรายได้พิเศษอยู่เสมอ<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสเงินสดหลั่งไหลเข้ามาอย่างต่อเนื่อง การค้าขายออนไลน์หรือการเป็นคนกลางเชื่อมโยงธุรกิจสร้างผลกำไรเกินคาด มีเกณฑ์ได้รับเงินปันผลหรือโบนัสก้อนใหญ่เข้ามาหมุนเวียน<br><strong>• การบริหารความเสี่ยง:</strong> ระวังรายจ่ายจรที่เกิดจากความใจใหญ่หรือการใช้จ่ายเพื่อรักษาหน้าตา ควรตั้งงบประมาณสำรองฉุกเฉินไว้อย่างเคร่งครัดและอย่าเพิ่งขยายการลงทุนเกินตัว",
+      "<strong>• คลังสมบัติ & โครงสร้างการเงิน (คลังมั่นคง):</strong> วาสนาการเงินจากวันเกิด (" + d + "/" + m + "/" + yBE + ") เน้นความมั่นคงถาวรดั่งขุนเขา ทรัพย์สินงอกเงยจากการสะสมที่ดิน อาคาร หรือการลงทุนในสินทรัพย์ที่มีมูลค่าเพิ่มตามกาลเวลาอย่างเป็นระบบ<br><strong>• จังหวะรับทรัพย์วันจร (" + tD + " " + tMName + " " + tY + "):</strong> มีจังหวะดีในการปลดเปลื้องภาระหนี้สิน การขอสินเชื่อธุรกิจ หรือการปรับโครงสร้างการเงินที่ให้ผลลัพธ์เป็นคุณและสภาพคล่องไหลลื่นขึ้นอย่างมาก<br><strong>• การบริหารความเสี่ยง:</strong> ควรระมัดระวังการเซ็นสัญญาผูกพันทางการเงินระยะยาว ตรวจสอบข้อกฎหมายและเงื่อนไขอย่างละเอียดถี่ถ้วนก่อนลงนาม"
     ];
 
     const LOVE = [
@@ -11809,19 +11819,47 @@ function renderBaziDirect() {
       "<strong>• ทิศรับทรัพย์มงคล:</strong> ปรับทิศทางการเจรจาหรือตั้งโต๊ะทำงานทาง <strong>ทิศตะวันออกเฉียงเหนือ หรือ ตะวันตกเฉียงใต้</strong> เพื่อความหนักแน่นมั่นคง<br><strong>• โทนสีและหินนำโชค:</strong> ใช้หินมงคล <strong>ไทเกอร์อายส์, ไหมเศรษฐี, นิลดำ</strong> ควบคู่กับเสื้อผ้าโทน <strong>สีเหลืองทอง, น้ำตาลอบอุ่น, เทาควันบุหรี่</strong><br><strong>• สิ่งมงคลตั้งโต๊ะ:</strong> วางวัตถุโลหะมันวาว นาฬิกาลูกตุ้ม หรือปิรามิดออร์โกไนท์ เพื่อปรับสมดุลสนามแม่เหล็กและสลายพลังงานลบในที่ทำงาน"
     ];
 
-    let wIdx = Math.abs(transitSeed) % 3;
-    let mIdx = Math.abs(transitSeed + 1) % 3;
-    let lIdx = Math.abs(transitSeed + 2) % 3;
-    let hIdx = Math.abs(transitSeed + 3) % 3;
-    let fIdx = Math.abs(transitSeed + 4) % 3;
+    // คำนวณแบบสลับพูลเนื้อหาแท้จริงตามวันเกิดและวันจร
+    let wIdx = Math.abs(transitSeed + tD) % WORK.length;
+    let mIdx = Math.abs(transitSeed + tD * 3 + 1) % MONEY.length;
+    let lIdx = Math.abs(transitSeed + tD * 7 + 2) % LOVE.length;
+    let hIdx = Math.abs(transitSeed + tD * 5 + 3) % HEALTH.length;
+    let fIdx = Math.abs(transitSeed + tD * 2 + 4) % FENG.length;
 
-    // สั่งเปิดกล่อง VIP
+    // -------------------------------------------------------------
+    // ตรวจสอบโหมดปัจจุบัน และสลับการแสดงผลอย่างเด็ดขาด
+    // -------------------------------------------------------------
+    const currentMode = (typeof AppState !== 'undefined' && AppState.currentBaziMode) ? AppState.currentBaziMode : 'free';
     const vipRes = document.getElementById('bazi-vip-result');
     const freeRes = document.getElementById('bazi-free-result');
-    if (vipRes) vipRes.style.display = 'block';
-    if (freeRes) freeRes.style.display = 'none';
 
-    // เรนเดอร์ 4 เสา
+    if (currentMode === 'free') {
+      if (freeRes) freeRes.style.display = 'block';
+      if (vipRes) vipRes.style.display = 'none';
+
+      const freeTitle = document.getElementById('bazi-free-title');
+      if (freeTitle) freeTitle.textContent = "ดิถีธาตุกำเนิดของคุณ: " + dayMaster.name + " (ธาตุ" + dayMaster.elem + dayMaster.pol + ")";
+
+      const freeDesc = document.getElementById('bazi-free-desc');
+      if (freeDesc) {
+        let fIdx = Math.abs(birthSeed) % FREE_POOLS.length;
+        freeDesc.innerHTML = `
+          <strong>ลักษณะตัวตนและจิตวิญญาณ:</strong> ${dayMaster.desc}<br><br>
+          <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>บทวิเคราะห์พื้นดวงชะตากำเนิด:</strong><br>
+            ${FREE_POOLS[fIdx]}
+          </div>
+        `;
+      }
+      return; // สิ้นสุดการทำงานของโหมดฟรี (ไม่เรนเดอร์ VIP)
+    }
+
+    // -------------------------------------------------------------
+    // ส่วนเรนเดอร์เฉพาะโหมด VIP
+    // -------------------------------------------------------------
+    if (freeRes) freeRes.style.display = 'none';
+    if (vipRes) vipRes.style.display = 'block';
+
     const pillars = document.getElementById('bazi-pillars-grid');
     if (pillars) {
       pillars.style.display = 'grid';
@@ -11834,14 +11872,12 @@ function renderBaziDirect() {
         '<div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;"><div style="font-size:0.75rem; color:#ffd700;">เสายาม (บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + hCol + '</div></div>';
     }
 
-    // เรนเดอร์หัวข้อ
     const title = document.getElementById('bazi-vip-strength-title');
     if (title) title.textContent = "ดิถี " + dayMaster.name + " (" + dayMaster.elem + dayMaster.pol + ") - สภาพดวงชะตา: เข้มแข็ง (Strong Day Master)";
 
     const elem = document.getElementById('bazi-vip-element-analysis');
     if (elem) elem.innerHTML = "<strong>พลังงานแก่นแท้:</strong> " + dayMaster.desc + "<br><strong>ธาตุให้คุณเกื้อหนุน (Yong Shen):</strong> <span style='color:#81c784; font-weight:700;'>" + yongShen + "</span> | <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style='color:#ff7675; font-weight:700;'>" + jiShen + "</span>";
 
-    // เรนเดอร์ 4 มิติ
     const ext = document.getElementById('bazi-vip-extended-analysis');
     if (ext) {
       ext.innerHTML = 
@@ -11880,11 +11916,11 @@ function renderBaziDirect() {
       luck.innerHTML = "<strong><i class='fa-solid fa-compass'></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด " + d + "/" + m + "/" + yBE + " และวันจร " + tD + " " + tMName + " " + tY + ":</strong><br>วัฏจักรพลังงานประจำปี พ.ศ. " + tY + " (วันจร " + tD + "/" + tM + "): ธาตุให้คุณส่งกำลังหนุนนำ ทำให้การเจรจาค้าขายและการขยายเครือข่ายเติบโตอย่างก้าวกระโดดสำหรับดิถี " + dayMaster.name;
     }
   } catch (err) {
-    alert("BaZi Render Error: " + err.message);
+    console.error("BaZi Render Error:", err);
   }
 }
 window.renderBaziDirect = renderBaziDirect;
-window.calcBaziEngine = renderBaziDirect; // ผูกทับตัวเก่าทันที
+window.calcBaziEngine = renderBaziDirect;
 </script>
 </body>
 </html>
