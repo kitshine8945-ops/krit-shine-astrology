@@ -4197,7 +4197,7 @@ function switchNum7Mode(mode) {
 
 function calcNum7Base() {
   try {
-    // 1. ดึงวันเดือนปีเกิด
+    // 1. ดึงวันเดือนปีเกิดจริง
     const bDEl = document.getElementById('birthDay');
     const bMEl = document.getElementById('birthMonth');
     const bYEl = document.getElementById('birthYearBE');
@@ -4208,7 +4208,7 @@ function calcNum7Base() {
     const bY = bYEl && bYEl.value ? parseInt(bYEl.value, 10) : (AppState.birthBE || 2522);
     const bH = bHEl && bHEl.value ? parseInt(bHEl.value, 10) : (AppState.birthHour || 0);
 
-    // 2. ดึงวันเดือนปี "จร" สดๆ
+    // 2. ดึงวันเดือนปี "จร" สดๆ จากฟอร์ม (ล็อกจุดนี้ให้อัปเดตตามวันจร 100%)
     const tDEl = document.getElementById('transitDay');
     const tMEl = document.getElementById('transitMonth');
     const tYEl = document.getElementById('transitYearBE');
@@ -4223,14 +4223,14 @@ function calcNum7Base() {
     let ageYang = (tY - bY) + 1;
     if (ageYang < 1) ageYang = 1;
 
-    // คำนวณวันเกิดและวันจรทางโหร (ตัด 06:00 น.)
+    // คำนวณวันเกิดทางโหร (ตัด 06:00 น.)
     let dObj = new Date(bY - 543, bM - 1, bD);
     if (bH < 6) dObj.setDate(dObj.getDate() - 1);
     let dayNum = dObj.getDay() + 1; // 1=อาทิตย์ ... 7=เสาร์
     let monthNum = ((bM + 1) % 12) || 12; 
     let yearNum = ((bY - 2400) % 12) || 12;
 
-    // วันประจำสัปดาห์ของวันจร
+    // วันประจำสัปดาห์ของวันจรจริง (1=อาทิตย์ ... 7=เสาร์)
     let tDateObj = new Date(tY - 543, tM - 1, tD);
     let tDayOfWeek = tDateObj.getDay() + 1;
 
@@ -4244,14 +4244,15 @@ function calcNum7Base() {
       r1.push(v1); r2.push(v2); r3.push(v3); r4.push(v4);
     }
 
-    // คำนวณฐาน 5 ถึง 9
+    // คำนวณฐาน 5 ถึง 9 (ระบบ 9 ฐานพิสดาร ผูกค่าตรงกับ tD, tM, tY, ageYang ให้ค่าเปลี่ยนตามวันจรสด)
     let r5 = [], r6 = [], r7 = [], r8 = [], r9 = [];
     for (let i = 0; i < 7; i++) {
       let v5 = (r1[i] + r2[i] + (tM % 3)) % 21 || 21;
       let v6 = (r2[i] + r3[i] + (tY % 5)) % 21 || 21;
       let v7 = (r1[i] + r3[i] + (ageYang % 4)) % 21 || 21;
       let v8 = (r4[i] + 7 + (tD % 3)) % 21 || 21;
-      let v9 = ((r4[i] * 2) + (tY % 7) + tD) % 21 || 21;
+      // ฐาน ๙ นำวันจร (tD) และเดือนจร (tM) เข้ามาคำนวณโดยตรง
+      let v9 = ((r4[i] * 2) + (tD * 3) + (tM * 2) + (tY % 7)) % 21 || 21;
       r5.push(v5); r6.push(v6); r7.push(v7); r8.push(v8); r9.push(v9);
     }
 
@@ -4289,7 +4290,7 @@ function calcNum7Base() {
     const analysisTitle = document.getElementById('num7AnalysisTitle');
     const analysisBody = document.getElementById('num7AnalysisBody');
 
-   // คำทำนายพื้นดวง
+    // พจนานุกรมพื้นดวง
     const ATTA_DICT = {
       1: "มีวาสนาความเป็นผู้นำสูง ใจเด็ดเดี่ยว รักศักดิ์ศรี ยึดมั่นในความถูกต้อง เป็นที่พึ่งพาให้แก่บริวาร สร้างตัวได้ด้วยเกียรติยศ",
       2: "มีเสน่ห์เมตตามหานิยม วาทศิลป์นุ่มนวล เข้ากับคนง่าย จิตใจอ่อนโยนแต่ปรับตัวเก่ง วาสนาเจริญรุ่งเรืองด้วยการสนับสนุนจากคนรอบข้าง",
@@ -4335,7 +4336,7 @@ function calcNum7Base() {
       6: "ตกเรือน มัชฌิมาจร: ดวงอยู่ในจุดสมดุล ความก้าวหน้าเกิดจากการประนีประนอมและการเดินทางสายกลาง"
     };
 
-    // คำทำนายฐาน ๙ มหาโชคประจำวันจร (เปลี่ยนข้อความตามรหัสฐาน ๙ ของเรือนจรจริง)
+    // คำทำนายฐาน ๙ ประจำวันจร
     let curVipCode = r9[transitHouseIdx];
     const BASE9_REAL_DICT = {
       1: "ขับเคลื่อนด้วยพลังอาทิตย์: ส่งเสริมบารมี เกียรติยศ และการได้รับความไว้วางใจจากระดับผู้บริหาร",
@@ -4349,7 +4350,7 @@ function calcNum7Base() {
     let b9Key = (curVipCode % 7) || 7;
     let base9AnalysisText = BASE9_REAL_DICT[b9Key];
 
-    // ประโยคหลัง VIP ผูกตามตัวเลขฐาน ๙ ของอัตตะ ธนัง และปิตา (การงาน)
+    // ประโยคหลัง VIP ผูกตามตัวเลขฐาน ๙ ของอัตตะ ธนัง และปิตา (งาน)
     let b9Atta = r9[0];
     let b9Dhana = r9[2];
     let b9Work = r9[3];
@@ -4388,7 +4389,7 @@ function calcNum7Base() {
     let vipDhanaTrail = VIP_TRAIL_DHANA[b9Dhana % 7];
     let vipWorkTrail = VIP_TRAIL_WORK[b9Work % 7];
 
-    // คำนวณเคล็ดลับเสริมดวงตามวันจร (tDayOfWeek) และรหัสดาวฐาน ๙ จริง
+    // คำนวณเคล็ดลับเสริมดวงตามวันจร (tDayOfWeek) และรหัสดาวฐาน ๙ จริง (เปลี่ยนตามวันจรสด)
     const REMEDY_DONATION = {
       1: `ทำบุญถวายหลอดไฟ เติมน้ำมันตะเกียง หรือบริจาคโลหิตตามกำลังวันอาทิตย์ เพื่อเปิดทางสว่างให้เกียรติยศ`,
       2: `ทำบุญค่าน้ำวัด ถวายน้ำดื่ม หรือช่วยเหลือสตรีและเด็ก เพื่อเสริมพลังเมตตามหานิยมและกระแสเงินไหลลื่น`,
@@ -4452,7 +4453,7 @@ function calcNum7Base() {
       analysisBody.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:14px;">
 
-          <!-- 1. ภาพรวมดวงจรรายปี & วันจร (เปลี่ยนตามวันจรและอายุย่างจริง) -->
+          <!-- 1. ภาพรวมดวงจรรายปี & วันจร (เปลี่ยนตามวันจรสด) -->
           <div style="background:rgba(255,215,0,0.08); border:1.5px solid #ffd700; border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <strong style="color:#ffd700; font-size:1rem;"><i class="fa-solid fa-compass"></i> ดวงจรรายปี & วันจร ณ วันที่ ${tD}/${tM}/${tY} (อายุย่าง ${ageYang} ปี):</strong>
@@ -4480,11 +4481,9 @@ function calcNum7Base() {
             </p>
           </div>
 
-         <!-- 4. มิติหน้าที่การงาน & ความก้าวหน้า -->
+          <!-- 4. มิติหน้าที่การงาน & ความก้าวหน้า -->
           <div style="background:rgba(255,255,255,0.03); border-left:4px solid #81c784; border-radius:10px; padding:14px;">
-            <strong style="color:#81c784; font-size:0.95rem;">
-              <i class="fa-solid fa-briefcase"></i> ๓. มิติการงาน หุ้นส่วน & ความสัมพันธ์ (ปิตา ดาว ${r1[3]} กำลังรวม ${r4[3]} หนุนด้วยฐาน ๙ ได้เลข ${r9[3]}):
-            </strong>
+            <strong style="color:#81c784; font-size:0.95rem;"><i class="fa-solid fa-briefcase"></i> ๓. มิติการงาน หุ้นส่วน & ความสัมพันธ์ (ปิตา ดาว ${r1[3]} กำลังรวม ${r4[3]} หนุนด้วยฐาน ๙ ได้เลข ${r9[3]}):</strong>
             <p style="margin:6px 0 0 0; font-size:0.86rem; color:#d1d9ec; line-height:1.7;">
               ${FAMILY_DICT[r1[3]]} ${vipWorkTrail}
             </p>
@@ -4495,7 +4494,7 @@ function calcNum7Base() {
             <strong style="color:#ffd700; font-size:0.95rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> ๔. เคล็ดลับเสริมดวงเฉพาะตัว (VIP Secret ประจำวันจร ${tD}/${tM}/${tY}):</strong>
             <div style="margin-top:6px; font-size:0.86rem; color:#fff; line-height:1.8;">
               • <strong>การทำบุญเปิดทาง:</strong> ${vipDonationText}<br>
-              • <strong>ทิศมงคลรับทรัพย์:</strong> หันหน้าโต๊ะทำงานหรือหัวเตียงไปทาง <strong>${vipDirectionText}</strong> เพื่อดึงดูดคลื่นพลังงานบวก<br>
+              • <strong>ทิศมงคลรับทรัพย์:</strong> หันโต๊ะทำงานหรือเตียงนอนไปทาง <strong>${vipDirectionText}</strong> เพื่อดึงดูดกระแสชี่มงคล<br>
               • <strong>บทสวดเจริญจิตตภาวนา:</strong> สวด <strong>${vipPrayerText}</strong> เป็นประจำเพื่อช่วยเปิดทางสว่างให้ชะตาชีวิต
             </div>
           </div>
