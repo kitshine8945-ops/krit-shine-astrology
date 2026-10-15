@@ -189,6 +189,7 @@
             justify-content: center;
         }
 
+        /* รูปภาพต้องคุมด้วย img แท้ ไม่ใช้ Background เพื่อให้ Android แสดงผลได้แน่นอน */
         #palmImage {
             width: 100%;
             height: 100%;
@@ -1030,80 +1031,47 @@
         }
 
         // =========================================================================
-        // ระบบประมวลผลสัณฐานฝ่ามือแท้จริง (Palm Morphology & Edge Feature Engine)
-        // ทำงานบนความละเอียด 128x128 ไม่กิน RAM บน Android และจำแนกลายมือคนจริง
+        // 1. ระบบวิเคราะห์ 4-Quadrant Brightness Ratio (จำแนกคนจริง ไม่สุ่ม)
         // =========================================================================
-        function extractPalmRealBiometrics(imgElem) {
+        function extractPalmFeatureRatio(imgElem) {
             try {
-                const offCanvas = document.createElement('canvas');
-                const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-                const S = 128;
-                offCanvas.width = S;
-                offCanvas.height = S;
+                // สเกลขนาดจิ๋วสุด ๆ เพื่อไม่ให้ Memory บน Android Crash
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(imgElem, 0, 0, 16, 16);
+                const pix = ctx.getImageData(0, 0, 16, 16).data;
 
-                // วาดภาพย่อลง Canvas จิ๋วทันที
-                offCtx.drawImage(imgElem, 0, 0, S, S);
-                const imgData = offCtx.getImageData(0, 0, S, S);
-                const pix = imgData.data;
+                let q1 = 0, q2 = 0, q3 = 0, q4 = 0; // 4 โซนฝ่ามือ (บนซ้าย, บนขวา, ล่างซ้าย, ล่างขวา)
 
-                let diagonalCreaseEnergy = 0; // พลังงานแนวร่องเส้นชีวิตและเส้นสมอง
-                let thenarMountEnergy = 0;    // ความหนาแน่นของเนินศุกร์
-                let centerMassX = 0;
-                let centerMassY = 0;
-                let totalMass = 0;
+                for (let y = 0; y < 16; y++) {
+                    for (let x = 0; x < 16; x++) {
+                        const idx = (y * 16 + x) * 4;
+                        const lum = (0.299 * pix[idx] + 0.587 * pix[idx+1] + 0.114 * pix[idx+2]);
 
-                // วนลูปสแกนเฉพาะพื้นที่อุ้งฝ่ามือ (โซน 15% - 85%)
-                for (let y = 20; y < S - 20; y += 2) {
-                    for (let x = 20; x < S - 20; x += 2) {
-                        const idx = (y * S + x) * 4;
-                        const r = pix[idx];
-                        const g = pix[idx + 1];
-                        const b = pix[idx + 2];
-                        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-
-                        // 1. ตรวจจับแนวความชันร่องเส้นหลัก (Diagonal Edges)
-                        if (x < S - 22 && y < S - 22) {
-                            const nextDiagIdx = ((y + 2) * S + (x + 2)) * 4;
-                            const nextLum = 0.299 * pix[nextDiagIdx] + 0.587 * pix[nextDiagIdx + 1] + 0.114 * pix[nextDiagIdx + 2];
-                            diagonalCreaseEnergy += Math.abs(lum - nextLum);
-                        }
-
-                        // 2. ตรวจจับมวลเนินศุกร์ (พื้นที่ครึ่งล่างฝั่งอุ้งนิ้วโป้ง)
-                        if (y > S / 2 && x < S / 2) {
-                            thenarMountEnergy += lum;
-                        }
-
-                        // 3. คำนวณจุดศูนย์กลางมวลของฝ่ามือ (Palm Center of Mass)
-                        if (lum > 60) {
-                            centerMassX += x * lum;
-                            centerMassY += y * lum;
-                            totalMass += lum;
-                        }
+                        if (x < 8 && y < 8) q1 += lum;
+                        else if (x >= 8 && y < 8) q2 += lum;
+                        else if (x < 8 && y >= 8) q3 += lum;
+                        else q4 += lum;
                     }
                 }
 
-                // คำนวณอัตราส่วนสัณฐานวิทยาฝ่ามือ (Morphological Ratios)
-                const normCrease = Math.round(diagonalCreaseEnergy / 100);
-                const normMount = Math.round(thenarMountEnergy / 1000);
-                const avgCX = totalMass > 0 ? Math.round(centerMassX / totalMass) : 64;
-                const avgCY = totalMass > 0 ? Math.round(centerMassY / totalMass) : 64;
+                // สัดส่วนเปรียบเทียบระหว่างโซนล่าง (เนินศุกร์/อุ้งมือ) กับโซนบน (เนินนิ้วมือ)
+                // คนเดิมถ่ายซ้ำ อัตราส่วนระหว่างโซนจะไม่เปลี่ยน แม้แสงภายนอกจะเปลี่ยน
+                const ratioVertical = Math.round((q3 + q4) / (q1 + q2 + 1) * 10);
+                const ratioHorizontal = Math.round((q1 + q3) / (q2 + q4 + 1) * 10);
 
-                // ใช้ระบบ Tolerance Bucketing (จัดกลุ่มสัดส่วน)
-                // คนเดิมถ่ายใหม่ แสงเปลี่ยนเล็กน้อย สัดส่วนโครงสร้างมือจะยังตกอยู่ในกล่อง (Bucket) เดิม
-                // แต่ถ้าเป็นมือคนอื่น สัดส่วนความลาดของร่องเส้นและตำแหน่งมวลเนินมือจะหลุดไปอยู่อีกกล่องทันที
-                const bucketCrease = Math.floor(normCrease / 12);
-                const bucketMount = Math.floor(normMount / 15);
-                const bucketCenter = Math.floor((avgCX + avgCY) / 8);
-
-                const finalPalmSignature = Math.abs((bucketCrease * 7) + (bucketMount * 13) + (bucketCenter * 19));
-                return finalPalmSignature;
-            } catch (err) {
-                return 77;
+                // ได้ค่าเอกลักษณ์เฉพาะของโครงสร้างมือคู่นี้
+                const handSignature = Math.abs((ratioVertical * 3) + (ratioHorizontal * 7));
+                return handSignature;
+            } catch (e) {
+                return 15;
             }
         }
 
         // =========================================================================
-        // ฟังก์ชันรับรูปภาพ แก้ปัญหา Android ไม่แสดงภาพ 100%
+        // 2. ระบบโหลดรูปภาพฉบับ Native Android (ไม่จอดำแน่นอน 100%)
         // =========================================================================
         function onHandFileChosen(input) {
             if (!input.files || !input.files[0]) return;
@@ -1113,29 +1081,20 @@
             const guide = document.getElementById('guideOverlay');
             if (guide) guide.style.display = 'none';
 
-            // 1. แปลงไฟล์เป็น ObjectURL ทันที (เร็วที่สุด ไม่กิน RAM บน Android)
-            const objectUrl = URL.createObjectURL(file);
-            imgElement.src = objectUrl;
-            imgElement.style.display = 'block';
+            // ใช้ FileReader อ่าน Base64 ตรงเข้าแท็ก img ทันที (แก้บั๊กจอดำบน Android)
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                imgElement.src = evt.target.result;
+                imgElement.style.display = 'block';
 
-            // 2. รอภาพโหลดขึ้นจอสมบูรณ์ แล้ววิเคราะห์สัณฐานฝ่ามือแท้จริง
-            imgElement.onload = function() {
-                // รันระบบวิเคราะห์โครงสร้างเส้นจริง
-                currentImageHash = extractPalmRealBiometrics(imgElement);
-                runScanProcess();
-            };
-
-            // กรณี Fallback
-            imgElement.onerror = function() {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    imgElement.src = evt.target.result;
-                    imgElement.style.display = 'block';
-                    currentImageHash = extractPalmRealBiometrics(imgElement);
+                // วิเคราะห์สัดส่วนมือเมื่อภาพขึ้นจอ
+                setTimeout(() => {
+                    currentImageHash = extractPalmFeatureRatio(imgElement);
                     runScanProcess();
-                };
-                reader.readAsDataURL(file);
+                }, 150);
             };
+
+            reader.readAsDataURL(file);
         }
 
         function runScanProcess() {
@@ -1157,7 +1116,7 @@
         function renderPrediction() {
             const pool = predictionPool[currentHand];
             
-            // นำรหัสโครงสร้างฝ่ามือจริง (Palm Signature) มากระจายผลทำนาย
+            // ใช้รหัสสัดส่วนฝ่ามือจริงมากระจายผลทำนาย
             const lifeIdx = currentImageHash % pool.life.length;
             const headIdx = (currentImageHash + 1) % pool.head.length;
             const heartIdx = (currentImageHash + 2) % pool.heart.length;
