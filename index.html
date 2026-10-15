@@ -10132,44 +10132,89 @@ window.calcBaziEngine = function() {
                     </p>
                 </div>
 
-                <!-- 5 มิติชะตาชีวิต VIP เต็มหน้าต่าง (อัปเดตตามวันเกิดและวันจร) -->
-                <div style="background: rgba(10, 16, 32, 0.95); border: 1px solid rgba(234,179,8,0.4); border-radius: 16px; padding: 22px; margin-bottom: 16px; width: 100%; box-sizing: border-box;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-                        <h4 style="color:#ffd700; font-size: 1.1rem; margin:0; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-crown" style="color:#ffd700;"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP)
-                        </h4>
-                        <span style="font-size:0.8rem; background:rgba(255,215,0,0.15); color:#ffd700; padding:3px 10px; border-radius:12px;">อิงวันจร: ${tD}/${tM}/${tY}</span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 0.88rem; line-height: 1.8;">
-                        <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                            <strong style="color:#ffd700; font-size:0.92rem;">1. วาสนาการเงิน & ขุมทรัพย์ (เจียไช่/เพียนไช่):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.money}</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                            <strong style="color:#64b5f6; font-size:0.92rem;">2. การงาน & บารมี (เจิ้งกวาน/ชีซา):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.work}</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #f48fb1;">
-                            <strong style="color:#f48fb1; font-size:0.92rem;">3. คู่ครอง & หุ้นส่วนชะตา (เสาวัน):</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.spouse}</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 10px; border-left: 3px solid #81c784;">
-                            <strong style="color:#81c784; font-size:0.92rem;">4. ฮวงจุ้ยเสริมพลังชี่ประจำตัว:</strong>
-                            <p style="margin-top: 5px; color: #cbd5e1;">${curVip.fengshui}</p>
-                        </div>
-                    </div>
-                </div>
+<!-- 5 มิติชะตาชีวิต VIP เต็มหน้าต่าง (เจาะลึกระดับลัคนาพยากรณ์) -->
+<div style="background: rgba(14, 20, 38, 0.98); border: 1.5px solid var(--gold-main); border-radius: 16px; padding: 22px; margin-bottom: 16px; width: 100%; box-sizing: border-box; box-shadow: 0 8px 25px rgba(0,0,0,0.6);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; border-bottom: 1px dashed rgba(234,179,8,0.35); padding-bottom: 12px;">
+        <h4 style="color:#ffd700; font-size: 1.15rem; margin:0; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-crown" style="color:#ffd700;"></i> คัมภีร์ผ่าดวง 4 มิติเชิงลึก & คลังสมบัติปาจื่อ (VIP Synthesis)
+        </h4>
+        <span style="font-size:0.8rem; background:rgba(255,215,0,0.15); color:#ffd700; padding:4px 12px; border-radius:12px; font-weight: 600;">อิงวันจร: ${tD}/${tM}/${tY}</span>
+    </div>
 
-                <!-- มหาวัฏจักร 10 ปี -->
-                <div style="background: rgba(234,179,8,0.1); border: 1.5px dashed #ffd700; padding: 18px 20px; border-radius: 14px; font-size: 0.9rem; color: #fff; line-height: 1.85; width: 100%; box-sizing: border-box;">
-                    <strong style="color:#ffd700; font-size: 0.95rem;"><i class="fa-solid fa-chart-line"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</strong><br>
-                    ${curVip.cycle}
-                </div>
-            `;
+    <!-- แสดงผลเรียง 1 แถวยาวเต็มหน้าจอแบบลัคนาพยากรณ์ -->
+    <div style="display: flex; flex-direction: column; gap: 14px; font-size: 0.88rem; line-height: 1.85;">
+        
+        <!-- 1. การงาน -->
+        <div style="background: rgba(255,255,255,0.03); padding: 16px 18px; border-radius: 12px; border-left: 4px solid #64b5f6; border-top: 1px solid rgba(100,181,246,0.2);">
+            <strong style="color:#64b5f6; font-size:0.95rem; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & 10 เทพ (เจิ้งกวน / ซางกวน / ชีซา):
+            </strong>
+            <div style="margin-top: 8px; color: #d1d9ec;">
+                <strong>• โครงสร้าง 10 เทพประจำดวง:</strong> ชะตาชีวิตมีดาวแห่งสติปัญญาและอำนาจการบริหารเกื้อหนุนอย่างเข้มข้น โดดเด่นในสายงานบริหารระดับสูง การวางกลยุทธ์ การคุมคน ธุรกิจออนไลน์ การค้าระหว่างประเทศ โลจิสติกส์ และงานดิจิทัลสร้างสรรค์ที่ต้องใช้ความไวในการปรับตัว<br>
+                <strong>• จังหวะอิทธิพลวันจร (${tD}/${tM}/${tY}):</strong> กระแสธาตุจรเปิดทางให้เกิดการเปลี่ยนแปลงครั้งสำคัญในหน้าที่การงาน มีเกณฑ์ได้รับการทาบทามให้รับผิดชอบโปรเจกต์ใหญ่ระดับองค์กร หรือการขยายสาขาธุรกิจส่วนตัว การเจรจาต่อรอง สัญญาร่วมทุน หรือการประมูลงานจะปิดดีลได้สำเร็จลุล่วง<br>
+                <strong>• ข้อควรระวัง:</strong> ระวังการแบกรับภาระงานหลายด้านพร้อมกันจนเกินกำลัง และควรทำข้อตกลงเป็นลายลักษณ์อักษรเสมอ หลีกเลี่ยงการพึ่งพาคำพูดปากเปล่า
+            </div>
+        </div>
+
+        <!-- 2. การเงิน -->
+        <div style="background: rgba(255,255,255,0.03); padding: 16px 18px; border-radius: 12px; border-left: 4px solid #ffd700; border-top: 1px solid rgba(255,215,0,0.2);">
+            <strong style="color:#ffd54f; font-size:0.95rem; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-coins"></i> ๒. มิติการเงิน คลังสมบัติ & สายธารโชคลาภ (เจิ้งไฉ / เพียนไฉ):
+            </strong>
+            <div style="margin-top: 8px; color: #d1d9ec;">
+                <strong>• คลังสมบัติ & โครงสร้างการเงิน:</strong> สายธารแห่งโชคลาภเปิดกว้าง การเงินหลั่งไหลเข้ามาจากหลากหลายช่องทาง ทั้งงานหลัก งานเสริม และการต่อยอดในสินทรัพย์ดิจิทัลหรือเทคโนโลยีใหม่ๆ<br>
+                <strong>• จังหวะรับทรัพย์วันจร:</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภลอยจากการเจรจาธุรกิจ ปิดการขายอสังหาริมทรัพย์ หรือผลตอบแทนจากการลงทุนระยะยาวที่เคยหว่านพืชไว้ เป็นช่วงเวลาทองในการสะสมความมั่งคั่งและขยายพอร์ตการลงทุน<br>
+                <strong>• การบริหารความเสี่ยง:</strong> แม้กระแสเงินจะเข้าคล่องตัว แต่ควรจัดสรรออมเป็นสินทรัพย์ถาวร งดเว้นการให้ผู้อื่นหยิบยืมเงินหรือค้ำประกันโดยเด็ดขาดเพื่อป้องกันปัญหาหนี้สูญ
+            </div>
+        </div>
+
+        <!-- 3. ความรัก -->
+        <div style="background: rgba(255,255,255,0.03); padding: 16px 18px; border-radius: 12px; border-left: 4px solid #f48fb1; border-top: 1px solid rgba(244,143,177,0.2);">
+            <strong style="color:#f48fb1; font-size:0.95rem; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-heart"></i> ๓. มิติความรัก คู่ครอง & หุ้นส่วนชะตา (เจาะลึกเสาวัน 日支):
+            </strong>
+            <div style="margin-top: 8px; color: #d1d9ec;">
+                <strong>• ฐานคู่ครองและเสาวัน:</strong> คู่ครองมีสติปัญญาเฉียบคม มีวุฒิภาวะสูง เป็นคู่คิดที่ดีในการช่วยวางแผนชีวิตและการเงิน ช่วยประคับประคองชะตาให้มั่นคง<br>
+                <strong>• สถานะคนมีคู่:</strong> ความสัมพันธ์เกื้อหนุนร่วมกันสร้างรากฐานครอบครัว มีเกณฑ์ได้ซื้อทรัพย์สินชิ้นใหญ่ บ้าน หรือยานพาหนะร่วมกัน ปัญหาความไม่เข้าใจในอดีตจะได้รับการคลี่คลาย<br>
+                <strong>• สถานะคนโสด:</strong> เสน่ห์เมตตามหานิยมเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีหน้าที่การงานมั่นคงหรือเป็นนักธุรกิจจากการติดต่องานหรือการเดินทาง
+            </div>
+        </div>
+
+        <!-- 4. สุขภาพ -->
+        <div style="background: rgba(255,255,255,0.03); padding: 16px 18px; border-radius: 12px; border-left: 4px solid #ff7675; border-top: 1px solid rgba(255,118,117,0.2);">
+            <strong style="color:#ff7675; font-size:0.95rem; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-shield-heart"></i> ๔. มิติสุขภาพ ธาตุพร่อง & เคราะห์กรรมที่ต้องระวัง:
+            </strong>
+            <div style="margin-top: 8px; color: #d1d9ec;">
+                <strong>• ธาตุพร่องและอวัยวะที่ต้องบำรุง:</strong> ระวังระบบไต ทางเดินปัสสาวะ ความดันโลหิต และอาการอ่อนล้าของระบบไหลเวียนโลหิต รวมถึงอาการไมเกรน<br>
+                <strong>• สภาวะร่างกายช่วงนี้:</strong> ระวังอาการนอนไม่หลับ ออฟฟิศซินโดรม ปวดหลังช่วงเอว และสายตาล้าจากการโหมงานหน้าจอคอมพิวเตอร์ ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้ตรงเวลา และหลีกเลี่ยงอาหารรสจัด
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 5. ฮวงจุ้ยแก้เคล็ด -->
+    <div style="margin-top: 16px; background: rgba(30, 20, 10, 0.9); border: 1.5px solid var(--gold-main); padding: 16px 18px; border-radius: 12px;">
+        <strong style="color: #ffd700; font-size:0.95rem; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ธาตุปรับดวงเฉพาะบุคคล (Yong Shen / 用神):
+        </strong>
+        <div style="font-size: 0.88rem; color: #fff; margin-top: 8px; line-height: 1.8;">
+            <strong>• ทิศรับทรัพย์มงคล:</strong> จัดโต๊ะทำงานหรือเตียงนอนโดยหันหน้าไปทาง <strong>ทิศเหนือ หรือ ทิศตะวันตก</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>
+            <strong>• โทนสีและหินนำโชค:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุทองและธาตุน้ำ เช่น <strong>ไพลิน, ลาพิส ลาซูลี, ไหมทอง, ซิทริน</strong> สวมใส่เสื้อผ้าโทน <strong>น้ำเงินคราม, ดำ, ขาวมุก, บรอนซ์ทอง</strong><br>
+            <strong>• สิ่งมงคลตั้งโต๊ะ:</strong> ตั้งน้ำพุจำลองขนาดเล็กที่มีน้ำไหลเวียน หรือลูกแก้วคริสตัลทางมุมซ้ายของโต๊ะทำงาน เพื่อกระตุ้นกระแสการเงินให้ไหลเวียนไม่ขาดสาย
+        </div>
+    </div>
+</div>
+
+<!-- มหาวัฏจักร 10 ปี -->
+<div style="background: rgba(234,179,8,0.1); border: 1.5px dashed #ffd700; padding: 18px 20px; border-radius: 14px; font-size: 0.9rem; color: #fff; line-height: 1.85; width: 100%; box-sizing: border-box;">
+    <strong style="color:#ffd700; font-size: 0.95rem;"><i class="fa-solid fa-chart-line"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</strong><br>
+    วัฏจักรพลังงานประจำปี พ.ศ. ${tY} (วันจร ${tD}/${tM}): พลังงานธาตุหนุนนำกำลังเปิดทางให้เกิดการเติบโตอย่างก้าวกระโดด การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายธุรกิจจะผลิดอกออกผลอย่างงดงามและมั่นคงถาวร
+</div>
+`;
         }
     }
 };
-
 // 3. ระบบคำนวณมหาทักษาเทวดาเสวยอายุ (เช็ควันเกิดจริง ไม่โชว์ค่ามั่ว)
 window.calcMahataksa = function() {
     var ageDisp = document.getElementById('taksaAgeDisp');
