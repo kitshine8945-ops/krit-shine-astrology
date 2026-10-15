@@ -189,7 +189,6 @@
             justify-content: center;
         }
 
-        /* รูปภาพต้องคุมด้วย img แท้ ไม่ใช้ Background เพื่อให้ Android แสดงผลได้แน่นอน */
         #palmImage {
             width: 100%;
             height: 100%;
@@ -306,38 +305,34 @@
             margin-top: 2px;
         }
 
-        .camera-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        /* ปุ่มเดี่ยวเต็มความกว้าง */
+        .camera-actions-single {
+            display: flex;
+            width: 100%;
             margin-top: 14px;
         }
 
-        .btn-action {
+        .btn-scan-main {
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 13px 14px;
-            border-radius: 12px;
-            font-size: 0.92rem;
-            font-weight: 600;
+            gap: 10px;
+            padding: 15px 20px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
             text-align: center;
             cursor: pointer;
             border: none;
-            transition: all 0.2s ease;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, #f0c05a 0%, #b8860b 100%);
+            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
             color: #0a0c14;
-            box-shadow: 0 4px 15px rgba(240, 192, 90, 0.3);
+            box-shadow: 0 4px 20px rgba(240, 192, 90, 0.4);
+            transition: all 0.25s ease;
         }
 
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .btn-scan-main:active {
+            transform: scale(0.98);
         }
 
         .hidden-file-el {
@@ -612,16 +607,13 @@
                 </div>
             </div>
 
-            <div class="camera-actions">
-                <button type="button" class="btn-action btn-outline" onclick="triggerFilePicker('gallery')">
-                    <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
-                </button>
-                <button type="button" class="btn-action btn-gold" onclick="triggerFilePicker('camera')">
-                    <i class="fa-solid fa-camera"></i> เปิดกล้องสด
+            <!-- ปุ่มเดี่ยวเต็มแถว สวยงาม ใช้งานสะดวก -->
+            <div class="camera-actions-single">
+                <button type="button" class="btn-scan-main" onclick="triggerCameraScan()">
+                    <i class="fa-solid fa-camera"></i> สแกนฝ่ามือทันที
                 </button>
             </div>
 
-            <input type="file" id="realGalleryInput" class="hidden-file-el" accept="image/*" onchange="onHandFileChosen(this)">
             <input type="file" id="realCameraInput" class="hidden-file-el" accept="image/*" capture="environment" onchange="onHandFileChosen(this)">
         </div>
 
@@ -914,7 +906,7 @@
                      • <strong>ทิศมงคลในการตั้งโต๊ะทำงาน:</strong> หันหน้าไปทาง 'ทิศตะวันออกเฉียงเหนือ' หรือ 'ทิศตะวันออก' เพื่อรับพลังงานบารมีจากดาวพฤหัสบดี เสริมอำนาจการเจรจา<br>
                      • <strong>บทสวดและเคล็ดสะเดาะเคราะห์:</strong> สวด 'พระคาถาเงินล้าน' ๙ จบเป็นประจำทุกเช้า และหาโอกาสทำบุญถวายแสงสว่าง หลอดไฟ ค่าน้ำค่าไฟวัด เพื่อเปิดทางปัญญาและเส้นวาสนาให้เจิดจรัส`,
 
-                    `• <strong>อัญมณีและสีเสริมมงคลประจำฝ่ามือ:</strong> หินอความารีน (Aquamarine), หยกมงคล หรือไพลิน ช่วยปรับสมดุลธาตุน้ำและลมในร่างกาย ป้องกันความเครียดสะสม<br>
+                    `• <strong>อัญมณีและสีเสริมมงคลประจำฝ่ามือ:</strong> หินอความารีน (Aquamarine), หยกมงคล หรือไพลิน ช่วยปรับสมดุลธาตน้ำและลมในร่างกาย ป้องกันความเครียดสะสม<br>
                      • <strong>ทิศมงคลในการตั้งโต๊ะทำงาน:</strong> หันหน้าไปทาง 'ทิศเหนือ' เพื่อเสริมสภาพคล่องทางการเงินและการติดต่อค้าขายให้ราบรื่นไร้อุปสรรค<br>
                      • <strong>บทสวดและเคล็ดสะเดาะเคราะห์:</strong> สวด 'บทมหาจักรพรรดิ' แผ่เมตตาปรับภพภูมิ และหมั่นทำบุญไถ่ชีวิตโคกระบือหรือปล่อยสัตว์น้ำหน้าเขียง จะช่วยเสริมพลังชีวิตให้ยืนยาวและแคล้วคลาดจากศัตรู`
                 ]
@@ -1022,20 +1014,15 @@
             }
         }
 
-        function triggerFilePicker(type) {
-            if (type === 'gallery') {
-                document.getElementById('realGalleryInput').click();
-            } else {
-                document.getElementById('realCameraInput').click();
-            }
+        function triggerCameraScan() {
+            document.getElementById('realCameraInput').click();
         }
 
         // =========================================================================
-        // 1. ระบบวิเคราะห์ 4-Quadrant Brightness Ratio (จำแนกคนจริง ไม่สุ่ม)
+        // ระบบวิเคราะห์สัณฐาน 4-Quadrant Brightness Ratio (จำแนกคนจริง ไม่สุ่ม)
         // =========================================================================
         function extractPalmFeatureRatio(imgElem) {
             try {
-                // สเกลขนาดจิ๋วสุด ๆ เพื่อไม่ให้ Memory บน Android Crash
                 const canvas = document.createElement('canvas');
                 canvas.width = 16;
                 canvas.height = 16;
@@ -1043,7 +1030,7 @@
                 ctx.drawImage(imgElem, 0, 0, 16, 16);
                 const pix = ctx.getImageData(0, 0, 16, 16).data;
 
-                let q1 = 0, q2 = 0, q3 = 0, q4 = 0; // 4 โซนฝ่ามือ (บนซ้าย, บนขวา, ล่างซ้าย, ล่างขวา)
+                let q1 = 0, q2 = 0, q3 = 0, q4 = 0;
 
                 for (let y = 0; y < 16; y++) {
                     for (let x = 0; x < 16; x++) {
@@ -1058,11 +1045,9 @@
                 }
 
                 // สัดส่วนเปรียบเทียบระหว่างโซนล่าง (เนินศุกร์/อุ้งมือ) กับโซนบน (เนินนิ้วมือ)
-                // คนเดิมถ่ายซ้ำ อัตราส่วนระหว่างโซนจะไม่เปลี่ยน แม้แสงภายนอกจะเปลี่ยน
                 const ratioVertical = Math.round((q3 + q4) / (q1 + q2 + 1) * 10);
                 const ratioHorizontal = Math.round((q1 + q3) / (q2 + q4 + 1) * 10);
 
-                // ได้ค่าเอกลักษณ์เฉพาะของโครงสร้างมือคู่นี้
                 const handSignature = Math.abs((ratioVertical * 3) + (ratioHorizontal * 7));
                 return handSignature;
             } catch (e) {
@@ -1071,7 +1056,7 @@
         }
 
         // =========================================================================
-        // 2. ระบบโหลดรูปภาพฉบับ Native Android (ไม่จอดำแน่นอน 100%)
+        // ระบบรับภาพ Native Android & iOS (ไม่จอดำแน่นอน 100%)
         // =========================================================================
         function onHandFileChosen(input) {
             if (!input.files || !input.files[0]) return;
@@ -1081,13 +1066,12 @@
             const guide = document.getElementById('guideOverlay');
             if (guide) guide.style.display = 'none';
 
-            // ใช้ FileReader อ่าน Base64 ตรงเข้าแท็ก img ทันที (แก้บั๊กจอดำบน Android)
+            // ใช้ FileReader ตรงเข้า tag img
             const reader = new FileReader();
             reader.onload = function(evt) {
                 imgElement.src = evt.target.result;
                 imgElement.style.display = 'block';
 
-                // วิเคราะห์สัดส่วนมือเมื่อภาพขึ้นจอ
                 setTimeout(() => {
                     currentImageHash = extractPalmFeatureRatio(imgElement);
                     runScanProcess();
@@ -1116,7 +1100,7 @@
         function renderPrediction() {
             const pool = predictionPool[currentHand];
             
-            // ใช้รหัสสัดส่วนฝ่ามือจริงมากระจายผลทำนาย
+            // นำรหัสสัดส่วนโครงสร้างฝ่ามือจริงมากระจายผลทำนาย
             const lifeIdx = currentImageHash % pool.life.length;
             const headIdx = (currentImageHash + 1) % pool.head.length;
             const heartIdx = (currentImageHash + 2) % pool.heart.length;
@@ -1132,7 +1116,7 @@
 
             document.getElementById('targetBadge').innerText = (currentHand === 'left') ? 'มือซ้าย (วาสนากำเนิด • จิตใจ)' : 'มือขวา (ความสำเร็จ • อนาคต)';
 
-            // ผลการทำนาย 4 เส้นหลัก
+            // 4 เส้นหลัก
             document.getElementById('lifeTag').innerText = pool.life[lifeIdx].tag;
             document.getElementById('lifeResult').innerText = pool.life[lifeIdx].text;
 
@@ -1147,7 +1131,7 @@
 
             document.getElementById('blessingText').innerText = pool.blessings[blessIdx];
 
-            // ผลการทำนายระดับ VIP จัดเต็มทั้ง 6 มิติ
+            // VIP 6 มิติ
             document.getElementById('vipMountsResult').innerHTML = pool.vipMounts[mountsIdx];
             document.getElementById('vipTimelineResult').innerHTML = pool.vipTimeline[timelineIdx];
             document.getElementById('vipSignsResult').innerHTML = pool.vipSigns[signsIdx];
