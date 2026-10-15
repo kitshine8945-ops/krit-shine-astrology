@@ -964,7 +964,7 @@ header.navbar {
         <div class="cat-sub">เลขเด่นประจำวัน & เฉพาะดวง</div>
       </div>
 
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('daily');}">
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('daily');}">
         <div class="cat-icon-circle"><i class="fa-solid fa-sun"></i></div>
         <div class="cat-name">ดูดวงรายวัน</div>
         <div class="cat-sub">ดวงประจำวันตามลัคนา</div>
@@ -982,34 +982,25 @@ header.navbar {
         <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
       </div>
 
-<div class="cat-item" onclick="
-        var bD = document.getElementById('birthDay') ? document.getElementById('birthDay').value : '';
-        if(!bD){
-          alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ');
-          if(typeof scrollToForm === 'function') scrollToForm();
-        } else {
-          var mBazi = document.getElementById('modal-bazi');
-          if(mBazi){
-            document.body.appendChild(mBazi);
-            mBazi.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
-          }
-          if(typeof openFeatureModal === 'function'){
-            openFeatureModal('bazi');
-          }
-          setTimeout(function(){
-            if(typeof window.renderBaziDirect === 'function'){
-              window.renderBaziDirect();
-            } else if(typeof calcBaziEngine === 'function'){
-              calcBaziEngine();
-            }
-          }, 100);
-        }
-      ">
+      <!-- ปุ่มปาจื่อ (ปิดแท็กสมบูรณ์) -->
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openBaziModal();}">
-  <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
-  <div class="cat-name">ปาจื่อ (BaZi)</div>
-  <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
-</div>
+        <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
+        <div class="cat-name">ปาจื่อ (BaZi)</div>
+        <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
+      </div>
+
+      <!-- ปุ่มซาจู (กู้คืนกลับมา) -->
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal();}">
+        <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
+        <div class="cat-name">ซาจู (Saju)</div>
+        <div class="cat-sub">4 เสาชะตาเกาหลี</div>
+      </div>
+
+      <div class="cat-item" onclick="openFeatureModal('numerology')">
+        <div class="cat-icon-circle"><i class="fa-solid fa-arrow-down-9-1"></i></div>
+        <div class="cat-name">เลขศาสตร์/ชื่อ</div>
+        <div class="cat-sub">ตรวจอักษรกาลกิณี</div>
+      </div>
 
       <div class="cat-item" onclick="openFeatureModal('phone')">
         <div class="cat-icon-circle"><i class="fa-solid fa-mobile-screen-button"></i></div>
