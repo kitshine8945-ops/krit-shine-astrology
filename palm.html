@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>สแกนลายมือพยากรณ์ AI & รายงาน VIP | Krit Shine Astrology</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0a0c14;
+            --card-bg: rgba(18, 22, 36, 0.85);
+            --gold-primary: #f0c05a;
+            --gold-light: #ffd97d;
+            --gold-glow: rgba(240, 192, 90, 0.4);
+            --cyan-glow: #00f3ff;
+            --danger-red: #ff2e54;
+            --danger-bg: rgba(255, 46, 84, 0.18);
+            --text-light: #f5f5f7;
+            --text-muted: #a0a5b5;
+            --border-gold: rgba(240, 192, 90, 0.3);
+            --border-radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(240, 192, 90, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 10% 90%, rgba(26, 38, 77, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(35, 18, 56, 0.3) 0%, transparent 50%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            width: 100%;
+            max-width: 640px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 12, 20, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            border-bottom: 1px solid var(--border-gold);
+        }
+
+        .back-btn {
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .nav-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--gold-light);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .vip-status-indicator {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .vip-active {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a0f00;
+        }
+
+        .vip-inactive {
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+        }
+
+        /* Container */
+        .main-container {
+            width: 100%;
+            max-width: 580px;
+            padding: 18px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 6px 0;
+        }
+
+        .hero-banner h1 {
+            font-size: 1.45rem;
+            color: var(--gold-light);
+            text-shadow: 0 0 15px var(--gold-glow);
+            margin-bottom: 6px;
+        }
+
+        .hero-banner p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Selection */
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .option-box {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .option-box.active {
+            border-color: var(--gold-primary);
+            background: rgba(240, 192, 90, 0.12);
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .option-box i {
+            font-size: 1.35rem;
+            color: var(--gold-primary);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .option-box .label {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .option-box .sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Viewport */
+        .scanner-container {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid var(--border-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #palmImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: 2;
+        }
+
+        /* Guide & Danger Overlay */
+        .hand-silhouette-guide {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+        }
+
+        .danger-zone-top {
+            height: 85px;
+            background: var(--danger-bg);
+            border-bottom: 2px dashed var(--danger-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #ff5277;
+            font-size: 0.82rem;
+            font-weight: 600;
+            backdrop-filter: blur(2px);
+        }
+
+        .danger-zone-top i {
+            font-size: 1.2rem;
+            color: var(--danger-red);
+        }
+
+        .palm-target-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .palm-focus-box {
+            width: 200px;
+            height: 190px;
+            border: 2px dashed var(--gold-primary);
+            border-radius: 20px;
+            background: radial-gradient(circle, rgba(240, 192, 90, 0.08) 0%, transparent 75%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .palm-focus-box i.palm-icon {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            opacity: 0.5;
+            margin-bottom: 6px;
+            animation: pulse-guide 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-guide {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* Scanner Laser */
+        .scanner-laser {
+            position: absolute;
+            top: 25%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cyan-glow), var(--gold-light), transparent);
+            box-shadow: 0 0 15px var(--cyan-glow);
+            display: none;
+            z-index: 10;
+        }
+
+        .scanning .scanner-laser {
+            display: block;
+            animation: scan-move 2.2s infinite ease-in-out;
+        }
+
+        @keyframes scan-move {
+            0% { top: 25%; }
+            50% { top: 92%; }
+            100% { top: 25%; }
+        }
+
+        /* Biometrics Notice */
+        .privacy-alert-box {
+            margin-top: 12px;
+            background: rgba(255, 46, 84, 0.08);
+            border: 1px solid rgba(255, 46, 84, 0.35);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #ffb4be;
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .privacy-alert-box i {
+            font-size: 1.15rem;
+            color: var(--danger-red);
+            margin-top: 2px;
+        }
+
+        /* Action Buttons */
+        .camera-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .btn-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-label-gold {
+            background: linear-gradient(135deg, #f0c05a 0%, #b8860b 100%);
+            color: #0a0c14;
+            box-shadow: 0 4px 15px rgba(240, 192, 90, 0.3);
+        }
+
+        .btn-label-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        input[type="file"] { display: none !important; }
+
+        /* Result Section */
+        #resultSection {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            border-bottom: 1px solid var(--border-gold);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-header h3 {
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .line-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(240, 192, 90, 0.15);
+            border-left: 4px solid var(--gold-primary);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .line-card.life { border-left-color: #43e97b; }
+        .line-card.head { border-left-color: #4facfe; }
+        .line-card.heart { border-left-color: #ff5e7e; }
+        .line-card.fate { border-left-color: #f0c05a; }
+
+        .line-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .line-desc {
+            font-size: 0.84rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .blessing-card {
+            background: linear-gradient(135deg, rgba(240, 192, 90, 0.15) 0%, rgba(20, 24, 40, 0.8) 100%);
+            border: 1px solid var(--gold-primary);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .blessing-card h4 {
+            color: var(--gold-light);
+            margin-bottom: 6px;
+        }
+
+        .blessing-card p {
+            font-size: 0.83rem;
+            color: #e5e7eb;
+            line-height: 1.5;
+        }
+
+        /* VIP Locked Box & Expanded Cards */
+        .vip-locked-banner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 24, 40, 0.95) 100%);
+            border: 1.5px dashed var(--gold-primary);
+            border-radius: 14px;
+            padding: 18px 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-unlock-vip {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a0f00;
+            font-weight: 700;
+            padding: 10px 24px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .btn-unlock-vip:hover { transform: translateY(-2px); }
+
+        .vip-unlocked-section {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+            border-top: 1px dashed var(--border-gold);
+            padding-top: 14px;
+        }
+
+        .vip-deep-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(250, 204, 21, 0.35);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .vip-deep-title {
+            color: #ffd700;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Modal PromptPay Styles (แบบเดียวกับ index.html) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 7, 15, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 14, 28, 0.98) 100%);
+            border: 1.5px solid rgba(234, 179, 8, 0.65);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px 20px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            color: #e2e8f0;
+            text-align: center;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 1.4rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .vip-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .vip-plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: 10px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .vip-plan-card.selected {
+            background: rgba(234, 179, 8, 0.25);
+            border: 2px solid #facc15;
+            box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <a href="index.html" class="back-btn">
+            <i class="fa-solid fa-chevron-left"></i> หน้าหลัก
+        </a>
+        <div class="nav-title">KRIT SHINE PALMISTRY</div>
+        <div id="navVipBadge" class="vip-status-indicator vip-inactive" onclick="openMemberModal()">
+            <i class="fa-solid fa-crown"></i> <span>สมัคร VIP</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Banner -->
+        <div class="hero-banner">
+            <h1><i class="fa-solid fa-hand"></i> สแกนวิเคราะห์ลายมือ AI</h1>
+            <p>ตรวจชะตาวาสนา สุขภาพ สติปัญญา และโชคลาภ ผ่าน 4 เส้นเอกแห่งฝ่ามือ</p>
+        </div>
+
+        <!-- Input Selection -->
+        <div class="card">
+            <p style="font-size: 0.85rem; color: var(--gold-primary); margin-bottom: 8px; font-weight: 600;">
+                <i class="fa-solid fa-sliders"></i> กำหนดมือที่ต้องการวิเคราะห์
+            </p>
+            <div class="selection-grid">
+                <div class="option-box active" id="btnLeft" onclick="selectHand('left')">
+                    <i class="fa-solid fa-hand-holding"></i>
+                    <div class="label">มือซ้าย</div>
+                    <div class="sub">วาสนากำเนิด / จิตใจ</div>
+                </div>
+                <div class="option-box" id="btnRight" onclick="selectHand('right')">
+                    <i class="fa-solid fa-hand"></i>
+                    <div class="label">มือขวา</div>
+                    <div class="sub">ความสำเร็จ / อนาคต</div>
+                </div>
+            </div>
+
+            <!-- Viewport & Guide -->
+            <div class="scanner-container" id="scannerViewport">
+                <img id="palmImage" alt="รูปฝ่ามือ">
+                <div class="scanner-laser" id="laserBar"></div>
+                
+                <div class="hand-silhouette-guide" id="guideOverlay">
+                    <div class="danger-zone-top">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span>ไม่ถ่ายติดปลายนิ้วมือเด็ดขาด</span>
+                    </div>
+
+                    <div class="palm-target-zone">
+                        <div class="palm-focus-box">
+                            <i class="fa-solid fa-hand palm-icon"></i>
+                            <p style="font-size: 0.85rem; font-weight: 600; color: var(--gold-light);">
+                                วางเฉพาะ "อุ้งฝ่ามือ" ในกรอบนี้
+                            </p>
+                            <span style="font-size: 0.7rem; color: #d1d5db; margin-top: 4px;">
+                                ถ่ายให้เห็นเส้นชัดเจนในที่แสงสว่าง
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- คำเตือนคุ้มครองลายนิ้วมือ -->
+            <div class="privacy-alert-box">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>
+                    <strong>มาตรการคุ้มครองข้อมูลชีวมิติ (Biometrics Shield):</strong><br>
+                    กรุณาเลื่อนปลายนิ้วให้พ้นขอบบน หรือถ่ายเฉพาะช่วงเนินและเส้นกลางฝ่ามือ ระบบใช้เพียงลายเส้นเนินชะตา ไม่เก็บภาพลายนิ้วมือ 100%
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="camera-actions">
+                <label for="galleryInput" class="btn-label btn-label-outline">
+                    <i class="fa-solid fa-image"></i> เลือกรูปถ่าย
+                </label>
+                <label for="cameraInput" class="btn-label btn-label-gold">
+                    <i class="fa-solid fa-camera"></i> เปิดกล้องสด
+                </label>
+            </div>
+
+            <input type="file" id="galleryInput" accept="image/*" onchange="handleImageInput(this)">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageInput(this)">
+        </div>
+
+        <!-- Result Box -->
+        <div class="card" id="resultSection">
+            <div class="result-header">
+                <h3><i class="fa-solid fa-feather-pointed"></i> ผลการอ่านหัตถศาสตร์ AI</h3>
+                <span id="targetBadge" style="font-size: 0.75rem; background: rgba(240, 192, 90, 0.2); color: var(--gold-primary); padding: 4px 8px; border-radius: 6px;">มือซ้าย</span>
+            </div>
+
+            <!-- 4 เส้นหลักพื้นฐาน -->
+            <div class="line-card life">
+                <div class="line-title">
+                    <span style="color: #43e97b;"><i class="fa-solid fa-heart-pulse"></i> เส้นชีวิต (Life Line)</span>
+                    <span style="font-size: 0.78rem; color: #43e97b;" id="lifeTag">พลังชีวิต & สุขภาพ</span>
+                </div>
+                <div class="line-desc" id="lifeResult"></div>
+            </div>
+
+            <div class="line-card head">
+                <div class="line-title">
+                    <span style="color: #4facfe;"><i class="fa-solid fa-brain"></i> เส้นสมอง (Head Line)</span>
+                    <span style="font-size: 0.78rem; color: #4facfe;" id="headTag">ไหวพริบ & สติปัญญา</span>
+                </div>
+                <div class="line-desc" id="headResult"></div>
+            </div>
+
+            <div class="line-card heart">
+                <div class="line-title">
+                    <span style="color: #ff5e7e;"><i class="fa-solid fa-heart"></i> เส้นใจ (Heart Line)</span>
+                    <span style="font-size: 0.78rem; color: #ff5e7e;" id="heartTag">ความรัก & ความสุขสงบ</span>
+                </div>
+                <div class="line-desc" id="heartResult"></div>
+            </div>
+
+            <div class="line-card fate">
+                <div class="line-title">
+                    <span style="color: #f0c05a;"><i class="fa-solid fa-coins"></i> เส้นวาสนา (Fate Line)</span>
+                    <span style="font-size: 0.78rem; color: #f0c05a;" id="fateTag">โชคลาภ & ความสำเร็จ</span>
+                </div>
+                <div class="line-desc" id="fateResult"></div>
+            </div>
+
+            <!-- กล่องล็อก VIP สำหรับผู้ใช้ทั่วไป -->
+            <div class="vip-locked-banner" id="vipLockedBanner">
+                <i class="fa-solid fa-crown" style="font-size: 1.8rem; color: #ffd700;"></i>
+                <div>
+                    <h4 style="color: #ffd700; font-size: 0.95rem; margin-bottom: 4px;">ปลดล็อกรายงานวิเคราะห์ฝ่ามือฉบับเต็ม (VIP)</h4>
+                    <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4;">
+                        เจาะลึก 5 เนินมหาโชค • ไทม์ไลน์ช่วงอายุความสำเร็จ (20-60 ปี) • ตรวจจับสัญลักษณ์มงคลพิเศษ
+                    </p>
+                </div>
+                <button class="btn-unlock-vip" onclick="openMemberModal()">
+                    <i class="fa-solid fa-key"></i> ปลดล็อกคำทำนาย VIP
+                </button>
+            </div>
+
+            <!-- กล่องแสดงผลเฉพาะสมาชิก VIP (เจาะลึก 3 ส่วน) -->
+            <div class="vip-unlocked-section" id="vipUnlockedSection">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                    <strong style="color: #ffd700; font-size: 0.9rem;"><i class="fa-solid fa-crown"></i> รายงานหัตถศาสตร์ขั้นสูงเฉพาะสมาชิก VIP</strong>
+                    <span style="font-size: 0.7rem; background: rgba(255,215,0,0.2); color: #ffd700; padding: 2px 8px; border-radius: 8px;">VIP Privilege</span>
+                </div>
+
+                <!-- 1. เนินฝ่ามือ -->
+                <div class="vip-deep-card">
+                    <div class="vip-deep-title">
+                        <i class="fa-solid fa-mountain" style="color: #f59e0b;"></i> วิเคราะห์ 5 เนินมหาโชคบนฝ่ามือ
+                    </div>
+                    <p class="line-desc" id="vipMountsResult"></p>
+                </div>
+
+                <!-- 2. ไทม์ไลน์อายุ -->
+                <div class="vip-deep-card">
+                    <div class="vip-deep-title">
+                        <i class="fa-solid fa-timeline" style="color: #60a5fa;"></i> ไทม์ไลน์ช่วงอายุแห่งความสำเร็จ (Age Matrix)
+                    </div>
+                    <p class="line-desc" id="vipTimelineResult"></p>
+                </div>
+
+                <!-- 3. สัญลักษณ์มงคลพิเศษ -->
+                <div class="vip-deep-card">
+                    <div class="vip-deep-title">
+                        <i class="fa-solid fa-gem" style="color: #ec4899;"></i> สัญลักษณ์มงคลและสัมผัสพิเศษ (Auspicious Marks)
+                    </div>
+                    <p class="line-desc" id="vipSignsResult"></p>
+                </div>
+            </div>
+
+            <div class="blessing-card">
+                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> เคล็ดเสริมดวงมงคลเฉพาะบุคคล</h4>
+                <p id="blessingText"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL ชำระเงิน VIP (ถอดแบบจากหน้าหลัก) ================= -->
+    <div class="modal-overlay" id="modal-member">
+        <div class="modal-content">
+            <div class="modal-close-btn" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></div>
+            <i class="fa-solid fa-crown" style="font-size: 2.5rem; color: #ffd700; margin-bottom: 6px;"></i>
+            <h3 style="color: #fff; margin-bottom: 4px; font-size: 1.25rem;">สมัครสมาชิก VIP - Krit Shine Astrology</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">ปลดล็อกการวิเคราะห์ลายมือเชิงลึก และฟีเจอร์พรีเมียมทุกศาสตร์บนระบบ</p>
+            
+            <div class="vip-plan-grid">
+                <div class="vip-plan-card" onclick="selectVipPackage(19, 'รายวัน', this)">
+                    <div style="font-size:0.8rem; color:#fff;">รายวัน</div>
+                    <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">19.-</div>
+                    <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 24 ชม.</div>
+                </div>
+                <div class="vip-plan-card" onclick="selectVipPackage(29, 'รายสัปดาห์', this)">
+                    <div style="font-size:0.8rem; color:#fff;">รายสัปดาห์</div>
+                    <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">29.-</div>
+                    <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 7 วัน</div>
+                </div>
+                <div class="vip-plan-card" onclick="selectVipPackage(39, 'รายเดือน', this)">
+                    <div style="font-size:0.8rem; color:#fff;">รายเดือน</div>
+                    <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">39.-</div>
+                    <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 30 วัน</div>
+                </div>
+                <div class="vip-plan-card selected" onclick="selectVipPackage(299, 'รายปี', this)">
+                    <div style="font-size:0.8rem; color:#fff;">รายปี</div>
+                    <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">299.-</div>
+                    <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 365 วัน</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+                <div style="font-size: 0.85rem; color: #fff; margin-bottom: 6px;">
+                    แพ็กเกจที่เลือก: <strong id="selected-package-name" style="color:#ffd700;">รายปี</strong> (ยอดชำระ <strong id="selected-package-price" style="color:#ffd700;">299</strong> บาท)
+                </div>
+                <div style="background: #fff; padding: 8px; display: inline-block; border-radius: 8px;">
+                    <img id="qr-image" src="qr-299.jpg" alt="PromptPay" style="display:block; margin: 0 auto; max-width: 160px; width: 100%; border-radius: 6px;">
+                </div>
+            </div>
+
+            <!-- อัปโหลดสลิป -->
+            <div style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(234, 179, 8, 0.4); border-radius: 10px;">
+                <div style="font-size: 0.82rem; margin-bottom: 6px; color: #fff; font-weight: 600;">
+                    <i class="fa-solid fa-file-invoice-dollar" style="color: #ffd700;"></i> แนบสลิปเพื่อยืนยันสิทธิ์ VIP
+                </div>
+                <input type="file" id="slip-file-input" accept="image/*" onchange="handleSlipSelected(this)" style="display: none;">
+                <label for="slip-file-input" id="slip-upload-label" style="display: inline-block; padding: 7px 14px; background: #333; color: #ffd700; border: 1px solid #ffd700; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> เลือกรูปภาพสลิป
+                </label>
+                <div id="slip-status-text" style="margin-top: 6px; font-size: 0.75rem; color: #aaa;">
+                    กรุณาแนบสลิปที่โอนตรงตามยอดแพ็กเกจ
+                </div>
+            </div>
+
+            <button type="button" id="btn-confirm-vip" onclick="confirmVipUnlock()" disabled style="width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 700; background: #444; color: #888; cursor: not-allowed; transition: all 0.3s ease;">
+                รอการแนบสลิป...
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentHand = 'left';
+        let currentImageHash = 0;
+        let isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
+
+        // ตรวจสอบสถานะ VIP เมื่อเปิดหน้าเว็บ
+        window.addEventListener('DOMContentLoaded', () => {
+            updateVipUIState();
+        });
+
+        function updateVipUIState() {
+            isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
+            const navBadge = document.getElementById('navVipBadge');
+            const lockedBanner = document.getElementById('vipLockedBanner');
+            const unlockedSection = document.getElementById('vipUnlockedSection');
+
+            if (isVipUser) {
+                if (navBadge) {
+                    navBadge.className = 'vip-status-indicator vip-active';
+                    navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมาชิก VIP</span>';
+                    navBadge.onclick = null;
+                }
+                if (lockedBanner) lockedBanner.style.display = 'none';
+                if (unlockedSection && document.getElementById('resultSection').style.display === 'flex') {
+                    unlockedSection.style.display = 'flex';
+                }
+            } else {
+                if (navBadge) {
+                    navBadge.className = 'vip-status-indicator vip-inactive';
+                    navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมัคร VIP</span>';
+                    navBadge.onclick = openMemberModal;
+                }
+                if (lockedBanner) lockedBanner.style.display = 'flex';
+                if (unlockedSection) unlockedSection.style.display = 'none';
+            }
+        }
+
+        // คลังคำทำนาย (รวมทั้ง Standard และ VIP)
+        const predictionPool = {
+            left: {
+                life: [
+                    { tag: 'พลังชีวิตเข้มแข็ง', text: 'เส้นชีวิตโค้งลึกชัดเจนและโอบรอบเนินศุกร์กว้าง ชี้ถึงพื้นดวงมีพละกำลังกายยอดเยี่ยม ธาตุขันธ์สมบูรณ์ มีจิตวิญญาณแห่งความทรหด อดทน บุญเก่าคุ้มครองให้แคล้วคลาดจากโรคร้าย' },
+                    { tag: 'ชีวิตราบรื่นสายบุญ', text: 'เส้นชีวิตเรียบเนียน ปราศจากเกาะหรือเส้นตัดขวาง ชี้ถึงชีวิตที่ได้รับความอุปถัมภ์จากผู้ใหญ่แต่เยาว์วัย จิตใจรักความสงบ มีความกตัญญูสูงซึ่งเป็นแรงส่งให้ชะตามีความมั่นคง' },
+                    { tag: 'จิตแกร่งสู้ชีวิต', text: 'ต้นเส้นชีวิตซ้อนกับเส้นสมองเล็กน้อย ชี้ว่าเป็นคนรอบคอบ คิดหน้าคิดหลัง ไม่ประมาทในชีวิต ช่วงวัยต้นอาจต้องเหนื่อยสร้างตัวด้วยตนเอง แต่บั้นปลายสุขสบายไร้กังวล' }
+                ],
+                head: [
+                    { tag: 'ปัญญาปฏิภาณไว', text: 'เส้นสมองทอดยาวคมชัด ปลายช้อยขึ้นเล็กน้อย ชี้ถึงไหวพริบยอดเยี่ยม มีลางสังหรณ์แม่นยำ จับประเด็นเก่ง เหมาะกับงานวางกลยุทธ์ การเจรจา และงานเทคโนโลยีออนไลน์' },
+                    { tag: 'พรสวรรค์สร้างสรรค์', text: 'เส้นสมองทอดยาวโค้งลงสู่เนินจันทร์ แสดงถึงพลังจินตนาการสูง มีอารมณ์ศิลปิน ลึกซึ้งในศาสตร์ลี้ลับ ศิลปะ และดนตรี มีความคิดสร้างสรรค์ที่ผู้อื่นคาดไม่ถึง' },
+                    { tag: 'ตรรกะและการค้า', text: 'เส้นสมองพุ่งตรงขนานกับฝ่ามือ เป็นคนคิดเป็นระบบ มองการณ์ไกลบนพื้นฐานความเป็นจริง บริหารเงินทองรอบคอบ มีหัวการค้าและเชี่ยวชาญการคำนวณกำไรขาดทุน' }
+                ],
+                heart: [
+                    { tag: 'เมตตาบารมีสูง', text: 'เส้นใจปลายแยกเป็นง่ามพฤหัส มีจิตใจงดงาม ชอบช่วยเหลือผู้อื่น มีความซื่อสัตย์ในความรัก ไม่ชอบการหักหลัง มักเป็นที่พึ่งพาและศูนย์รวมใจของคนรอบข้าง' },
+                    { tag: 'รักแท้และมั่นคง', text: 'เส้นใจยาวจรดเนินพฤหัสเนียนตา แสดงถึงอารมณ์ที่หนักแน่น ควบคุมสติได้ดี มีความรักที่บริสุทธิ์ ให้เกียรติคู่ครอง และมักได้คู่ที่เป็นกัลยาณมิตรเกื้อหนุนชีวิต' },
+                    { tag: 'ทุ่มเทเพื่อผู้อื่น', text: 'เส้นใจลึกและมีเส้นแขนงเล็กๆ ชี้ว่าเป็นคนมีเสน่ห์ทางวาจา ขี้สงสาร ใส่ใจความรู้สึกผู้อื่นลึกซึ้ง แต่อาจต้องระวังการแบกรับปัญหาแทนคนอื่นมากเกินไป' }
+                ],
+                fate: [
+                    { tag: 'วาสนาสร้างตน', text: 'เส้นวาสนาก่อตัวจากโคนฝ่ามือพุ่งขึ้นตรง แสดงว่าความสำเร็จมาจากน้ำพักน้ำแรง ไม่ได้พึ่งพาโชคช่วยแต่แรก แต่เมื่อตั้งหลักได้แล้ว ความมั่นคงจะยั่งยืนยาวนาน' },
+                    { tag: 'มีคนอุปถัมภ์ค้ำชู', text: 'เส้นวาสนาเริ่มจากเนินจันทร์พุ่งขึ้นสู่เนินเสาร์ บ่งบอกถึงเสน่ห์เมตตามหานิยม มักมีผู้ใหญ่ เจ้านาย หรือแฟนคลับคอยยื่นมือเข้ามาช่วยเหลือผลักดันสู่ความสำเร็จ' },
+                    { tag: 'โชคลาภตามวัย', text: 'เส้นวาสนาเด่นชัดตั้งแต่ช่วงกลางฝ่ามือขึ้นไป บ่งบอกว่าช่วงอายุ 35-40 ปีขึ้นไป ชะตาจะเปิดรับทรัพย์ใหญ่ ทรัพย์สินงอกเงย และมีเกณฑ์ได้รับมรดกหรือสิ่งไม่คาดฝัน' }
+                ],
+                blessings: [
+                    'แนะนำให้สวดมนต์แผ่เมตตา หรือทำบุญถวายภัตตาหารแด่พระสงฆ์ เพื่อเสริมสร้างพลังจิตใจให้แจ่มใส ปัดเป่าอุปสรรค และเปิดรับสิ่งมงคลเข้าตัว',
+                    'แนะนำให้ทำบุญปล่อยปลา ไถ่ชีวิตสัตว์ หรือบริจาคทานแก่คนชรา จะช่วยหนุนนำพลังชีวิตให้ยืนยาว แคล้วคลาดปลอดภัย และมีสุขภาพสมบูรณ์แข็งแรง',
+                    'แนะนำให้ร่วมบุญสร้างโบสถ์ วิหาร หรือถาวรวัตถุ เพื่อเป็นการวางรากฐานบุญ หนุนให้เส้นวาสนาเดิมมั่นคง แข็งแกร่ง ไม่มีวันตกอับ'
+                ],
+                // เนื้อหาเจาะลึกเฉพาะ VIP
+                vipMounts: [
+                    'เนินพฤหัส (ใต้นิ้วชี้) อิ่มเต็มและไร้ตำหนิ บ่งบอกถึงบารมีธรรม ความเป็นผู้นำ และการได้รับความไว้วางใจจากผู้หลักผู้ใหญ่ เนินศุกร์หนานุ่มส่งผลให้มีพลังงานกายสมบูรณ์ มีเสน่ห์เมตตามหานิยมสูง'
+                ],
+                vipTimeline: [
+                    'ช่วงอายุ 20-32 ปี เป็นวาระแห่งการเรียนรู้และวางรากฐานชีวิต | ช่วงอายุ 35-48 ปี เป็นช่วงพุ่งทะยาน เส้นวาสนาเปิดรับทรัพย์และตำแหน่งหน้าที่การงานมั่นคงสูงสุด | อายุ 50 ปีขึ้นไป ชะตาร่มเย็น เสวยสุขบนทรัพย์สินที่สร้างไว้'
+                ],
+                vipSigns: [
+                    'ปรากฏสัญลักษณ์ "กากบาทลึกลับ (Mystic Cross)" ระหว่างเส้นใจและเส้นสมอง ชี้ถึงสัมผัสที่หก แม่นยำเรื่องลางสังหรณ์ มีสิ่งศักดิ์สิทธิ์และเทวดาประจำตัวคอยคุ้มครองให้แคล้วคลาดจากภยันตรายเสมอ'
+                ]
+            },
+            right: {
+                life: [
+                    { tag: 'ร่างกายทรงพลัง', text: 'เส้นชีวิตหนาแน่น สดใส ไร้รอยสะดุด ชี้ว่าปัจจุบันสุขภาพกายและพลังขับเคลื่อนกำลังเข้าสู่จุดพีค การงานที่ต้องลงแรงหรือเดินทางจะสำเร็จอย่างราบรื่น' },
+                    { tag: 'สร้างหลักปักฐาน', text: 'ปลายเส้นชีวิตแตกแขนงออกกว้าง บ่งบอกถึงการขยับขยายที่อยู่อาศัย มีเกณฑ์ได้ครอบครองอสังหาริมทรัพย์ ยานพาหนะใหม่ หรือหลักทรัพย์ก้อนโตในเร็ววันนี้' },
+                    { tag: 'ปรับตัวยอดเยี่ยม', text: 'เส้นชีวิตโอบล้อมแน่นหนา ชี้ถึงความสามารถในการปรับตัวเข้ากับสภาพแวดล้อมใหม่ๆ ทนต่อแรงกดดันได้ดีมาก ยิ่งเจองานท้าทาย ยิ่งพัฒนาได้อย่างก้าวกระโดด' }
+                ],
+                head: [
+                    { tag: 'ผู้นำและนักบริหาร', text: 'เส้นสมองคมกริบ ปลายชี้ตรงอย่างมั่นคง แสดงถึงภาวะผู้นำ การตัดสินใจที่เฉียบขาด ชัดเจน กล้าได้กล้าเสีย เหมาะอย่างยิ่งกับการเป็นเจ้าของธุรกิจหรือคุมทีมงาน' },
+                    { tag: 'วิสัยทัศน์ก้าวหน้า', text: 'เส้นสมองยาวพาดผ่าน มีเส้นแขนงแยกขึ้นด้านบน แสดงว่ามีไอเดียทันโลก ทันสมัย มองเห็นโอกาสทองในวิกฤต สามารถนำเทคโนโลยีและช่องทางใหม่ๆ มาทำเงินได้เสมอ' },
+                    { tag: 'การเจรจาเป็นทรัพย์', text: 'เส้นสมองมีพลังมุ่งสู่เนินปรอท ชี้ว่าคำพูดและการติดต่อสื่อสารจะนำพาเงินทองมาให้ พูดสิ่งใดมักได้รับการเชื่อถือ ปิดดีลธุรกิจสำเร็จได้อย่างน่าทึ่ง' }
+                ],
+                heart: [
+                    { tag: 'วุฒิภาวะสูงส่ง', text: 'เส้นใจราบรื่น ทรงพลัง บ่งบอกถึงการจัดการอารมณ์ในที่ทำงานและชีวิตส่วนตัวได้อย่างลงตัว เป็นที่นับถือของลูกน้องและได้รับความเคารพจากคนรอบข้าง' },
+                    { tag: 'มิตรแท้เกื้อหนุน', text: 'เส้นใจมีกิ่งก้านพุ่งขึ้น ชี้ว่าปัจจุบันแวดล้อมไปด้วยมิตรภาพที่ดี มีหุ้นส่วนหรือเพื่อนร่วมงานที่คอยระวังหลังและพร้อมร่วมทุกข์ร่วมสุขไปด้วยกัน' },
+                    { tag: 'เด็ดเดี่ยวในเป้าหมาย', text: 'เส้นใจตรงและลึก แสดงถึงความแน่วแน่ ไม่หวั่นไหวต่อคำนินทา มุ่งมั่นสร้างความสำเร็จเพื่อครอบครัวและคนที่รักอย่างสุดกำลัง' }
+                ],
+                fate: [
+                    { tag: 'หยาดเหงื่อสู่เศรษฐี', text: 'เส้นวาสนาพุ่งทะลุเส้นสมองและเส้นใจอย่างสง่างาม บ่งบอกว่าสิ่งที่กำลังลงมือทำอยู่ในปัจจุบันจะออกดอกออกผลเป็นทรัพย์สินมหาศาล มีเกณฑ์แตะเงินล้านได้สำเร็จ' },
+                    { tag: 'ลาภลอยและการเงินหมุนคล่อง', text: 'มีเส้นวาสนาเส้นรองขนานเสริมขึ้นมา บ่งบอกว่าจะมีช่องทางรายได้มากกว่าหนึ่งทาง เงินทองหมุนเวียนคล่องตัว มีเกณฑ์รับโชคลาภจากการลงทุนและการเสี่ยงโชค' },
+                    { tag: 'ชื่อเสียงขจรไกล', text: 'เส้นวาสนาพุ่งตรงเข้าหาเนินอาทิตย์ร่วมด้วย ชี้ว่าจะมีความสำเร็จพร้อมชื่อเสียง เป็นที่รู้จักในแวดวงสังคม การค้าหรือช่องทางออนไลน์จะเติบโตแบบก้าวกระโดด' }
+                ],
+                blessings: [
+                    'แนะนำให้ทำบุญเกี่ยวกับแสงสว่าง เติมน้ำมันตะเกียง บริจาคหลอดไฟ หรือบริจาคค่าไฟวัด เพื่อเปิดทางสว่างให้แก่ธุรกิจการงานและโชคลาภ',
+                    'แนะนำให้ทำบุญบริจาคโลงศพ หรือช่วยเหลืองานศพไร้ญาติ จะช่วยแก้เคล็ดตัดเคราะห์ เสริมบารมีให้หน้าที่การงานไร้อุปสรรคขัดขวาง',
+                    'แนะนำให้ทำทานแก่ผู้ยากไร้ และหมั่นกตัญญูเลี้ยงดูบุพการี จะเป็นพลังมหาศาลช่วยผลักดันให้เส้นวาสนาเปิดรับทรัพย์และลาภลอยอย่างต่อเนื่อง'
+                ],
+                // เนื้อหาเจาะลึกเฉพาะ VIP
+                vipMounts: [
+                    'เนินอาทิตย์ (ใต้นิ้วนาง) เด่นชัดและมีเส้นอาทิตย์พุ่งตรง ชี้ถึงความสำเร็จทางชื่อเสียงและเกียรติยศ เนินพุธ (ใต้นิ้วก้อย) มีเส้นตั้งชัดเจน แสดงถึงทักษะการค้า วาทศิลป์การเจรจาที่เป็นเงินเป็นทอง'
+                ],
+                vipTimeline: [
+                    'ช่วงอายุ 28-36 ปี จุดเปลี่ยนอาชีพก้าวขึ้นสู่ระดับหัวหน้าหรือเจ้าของกิจการ | ช่วงอายุ 40-52 ปี วาระทองแห่งการรับทรัพย์ใหญ่ ขยายสาขาหรือครอบครองอสังหาริมทรัพย์ถาวร | วัยเกษียณมั่นคงด้วยเงินปันผลและลูกหลานสืบทอดกิจการ'
+                ],
+                vipSigns: [
+                    'ปรากฏสัญลักษณ์ "รูปสามเหลี่ยมขุมทรัพย์ (Money Triangle)" บริเวณจุดตัดเส้นใจ-เส้นสมอง-เส้นวาสนา บ่งบอกถึงการเก็บเงินอยู่ ทรัพย์สินไม่รั่วไหล และมีเกณฑ์สร้างความมั่งคั่งแตะเงินล้านได้สำเร็จ'
+                ]
+            }
+        };
+
+        function selectHand(hand) {
+            currentHand = hand;
+            document.getElementById('btnLeft').classList.toggle('active', hand === 'left');
+            document.getElementById('btnRight').classList.toggle('active', hand === 'right');
+            
+            if (document.getElementById('resultSection').style.display === 'flex') {
+                renderPrediction();
+            }
+        }
+
+        function handleImageInput(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+
+            currentImageHash = Math.abs(hashCode(file.name + file.size + file.lastModified + new Date().getTime()));
+
+            const imgElement = document.getElementById('palmImage');
+            const guide = document.getElementById('guideOverlay');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imgElement.src = e.target.result;
+                imgElement.style.display = 'block';
+                guide.style.display = 'none';
+                runScanProcess();
+            };
+            reader.onerror = function() {
+                imgElement.src = URL.createObjectURL(file);
+                imgElement.style.display = 'block';
+                guide.style.display = 'none';
+                runScanProcess();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash;
+        }
+
+        function runScanProcess() {
+            const viewport = document.getElementById('scannerViewport');
+            const resultSection = document.getElementById('resultSection');
+
+            viewport.classList.add('scanning');
+            resultSection.style.display = 'none';
+
+            setTimeout(() => {
+                viewport.classList.remove('scanning');
+                renderPrediction();
+                resultSection.style.display = 'flex';
+                updateVipUIState();
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            }, 2200);
+        }
+
+        function renderPrediction() {
+            const pool = predictionPool[currentHand];
+            
+            const lifeIdx = (currentImageHash + 1) % pool.life.length;
+            const headIdx = (currentImageHash + 3) % pool.head.length;
+            const heartIdx = (currentImageHash + 5) % pool.heart.length;
+            const fateIdx = (currentImageHash + 7) % pool.fate.length;
+            const blessIdx = (currentImageHash + 9) % pool.blessings.length;
+
+            document.getElementById('targetBadge').innerText = (currentHand === 'left') ? 'มือซ้าย (วาสนากำเนิด • จิตใจ)' : 'มือขวา (ความสำเร็จ • อนาคต)';
+
+            document.getElementById('lifeTag').innerText = pool.life[lifeIdx].tag;
+            document.getElementById('lifeResult').innerText = pool.life[lifeIdx].text;
+
+            document.getElementById('headTag').innerText = pool.head[headIdx].tag;
+            document.getElementById('headResult').innerText = pool.head[headIdx].text;
+
+            document.getElementById('heartTag').innerText = pool.heart[heartIdx].tag;
+            document.getElementById('heartResult').innerText = pool.heart[heartIdx].text;
+
+            document.getElementById('fateTag').innerText = pool.fate[fateIdx].tag;
+            document.getElementById('fateResult').innerText = pool.fate[fateIdx].text;
+
+            document.getElementById('blessingText').innerText = pool.blessings[blessIdx];
+
+            // เรนเดอร์ส่วนของ VIP
+            document.getElementById('vipMountsResult').innerText = pool.vipMounts[0];
+            document.getElementById('vipTimelineResult').innerText = pool.vipTimeline[0];
+            document.getElementById('vipSignsResult').innerText = pool.vipSigns[0];
+        }
+
+        /* ================= ระบบจัดการ Modal VIP ================= */
+        let chosenVipPrice = 299;
+        let chosenVipName = 'รายปี';
+
+        function openMemberModal() {
+            document.getElementById('modal-member').style.display = 'flex';
+        }
+
+        function closeMemberModal() {
+            document.getElementById('modal-member').style.display = 'none';
+        }
+
+        function selectVipPackage(price, name, el) {
+            chosenVipPrice = price;
+            chosenVipName = name;
+
+            document.querySelectorAll('.vip-plan-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+
+            document.getElementById('selected-package-name').innerText = name;
+            document.getElementById('selected-package-price').innerText = price;
+            document.getElementById('qr-image').src = `qr-${price}.jpg`;
+        }
+
+        function handleSlipSelected(input) {
+            if (input.files && input.files[0]) {
+                const label = document.getElementById('slip-upload-label');
+                const status = document.getElementById('slip-status-text');
+                const confirmBtn = document.getElementById('btn-confirm-vip');
+
+                label.innerHTML = `<i class="fa-solid fa-check"></i> แนบสลิปเรียบร้อย (${input.files[0].name.substring(0, 15)}...)`;
+                label.style.background = '#15803d';
+                label.style.color = '#fff';
+                label.style.borderColor = '#22c55e';
+
+                status.innerHTML = `<span style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> พร้อมยืนยันการเปิดสิทธิ์ VIP แพ็กเกจ ${chosenVipName} (${chosenVipPrice} บาท)</span>`;
+
+                confirmBtn.disabled = false;
+                confirmBtn.style.background = 'linear-gradient(135deg, #ffd700 0%, #ff8c00 100%)';
+                confirmBtn.style.color = '#1a0f00';
+                confirmBtn.style.cursor = 'pointer';
+                confirmBtn.innerText = 'ยืนยันปลดล็อกสมาชิก VIP ทันที';
+            }
+        }
+
+        function confirmVipUnlock() {
+            // บันทึกสถานะ VIP ลง LocalStorage ตามแบบเว็บหลัก
+            localStorage.setItem('ks_vip_active', 'true');
+            alert(`🎉 ยินดีด้วยครับ! ระบบได้ทำการเปิดสิทธิ์สมาชิก VIP (${chosenVipName}) ให้คุณเรียบร้อยแล้ว`);
+            closeMemberModal();
+            updateVipUIState();
+        }
+    </script>
+</body>
+</html>
