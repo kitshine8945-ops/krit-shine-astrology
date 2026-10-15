@@ -11222,7 +11222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-// 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
+// --- ระบบคำนวณปาจื่อ (BaZi) มาตรฐานปฏิทินจีนสากล (สุริยคติ 4 เสาหลักแท้) ---
 function calcBaziEngine() {
   try {
     const dayEl = document.getElementById('birthDay');
@@ -11238,6 +11238,7 @@ function calcBaziEngine() {
     let m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : 4;
     let yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : 2522;
     let hHour = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 1;
+    let yCE = yBE > 2400 ? (yBE - 543) : yBE;
 
     let tD = transitDayEl && transitDayEl.value ? parseInt(transitDayEl.value, 10) : 15;
     let tM = transitMonthEl && transitMonthEl.value ? parseInt(transitMonthEl.value, 10) : 10;
@@ -11245,43 +11246,116 @@ function calcBaziEngine() {
 
     const MONTH_TH_LIST = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
     let tMName = MONTH_TH_LIST[tM - 1] || 'ตุลาคม';
-    let bMName = MONTH_TH_LIST[m - 1] || 'เมษายน';
 
-    // 10 กิ่งฟ้า & 12 ก้านดิน
+    // 10 กิ่งฟ้า (Heavenly Stems)
     const stemsList = [
-      { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
-      { name: "乙 (อี่)", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
-      { name: "丙 (ปิ่ง)", elem: "ไฟ", pol: "หยาง", desc: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง ร่าเริง มีพลังขับเคลื่อนสร้างแรงบันดาลใจ" },
-      { name: "丁 (ติง)", elem: "ไฟ", pol: "หยิน", desc: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน มีสัญชาตญาณและความคิดลึกซึ้ง" },
-      { name: "戊 (อู้)", elem: "ดิน", pol: "หยาง", desc: "ภูผา หนักแน่น น่าเชื่อถือ มีความรับผิดชอบสูงและเป็นที่พึ่งพาให้ผู้อื่น" },
-      { name: "己 (จี่)", elem: "ดิน", pol: "หยิน", desc: "ดินสวนหย่อม อ่อนโยน ละเอียดรอบคอบ มีความเข้าอกเข้าใจผู้อื่นสูง" },
-      { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
-      { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
-      { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
-      { name: "癸 (กุ่ย)", elem: "น้ำ", pol: "หยิน", desc: "สายฝน ละมุนละไม ภายนอกนุ่มนวลแต่เปี่ยมปัญญาลึกซึ้ง ลางสังหรณ์แม่นยำ" }
+      { name: "甲 (เจี่ย)", ch: "甲", elem: "ไม้", pol: "หยาง", desc: "ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรม" },
+      { name: "乙 (อี่)", ch: "乙", elem: "ไม้", pol: "หยิน", desc: "ไม้เลื้อย อ่อนโยน ปรับตัวเก่ง มีวาทศิลป์และความคิดสร้างสรรค์แพรวพราว" },
+      { name: "丙 (ปิ่ง)", ch: "丙", elem: "ไฟ", pol: "หยาง", desc: "สุริยัน สว่างไสว เปิดเผย ใจกว้าง ร่าเริง มีพลังขับเคลื่อนสร้างแรงบันดาลใจ" },
+      { name: "丁 (ติง)", ch: "丁", elem: "ไฟ", pol: "หยิน", desc: "ดวงประทีป อบอุ่น มีเสน่ห์ ละเอียดอ่อน มีสัญชาตญาณและความคิดลึกซึ้ง" },
+      { name: "戊 (อู้)", ch: "戊", elem: "ดิน", pol: "หยาง", desc: "ภูผา หนักแน่น น่าเชื่อถือ มีความรับผิดชอบสูงและเป็นที่พึ่งพาให้ผู้อื่น" },
+      { name: "己 (จี่)", ch: "己", elem: "ดิน", pol: "หยิน", desc: "ดินสวนหย่อม อ่อนโยน ละเอียดรอบคอบ มีความเข้าอกเข้าใจผู้อื่นสูง" },
+      { name: "庚 (เกิง)", ch: "庚", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
+      { name: "辛 (ซิน)", ch: "辛", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
+      { name: "壬 (เหริน)", ch: "壬", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
+      { name: "癸 (กุ่ย)", ch: "癸", elem: "น้ำ", pol: "หยิน", desc: "สายฝน ละมุนละไม ภายนอกนุ่มนวลแต่เปี่ยมปัญญาลึกซึ้ง ลางสังหรณ์แม่นยำ" }
     ];
 
+    // 12 ก้านดิน (Earthly Branches)
     const branchesList = [
-      "子 (ชวด)", "丑 (ฉลู)", "寅 (ขาล)", "卯 (เถาะ)", 
-      "辰 (มะโรง)", "巳 (มะเส็ง)", "午 (มะเมีย)", "未 (มะแม)", 
-      "申 (วอก)", "酉 (ระกา)", "戌 (จอ)", "亥 (กุน)"
+      { name: "子 (ชวด)", ch: "子", elem: "น้ำ" },
+      { name: "丑 (ฉลู)", ch: "丑", elem: "ดิน" },
+      { name: "寅 (ขาล)", ch: "寅", elem: "ไม้" },
+      { name: "卯 (เถาะ)", ch: "卯", elem: "ไม้" },
+      { name: "辰 (มะโรง)", ch: "辰", elem: "ดิน" },
+      { name: "巳 (มะเส็ง)", ch: "巳", elem: "ไฟ" },
+      { name: "午 (มะเมีย)", ch: "午", elem: "ไฟ" },
+      { name: "未 (มะแม)", ch: "未", elem: "ดิน" },
+      { name: "申 (วอก)", ch: "申", elem: "ทอง" },
+      { name: "酉 (ระกา)", ch: "酉", elem: "ทอง" },
+      { name: "戌 (จอ)", ch: "戌", elem: "ดิน" },
+      { name: "亥 (กุน)", ch: "亥", elem: "น้ำ" }
     ];
 
-    let seed = (d * 31) + (m * 53) + (yBE * 7) + (hHour * 17);
-    let stemIdx = Math.abs(seed) % stemsList.length;
-    let dayMaster = stemsList[stemIdx] || stemsList[9];
+    // ==========================================
+    // ๑. คำนวณเสาปี (Year Pillar) - ตัดสารทลี่ชุน (立春 ~ 4 ก.พ.)
+    // ==========================================
+    let solarYear = yCE;
+    if (m < 2 || (m === 2 && d < 4)) {
+      solarYear = yCE - 1;
+    }
+    let yearStemIdx = (solarYear - 4) % 10;
+    if (yearStemIdx < 0) yearStemIdx += 10;
+    let yearBranchIdx = (solarYear - 4) % 12;
+    if (yearBranchIdx < 0) yearBranchIdx += 12;
 
-    // คำนวณ 4 เสาชะตา (กิ่งฟ้า + ก้านดิน)
-    let yearCol = stemsList[Math.abs(seed + 1) % 10].name + "<br>" + branchesList[Math.abs(seed + 1) % 12];
-    let monthCol = stemsList[Math.abs(seed + 3) % 10].name + "<br>" + branchesList[Math.abs(seed + 3) % 12];
-    let dayCol = dayMaster.name + "<br>" + branchesList[Math.abs(seed + 7) % 12];
-    let hourCol = stemsList[Math.abs(seed + 5) % 10].name + "<br>" + branchesList[Math.abs(seed + 5) % 12];
+    // ==========================================
+    // ๒. คำนวณเสาเดือน (Month Pillar) - สารท 24 Jie Qi
+    // ==========================================
+    // วันเปลี่ยนสารทประจำเดือนโดยเฉลี่ย
+    const JIE_QI_DAYS = [5, 4, 5, 5, 5, 5, 7, 7, 7, 8, 7, 7]; // ม.ค. ถึง ธ.ค.
+    let monthBranchIdx = 0;
+    if (m === 1) monthBranchIdx = (d >= JIE_QI_DAYS[0]) ? 1 : 0;        // 丑 หรือ 子
+    else if (m === 2) monthBranchIdx = (d >= JIE_QI_DAYS[1]) ? 2 : 1;   // 寅 หรือ 丑
+    else if (m === 3) monthBranchIdx = (d >= JIE_QI_DAYS[2]) ? 3 : 2;   // 卯 หรือ 寅
+    else if (m === 4) monthBranchIdx = (d >= JIE_QI_DAYS[3]) ? 4 : 3;   // 辰 หรือ 卯
+    else if (m === 5) monthBranchIdx = (d >= JIE_QI_DAYS[4]) ? 5 : 4;   // 巳 หรือ 辰
+    else if (m === 6) monthBranchIdx = (d >= JIE_QI_DAYS[5]) ? 6 : 5;   // 午 หรือ 巳
+    else if (m === 7) monthBranchIdx = (d >= JIE_QI_DAYS[6]) ? 7 : 6;   // 未 หรือ 午
+    else if (m === 8) monthBranchIdx = (d >= JIE_QI_DAYS[7]) ? 8 : 7;   // 申 หรือ 未
+    else if (m === 9) monthBranchIdx = (d >= JIE_QI_DAYS[8]) ? 9 : 8;   // 酉 หรือ 申
+    else if (m === 10) monthBranchIdx = (d >= JIE_QI_DAYS[9]) ? 10 : 9; // 戌 หรือ 酉
+    else if (m === 11) monthBranchIdx = (d >= JIE_QI_DAYS[10]) ? 11 : 10;// 亥 หรือ 戌
+    else monthBranchIdx = (d >= JIE_QI_DAYS[11]) ? 0 : 11;               // 子 หรือ 亥
 
-    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุน้ำ และ ธาตุไฟ' : (dayMaster.elem === 'ไฟ' ? 'ธาตุไม้ และ ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไฟ และ ธาตุทอง' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน และ ธาตุน้ำ' : 'ธาตุทอง (Metal) & ธาตุน้ำ (Water)')));
-    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุไม้ (Wood) & ธาตุไฟ (Fire)')));
+    // สูตรเบญจพยัคฆ์ (五虎遁): หากิ่งฟ้าเสาเดือนจากกิ่งฟ้าเสาปี
+    let monthStemStart = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0]; // เริ่มต้นเดือนขาล (寅=2)
+    let mOrderFromYin = (monthBranchIdx - 2 + 12) % 12;
+    let monthStemIdx = (monthStemStart[yearStemIdx] + mOrderFromYin) % 10;
+
+    // ==========================================
+    // ๓. คำนวณเสาวัน (Day Pillar / ดิถี) - 60 กะจื้อ Julian Day Number
+    // ==========================================
+    let refDate = new Date(Date.UTC(2008, 7, 8)); // 8 ส.ค. 2008 คือวัน 庚辰 (ลำดับที่ 16 ใน 60 กะจื้อ)
+    let curDate = new Date(Date.UTC(yCE, m - 1, d));
+    let diffDays = Math.round((curDate - refDate) / (1000 * 60 * 60 * 24));
+    let dayCycleIdx = (16 + diffDays) % 60;
+    if (dayCycleIdx < 0) dayCycleIdx += 60;
+
+    // ถ้าเกิดช่วง 23:00 - 23:59 น. (ยามชวดดึก) ตามโหราศาสตร์จีนถือเป็นวันใหม่
+    if (hHour >= 23) {
+      dayCycleIdx = (dayCycleIdx + 1) % 60;
+    }
+
+    let dayStemIdx = dayCycleIdx % 10;
+    let dayBranchIdx = dayCycleIdx % 12;
+    let dayMaster = stemsList[dayStemIdx];
+
+    // ==========================================
+    // ๔. คำนวณเสายาม (Hour Pillar) - สูตรเบญจมุสิก (五鼠遁)
+    // ==========================================
+    let hourBranchIdx = Math.floor(((hHour + 1) % 24) / 2); // 23:00-00:59=0(子), 01:00-02:59=1(丑)...
+    let hourStemStart = [0, 2, 4, 6, 8, 0, 2, 4, 6, 8];    // 甲/己 เริ่ม 甲(0), 乙/庚 เริ่ม 丙(2)...
+    let hourStemIdx = (hourStemStart[dayStemIdx] + hourBranchIdx) % 10;
+
+    // สร้างกล่องข้อความ 4 เสาชะตา
+    let yearCol = stemsList[yearStemIdx].name + "<br>" + branchesList[yearBranchIdx].name;
+    let monthCol = stemsList[monthStemIdx].name + "<br>" + branchesList[monthBranchIdx].name;
+    let dayCol = dayMaster.name + "<br>" + branchesList[dayBranchIdx].name;
+    let hourCol = stemsList[hourStemIdx].name + "<br>" + branchesList[hourBranchIdx].name;
+
+    // วิเคราะห์ธาตุสำคัญ ย้งซิ้ง (Yong Shen) & กี๋ซิ้ง (Ji Shen)
+    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุน้ำ (Water) & ธาตุไฟ (Fire)' : 
+                   (dayMaster.elem === 'ไฟ') ? 'ธาตุไม้ (Wood) & ธาตุดิน (Earth)' : 
+                   (dayMaster.elem === 'ดิน') ? 'ธาตุไฟ (Fire) & ธาตุทอง (Metal)' : 
+                   (dayMaster.elem === 'ทอง') ? 'ธาตุดิน (Earth) & ธาตุน้ำ (Water)' : 'ธาตุทอง (Metal) & ธาตุไม้ (Wood)';
+    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง (Metal)' : 
+                 (dayMaster.elem === 'ไฟ') ? 'ธาตุน้ำ (Water)' : 
+                 (dayMaster.elem === 'ดิน') ? 'ธาตุไม้ (Wood)' : 
+                 (dayMaster.elem === 'ทอง') ? 'ธาตุไฟ (Fire)' : 'ธาตุดิน (Earth)';
 
     // ดัชนีกระจายคำทำนายตามวันเกิดและวันจร
-    let birthSeed = (d * 31) + (m * 17) + (yBE * 7) + (hHour * 13);
+    let birthSeed = (d * 31) + (m * 17) + (yBE * 7) + (hHour * 13) + (dayStemIdx * 19);
     let transitSeed = (tY * 997) + (tM * 101) + (tD * 31) + birthSeed;
 
     const WORK_POOLS = [
@@ -11320,7 +11394,13 @@ function calcBaziEngine() {
     let hIdx = Math.abs(transitSeed + 3) % HEALTH_POOLS.length;
     let fIdx = Math.abs(transitSeed + 4) % FENGSHUI_POOLS.length;
 
-    // บังคับเปิดกล่อง VIP ทันทีเพื่อแสดงผล
+    // อัปเดตกล่องโหมดฟรี
+    const freeTitle = document.getElementById('bazi-free-title');
+    if (freeTitle) freeTitle.textContent = "ดิถีธาตุกำเนิดของคุณ: " + dayMaster.name + " (" + dayMaster.elem + dayMaster.pol + ")";
+    const freeDesc = document.getElementById('bazi-free-desc');
+    if (freeDesc) freeDesc.textContent = dayMaster.desc;
+
+    // บังคับเปิดกล่อง VIP เพื่อแสดงผล
     const vipRes = document.getElementById('bazi-vip-result');
     if (vipRes) vipRes.style.display = 'block';
 
