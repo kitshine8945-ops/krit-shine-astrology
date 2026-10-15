@@ -3140,31 +3140,28 @@ const password = document.getElementById('authPassword').value;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
 // --- คำนวณลัคนาตามตารางมาตรฐานยอดนิยม (บล็อกละ 2 ชั่วโมง) ---
-      let bD = AppState.birthDay;
-      let bM = AppState.birthMonth;
-      let bH = AppState.birthHour;
-      let bMin = AppState.birthMinute;
+      let tbDay = AppState.birthDay;
+      let tbMonth = AppState.birthMonth;
+      let tbHour = AppState.birthHour;
+      let tbMin = AppState.birthMinute;
 
       // 1. หา "ราศีเกิดประจำช่วงวัน" ตามแถวในตาราง (0=เมษ, 1=พฤษภ, ..., 11=มีน)
       let sunSign = 0;
-      if ((bM === 4 && bD >= 13) || (bM === 5 && bD <= 13)) sunSign = 0;       // 13 เม.ย. - 13 พ.ค. (เมษ)
-      else if ((bM === 5 && bD >= 14) || (bM === 6 && bD <= 13)) sunSign = 1;  // 14 พ.ค. - 13 มิ.ย. (พฤษภ)
-      else if ((bM === 6 && bD >= 14) || (bM === 7 && bD <= 14)) sunSign = 2;  // 14 มิ.ย. - 14 ก.ค. (เมถุน)
-      else if ((bM === 7 && bD >= 15) || (bM === 8 && bD <= 16)) sunSign = 3;  // 15 ก.ค. - 16 ส.ค. (กรกฎ)
-      else if ((bM === 8 && bD >= 17) || (bM === 9 && bD <= 16)) sunSign = 4;  // 17 ส.ค. - 16 ก.ย. (สิงห์)
-      else if ((bM === 9 && bD >= 17) || (bM === 10 && bD <= 16)) sunSign = 5; // 17 ก.ย. - 16 ต.ค. (กันย์)
-      else if ((bM === 10 && bD >= 17) || (bM === 11 && bD <= 15)) sunSign = 6;// 17 ต.ค. - 15 พ.ย. (ตุลย์)
-      else if ((bM === 11 && bD >= 16) || (bM === 12 && bD <= 15)) sunSign = 7;// 16 พ.ย. - 15 ธ.ค. (พิจิก)
-      else if ((bM === 12 && bD >= 16) || (bM === 1 && bD <= 15)) sunSign = 8; // 16 ธ.ค. - 15 ม.ค. (ธนู)
-      else if ((bM === 1 && bD >= 16) || (bM === 2 && bD <= 12)) sunSign = 9;  // 16 ม.ค. - 12 ก.พ. (มังกร)
-      else if ((bM === 2 && bD >= 13) || (bM === 3 && bD <= 13)) sunSign = 10; // 13 ก.พ. - 13 มี.ค. (กุมภ์)
-      else sunSign = 11;                                                        // 14 มี.ค. - 12 เม.ย. (มีน)
+      if ((tbMonth === 4 && tbDay >= 13) || (tbMonth === 5 && tbDay <= 13)) sunSign = 0;       // 13 เม.ย. - 13 พ.ค. (เมษ)
+      else if ((tbMonth === 5 && tbDay >= 14) || (tbMonth === 6 && tbDay <= 13)) sunSign = 1;  // 14 พ.ค. - 13 มิ.ย. (พฤษภ)
+      else if ((tbMonth === 6 && tbDay >= 14) || (tbMonth === 7 && tbDay <= 14)) sunSign = 2;  // 14 มิ.ย. - 14 ก.ค. (เมถุน)
+      else if ((tbMonth === 7 && tbDay >= 15) || (tbMonth === 8 && tbDay <= 16)) sunSign = 3;  // 15 ก.ค. - 16 ส.ค. (กรกฎ)
+      else if ((tbMonth === 8 && tbDay >= 17) || (tbMonth === 9 && tbDay <= 16)) sunSign = 4;  // 17 ส.ค. - 16 ก.ย. (สิงห์)
+      else if ((tbMonth === 9 && tbDay >= 17) || (tbMonth === 10 && tbDay <= 16)) sunSign = 5; // 17 ก.ย. - 16 ต.ค. (กันย์)
+      else if ((tbMonth === 10 && tbDay >= 17) || (tbMonth === 11 && tbDay <= 15)) sunSign = 6;// 17 ต.ค. - 15 พ.ย. (ตุลย์)
+      else if ((tbMonth === 11 && tbDay >= 16) || (tbMonth === 12 && tbDay <= 15)) sunSign = 7;// 16 พ.ย. - 15 ธ.ค. (พิจิก)
+      else if ((tbMonth === 12 && tbDay >= 16) || (tbMonth === 1 && tbDay <= 15)) sunSign = 8; // 16 ธ.ค. - 15 ม.ค. (ธนู)
+      else if ((tbMonth === 1 && tbDay >= 16) || (tbMonth === 2 && tbDay <= 12)) sunSign = 9;  // 16 ม.ค. - 12 ก.พ. (มังกร)
+      else if ((tbMonth === 2 && tbDay >= 13) || (tbMonth === 3 && tbDay <= 13)) sunSign = 10; // 13 ก.พ. - 13 มี.ค. (กุมภ์)
+      else sunSign = 11;                                                                        // 14 มี.ค. - 12 เม.ย. (มีน)
 
       // 2. คำนวณช่วงเวลาเกิด โดยเริ่มนับก้าวที่ 0 ตั้งแต่ 05.00 น.
-      // 05.00-06.59 = ก้าว 0
-      // 07.00-08.59 = ก้าว 1
-      // ... วนไปเรื่อย ๆ ช่วงละ 2 ชั่วโมง
-      let totalMinutes = bH * 60 + bMin;
+      let totalMinutes = tbHour * 60 + tbMin;
       let startMinutes = 5 * 60; // 05.00 น. = 300 นาที
 
       let diffMinutes = totalMinutes - startMinutes;
@@ -3175,7 +3172,7 @@ const password = document.getElementById('authPassword').value;
       // 1 ช่วง = 120 นาที (2 ชั่วโมง)
       let step = Math.floor(diffMinutes / 120);
 
-      // 3. นำราศีเกิด + จำนวนช่วงเวลา = ลัคนาตามตารางเป๊ะ 100%
+      // 3. นำราศีเกิด + จำนวนช่วงเวลา = ลัคนาตามตาราง
       let ascSign = (sunSign + step) % 12;
 
       // กำหนดผลลัพธ์
