@@ -2476,6 +2476,40 @@ function analyzeVipSpecificQuestion() {
     </div>
   </div>
 </div>
+
+  <!-- MODAL: ซาจู (Saju 4 เสาชะตาเกาหลี) -->
+<div class="modal-overlay" id="modal-saju">
+  <div class="modal-content" style="max-width: 890px;">
+    <div class="modal-close-btn" onclick="closeModal('modal-saju'); var ms=document.getElementById('modal-saju'); if(ms) ms.style.display='none';"><i class="fa-solid fa-xmark"></i></div>
+    <div class="profile-astro-badge dynamic-user-badge"></div>
+    <div class="tier-switcher" style="margin-bottom:14px;">
+      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')">อิลจู & แก่นแท้ธาตุเกิด (ดูฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')"><i class="fa-solid fa-crown"></i> ผ่าดวงซาจู VIP & ชะตา 4 ฤดูจร (VIP)</button>
+    </div>
+    <div style="text-align: center; margin-bottom: 15px;">
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-compass"></i> ซาจู พัลจา (사주팔자) โหราศาสตร์เกาหลีโบราณ</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์ 4 เสาหลักชะตาชีวิต (ปี/เดือน/วัน/ยาม) ถอดรหัสชอนกัน (Cheongon) จีจี (Jiji) และพลังงานอุนเซ (Wun-se)</p>
+    </div>
+    <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
+      <!-- โหมดฟรี -->
+      <div id="saju-free-result" style="display:block; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 id="saju-free-title" style="color:#ffd700; margin-bottom:6px;">อิลจู (Ilju) เสาวันเกิดของคุณ: -</h4>
+        <p id="saju-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
+      </div>
+
+      <!-- โหมด VIP -->
+      <div id="saju-vip-result" style="display:none; margin-top: 18px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="saju-pillars-grid"></div>
+        <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-soft);">
+          <h4 id="saju-vip-strength-title" style="color:#ffd700; margin-bottom:6px;">-</h4>
+          <p id="saju-vip-element-analysis" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+          <div id="saju-vip-extended-analysis" style="margin-top:12px; border-top:1px dashed var(--border-soft); padding-top:10px;"></div>
+          <div id="saju-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   
   <!-- MODAL: 12 ราศี -->
   <div class="modal-overlay" id="modal-zodiac">
