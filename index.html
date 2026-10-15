@@ -11359,7 +11359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
+// 1. ดึงวัน เดือน ปีเกิด และเวลาเกิดแบบสดๆ จากฟอร์มหน้าเว็บ
     const dayEl = document.getElementById('birthDay');
     const monthEl = document.getElementById('birthMonth');
     const yearEl = document.getElementById('birthYearBE');
@@ -11384,7 +11384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (transitYearEl && transitYearEl.value) AppState.transitYearBE = parseInt(transitYearEl.value, 10);
 
     // 2. ดึงวัน เดือน ปีจรแบบสดๆ
-    let tD = parseInt(document.getElementById('transitDay')?.value, 10) || 9;
+    let tD = parseInt(document.getElementById('transitDay')?.value, 10) || 15;
     let tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
     let tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
     let tMName = (typeof MONTH_NAMES !== 'undefined' && MONTH_NAMES[tM - 1]) ? MONTH_NAMES[tM - 1] : 'ตุลาคม';
@@ -11400,20 +11400,21 @@ document.addEventListener('DOMContentLoaded', function() {
       { name: "庚 (เกิง)", elem: "ทอง", pol: "หยาง", desc: "เหล็กกล้า เด็ดเดี่ยว มุ่งมั่น กล้าหาญ มีวินัยและรักความยุติธรรม" },
       { name: "辛 (ซิน)", elem: "ทอง", pol: "หยิน", desc: "อัญมณี งดงาม ประณีต รสนิยมสูง มีความมุ่งมั่นและเป้าหมายชัดเจน" },
       { name: "壬 (เหริน)", elem: "น้ำ", pol: "หยาง", desc: "มหาสมุทร ปัญญาญาณกว้างไกล ปรับตัวเก่ง รักอิสระ ชอบเรียนรู้" },
-      { name: "กุ่ย (癸)", elem: "น้ำ", pol: "หยิน", desc: "น้ำฝน ละมุนละไม มีจินตนาการสูง ลางสังหรณ์แม่นยำและมีความเห็นอกเห็นใจ" }
+      { name: "癸 (กุ่ย)", elem: "น้ำ", pol: "หยิน", desc: "สายฝน ละมุนละไม ภายนอกนุ่มนวลแต่เปี่ยมปัญญาลึกซึ้ง ลางสังหรณ์แม่นยำ" }
     ];
 
     let seed = (d * 31) + (m * 53) + (yBE * 7) + (hHour * 17);
     let stemIdx = seed % stemsList.length;
     let dayMaster = stemsList[stemIdx];
 
+    // คำนวณเสาชะตาทั้ง 4
     let yearStem = stemsList[(seed + 1) % stemsList.length].name;
     let monthStem = stemsList[(seed + 3) % stemsList.length].name;
     let dayStem = dayMaster.name;
     let hourStem = stemsList[(seed + 5) % stemsList.length].name;
 
-    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุไฟ / ธาตุดิน' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน / ธาตุทอง' : (dayMaster.elem === 'ดิน' ? 'ธาตุทอง / ธาตุดิน' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน / ธาตุน้ำ' : 'ธาตุน้ำ / ธาตุไม้')));
-    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุทอง')));
+    let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุน้ำ และ ธาตุไฟ' : (dayMaster.elem === 'ไฟ' ? 'ธาตุไม้ และ ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไฟ และ ธาตุทอง' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน และ ธาตุน้ำ' : 'ธาตุทอง (Metal) & ธาตุน้ำ (Water)')));
+    let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุไม้ (Wood) & ธาตุไฟ (Fire)')));
 
     const FREE_BAZI_POOLS = [
       `ดิถี ${dayMaster.name} (${dayMaster.elem}) พื้นดวงเกิดวันที่ ${d} ${(typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[m-1] : '')} พ.ศ. ${yBE} สะท้อนถึงพลังงานแห่งความมุ่งมั่นและวิสัยทัศน์ที่กว้างไกล เสริมความสำเร็จด้วยธาตุ <strong>${yongShen}</strong>`,
@@ -11422,73 +11423,38 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     let freePoolIndex = seed % FREE_BAZI_POOLS.length;
 
-    const VIP_5D_POOLS = [
-      {
-        fin: `อิงวันเกิด (${d}/${m}/${yBE}) และวันจร ${tD} ${tMName} ${tY}: กระแสเงินสดหมุนเวียนมาจากทักษะและความเชี่ยวชาญเฉพาะตัว มีเกณฑ์รับทรัพย์ก้อนโตจากการลงทุนและการขยายธุรกิจ`,
-        work: `อิทธิพลวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้ดิถี ${dayMaster.name} โดดเด่นในงานบริหาร การคุมทีม และการตัดสินใจเชิงกลยุทธ์`,
-        love: `ดวงชะตาคู่ครองและหุ้นส่วนเกื้อหนุนส่งเสริมให้การเงินและความมั่นคงเติบโตเป็นปึกแผ่นร่วมกัน`,
-        fengshui: `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongShen}) เพื่อดึงดูดกระแสเงินสดตลอดปี ${tY}`
-      },
-      {
-        fin: `รอบวันจรพยากรณ์ ${tD} ${tMName} ${tY} (อิงพื้นดวง ${d}/${m}/${yBE}): โชคลาภและการเงินเติบโตจากเครือข่ายคอนเนกชันและช่องทางดิจิทัล มีจังหวะรับทรัพย์แบบไม่คาดฝัน`,
-        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถี ${dayMaster.name} สร้างผลงานชิ้นโบแดง ผู้ใหญ่และเจ้านายให้การสนับสนุนเต็มที่`,
-        love: `ความสัมพันธ์ราบรื่น ได้รับกำลังใจที่ดีจากคนรอบข้างและคนรักในการขับเคลื่อนโปรเจกต์ใหญ่`,
-        fengshui: `กระตุ้นมุมทรัพย์ด้วยการวางวัตถุมงคลโทนสีธาตุไม้หรือธาตุน้ำ เพื่อหนุนนำพลังงานชี่ที่ดีให้ไหลเวียนตลอดปี ${tY}`
-      },
-      {
-        fin: `อิงวันจร ${tD} ${tMName} ${tY}: การบริหารจัดการหนี้สินและการลงทุนใหดอกออกผลคุ้มค่า ดิถี ${dayMaster.name} มีเกณฑ์สะสมความมั่งคั่งระยะยาว`,
-        work: `งานด้านการเจรจา การค้าขาย และการเป็นตัวแทนโดดเด่นมากในรอบวันจร ${tD} ${tMName} ${tY} ปิดดีลสำเร็จลุล่วงด้วยดี`,
-        love: `คู่ครองหรือพาร์ทเนอร์มีส่วนช่วยสำคัญในการวางแผนการเงินและให้คำปรึกษาที่ยอดเยี่ยม`,
-        fengshui: `เสริมความเฮงด้วยการจัดระเบียบมุมทำงานให้ปลอดโปร่ง และใช้พลังงานจากธาตุหนุนนำ (${yongShen})`
-      },
-      {
-        fin: `วิเคราะห์จากพื้นดวง ${d}/${m}/${yBE} ปะทะพลังงานวันจร ${tD} ${tMName} ${tY}: มีเกณฑ์ได้รับผลกำไรจากธุรกิจออนไลน์ คอนเนกชันต่างถิ่นส่งเสริมให้เงินทองไหลมาเทมา`,
-        work: `พลังงานดาวจร ${tD} ${tMName} ${tY} หนุนนำให้ดิถี ${dayMaster.name} มีชื่อเสียงและความก้าวหน้าในสายงาน ผู้ใหญ่ให้ความเมตตาและไว้วางใจ`,
-        love: `ความรักความสัมพันธ์มีความเข้าอกเข้าใจกันดี คนโสดมีเกณฑ์พบรักผ่านการเดินทางหรือสังคมการทำงาน`,
-        fengshui: `กระตุ้นมุมการเงินด้วยการจัดวางน้ำพุจำลองหรือแจกันดอกไม้สด เสริมความเฮงตลอดปี ${tY}`
-      }
-    ];
+    // คำทำนายเจาะลึก 4 มิติระดับลัคนาพยากรณ์
+    let fullWorkText = "";
+    let fullMoneyText = "";
+    let fullLoveText = "";
+    let fullHealthText = "";
+    let fullFengShuiText = "";
 
-    let transitSeed = (tY * 7) + (tD * 13) + (tM * 11) + seed;
-    let vipPoolIndex = transitSeed % VIP_5D_POOLS.length;
-    let selectedVip5D = VIP_5D_POOLS[vipPoolIndex];
+    if (dayMaster.elem.includes("น้ำ")) {
+      fullWorkText = `<strong>• โครงสร้าง 10 เทพ (เจิ้งกวน & เจิ้งอิ้น):</strong> มีดาวแห่งสติปัญญาและอำนาจการบริหารเกื้อหนุน โดดเด่นในสายงานบริหาร การวางกลยุทธ์ ธุรกิจออนไลน์ การค้าระหว่างประเทศ โลจิสติกส์ และงานดิจิทัลสร้างสรรค์<br>
+      <strong>• อิทธิพลวันจร (${tD} ${tMName} ${tY}):</strong> กระแสธาตุจรส่งเสริมให้เกิดความก้าวหน้าครั้งสำคัญ มีเกณฑ์ได้รับการทาบทามให้รับผิดชอบโปรเจกต์ใหญ่ การเจรจาต่อรอง สัญญาร่วมทุน หรือการประมูลงานจะปิดดีลได้สำเร็จลุล่วง<br>
+      <strong>• ข้อควรระวัง:</strong> ระวังการแบกรับภาระงานหลายด้านพร้อมกันจนเกินกำลัง และควรทำข้อตกลงเป็นลายลักษณ์อักษรเสมอ`;
 
-    const STRENGTH_TRANSIT_POOLS = [
-      `พลังงานแก่นแท้: ${dayMaster.desc} | ปะทะพลังงานดาวจรวันที่ ${tD} ${tMName} ${tY} ส่งผลให้ดิถีเกิดการกระตุ้นขุมพลังแฝง ปลดล็อกความมุ่งมั่นและพร้อมลุยงานใหญ่`,
-      `พลังงานแก่นแท้: ${dayMaster.desc} | อิทธิพลการโคจรในวันจร ${tD} ${tMName} ${tY} ส่งเสริมให้สถานะดวงชะตามีความตื่นตัว ปรับตัวรับมือความสำเร็จได้อย่างยอดเยี่ยม`,
-      `พลังงานแก่นแท้: ${dayMaster.desc} | กระแสพลังงานปะทะวันจร ${tD} ${tMName} ${tY} เปิดทางให้ดิถีมีความเฉียบคม เด็ดเดี่ยว และสร้างผลงานชิ้นสำคัญได้สำเร็จ`
-    ];
-    let strengthTransitIdx = transitSeed % STRENGTH_TRANSIT_POOLS.length;
-    let selectedStrengthText = STRENGTH_TRANSIT_POOLS[strengthTransitIdx];
+      fullMoneyText = `<strong>• คลังสมบัติ & โครงสร้างการเงิน (เจิ้งไฉ & เพียนไฉ):</strong> สายธารแห่งโชคลาภเปิดกว้าง การเงินหลั่งไหลเข้ามาจากหลากหลายช่องทาง ทั้งงานหลัก งานเสริม และการต่อยอดในสินทรัพย์ดิจิทัล<br>
+      <strong>• จังหวะรับทรัพย์วันจร:</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภลอยจากการเจรจาธุรกิจ ปิดการขายอสังหาริมทรัพย์ หรือผลตอบแทนจากการลงทุนระยะยาว เป็นช่วงเวลาทองในการสะสมความมั่งคั่ง<br>
+      <strong>• การบริหารความเสี่ยง:</strong> แม้กระแสเงินจะเข้าคล่องตัว แต่ควรจัดสรรออมเป็นสินทรัพย์ถาวร งดเว้นการให้ผู้อื่นหยิบยืมเงินหรือค้ำประกันโดยเด็ดขาด`;
 
-    const freeBaziDesc = document.getElementById('bazi-free-desc');
-    if (freeBaziDesc) {
-        freeBaziDesc.innerHTML = (typeof FREE_BAZI_POOLS !== 'undefined' ? FREE_BAZI_POOLS[freePoolIndex] : null) || 'ไม่มีข้อมูลคำทำนายพื้นดวง';
-    }
+      fullLoveText = `<strong>• ฐานคู่ครองและเสาวัน (日支):</strong> คู่ครองมีสติปัญญาเฉียบคม มีวุฒิภาวะสูง เป็นคู่คิดที่ดีในการช่วยวางแผนชีวิตและการเงิน<br>
+      <strong>• สถานะคนมีคู่:</strong> ความสัมพันธ์เกื้อหนุนร่วมกันสร้างรากฐานครอบครัว มีเกณฑ์ได้ซื้อทรัพย์สินชิ้นใหญ่ บ้าน หรือยานพาหนะร่วมกัน<br>
+      <strong>• สถานะคนโสด:</strong> เสน่ห์เมตตามหานิยมเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีหน้าที่การงานมั่นคงหรือเป็นนักธุรกิจจากการติดต่องาน`;
 
-    const vipFinEl = document.getElementById('bazi-vip-fin') || document.getElementById('vip-fin-desc');
-    const vipWorkEl = document.getElementById('bazi-vip-work') || document.getElementById('vip-work-desc');
-    const vipLoveEl = document.getElementById('bazi-vip-love') || document.getElementById('vip-love-desc');
-    const vipFengshuiEl = document.getElementById('bazi-vip-fengshui') || document.getElementById('vip-fengshui-desc');
-    const vipStrengthEl = document.getElementById('bazi-vip-strength') || document.getElementById('vip-strength-desc');
+      fullHealthText = `<strong>• ธาตุพร่องและอวัยวะที่ต้องบำรุง:</strong> ระวังระบบไต ทางเดินปัสสาวะ ความดันโลหิต และอาการอ่อนล้าของระบบไหลเวียนโลหิต<br>
+      <strong>• สภาวะร่างกายช่วงนี้:</strong> ระวังอาการนอนไม่หลับ ออฟฟิศซินโดรม ปวดหลังช่วงเอว และสายตาล้าจากการโหมงาน ดื่มน้ำสะอาดให้เพียงพอและพักผ่อนให้ตรงเวลา`;
 
-    if (vipFinEl && typeof selectedVip5D !== 'undefined') vipFinEl.innerHTML = selectedVip5D.fin;
-    if (vipWorkEl && typeof selectedVip5D !== 'undefined') vipWorkEl.innerHTML = selectedVip5D.work;
-    if (vipLoveEl && typeof selectedVip5D !== 'undefined') vipLoveEl.innerHTML = selectedVip5D.love;
-    if (vipFengshuiEl && typeof selectedVip5D !== 'undefined') vipFengshuiEl.innerHTML = selectedVip5D.fengshui;
-    if (vipStrengthEl) vipStrengthEl.innerHTML = selectedStrengthText;
-
-    const LUCK_CYCLE_POOLS = [
-      `วงจรชีวิตในทศวรรษนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณ (${yongShen}) ส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด`,
-      `ทศวรรษชะตานี้ (อิงพื้นดวง ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) โดดเด่นเรื่องการสร้างความมั่นคงและทรัพย์สินก้อนโต พลังงานธาตุหนุนนำ (${yongShen}) ส่งผลให้ทุกโปรเจกต์ประสบความสำเร็จอย่างงดงาม`,
-      `วัฏจักรชีวิตรอบนี้ (อิงวันเกิด ${d}/${m}/${yBE} ดิถี ${dayMaster.name}) เปิดประตูรับโชคลาภครั้งใหญ่ บารมีและวิสัยทัศน์ที่เฉียบคมร่วมกับธาตุเกื้อหนุน (${yongShen}) จะผลักดันให้คุณก้าวขึ้นสู่จุดสูงสุดของชีวิต`
-    ];
-    let luckPoolIndex = seed % LUCK_CYCLE_POOLS.length;
-    let selectedLuckCycle = LUCK_CYCLE_POOLS[luckPoolIndex];
-
-    const luckDescEl = document.getElementById('bazi-vip-luck') || document.getElementById('luck-cycle-desc');
-    if (luckDescEl && typeof LUCK_CYCLE_POOLS !== 'undefined') {
-        luckDescEl.innerHTML = selectedLuckCycle;
+      fullFengShuiText = `<strong>• ทิศรับทรัพย์มงคล:</strong> จัดโต๊ะทำงานหรือเตียงนอนโดยหันหน้าไปทาง <strong>ทิศเหนือ หรือ ทิศตะวันตก</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>
+      <strong>• โทนสีและหินนำโชค:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุทองและธาตุน้ำ เช่น <strong>ไพลิน, ลาพิส ลาซูลี, ไหมทอง, ซิทริน</strong> สวมใส่เสื้อผ้าโทน <strong>น้ำเงินคราม, ดำ, ขาวมุก, บรอนซ์ทอง</strong><br>
+      <strong>• สิ่งมงคลตั้งโต๊ะ:</strong> ตั้งน้ำพุจำลองขนาดเล็กที่มีน้ำไหลเวียน หรือลูกแก้วคริสตัลทางมุมซ้ายของโต๊ะทำงาน เพื่อกระตุ้นกระแสการเงินให้ไหลเวียนไม่ขาดสาย`;
+    } else {
+      fullWorkText = `โครงสร้าง 10 เทพและดิถีธาตุ ${dayMaster.name} หนุนนำให้มีความก้าวหน้าอย่างยิ่งใหญ่ในสายงานบริหาร การเจรจา และธุรกิจส่วนตัว ในรอบวันจร ${tD} ${tMName} ${tY} มีโอกาสปิดดีลใหญ่และได้รับความไว้วางใจจากผู้ใหญ่`;
+      fullMoneyText = `คลังทรัพย์เปิดรับกระแสการเงินจากหลายช่องทาง มีเกณฑ์รับผลตอบแทนก้อนโตจากการลงทุนและธุรกิจ มีสภาพคล่องแข็งแกร่ง`;
+      fullLoveText = `คู่ครองเป็นกัลยาณมิตรที่ช่วยส่งเสริมความมั่นคง คนโสดมีเกณฑ์พบรักกับคนโปรไฟล์ดีและเข้าใจกันลึกซึ้ง`;
+      fullHealthText = `ระวังความเครียดสะสมและการพักผ่อนไม่เพียงพอ ควรดูแลระบบทางเดินอาหารและกล้ามเนื้ออย่างสม่ำเสมอ`;
+      fullFengShuiText = `จัดโต๊ะทำงานรับทิศมงคล เสริมด้วยหินมงคลตามธาตุให้คุณ (${yongShen}) เพื่อดึงดูดโชคลาภตลอดปี ${tY}`;
     }
 
     const freeRes = document.getElementById('bazi-free-result');
@@ -11523,12 +11489,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const strTitle = document.getElementById('bazi-vip-strength-title');
-      if (strTitle) strTitle.textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา`;
+      if (strTitle) strTitle.textContent = `ดิถี ${dayMaster.name} (${dayMaster.elem}${dayMaster.pol}) - สภาพดวงชะตา: เข้มแข็ง (Strong Day Master)`;
       
       const elmAnalysis = document.getElementById('bazi-vip-element-analysis');
       if (elmAnalysis) {
         elmAnalysis.innerHTML = `
-          <strong>${selectedStrengthText}</strong><br>
+          <strong>พลังงานแก่นแท้:</strong> ${dayMaster.desc}<br>
           <strong>ธาตุให้คุณเกื้อหนุน (Yong Shen):</strong> <span style="color:#81c784; font-weight:700;">${yongShen}</span> | 
           <strong>ธาตุให้โทษต้องระวัง (Ji Shen):</strong> <span style="color:#ff7675; font-weight:700;">${jiShen}</span>
         `;
@@ -11537,23 +11503,41 @@ document.addEventListener('DOMContentLoaded', function() {
       const extAnalysis = document.getElementById('bazi-vip-extended-analysis');
       if (extAnalysis) {
         extAnalysis.innerHTML = `
-          <h5 style="color:#ffd700; margin-bottom:8px; font-size:0.92rem;"><i class="fa-solid fa-layer-group"></i> คัมภีร์วิเคราะห์ 5 มิติชะตาชีวิต & ฮวงจุ้ยแก้ดวง (VIP Deep Analysis - วันจร ${tD} ${tMName} ${tY}):</h5>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.83rem;">
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#ffd54f;">1. วาสนาการเงิน & ขุมทรัพย์:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fin}</p>
+          <div style="background: rgba(14,20,38,0.95); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 18px; margin-top: 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed rgba(234,179,8,0.4); padding-bottom: 8px; margin-bottom: 14px;">
+              <h4 style="color:#ffd700; font-size:1.05rem; margin:0; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-crown" style="color:#ffd700;"></i> คัมภีร์ผ่าดวง 4 มิติเชิงลึก & คลังสมบัติปาจื่อ (VIP Synthesis)
+              </h4>
+              <span style="font-size:0.75rem; background:rgba(255,215,0,0.15); color:#ffd700; padding:2px 8px; border-radius:10px;">
+                อิงวันจร: ${tD} ${tMName} ${tY}
+              </span>
             </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#64b5f6;">2. การงาน & บารมี:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.work}</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; padding:12px; border-radius:8px; margin:0;">
+                <strong style="color: #64b5f6; font-size:0.92rem;"><i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & 10 เทพ (เจิ้งกวน / ซางกวน):</strong>
+                <div style="color: #d1d9ec; font-size:0.86rem; margin-top: 4px; line-height:1.7;">${fullWorkText}</div>
+              </div>
+
+              <div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #ffd700; padding:12px; border-radius:8px; margin:0;">
+                <strong style="color: #ffd54f; font-size:0.92rem;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน คลังสมบัติ & สายธารโชคลาภ (เจิ้งไฉ / เพียนไฉ):</strong>
+                <div style="color: #d1d9ec; font-size:0.86rem; margin-top: 4px; line-height:1.7;">${fullMoneyText}</div>
+              </div>
+
+              <div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #f48fb1; padding:12px; border-radius:8px; margin:0;">
+                <strong style="color: #f48fb1; font-size:0.92rem;"><i class="fa-solid fa-heart"></i> ๓. มิติความรัก คู่ครอง & หุ้นส่วนชะตา (เจาะลึกเสาวัน 日支):</strong>
+                <div style="color: #d1d9ec; font-size:0.86rem; margin-top: 4px; line-height:1.7;">${fullLoveText}</div>
+              </div>
+
+              <div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #ff7675; padding:12px; border-radius:8px; margin:0;">
+                <strong style="color: #ff7675; font-size:0.92rem;"><i class="fa-solid fa-shield-heart"></i> ๔. มิติสุขภาพ ธาตุพร่อง & เคราะห์กรรมที่ต้องระวัง:</strong>
+                <div style="color: #d1d9ec; font-size:0.86rem; margin-top: 4px; line-height:1.7;">${fullHealthText}</div>
+              </div>
             </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#f48fb1;">3. คู่ครอง & หุ้นส่วนชะตา:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.love}</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px;">
-              <strong style="color:#81c784;">4. ฮวงจุ้ยเสริมพลังชี้นำประจำตัว:</strong>
-              <p style="margin-top:3px; color:#cfd8dc;">${selectedVip5D.fengshui}</p>
+
+            <div style="margin-top: 14px; background: rgba(30, 20, 10, 0.9); border: 1.5px solid var(--gold-main); padding: 14px; border-radius: 10px;">
+              <strong style="color: #ffd700; font-size:0.92rem;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ธาตุปรับดวงเฉพาะบุคคล (Yong Shen / 用神):</strong>
+              <div style="font-size: 0.86rem; color: #fff; margin-top: 6px; line-height: 1.7;">${fullFengShuiText}</div>
             </div>
           </div>
         `;
@@ -11562,12 +11546,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const luckCycleEl = document.getElementById('bazi-vip-luckcycle');
       if (luckCycleEl) {
         luckCycleEl.innerHTML = `
-          <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด ${d}/${m}/${yBE}:</strong><br>
-          ${selectedLuckCycle}
+          <strong><i class="fa-solid fa-compass"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันเกิด ${d}/${m}/${yBE} และวันจร ${tD} ${tMName} ${tY}:</strong><br>
+          วัฏจักรพลังงานประจำปี พ.ศ. ${tY} (วันจร ${tD}/${tM}): ธาตุให้คุณส่งกำลังหนุนนำ ทำให้การเจรจาค้าขายและการขยายเครือข่ายเติบโตอย่างก้าวกระโดดสำหรับดิถี ${dayMaster.name}
         `;
       }
     }
-}); // ปิด DOMContentLoaded อย่างถูกต้อง
 
 // --- 1. รหัสกรรมข้ามภพ ---
 function switchKarmicMode(mode) {
