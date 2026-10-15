@@ -3139,78 +3139,91 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-// --- ระบบคำนวณลัคนามาตรฐานสุริยยาตร์ไทยแท้ (Suriyayat Engine) ---
-      let tbDay = AppState.birthDay;
-      let tbMonth = AppState.birthMonth;
-      let tbYearBE = AppState.birthBE;
-      let tbHour = AppState.birthHour;
-      let tbMin = AppState.birthMinute;
+// --- ระบบคำนวณลัคนามาตรฐานโหรไทย (ตัดวันเวลาอาทิตย์อุทัย 06:00 น.) ---
+      let rawDay = AppState.birthDay;
+      let rawMonth = AppState.birthMonth;
+      let rawYear = AppState.birthBE;
+      let rawHour = AppState.birthHour;
+      let rawMin = AppState.birthMinute;
 
-      // 1. อันโตนาทีสุริยยาตร์ (ASCII ล้วน: เมษ ถึง มีน รวม 1,440 นาที)
-      const SURIYAYAT_ANTANATI = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
+      // 1. กฎโหรไทย: ถ้าเกิด 00:00 - 05:59 น. ให้นับอาทิตย์อุทัยของวันก่อนหน้า (ลด 1 วัน)
+      let calcD = rawDay;
+      let calcM = rawMonth;
+      let calcY = rawYear;
 
-      // วันที่อาทิตย์ยกเข้าแต่ละราศี
-      const SUN_ENTRY = [
-        { m: 4, d: 13.7 }, // เมษ (0)
-        { m: 5, d: 14.8 }, // พฤษภ (1)
-        { m: 6, d: 15.3 }, // เมถุน (2)
-        { m: 7, d: 16.8 }, // กรกฎ (3)
-        { m: 8, d: 16.8 }, // สิงห์ (4)
-        { m: 9, d: 16.8 }, // กันย์ (5)
-        { m: 10, d: 17.8 }, // ตุลย์ (6)
-        { m: 11, d: 16.8 }, // พิจิก (7)
-        { m: 12, d: 15.8 }, // ธนู (8)
-        { m: 1, d: 14.8 },  // มังกร (9)
-        { m: 2, d: 13.8 },  // กุมภ์ (10)
-        { m: 3, d: 14.8 }   // มีน (11)
+      if (rawHour < 6) {
+        let prevDate = new Date(calcY - 543, calcM - 1, calcD - 1);
+        calcD = prevDate.getDate();
+        calcM = prevDate.getMonth() + 1;
+        calcY = prevDate.getFullYear() + 543;
+      }
+
+      // 2. อันโตนาทีสามัญมาตรฐานสุริยยาตร์ (นาทีต่อราศี: เมษ ถึง มีน)
+      const SUR_ANTANATI = [120, 114, 118, 134, 138, 132, 126, 120, 114, 108, 110, 116];
+
+      // วันที่อาทิตย์ยกเข้าแต่ละราศี (0=เมษ ถึง 11=มีน)
+      const SUN_ENTRY_DAYS = [
+        { m: 4, d: 14 }, // เมษ
+        { m: 5, d: 15 }, // พฤษภ
+        { m: 6, d: 15 }, // เมถุน
+        { m: 7, d: 17 }, // กรกฎ
+        { m: 8, d: 17 }, // สิงห์
+        { m: 9, d: 17 }, // กันย์
+        { m: 10, d: 18 }, // ตุลย์
+        { m: 11, d: 17 }, // พิจิก
+        { m: 12, d: 16 }, // ธนู
+        { m: 1, d: 15 },  // มังกร
+        { m: 2, d: 14 },  // กุมภ์
+        { m: 3, d: 15 }   // มีน
       ];
 
-      // 2. หาสมผุสอาทิตย์
+      // 3. หาสมผุสอาทิตย์ ณ วันตัดแบบไทย
       let sunSign = 0;
-      let entryDay = 13.7;
+      let baseEntryDay = 14;
       for (let i = 0; i < 12; i++) {
-        if (tbMonth === SUN_ENTRY[i].m) {
-          if (tbDay >= Math.floor(SUN_ENTRY[i].d)) {
+        if (calcM === SUN_ENTRY_DAYS[i].m) {
+          if (calcD >= SUN_ENTRY_DAYS[i].d) {
             sunSign = i;
-            entryDay = SUN_ENTRY[i].d;
+            baseEntryDay = SUN_ENTRY_DAYS[i].d;
           } else {
             sunSign = (i + 11) % 12;
-            entryDay = SUN_ENTRY[sunSign].d;
+            baseEntryDay = SUN_ENTRY_DAYS[sunSign].d;
           }
           break;
         }
       }
 
-      // องศาอาทิตย์ (0 - 30 องศา)
-      let sunDegree = (tbDay >= entryDay) 
-        ? (tbDay - entryDay) 
-        : (30 - (entryDay - tbDay));
-      if (sunDegree < 0) sunDegree = 0;
-      if (sunDegree >= 30) sunDegree = 29.9;
+      // คำนวณองศาอาทิตย์ (0 - 30 องศา)
+      let sunDeg = (calcD >= baseEntryDay) 
+        ? (calcD - baseEntryDay) 
+        : (30 - (baseEntryDay - calcD));
+      if (sunDeg < 0) sunDeg = 0;
+      if (sunDeg >= 30) sunDeg = 29.9;
 
-      // 3. เวลาเกิดเทียบกับอาทิตย์อุทัยเฉลี่ย (06:00 น.)
-      let totalMinutesFromSunrise = 0;
-      if (tbHour >= 6) {
-        totalMinutesFromSunrise = (tbHour - 6) * 60 + tbMin;
+      // 4. คำนวณเวลาที่ผ่านไปจาก 06:00 น.
+      let elapsedMins = 0;
+      if (rawHour >= 6) {
+        elapsedMins = (rawHour - 6) * 60 + rawMin;
       } else {
-        totalMinutesFromSunrise = (18 + tbHour) * 60 + tbMin;
+        // เกิดหลังเที่ยงคืน = ผ่านจาก 06:00 น. ของวันวานมาแล้ว 18 ชม. + ชั่วโมงเกิด
+        elapsedMins = (18 + rawHour) * 60 + rawMin;
       }
 
-      // 4. เวลาคงเหลือของราศีที่อาทิตย์สถิตอยู่
-      let firstSignDuration = SURIYAYAT_ANTANATI[sunSign];
-      let remainingFirstSignMin = firstSignDuration * ((30 - sunDegree) / 30);
+      // 5. รอนาทีหาลัคนา
+      let firstSignMins = SUR_ANTANATI[sunSign];
+      let remFirstSign = firstSignMins * ((30 - sunDeg) / 30);
 
       let ascSign = sunSign;
-      let runningTime = totalMinutesFromSunrise;
+      let leftTime = elapsedMins;
 
-      if (runningTime <= remainingFirstSignMin) {
+      if (leftTime <= remFirstSign) {
         ascSign = sunSign;
       } else {
-        runningTime -= remainingFirstSignMin;
+        leftTime -= remFirstSign;
         ascSign = (ascSign + 1) % 12;
 
-        while (runningTime > SURIYAYAT_ANTANATI[ascSign]) {
-          runningTime -= SURIYAYAT_ANTANATI[ascSign];
+        while (leftTime > SUR_ANTANATI[ascSign]) {
+          leftTime -= SUR_ANTANATI[ascSign];
           ascSign = (ascSign + 1) % 12;
         }
       }
