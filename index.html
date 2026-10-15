@@ -1002,12 +1002,26 @@ header.navbar {
         <div class="cat-name">ปาจื่อ (BaZi)</div>
         <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
       </div>
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal(); setTimeout(calcSajuEngine, 100);}">
+     <div class="cat-item" onclick="
+        var bD=document.getElementById('birthDay').value; 
+        if(!bD){
+          alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); 
+          scrollToForm();
+        } else {
+          openSajuModal(); 
+          setTimeout(function(){
+            if(typeof window.renderSajuDirect === 'function'){
+              window.renderSajuDirect();
+            } else if(typeof calcSajuEngine === 'function'){
+              calcSajuEngine();
+            }
+          }, 150);
+        }
+      ">
         <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
         <div class="cat-name">ซาจู (Saju)</div>
         <div class="cat-sub">4 เสาชะตาเกาหลี</div>
       </div>
-
       <div class="cat-item" onclick="openFeatureModal('numerology')">
         <div class="cat-icon-circle"><i class="fa-solid fa-arrow-down-9-1"></i></div>
         <div class="cat-name">เลขศาสตร์/ชื่อ</div>
@@ -2455,35 +2469,35 @@ function analyzeVipSpecificQuestion() {
     </div>
   </div>
 
-<!-- MODAL: ปาจื่อ -->
-<div class="modal-overlay" id="modal-bazi">
+<!-- MODAL: ซาจู (Saju 4 เสาชะตาเกาหลี) -->
+<div class="modal-overlay" id="modal-saju">
   <div class="modal-content" style="max-width: 890px;">
-    <div class="modal-close-btn" onclick="closeModal('modal-bazi')"><i class="fa-solid fa-xmark"></i></div>
+    <div class="modal-close-btn" onclick="closeModal('modal-saju')"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
     <div class="tier-switcher" style="margin-bottom:14px;">
-      <button type="button" class="tier-btn active" id="btn-bazi-free" onclick="switchBaziMode('free')">ดิถีธาตุพื้นฐาน (ดูฟรี)</button>
-      <button type="button" class="tier-btn" id="btn-bazi-vip" onclick="switchBaziMode('vip'); if(typeof window.renderBaziDirect === 'function'){ window.renderBaziDirect(); } else if(typeof calcBaziEngine === 'function'){ calcBaziEngine(); }"><i class="fa-solid fa-crown"></i> 4 เสาหลัก, 10 เทพ & ฮวงจุ้ยชั้นสูง (VIP)</button>
+      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')">อิลจู & แก่นแท้ธาตุเกิด (ดูฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')"><i class="fa-solid fa-crown"></i> ผ่าดวงซาจู VIP & ชะตา 4 ฤดูจร (VIP)</button>
     </div>
     <div style="text-align: center; margin-bottom: 15px;">
-      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-yin-yang"></i> ปาจื่อ (BaZi) ดวงจีนโบราณ</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์พลังงาน 5 ธาตุ หยิน-หยาง และถอดรหัสกิ่งฟ้า-ก้านดิน 4 เสาหลัก (ระบบ พ.ศ.)</p>
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-compass"></i> ซาจู พัลจา (사주팔자) โหราศาสตร์เกาหลีโบราณ</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์ 4 เสาหลักชะตาชีวิต (ปี/เดือน/วัน/ยาม) ถอดรหัสชอนกัน (Cheongon) จีจี (Jiji) และพลังงานอุนเซ (Wun-se)</p>
     </div>
     <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
       
       <!-- โหมดฟรี -->
-      <div id="bazi-free-result" style="display:none; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
-        <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4>
-        <p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
+      <div id="saju-free-result" style="display:block; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 id="saju-free-title" style="color:#ffd700; margin-bottom:6px;">อิลจู (Ilju) เสาวันเกิดของคุณ: -</h4>
+        <p id="saju-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
       </div>
 
       <!-- โหมด VIP -->
-      <div id="bazi-vip-result" style="display:none; margin-top: 18px;">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="bazi-pillars-grid"></div>
+      <div id="saju-vip-result" style="display:none; margin-top: 18px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="saju-pillars-grid"></div>
         <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-soft);">
-          <h4 id="bazi-vip-strength-title" style="color:#ffd700; margin-bottom:6px;">-</h4>
-          <p id="bazi-vip-element-analysis" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
-          <div id="bazi-vip-extended-analysis" style="margin-top:12px; border-top:1px dashed var(--border-soft); padding-top:10px;"></div>
-          <div id="bazi-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
+          <h4 id="saju-vip-strength-title" style="color:#ffd700; margin-bottom:6px;">-</h4>
+          <p id="saju-vip-element-analysis" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+          <div id="saju-vip-extended-analysis" style="margin-top:12px; border-top:1px dashed var(--border-soft); padding-top:10px;"></div>
+          <div id="saju-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
         </div>
       </div>
 
@@ -11921,6 +11935,254 @@ function renderBaziDirect() {
 }
 window.renderBaziDirect = renderBaziDirect;
 window.calcBaziEngine = renderBaziDirect;
+    // ฟังก์ชันเปิดโมดอลซาจู
+function openSajuModal() {
+  if (typeof openFeatureModal === 'function') {
+    openFeatureModal('saju');
+  } else {
+    const modal = document.getElementById('modal-saju');
+    if (modal) modal.style.display = 'flex';
+  }
+  if (typeof AppState !== 'undefined') {
+    AppState.currentSajuMode = AppState.currentSajuMode || 'free';
+  }
+  setTimeout(renderSajuDirect, 120);
+}
+window.openSajuModal = openSajuModal;
+
+// ฟังก์ชันสลับโหมด ฟรี / VIP ของซาจู
+function switchSajuMode(mode) {
+  if (typeof AppState !== 'undefined') {
+    AppState.currentSajuMode = mode;
+  }
+  const btnFree = document.getElementById('btn-saju-free');
+  const btnVip = document.getElementById('btn-saju-vip');
+  if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+  if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+  const freeRes = document.getElementById('saju-free-result');
+  const vipRes = document.getElementById('saju-vip-result');
+  if (freeRes) freeRes.style.display = (mode === 'free') ? 'block' : 'none';
+  if (vipRes) vipRes.style.display = (mode === 'vip') ? 'block' : 'none';
+
+  renderSajuDirect();
+}
+window.switchSajuMode = switchSajuMode;
+
+// ฟังก์ชันคำนวณและพยากรณ์ซาจูฉบับสมบูรณ์
+function renderSajuDirect() {
+  try {
+    const dayEl = document.getElementById('birthDay');
+    const monthEl = document.getElementById('birthMonth');
+    const yearEl = document.getElementById('birthYearBE');
+    const hourEl = document.getElementById('birthHour24');
+
+    const transitDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
+    const transitMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
+    const transitYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
+
+    let d = dayEl && dayEl.value ? parseInt(dayEl.value, 10) : 30;
+    let m = monthEl && monthEl.value ? parseInt(monthEl.value, 10) : 4;
+    let yBE = yearEl && yearEl.value ? parseInt(yearEl.value, 10) : 2522;
+    let hHour = hourEl && hourEl.value ? parseInt(hourEl.value, 10) : 1;
+
+    let tD = transitDayEl && transitDayEl.value ? parseInt(transitDayEl.value, 10) : 15;
+    let tM = transitMonthEl && transitMonthEl.value ? parseInt(transitMonthEl.value, 10) : 10;
+    let tY = transitYearEl && transitYearEl.value ? parseInt(transitYearEl.value, 10) : 2569;
+
+    const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    let tMName = thMonths[tM - 1] || 'ตุลาคม';
+    let bMName = thMonths[m - 1] || 'เมษายน';
+
+    // 10 กิ่งฟ้าเกาหลี (Cheongan: 천간)
+    const cheongan = [
+      { kr: "갑 (คัพ)", elem: "ไม้หยาง", sym: "ต้นสนใหญ่", desc: "จิตใจเข้มแข็ง มั่นคง มีศักดิ์ศรี ยึดมั่นในคุณธรรมและการเป็นผู้นำอย่างแท้จริง" },
+      { kr: "乙 (อึล)", elem: "ไม้หยิน", sym: "เถาวัลย์ / ดอกไม้", desc: "ปรับตัวเข้ากับสภาพแวดล้อมได้ดีเยี่ยม อ่อนโยน มีวาทศิลป์และความคิดสร้างสรรค์" },
+      { kr: "병 (พย็อง)", elem: "ไฟหยาง", sym: "ดวงตะวัน", desc: "กระตือรือร้น ใจกว้าง เปิดเผย ตรงไปตรงมา มีพลังขับเคลื่อนและสร้างแรงบันดาลใจ" },
+      { kr: "정 (จ็อง)", elem: "ไฟหยิน", sym: "เปลวเทียน", desc: "อบอุ่น ละเอียดอ่อน ช่างสังเกต มีสัญชาตญาณพิเศษและปัญญาลึกซึ้ง" },
+      { kr: "무 (มู)", elem: "ดินหยาง", sym: "ขุนเขาศิลา", desc: "หนักแน่น น่าเกรงขาม ซื่อสัตย์ ไว้วางใจได้สูง ดุจภูผาที่ไม่สั่นคลอน" },
+      { kr: "기 (คี)", elem: "ดินหยิน", sym: "ดินสวนอันอุดม", desc: "โอบอ้อมอารี อดทนสูง เข้าอกเข้าใจผู้อื่น เลี้ยงดูเกื้อกูลสิ่งรอบตัว" },
+      { kr: "경 (คย็อง)", elem: "ทองหยาง", sym: "ดาบเหล็กกล้า", desc: "เด็ดเดี่ยว มีระเบียบวินัย กล้าได้กล้าเสีย ชัดเจนในจุดยืน ไม่ยอมก้มหัวให้อธรรม" },
+      { kr: "신 (ชิน)", elem: "ทองหยิน", sym: "อัญมณีล้ำค่า", desc: "ประณีต รสนิยมสูง มีเสน่ห์เฉพาะตัว พิถีพิถันและมุ่งสู่ความสมบูรณ์แบบ" },
+      { kr: "임 (อิม)", elem: "น้ำหยาง", sym: "แม่น้ำใหญ่ / มหาสมุทร", desc: "ปัญญาเฉียบคม ลึกซึ้ง ปรับตัวเก่ง มีวิสัยทัศน์กว้างไกลและชอบเรียนรู้" },
+      { kr: "계 (คเย)", elem: "น้ำหยิน", sym: "หยาดฝนพรำ / น้ำค้าง", desc: "สุขุม ละมุนละไม นุ่มนวลแต่พลังใจเหนียวแน่น มีลางสังหรณ์แม่นยำ" }
+    ];
+
+    // 12 ก้านดินเกาหลี (Jiji: 지지)
+    const jiji = [
+      "자 (จา: ชวด)", "축 (ชุก: ฉลู)", "인 (อิน: ขาล)", "묘 (มโย: เถาะ)",
+      "진 (จิน: มะโรง)", "사 (ซา: มะเส็ง)", "오 (โอ: มะเมีย)", "미 (มี: มะแม)",
+      "신 (ชิน: วอก)", "유 (ยู: ระกา)", "술 (ซุล: จอ)", "해 (แฮ: กุน)"
+    ];
+
+    let seed = (d * 31) + (m * 53) + (yBE * 7) + (hHour * 17);
+    let dayMaster = cheongan[Math.abs(seed) % 10];
+
+    // 4 เสาชะตาซาจู (Saju Pillars)
+    let yCol = cheongan[Math.abs(seed + 1) % 10].kr + "<br>" + jiji[Math.abs(seed + 1) % 12];
+    let mCol = cheongan[Math.abs(seed + 3) % 10].kr + "<br>" + jiji[Math.abs(seed + 3) % 12];
+    let dCol = dayMaster.kr + "<br>" + jiji[Math.abs(seed + 7) % 12];
+    let hCol = cheongan[Math.abs(seed + 5) % 10].kr + "<br>" + jiji[Math.abs(seed + 5) % 12];
+
+    let yongshin = (dayMaster.elem.includes('ไม้')) ? 'ธาตุน้ำ (ซู: 水) และ ธาตุไฟ (ฮวา: 火)' : 
+                   (dayMaster.elem.includes('ไฟ')) ? 'ธาตุไม้ (มก: 木) และ ธาตุดิน (โท: 土)' : 
+                   (dayMaster.elem.includes('ดิน')) ? 'ธาตุไฟ (ฮวา: 火) และ ธาตุทอง (คึม: 金)' : 
+                   (dayMaster.elem.includes('ทอง')) ? 'ธาตุดิน (โท: 土) และ ธาตุน้ำ (ซู: 水)' : 'ธาตุทอง (คึม: 金) และ ธาตุไม้ (มก: 木)';
+
+    let gishin = (dayMaster.elem.includes('ไม้')) ? 'ธาตุทองหนัก' : 
+                 (dayMaster.elem.includes('ไฟ')) ? 'ธาตุน้ำแผดเผา' : 
+                 (dayMaster.elem.includes('ดิน')) ? 'ธาตุไม้ทึบ' : 
+                 (dayMaster.elem.includes('ทอง')) ? 'ธาตุไฟจัด' : 'ธาตุดินปิดกั้น';
+
+    // คำนวณ Seed กระจายตัวแบบไดนามิก
+    let birthSeed = (d * 41) + (m * 23) + (yBE * 13) + (hHour * 19);
+    let transitSeed = (tY * 797) + (tM * 83) + (tD * 53) + birthSeed;
+
+    // พูลคำทำนายฟรี (Free Pool)
+    const FREE_SAJU = [
+      `อิลจู (일주: เสาวันเกิด) ของคุณคือ <strong>${dayMaster.kr} (${dayMaster.elem} - ${dayMaster.sym})</strong> ตามรอบวันเกิด ${d} ${bMName} ${yBE}: ชะตาชีวิตมีแก่นแท้แห่ง${dayMaster.desc} เป็นคนมีจุดยืนเด่นชัด พึ่งพาตนเองได้ดีเยี่ยม พลังปรับสมดุลชีวิต (ยงชิน) คือ <strong>${yongshin}</strong> ควรระวังอิทธิพลจาก <strong>${gishin}</strong>`,
+      `อิลจูประจำตัว <strong>${dayMaster.kr} (${dayMaster.elem})</strong> กำเนิด ${d} ${bMName} ${yBE}: เปรียบเสมือน${dayMaster.sym} สถิตพลังแห่งความรอบคอบสุขุม มีทักษะการตัดสินใจในยามวิกฤตได้เฉียบขาด เสริมความเจริญรุ่งเรืองด้วยพลัง <strong>${yongshin}</strong>`,
+      `ถอดรหัสเสาวัน <strong>${dayMaster.kr} (${dayMaster.elem})</strong> รอบเกิด ${d}/${m}/${yBE}: พลังงานชอนกันสะท้อนถึงคนที่มีเสน่ห์เฉพาะตัวสูง ความคิดสร้างสรรค์เป็นเลิศ ยิ่งใช้พลังเกื้อหนุนของ <strong>${yongshin}</strong> ยิ่งเปิดทางสู่ความสำเร็จใหญ่`
+    ];
+
+    // พูลคำทำนาย VIP ซาจู 4 มิติ
+    const SAJU_CAREER = [
+      "<strong>• โครงสร้างควันซ็อง & อินซ็อง (관성/인성 - ยศศักดิ์และปัญญา):</strong> ดวงกำเนิด (" + d + "/" + m + "/" + yBE + ") หนุนให้อิลจู " + dayMaster.kr + " มีบารมีในการคุมคนและการวางแผนกลยุทธ์ขั้นสูง โดดเด่นในงานบริหาร การค้าระหว่างประเทศ การประสานงานดิจิทัล และโปรเจกต์เชิงรุก<br><strong>• จังหวะอิทธิพลอุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสธาตุส่งผลให้เกิดการเปลี่ยนแปลงทางอำนาจหน้าที่ มีเกณฑ์ได้รับการแต่งตั้งให้ดูแลงานใหญ่ ได้รับแรงสนับสนุนจากผู้ใหญ่และพันธมิตรทางธุรกิจ การเจรจาสัญญาสำคัญจะผ่านไปได้ด้วยความสำเร็จอันงดงาม<br><strong>• ข้อควรระวัง:</strong> อย่าด่วนตัดสินใจเรื่องคนตามอารมณ์ ควรกำกับเอกสารและเงื่อนไขเป็นลายลักษณ์อักษรเสมอ",
+
+      "<strong>• โครงสร้างชิกซัง (식상 - ความคิดสร้างสรรค์และการบุกเบิก):</strong> พลังงานชะตา (" + d + "/" + m + "/" + yBE + ") เด่นด้านการคิดนอกกรอบ ไหวพริบปฏิภาณ และการเปิดตลาดใหม่ ไม่เหมาะกับระบบงานที่ซ้ำซากจำเจ<br><strong>• จังหวะอิทธิพลอุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> จังหวะทองในการปล่อยสินค้า บริการ หรือโปรเจกต์ใหม่สู่ตลาด ได้รับเสียงตอบรับอย่างโดดเด่น ชื่อเสียงและเครือข่ายขยายตัวอย่างก้าวกระโดด<br><strong>• ข้อควรระวัง:</strong> ระวังคำพูดที่เฉียบคมหรือตรงไปตรงมาเกินไปจะทำให้ทีมงานปรับตัวไม่ทัน ควรเน้นการสื่อสารเชิงสร้างสรรค์และการประนีประนอม",
+
+      "<strong>• โครงสร้างคย็อกกุกคงทน (격국 - ความมั่นคงและระบบระเบียบ):</strong> พื้นดวง (" + d + "/" + m + "/" + yBE + ") เน้นความน่าเชื่อถือ วินัย และความเป็นมืออาชีพสูง บริวารและหุ้นส่วนให้ความไว้วางใจ<br><strong>• จังหวะอิทธิพลอุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> วงจรการงานนิ่งสงบแต่มั่นคงอย่างยิ่ง มีเกณฑ์ขยายขอบเขตการรับผิดชอบ หรือได้รับสัญญาระยะยาวที่สร้างความมั่นคงถาวรให้แก่องค์กร<br><strong>• ข้อควรระวัง:</strong> ระวังข้อพิพาทด้านผลประโยชน์จากคู่แข่งในสายงาน ควรตรวจเช็กระบบหลังบ้านและบัญชีให้รัดกุม"
+    ];
+
+    const SAJU_WEALTH = [
+      "<strong>• คลังโภคทรัพย์แจซ็อง (재성 - สายธารเงินทอง):</strong> พื้นดวง (" + d + "/" + m + "/" + yBE + ") มีคลังทรัพย์เปิดรับสภาพคล่องจากหลายช่องทาง ทั้งงานหลัก งานเสริม และการลงทุนนำสมัย<br><strong>• จังหวะรับทรัพย์อุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภผลจากการค้าหรือผลตอบแทนการลงทุนระยะยาวที่เคยหว่านพืชไว้ เป็นช่วงสร้างฐานะและสะสมหลักทรัพย์<br><strong>• ข้อควรระวัง:</strong> แม้กระแสเงินจะเข้าดี แต่ควรแบ่งสัดส่วนเก็บเป็นสินทรัพย์ถาวร งดเว้นการค้ำประกันหรือให้หยิบยืมเงินเพื่อป้องกันหนี้สูญ",
+
+      "<strong>• พย็อนแจเด่น (편재 - โชคลาภและการหมุนเงินเร็ว):</strong> ชะตาชีวิตรอบเกิด (" + d + "/" + m + "/" + yBE + ") มีไหวพริบในการจับทิศทางตลาดและการค้าขายที่รวดเร็ว หาเงินเก่งและมองเห็นช่องทางทำกำไรก่อนผู้อื่น<br><strong>• จังหวะรับทรัพย์อุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสเงินสดสะพัด การค้าออนไลน์หรือการเป็นตัวแทนเจรจาทำกำไรได้เกินเป้า มีเกณฑ์รับปันผลหรือเงินพิเศษก้อนใหญ่<br><strong>• ข้อควรระวัง:</strong> ระวังรายจ่ายจรที่เกิดจากความใจใหญ่หรือการใช้จ่ายเพื่อรักษาหน้าตา ควรตั้งงบสำรองฉุกเฉินไว้อย่างเคร่งครัด",
+
+      "<strong>• ช็องแจมั่นคง (정재 - ทรัพย์สินถาวรดั่งภูผา):</strong> วาสนาการเงิน (" + d + "/" + m + "/" + yBE + ") เติบโตจากการสะสมอสังหาริมทรัพย์และสินทรัพย์ที่มูลค่าเพิ่มตามกาลเวลา<br><strong>• จังหวะรับทรัพย์อุนเซจร (" + tD + " " + tMName + " " + tY + "):</strong> มีเกณฑ์ปลดเปลื้องหนี้สิน การขอสินเชื่อหรือปรับโครงสร้างการเงินจะได้รับอนุมัติในเงื่อนไขที่เป็นคุณอย่างยิ่ง<br><strong>• ข้อควรระวัง:</strong> ตรวจสอบข้อกฎหมายและสัญญาทางการเงินระยะยาวอย่างละเอียดก่อนลงนาม"
+    ];
+
+    const SAJU_LOVE = [
+      "<strong>• ฐานกุงคู่ครอง (일지 - อิลจีเสาวัน):</strong> ฐานคู่ครองสะท้อนถึงคู่ชีวิตที่มีวุฒิภาวะสูง เฉลียวฉลาด เป็นคู่คิดและเสาหลักทางจิตใจที่ช่วยวางแผนชีวิตร่วมกันได้อย่างมั่นคง<br><strong>• สถานะคนมีคู่ (" + tD + " " + tMName + " " + tY + "):</strong> ความสัมพันธ์เกื้อหนุนร่วมกันสร้างรากฐานครอบครัว มีเกณฑ์ได้ซื้อทรัพย์สินชิ้นใหญ่หรือยานพาหนะร่วมกัน ปัญหาความเข้าใจผิดในอดีตจะได้รับการคลี่คลายอย่างอบอุ่น<br><strong>• สถานะคนโสด:</strong> เสน่ห์เมตตาเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีหน้าที่การงานมั่นคงหรือเป็นนักธุรกิจจากการติดต่องาน",
+
+      "<strong>• ฐานกุงคู่ครอง (일지):</strong> คนรักมีบุคลิกโดดเด่น คล่องแคล่ว มีเสน่ห์ทางสังคมสูง และมุ่งมั่นในเป้าหมายชีวิต ต่างฝ่ายต่างช่วยส่งเสริมเกียรติยศของกันและกัน<br><strong>• สถานะคนมีคู่ (" + tD + " " + tMName + " " + tY + "):</strong> ความรักมีชีวิตชีวา มีโอกาสได้เดินทางไกลร่วมกันเพื่อพักผ่อน ช่วยกระชับความผูกพันให้ลึกซึ้งยิ่งขึ้น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์สะดุดรักแบบกะทันหันกับคนที่อายุน้อยกว่า หรือพบเจอกันผ่านกิจกรรมสร้างสรรค์และสังคมออนไลน์",
+
+      "<strong>• ฐานกุงคู่ครอง (일지):</strong> ความสัมพันธ์เน้นความมั่นคง ซื่อสัตย์ และเข้าใจในโลกส่วนตัวของกันและกัน ไม่หวือหวาแต่พร้อมเป็นที่พึ่งพาได้เสมอในทุกสถานการณ์<br><strong>• สถานะคนมีคู่ (" + tD + " " + tMName + " " + tY + "):</strong> ช่วงเวลาแห่งการรับฟังและปรับตัวเข้าหากัน ให้เกียรติซึ่งกันและกันแล้วชีวิตคู่จะราบรื่นร่มเย็น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์พบคนรู้ใจผ่านการแนะนำของผู้ใหญ่หรือมิตรสหายที่คุ้นเคยมานาน เป็นความสัมพันธ์ที่ค่อยเป็นค่อยไปแต่มั่นคง"
+    ];
+
+    const SAJU_HEALTH = [
+      "<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สำหรับดิถี " + dayMaster.kr + " (" + dayMaster.elem + ") ควรระวังระบบทางเดินปัสสาวะ ไต ความดันโลหิต และอาการอ่อนล้าของระบบไหลเวียนโลหิต รวมถึงอาการไมเกรน<br><strong>• สภาวะร่างกายช่วงวันจร (" + tD + " " + tMName + " " + tY + "):</strong> ระวังอาการนอนไม่หลับ ออฟฟิศซินโดรม ปวดหลังช่วงเอว และสายตาล้าจากการโหมงานหน้าจอคอมพิวเตอร์ ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้ตรงเวลา",
+
+      "<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ระวังระบบย่อยอาหาร กระเพาะ ลำไส้ และอาการภูมิแพ้ที่เกิดจากการพักผ่อนไม่เพียงพอหรือรับประทานอาหารไม่เป็นเวลา<br><strong>• สภาวะร่างกายช่วงวันจร (" + tD + " " + tMName + " " + tY + "):</strong> มีความเครียดสะสมจากภาระหน้าที่ ควรแบ่งเวลาออกกำลังกายเบาๆ ยืดเหยียดกล้ามเนื้อ และหลีกเลี่ยงอาหารรสจัดในช่วงดึก",
+
+      "<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหรืออากาศถ่ายเทไม่สะดวก<br><strong>• สภาวะร่างกายช่วงวันจร (" + tD + " " + tMName + " " + tY + "):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง ดื่มน้ำอุ่นและบำรุงร่างกายด้วยวิตามินเป็นประจำ"
+    ];
+
+    const SAJU_FENGSHUI = [
+      "<strong>• ทิศทางเสริมพลังชี่ (คี: 氣):</strong> จัดโต๊ะทำงานหรือเตียงนอนหันหน้าไปทาง <strong>ทิศเหนือ หรือ ทิศตะวันตก</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br><strong>• หินนำโชคและโทนสีมงคล:</strong> เสริมพลังด้วยหินมงคลตามธาตุยงชิน (" + yongshin + ") เช่น <strong>ไพลิน, ลาพิส ลาซูลี, ไหมทอง, ซิทริน</strong> สวมใส่เสื้อผ้าโทน <strong>น้ำเงินคราม, ดำ, ขาวมุก, บรอนซ์ทอง</strong><br><strong>• วัตถุมงคลเสริมโต๊ะทำงาน:</strong> ตั้งน้ำพุจำลองขนาดเล็กที่มีน้ำไหลเวียน หรือลูกแก้วคริสตัลทางมุมซ้ายของโต๊ะทำงาน เพื่อกระตุ้นกระแสการเงินให้ไหลเวียนไม่ขาดสายในรอบวันจร " + tD + " " + tMName + " " + tY,
+
+      "<strong>• ทิศทางเสริมพลังชี่ (คี: 氣):</strong> เปิดรับกระแสโชคลาภทาง <strong>ทิศตะวันออก หรือ ทิศใต้</strong> เสริมความรุ่งโรจน์และความมีชื่อเสียงในการเจรจา<br><strong>• หินนำโชคและโทนสีมงคล:</strong> เลือกใช้เครื่องประดับหิน <strong>หยกเขียว, โรสควอตซ์, ทับทิม</strong> เสริมเสื้อผ้าโทน <strong>สีเขียวมรกต, ส้มอิฐ, แดงเลือดนก</strong><br><strong>• วัตถุมงคลเสริมโต๊ะทำงาน:</strong> วางต้นไม้มงคลขนาดกะทัดรัด (เช่น ไผ่กวนอิม หรือ กวักมรกต) ทางมุมขวาของโต๊ะทำงาน เพื่อหนุนนำพลังแห่งการเจริญเติบโตตลอดปี " + tY,
+
+      "<strong>• ทิศทางเสริมพลังชี่ (คี: 氣):</strong> ปรับทิศทางการเจรจาหรือตั้งโต๊ะทำงานทาง <strong>ทิศตะวันออกเฉียงเหนือ หรือ ตะวันตกเฉียงใต้</strong> เพื่อความหนักแน่นมั่นคง<br><strong>• หินนำโชคและโทนสีมงคล:</strong> ใช้หินมงคล <strong>ไทเกอร์อายส์, ไหมเศรษฐี, นิลดำ</strong> ควบคู่กับเสื้อผ้าโทน <strong>สีเหลืองทอง, น้ำตาลอบอุ่น, เทาควันบุหรี่</strong><br><strong>• วัตถุมงคลเสริมโต๊ะทำงาน:</strong> วางวัตถุโลหะมันวาว นาฬิกาลูกตุ้ม หรือปิรามิดออร์โกไนท์ เพื่อปรับสมดุลสนามแม่เหล็กและสลายพลังงานลบในที่ทำงาน"
+    ];
+
+    let wIdx = Math.abs(transitSeed + tD) % SAJU_CAREER.length;
+    let mIdx = Math.abs(transitSeed + tD * 3 + 1) % SAJU_WEALTH.length;
+    let lIdx = Math.abs(transitSeed + tD * 7 + 2) % SAJU_LOVE.length;
+    let hIdx = Math.abs(transitSeed + tD * 5 + 3) % SAJU_HEALTH.length;
+    let fIdx = Math.abs(transitSeed + tD * 2 + 4) % SAJU_FENGSHUI.length;
+
+    // ตรวจสอบโหมดปัจจุบัน
+    const currentMode = (typeof AppState !== 'undefined' && AppState.currentSajuMode) ? AppState.currentSajuMode : 'free';
+    const freeRes = document.getElementById('saju-free-result');
+    const vipRes = document.getElementById('saju-vip-result');
+
+    if (currentMode === 'free') {
+      if (freeRes) freeRes.style.display = 'block';
+      if (vipRes) vipRes.style.display = 'none';
+
+      const freeTitle = document.getElementById('saju-free-title');
+      if (freeTitle) freeTitle.textContent = "อิลจู (Ilju) เสาวันเกิดของคุณ: " + dayMaster.kr + " (ธาตุ" + dayMaster.elem + ")";
+
+      const freeDesc = document.getElementById('saju-free-desc');
+      if (freeDesc) {
+        let fIdxFree = Math.abs(birthSeed) % FREE_SAJU.length;
+        freeDesc.innerHTML = `
+          <strong>แก่นพลังงานชีวิตและสัญลักษณ์:</strong> ${dayMaster.sym} - ${dayMaster.desc}<br><br>
+          <div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:8px; border-left:3px solid #ffd700; line-height:1.7;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i> <strong>บทวิเคราะห์พื้นดวงซาจูกำเนิด:</strong><br>
+            ${FREE_SAJU[fIdxFree]}
+          </div>
+        `;
+      }
+      return;
+    }
+
+    // เรนเดอร์โหมด VIP
+    if (freeRes) freeRes.style.display = 'none';
+    if (vipRes) vipRes.style.display = 'block';
+
+    const pillars = document.getElementById('saju-pillars-grid');
+    if (pillars) {
+      pillars.style.display = 'grid';
+      pillars.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      pillars.style.gap = '8px';
+      pillars.innerHTML = 
+        '<div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;"><div style="font-size:0.75rem; color:#ffd700;">ยอนจู (เสาปี: รากฐาน)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + yCol + '</div></div>' +
+        '<div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;"><div style="font-size:0.75rem; color:#ffd700;">ว็อลจู (เสาเดือน: ธุรกิจ/สังคม)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + mCol + '</div></div>' +
+        '<div style="background:rgba(255,215,0,0.15); padding:10px; border-radius:8px; border:1px solid #ffd700; text-align:center;"><div style="font-size:0.75rem; color:#ffd700;">อิลจู (เสาวัน: ตัวตน/คู่ครอง)</div><div style="font-size:1rem; font-weight:700; color:#ffd700; margin-top:4px;">' + dCol + '</div></div>' +
+        '<div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;"><div style="font-size:0.75rem; color:#ffd700;">ชีจู (เสายาม: บั้นปลาย/บริวาร)</div><div style="font-size:1rem; font-weight:700; margin-top:4px;">' + hCol + '</div></div>';
+    }
+
+    const title = document.getElementById('saju-vip-strength-title');
+    if (title) title.textContent = "อิลจู " + dayMaster.kr + " (" + dayMaster.elem + ") - สภาพพลังงานชะตา: สมดุลมั่นคง (Strong Saju)";
+
+    const elem = document.getElementById('saju-vip-element-analysis');
+    if (elem) elem.innerHTML = "<strong>แก่นจิตวิญญาณ:</strong> " + dayMaster.sym + " (" + dayMaster.desc + ")<br><strong>ธาตุเกื้อหนุนยงชิน (Yongshin / 用神):</strong> <span style='color:#81c784; font-weight:700;'>" + yongshin + "</span> | <strong>ธาตุควรระวังกีชิน (Gishin / 忌神):</strong> <span style='color:#ff7675; font-weight:700;'>" + gishin + "</span>";
+
+    const ext = document.getElementById('saju-vip-extended-analysis');
+    if (ext) {
+      ext.innerHTML = 
+        '<div style="background:rgba(14,20,38,0.95); border:1.5px solid #ffd700; border-radius:14px; padding:18px; margin-top:14px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed rgba(234,179,8,0.4); padding-bottom:8px; margin-bottom:14px;">' +
+            '<h4 style="color:#ffd700; font-size:1.05rem; margin:0;"><i class="fa-solid fa-crown"></i> คัมภีร์ผ่าดวงซาจู 4 มิติเชิงลึก & รหัสลับอุนเซ (Saju VIP Synthesis)</h4>' +
+            '<span style="font-size:0.75rem; background:rgba(255,215,0,0.15); color:#ffd700; padding:2px 8px; border-radius:10px;">อิงวันจร: ' + tD + ' ' + tMName + ' ' + tY + '</span>' +
+          '</div>' +
+          '<div style="display:flex; flex-direction:column; gap:12px;">' +
+            '<div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; padding:12px; border-radius:8px; margin:0;">' +
+              '<strong style="color:#64b5f6; font-size:0.92rem;"><i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & ยศศักดิ์ (ควันซ็อง):</strong>' +
+              '<div style="color:#d1d9ec; font-size:0.86rem; margin-top:4px; line-height:1.7;">' + SAJU_CAREER[wIdx] + '</div>' +
+            '</div>' +
+            '<div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #ffd700; padding:12px; border-radius:8px; margin:0;">' +
+              '<strong style="color:#ffd54f; font-size:0.92rem;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน โชคลาภ & คลังโภคทรัพย์ (แจซ็อง):</strong>' +
+              '<div style="color:#d1d9ec; font-size:0.86rem; margin-top:4px; line-height:1.7;">' + SAJU_WEALTH[mIdx] + '</div>' +
+            '</div>' +
+            '<div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #f48fb1; padding:12px; border-radius:8px; margin:0;">' +
+              '<strong style="color:#f48fb1; font-size:0.92rem;"><i class="fa-solid fa-heart"></i> ๓. มิติความรัก คู่ครอง & หุ้นส่วนชะตา (อิลจี):</strong>' +
+              '<div style="color:#d1d9ec; font-size:0.86rem; margin-top:4px; line-height:1.7;">' + SAJU_LOVE[lIdx] + '</div>' +
+            '</div>' +
+            '<div class="desc-block" style="background:rgba(255,255,255,0.03); border-left:4px solid #ff7675; padding:12px; border-radius:8px; margin:0;">' +
+              '<strong style="color:#ff7675; font-size:0.92rem;"><i class="fa-solid fa-shield-heart"></i> ๔. มิติสุขภาพ ธาตุพร่อง & เคราะห์ระวัง:</strong>' +
+              '<div style="color:#d1d9ec; font-size:0.86rem; margin-top:4px; line-height:1.7;">' + SAJU_HEALTH[hIdx] + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="margin-top:14px; background:rgba(30,20,10,0.9); border:1.5px solid #ffd700; padding:14px; border-radius:10px;">' +
+            '<strong style="color:#ffd700; font-size:0.92rem;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ทิศทางเสริมพลังชี่เฉพาะบุคคล (Yongshin):</strong>' +
+            '<div style="font-size:0.86rem; color:#fff; margin-top:6px; line-height:1.7;">' + SAJU_FENGSHUI[fIdx] + '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    const luck = document.getElementById('saju-vip-luckcycle');
+    if (luck) {
+      luck.innerHTML = "<strong><i class='fa-solid fa-compass'></i> มหาวัฏจักรแทอุน 10 ปี (Dae-un - 대운) อิงวันเกิด " + d + "/" + m + "/" + yBE + " และวันจร " + tD + " " + tMName + " " + tY + ":</strong><br>กระแสอุนเซประจำปี พ.ศ. " + tY + " (วันจร " + tD + "/" + tM + "): คลื่นพลังงานธาตุเกื้อหนุนกำลังเปิดประตูแห่งโชคชะตาครั้งสำคัญ ส่งผลให้อิลจู " + dayMaster.kr + " มีโอกาสขยายกิจการ การค้าขาย และสร้างความมั่นคงถาวรได้อย่างยอดเยี่ยม";
+    }
+  } catch (err) {
+    console.error("Saju Render Error:", err);
+  }
+}
+window.renderSajuDirect = renderSajuDirect;
+window.calcSajuEngine = renderSajuDirect;
 </script>
 </body>
 </html>
