@@ -11014,186 +11014,128 @@ if (lifeEl && lifeEl.style.display !== 'none' && isVip) {
 }
 // ฟังก์ชันสลับโหมดโหราศาสตร์สากลแบบสมบูรณ์
 function switchWesternMode(mode) {
-    const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
 
-    AppState.currentWesternMode = mode;
-    const btnFree = document.getElementById('btn-western-free');
-    const btnVip = document.getElementById('btn-western-vip');
-    if (btnFree) btnFree.classList.toggle('active', mode === 'free');
-    if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+  AppState.currentWesternMode = mode;
+  const btnFree = document.getElementById('btn-western-free');
+  const btnVip = document.getElementById('btn-western-vip');
+  if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+  if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
 
-    const freeBox = document.getElementById('westernFreeBox');
-    const vipBox = document.getElementById('westernVipBox');
-    if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
-    if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
+  const freeBox = document.getElementById('westernFreeBox');
+  const vipBox = document.getElementById('westernVipBox');
+  if (freeBox) freeBox.style.display = (mode === 'free') ? 'block' : 'none';
+  if (vipBox) vipBox.style.display = (mode === 'vip') ? 'block' : 'none';
 
-    if (mode === 'vip') {
-        const container = document.getElementById('westernVipContent') || document.getElementById('westernVipBox');
-        if (!container) return;
-        const targetBox = document.getElementById('westernVipContent') ? document.getElementById('westernVipContent') : container;
+  if (mode === 'vip') {
+    const container = document.getElementById('westernVipContent') || document.getElementById('westernVipBox');
+    if (!container) return;
+    const targetBox = document.getElementById('westernVipContent') ? document.getElementById('westernVipContent') : container;
 
-        // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก
-        const bDayEl = document.getElementById('birthDay');
-        const bMonthEl = document.getElementById('birthMonth');
-        const bYearEl = document.getElementById('birthYearBE');
+    // 1. ดึงวันเดือนปีเกิดจากฟอร์มหลัก
+    const bDayEl = document.getElementById('birthDay');
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
 
-        const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
-        const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
-        const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
+    const bD = bDayEl ? parseInt(bDayEl.value, 10) : AppState.birthDay || 30;
+    const bM = bMonthEl ? parseInt(bMonthEl.value, 10) : AppState.birthMonth || 4;
+    const bY = bYearEl ? parseInt(bYearEl.value, 10) : AppState.birthBE || 2522;
 
-        // 2. ดึงค่าวัน/เดือน/ปี "จร" สดๆ จากฟอร์มวันจร
-        const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
-        const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
-        const tMIndex = tMVal - 1;
-        const tM = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMIndex] : null) || 'มกราคม';
-        const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-        const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
-        const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
+    // 2. ดึงค่าวัน/เดือน/ปี "จร" สดๆ จากฟอร์มวันจร
+    const tD = parseInt(document.getElementById('transitDay')?.value, 10) || 1;
+    const tMVal = parseInt(document.getElementById('transitMonth')?.value, 10) || 1;
+    const tMIndex = tMVal - 1;
+    const tM = (typeof MONTH_NAMES !== 'undefined' ? MONTH_NAMES[tMIndex] : null) || 'มกราคม';
+    const tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
+    const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
+    const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
 
-        let ageYang = (tY - bY) + 1;
-        if (ageYang < 1) ageYang = 1;
+    let ageYang = (tY - bY) + 1;
+    if (ageYang < 1) ageYang = 1;
 
-        if (!bD || !bM || !bY) {
-            targetBox.innerHTML = `
-                <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
-                    <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                    <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
-                    <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบวิเคราะห์ Natal Chart Aspects & Houses เต็มรูปแบบ</p>
-                </div>
-            `;
-            return;
-        }
-
-        const WESTERN_VIP_POOLS = [
-            {
-                h1: `อิทธิพลวันจรวันที่ ${tD} ${tM} ${tY} (เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.) ส่งผลให้ลัคนาจรและ 1st House ในรอบปี พ.ศ. ${tY} นี้ ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย`,
-                h10: `ตำแหน่ง Midheaven ณ ห้วงเวลา ${tY} นี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
-                asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในรอบปี ${tY}): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู`,
-                asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส - พ.ศ. ${tY}): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย`,
-                asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า - พ.ศ. ${tY}): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจ`
-            }
-        ];
-
-        let poolIndex = (tY * 7 + tMVal * 5 + tD * 3 + bD) % WESTERN_VIP_POOLS.length;
-        let selected = WESTERN_VIP_POOLS[poolIndex];
-
-        targetBox.innerHTML = `
-            <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
-                <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา เรียบร้อยแล้ว</p>
-            </div>
-
-            <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พ.ศ. ${tY})
-                </h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-                    <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                        <strong style="color: #ffd700;">1st House (Ascendant - ตัวตน & วิสัยทัศน์):</strong>
-                        <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h1}</p>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                        <strong style="color: #64b5f6;">10th House (Midheaven - เกียรติยศ & อาชีพ):</strong>
-                        <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h10}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-shapes" style="color: #ffd700;"></i> การวิเคราะห์มุมสัมพันธ์ดวงดาวเชิงลึก (Major Natal Aspects)
-                </h4>
-                <div style="display: flex; flex-direction: column; gap: 14px;">
-                    <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                        <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> ${selected.asp1.split(':')[0]}:</strong>
-                        <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp1.split(':')[1]}</p>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                        <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> ${selected.asp2.split(':')[0]}:</strong>
-                        <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp2.split(':')[1]}</p>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                        <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> ${selected.asp3.split(':')[0]}:</strong>
-                        <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
-                    </div>
-                </div>
-            </div>
-        `;
+    if (!bD || !bM || !bY) {
+      targetBox.innerHTML = `
+        <div style="background: rgba(255,215,0,0.05); border: 1px dashed var(--gold-main, #d4af37); border-radius: 12px; padding: 25px; text-align: center; color: var(--gold-bright, #ffd700);">
+          <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+          <strong style="font-size: 1rem;">ยังไม่มีข้อมูลวันเกิดสำหรับคำนวณเชิงลึก</strong>
+          <p style="font-size: 0.85rem; color: #cfd8dc; margin-top: 8px; margin-bottom: 0;">กรุณากรอก วัน/เดือน/ปีเกิด ที่หน้าแรก เพื่อเปิดระบบวิเคราะห์ Natal Chart Aspects & Houses เต็มรูปแบบ</p>
+        </div>
+      `;
+      return;
     }
+
+    // คลังชุดคำทำนายแบบสลับเปลี่ยนตามสูตรวันเกิดและวันจรจริง
+    const WESTERN_VIP_POOLS = [
+      {
+        h1: `อิทธิพลวันจรวันที่ ${tD} ${tM} ${tY} (เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.) ส่งผลให้ลัคนาจรและ 1st House ในรอบปี พ.ศ. ${tY} นี้ ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ส่วนตัว`,
+        h10: `ตำแหน่ง Midheaven ณ ห้วงเวลา ${tY} นี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
+        asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในรอบปี ${tY}): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู พลิกวิกฤตเป็นโอกาสได้ยอดเยี่ยม`,
+        asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส - พ.ศ. ${tY}): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรมและการสื่อสาร`,
+        asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า - พ.ศ. ${tY}): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจนำมาซึ่งชื่อเสียงและรายได้มหาศาล`
+      },
+      {
+        h1: `กระแสพลังงานดาวสากลจรประจำวันที่ ${tD} ${tM} ${tY} ส่งผลให้ 1st House เปิดรับพลังแห่งความสำเร็จและความมั่นคง คุณมีความสุขุมรอบคอบและพร้อมผลักดันเป้าหมายชีวิตให้ก้าวหน้า`,
+        h10: `Midheaven ในรอบปี พ.ศ. ${tY} บ่งบอกถึงจังหวะเวลาของการขยายเครือข่ายธุรกิจ การได้รับความไว้วางใจจากพาร์ทเนอร์ และความสำเร็จในระยะยาว`,
+        asp1: `Sun Sextile Saturn (ดาวอาทิตย์ทำมุมโยคถึงดาวเสาร์ในปี ${tY}): ความมีวินัยและความรับผิดชอบนำมาซึ่งความสำเร็จที่มั่นคงถาวร`,
+        asp2: `Moon Trine Venus (ดวงจันทร์ทำมุมตรีโกณถึงดาวศุกร์ - พ.ศ. ${tY}): บรรยากาศรอบตัวในรอบปีนี้มีความสุข ความสัมพันธ์ราบรื่น อบอุ่น และเป็นกันเอง`,
+        asp3: `Mars Trine Neptune (ดาวอังคารทำมุมตรีโกณถึงดาวเนปจูน - พ.ศ. ${tY}): แรงบันดาลใจสูงส่ง เปลี่ยนจินตนาการในห้วงเวลานี้ให้กลายเป็นผลงานและความสำเร็จจริง`
+      },
+      {
+        h1: `อิทธิพลโคจร ณ วันที่ ${tD} ${tM} ${tY} กระตุ้นเรือน 1st House ให้เกิดพลังขับเคลื่อนทางความคิดและการเจรจา คุณมีความเฉียบคมในการตัดสินใจและพร้อมลุยงานใหญ่`,
+        h10: `Midheaven เคลื่อนรับมุมสัมพันธ์ใน พ.ศ. ${tY} หนุนนำให้เกียรติยศและตำแหน่งหน้าที่การงานขยับขยาย มีชื่อเสียงเป็นที่ยอมรับในวงกว้าง`,
+        asp1: `Jupiter Trine Midheaven (ดาวพฤหัสบดีทำมุมตรีโกณจุดจอมฟ้า - พ.ศ. ${tY}): โอกาสทองด้านการงานและการเงินวิ่งเข้าหา ได้รับการสนับสนุนจากผู้หลักผู้ใหญ่`,
+        asp2: `Sun Conjunction Mercury (ดาวอาทิตย์กุมดาวพุธ - พ.ศ. ${tY}): ความคิดความอ่านเฉียบคม วาทศิลป์โดดเด่น เจรจาค้าขายหรือปิดดีลสำเร็จลุล่วง`,
+        asp3: `Mars Sextile Jupiter (ดาวอังคารทำมุมโยคดาวพฤหัสบดี - พ.ศ. ${tY}): พลังงานและความมุ่งมั่นสูงส่ง สร้างผลงานเข้าเป้าและรับทรัพย์ก้อนโต`
+      }
+    ];
+
+    let poolIndex = (tY * 7 + tMVal * 5 + tD * 3 + bD) % WESTERN_VIP_POOLS.length;
+    let selected = WESTERN_VIP_POOLS[poolIndex];
+
+    targetBox.innerHTML = `
+      <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
+        <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา (Placidus Houses) ได้รับการอัปเดตตามห้วงเวลาวันจร พ.ศ. ${tY} เรียบร้อยแล้ว</p>
+      </div>
+
+      <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พ.ศ. ${tY})
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
+            <strong style="color: #ffd700;">1st House (Ascendant - ตัวตน & วิสัยทัศน์):</strong>
+            <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h1}</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
+            <strong style="color: #64b5f6;">10th House (Midheaven - เกียรติยศ & อาชีพ):</strong>
+            <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h10}</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-shapes" style="color: #ffd700;"></i> การวิเคราะห์มุมสัมพันธ์ดวงดาวเชิงลึก (Major Natal Aspects)
+        </h4>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+            <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> ${selected.asp1.split(':')[0]}:</strong>
+            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp1.split(':')[1]}</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+            <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> ${selected.asp2.split(':')[0]}:</strong>
+            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp2.split(':')[1]}</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
+            <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> ${selected.asp3.split(':')[0]}:</strong>
+            <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 }
-
-        // คลังชุดคำทำนายแบบสลับเปลี่ยนตามสูตรวันจรจริง (tD, tMVal, tY)
-        const WESTERN_VIP_POOLS = [
-          {
-            h1: `อิทธิพลวันจรวันที่ ${tD} ${tM} ${tY} (เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.) ส่งผลให้ลัคนาจรและ 1st House ในรอบปี พ.ศ. ${tY} นี้ ขับเคลื่อนตัวตนให้โดดเด่น มีความมั่นใจและความคิดก้าวหน้าทันยุคสมัย เหมาะกับการริเริ่มโปรเจกต์ส่วนตัว`,
-            h10: `ตำแหน่ง Midheaven ณ ห้วงเวลา ${tY} นี้ ส่งเสริมเส้นทางอาชีพและชื่อเสียงให้เติบโตสู่ระดับผู้บริหาร ผลงานเด่นชัดและสร้างกระแสรายได้ก้อนโต`,
-            asp1: `Sun Trine Jupiter (ดาวอาทิตย์ทำมุมตรีโกณถึงดาวพฤหัสบดีในรอบปี ${tY}): มุมแห่งโชคลาภและความเมตตา ผู้ใหญ่ให้ความเอ็นดู พลิกวิกฤตเป็นโอกาสได้ยอดเยี่ยม`,
-            asp2: `Mercury Sextile Uranus (ดาวพุธทำมุมโยคถึงดาวยูเรนัส - พ.ศ. ${tY}): ปฏิภาณไหวพริบยอดเยี่ยม มีความคิดสร้างสรรค์ล้ำสมัย เหมาะกับงานนวัตกรรมและการสื่อสาร`,
-            asp3: `Venus Conjunction Midheaven (ดาวศุกร์กุมจุดจอมฟ้า - พ.ศ. ${tY}): เสน่ห์เมตตามหานิยมในหน้าที่การงาน งานที่สร้างแรงบันดาลใจนำมาซึ่งชื่อเสียงและรายได้มหาศาล`
-          },
-          {
-            h1: `กระแสพลังงานดาวสากลจรประจำวันที่ ${tD} ${tM} ${tY} ส่งผลให้ 1st House เปิดรับพลังแห่งความสำเร็จและความมั่นคง คุณมีความสุขุมรอบคอบและพร้อมผลักดันเป้าหมายชีวิตให้ก้าวหน้า`,
-            h10: `Midheaven ในรอบปี พ.ศ. ${tY} บ่งบอกถึงจังหวะเวลาของการขยายเครือข่ายธุรกิจ การได้รับความไว้วางใจจากพาร์ทเนอร์ และความสำเร็จในระยะยาว`,
-            asp1: `Sun Sextile Saturn (ดาวอาทิตย์ทำมุมโยคถึงดาวเสาร์ในปี ${tY}): ความมีวินัยและความรับผิดชอบนำมาซึ่งความสำเร็จที่มั่นคงถาวร`,
-            asp2: `Moon Trine Venus (ดวงจันทร์ทำมุมตรีโกณถึงดาวศุกร์ - พ.ศ. ${tY}): บรรยากาศรอบตัวในรอบปีนี้มีความสุข ความสัมพันธ์ราบรื่น อบอุ่น และเป็นกันเอง`,
-            asp3: `Mars Trine Neptune (ดาวอังคารทำมุมตรีโกณถึงดาวเนปจูน - พ.ศ. ${tY}): แรงบันดาลใจสูงส่ง เปลี่ยนจินตนาการในห้วงเวลานี้ให้กลายเป็นผลงานและความสำเร็จจริง`
-          },
-          {
-            h1: `อิทธิพลโคจร ณ วันที่ ${tD} ${tM} ${tY} กระตุ้นเรือน 1st House ให้เกิดพลังขับเคลื่อนทางความคิดและการเจรจา คุณมีความเฉียบคมในการตัดสินใจและพร้อมลุยงานใหญ่`,
-            h10: `Midheaven เคลื่อนรับมุมสัมพันธ์ใน พ.ศ. ${tY} หนุนนำให้เกียรติยศและตำแหน่งหน้าที่การงานขยับขยาย มีชื่อเสียงเป็นที่ยอมรับในวงกว้าง`,
-            asp1: `Jupiter Trine Midheaven (ดาวพฤหัสบดีทำมุมตรีโกณจุดจอมฟ้า - พ.ศ. ${tY}): โอกาสทองด้านการงานและการเงินวิ่งเข้าหา ได้รับการสนับสนุนจากผู้หลักผู้ใหญ่`,
-            asp2: `Sun Conjunction Mercury (ดาวอาทิตย์กุมดาวพุธ - พ.ศ. ${tY}): ความคิดความอ่านเฉียบคม วาทศิลป์โดดเด่น เจรจาค้าขายหรือปิดดีลสำเร็จลุล่วง`,
-            asp3: `Mars Sextile Jupiter (ดาวอังคารทำมุมโยคดาวพฤหัสบดี - พ.ศ. ${tY}): พลังงานและความมุ่งมั่นสูงส่ง สร้างผลงานเข้าเป้าและรับทรัพย์ก้อนโต`
-          }
-        ];
-
-        // ใช้สูตรคำนวณ index จากวัน เดือน ปี จร เพื่อให้เปลี่ยนแบบไดนามิก 100%
-        let poolIndex = (tY * 7 + tMVal * 5 + tD * 3 + bD) % WESTERN_VIP_POOLS.length;
-        let selected = WESTERN_VIP_POOLS[poolIndex];
-
-        targetBox.innerHTML = `
-          <div style="background: rgba(255,215,0,0.08); border: 1px solid var(--gold-main, #d4af37); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-            <strong style="color: var(--gold-bright, #ffd700);"><i class="fa-solid fa-compass"></i> โหราศาสตร์สากล VIP (อิงวันจร: ${tD} ${tM} ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น. - อายุย่าง ${ageYang} ปี):</strong>
-            <p style="margin-top: 4px; font-size: 0.85rem; color: #fff; line-height: 1.6;">ผลการวิเคราะห์ตำแหน่งดาวกำเนิด (Natal Chart) มุมสัมพันธ์ (Aspects) และเรือนชะตา (Placidus Houses) ได้รับการอัปเดตตามห้วงเวลาวันจร พ.ศ. ${tY} เรียบร้อยแล้ว</p>
-          </div>
-
-          <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 12px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-house-chimney" style="color: #64b5f6;"></i> โครงสร้างเรือนชะตาสากลเชิงลึก (Placidus House System - พ.ศ. ${tY})
-            </h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-              <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #ffd700;">
-                <strong style="color: #ffd700;">1st House (Ascendant - ตัวตน & วิสัยทัศน์):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h1}</p>
-              </div>
-              <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border-left: 3px solid #64b5f6;">
-                <strong style="color: #64b5f6;">10th House (Midheaven - เกียรติยศ & อาชีพ):</strong>
-                <p style="margin: 6px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.h10}</p>
-              </div>
-            </div>
-          </div>
-
-          <div style="background: rgba(20,28,55,0.7); border: 1px solid var(--gold-main, #d4af37); border-radius: 14px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <h4 style="color: var(--gold-bright, #ffd700); margin-top: 0; margin-bottom: 16px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-shapes" style="color: #ffd700;"></i> การวิเคราะห์มุมสัมพันธ์ดวงดาวเชิงลึก (Major Natal Aspects)
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #81c784;"><i class="fa-solid fa-circle-check"></i> ${selected.asp1.split(':')[0]}:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp1.split(':')[1]}</p>
-              </div>
-              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #64b5f6;"><i class="fa-solid fa-circle-check"></i> ${selected.asp2.split(':')[0]}:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp2.split(':')[1]}</p>
-              </div>
-              <div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 10px;">
-                <strong style="color: #ba68c8;"><i class="fa-solid fa-circle-check"></i> ${selected.asp3.split(':')[0]}:</strong>
-                <p style="margin: 5px 0 0; font-size: 0.88rem; color: #d1d9ec; line-height: 1.6;">${selected.asp3.split(':')[1]}</p>
-              </div>
-            </div>
-          </div>
-         `;
-       }
 
 document.addEventListener('DOMContentLoaded', function() {
     // 1. ดักจับทุกครั้งที่มีการเปลี่ยนข้อมูลในฟอร์มวันเกิด
@@ -12163,10 +12105,10 @@ let hIdx = Math.abs(natalPillarScore * 5 + transitFactor * 7 + 3) % HEALTH.lengt
       `<strong>• ธาตุพร่องและอวัยวะที่ต้องบำรุง:</strong> ดูแลระบบทางเดินหายใจ หลอดลม คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหรืออากาศถ่ายเทไม่สะดวก<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง ดื่มน้ำอุ่นและบำรุงร่างกายด้วยวิตามินเป็นประจำ`
     ];
 
-    let wIdx = Math.abs(transitSeed + tD) % WORK.length;
-    let mIdx = Math.abs(transitSeed + tD * 3 + 1) % MONEY.length;
-    let lIdx = Math.abs(transitSeed + tD * 7 + 2) % LOVE.length;
-    let hIdx = Math.abs(transitSeed + tD * 5 + 3) % HEALTH.length;
+    wIdx = Math.abs(transitSeed + tD) % WORK.length;
+    mIdx = Math.abs(transitSeed + tD * 3 + 1) % MONEY.length;
+    lIdx = Math.abs(transitSeed + tD * 7 + 2) % LOVE.length;
+    hIdx = Math.abs(transitSeed + tD * 5 + 3) % HEALTH.length;
 
     const currentMode = (typeof AppState !== 'undefined' && AppState.currentBaziMode) ? AppState.currentBaziMode : 'free';
     const vipRes = document.getElementById('bazi-vip-result');
