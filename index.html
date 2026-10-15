@@ -5253,14 +5253,23 @@ const STEMS = [
       };
    }
 
-   function switchBaziMode(mode) {
-      AppState.currentBaziMode = mode;
+ function switchBaziMode(mode) {
+      if (typeof AppState !== 'undefined') {
+        AppState.currentBaziMode = mode;
+      }
       const btnFree = document.getElementById('btn-bazi-free');
       const btnVip = document.getElementById('btn-bazi-vip');
       if (btnFree) btnFree.classList.toggle('active', mode === 'free');
       if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+      const freeRes = document.getElementById('bazi-free-result');
+      const vipRes = document.getElementById('bazi-vip-result');
+      if (freeRes) freeRes.style.display = (mode === 'free') ? 'block' : 'none';
+      if (vipRes) vipRes.style.display = (mode === 'vip') ? 'block' : 'none';
+
       calcBaziEngine();
-   }
+  }
+  window.switchBaziMode = switchBaziMode;
     const FULL_TAROT_DECK = [
       { name: "0. The Fool", th: "ผู้ไร้เดียงสา", desc: "การเริ่มต้นใหม่ การเดินทางด้วยความหวัง อิสรภาพ ความกล้าที่จะเสี่ยง" },
       { name: "I. The Magician", th: "ผู้วิเศษ", desc: "สติปัญญา พรสวรรค์ เครื่องมือและโอกาสพร้อมสรรพ การเนรมิตเป้าหมายให้สำเร็จ" },
