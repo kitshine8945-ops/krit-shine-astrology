@@ -3139,85 +3139,85 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-     // --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย ---
-// 1. ตรวจสอบการตัดวันแบบไทย (ก่อน 06:00 น. นับเป็นวันเดิม)
-let calcDay = AppState.birthDay;
-let calcMonth = AppState.birthMonth;
-let calcYearBE = AppState.birthBE;
-let bHour = AppState.birthHour;
-let bMin = AppState.birthMinute;
+// --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย ---
+      // 1. ตรวจสอบข้อมูลวันเกิด
+      let calcDay = AppState.birthDay;
+      let calcMonth = AppState.birthMonth;
+      let calcYearBE = AppState.birthBE;
+      let cHour = AppState.birthHour;
+      let cMin = AppState.birthMinute;
 
-// 2. คำนวณอันโตนาที (นาทีต่อราศี: เมษ ถึง มีน)
-const ANTANATI_REAL = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
+      // 2. คำนวณอันโตนาที (นาทีต่อราศี: เมษ ถึง มีน)
+      const ANTANATI_REAL = [100, 112, 128, 136, 134, 126, 122, 128, 134, 126, 102, 92];
 
-// วันที่อาทิตย์ยกราศีเฉลี่ย (เมษ=0 ... มีน=11)
-const SUN_INGRESS = [
-  { m: 4, d: 13.5 }, // เมษ
-  { m: 5, d: 14.5 }, // พฤษภ
-  { m: 6, d: 15.0 }, // เมถุน
-  { m: 7, d: 16.5 }, // กรกฎ
-  { m: 8, d: 16.5 }, // สิงห์
-  { m: 9, d: 16.5 }, // กันย์
-  { m: 10, d: 17.5 }, // ตุลย์
-  { m: 11, d: 16.5 }, // พิจิก
-  { m: 12, d: 15.5 }, // ธนู
-  { m: 1, d: 14.5 }, // มังกร
-  { m: 2, d: 13.5 }, // กุมภ์
-  { m: 3, d: 14.5 }  // มีน
-];
+      // วันที่อาทิตย์ยกราศีเฉลี่ย (เมษ=0 ... มีน=11)
+      const SUN_INGRESS = [
+        { m: 4, d: 13.5 }, // เมษ
+        { m: 5, d: 14.5 }, // พฤษภ
+        { m: 6, d: 15.0 }, // เมถุน
+        { m: 7, d: 16.5 }, // กรกฎ
+        { m: 8, d: 16.5 }, // สิงห์
+        { m: 9, d: 16.5 }, // กันย์
+        { m: 10, d: 17.5 }, // ตุลย์
+        { m: 11, d: 16.5 }, // พิจิก
+        { m: 12, d: 15.5 }, // ธนู
+        { m: 1, d: 14.5 }, // มังกร
+        { m: 2, d: 13.5 }, // กุมภ์
+        { m: 3, d: 14.5 }  // มีน
+      ];
 
-// 3. หาสมผุสอาทิตย์ (ราศีและองศาอาทิตย์กำเนิด)
-let sunSign = 0;
-let ingressDay = 13.5;
-for (let i = 0; i < 12; i++) {
-  if (calcMonth === SUN_INGRESS[i].m) {
-    if (calcDay >= Math.floor(SUN_INGRESS[i].d)) {
-      sunSign = i;
-      ingressDay = SUN_INGRESS[i].d;
-    } else {
-      sunSign = (i + 11) % 12;
-      ingressDay = SUN_INGRESS[sunSign].d;
-    }
-    break;
-  }
-}
+      // 3. หาสมผุสอาทิตย์ (ราศีและองศาอาทิตย์กำเนิด)
+      let sunSign = 0;
+      let ingressDay = 13.5;
+      for (let i = 0; i < 12; i++) {
+        if (calcMonth === SUN_INGRESS[i].m) {
+          if (calcDay >= Math.floor(SUN_INGRESS[i].d)) {
+            sunSign = i;
+            ingressDay = SUN_INGRESS[i].d;
+          } else {
+            sunSign = (i + 11) % 12;
+            ingressDay = SUN_INGRESS[sunSign].d;
+          }
+          break;
+        }
+      }
 
-// คำนวณองศาอาทิตย์ (0 - 30 องศา)
-let sunDeg = (calcDay >= ingressDay) 
-  ? (calcDay - ingressDay) 
-  : (30 - (ingressDay - calcDay));
-if (sunDeg < 0) sunDeg = 0;
-if (sunDeg > 30) sunDeg = 29.99;
+      // คำนวณองศาอาทิตย์ (0 - 30 องศา)
+      let sunDeg = (calcDay >= ingressDay) 
+        ? (calcDay - ingressDay) 
+        : (30 - (ingressDay - calcDay));
+      if (sunDeg < 0) sunDeg = 0;
+      if (sunDeg > 30) sunDeg = 29.99;
 
-// 4. เวลาเกิดเทียบกับเวลาอาทิตย์อุทัยเฉลี่ย (06:00 น.)
-// ถ้าเกิด 00:00 - 05:59 น. = ผ่านจาก 06:00 น. วันวานมาแล้ว 18 ชม. + ชั่วโมงเกิด
-let birthTotalMinutes = (bHour >= 6)
-  ? ((bHour - 6) * 60 + bMin)
-  : ((18 + bHour) * 60 + bMin);
+      // 4. เวลาเกิดเทียบกับเวลาอาทิตย์อุทัยเฉลี่ย (06:00 น.)
+      let birthTotalMinutes = (cHour >= 6)
+        ? ((cHour - 6) * 60 + cMin)
+        : ((18 + cHour) * 60 + cMin);
 
-// 5. คำนวณอันโตนาทีคงเหลือของราศีที่อาทิตย์สถิต
-let antanatiCurrentSign = ANTANATI_REAL[sunSign];
-let remainingMinutesInFirstSign = antanatiCurrentSign * ((30 - sunDeg) / 30);
+      // 5. คำนวณอันโตนาทีคงเหลือของราศีที่อาทิตย์สถิต
+      let antanatiCurrentSign = ANTANATI_REAL[sunSign];
+      let remainingMinutesInFirstSign = antanatiCurrentSign * ((30 - sunDeg) / 30);
 
-let ascSign = sunSign;
-let remTime = birthTotalMinutes;
+      let ascSign = sunSign;
+      let remTime = birthTotalMinutes;
 
-if (remTime <= remainingMinutesInFirstSign) {
-  // ยังอยู่ในราศีที่อาทิตย์สถิต
-  ascSign = sunSign;
-} else {
-  remTime -= remainingMinutesInFirstSign;
-  ascSign = (ascSign + 1) % 12;
-  
-  while (remTime > ANTANATI_REAL[ascSign]) {
-    remTime -= ANTANATI_REAL[ascSign];
-    ascSign = (ascSign + 1) % 12;
-  }
-}
+      if (remTime <= remainingMinutesInFirstSign) {
+        ascSign = sunSign;
+      } else {
+        remTime -= remainingMinutesInFirstSign;
+        ascSign = (ascSign + 1) % 12;
+        
+        while (remTime > ANTANATI_REAL[ascSign]) {
+          remTime -= ANTANATI_REAL[ascSign];
+          ascSign = (ascSign + 1) % 12;
+        }
+      }
 
-// กำหนดผลลัพธ์ที่ถูกต้อง
-AppState.currentCalculatedAscIndex = ascSign;
-AppState.currentCalculatedSunIndex = sunSign;
+      // กำหนดผลลัพธ์ที่ถูกต้อง พร้อมส่งต่อตัวแปรให้ระบบอื่นทำงานต่อได้ทันที
+      AppState.currentCalculatedAscIndex = ascSign;
+      AppState.currentCalculatedSunIndex = sunSign;
+      let ascIndex = ascSign;
+      let sunSignIndex = sunSign;
 // บันทึกข้อมูลวันเกิดและการคำนวณลงเบราว์เซอร์ให้อยู่ยาวๆ
     try {
       localStorage.setItem('saved_birthDay', AppState.birthDay || '');
