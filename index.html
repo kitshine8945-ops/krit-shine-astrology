@@ -1005,36 +1005,11 @@ header.navbar {
           }, 100);
         }
       ">
-        <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
-        <div class="cat-name">ปาจื่อ (BaZi)</div>
-        <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
-      </div>
-      
-     <div class="cat-item" onclick="
-        var bD=document.getElementById('birthDay').value; 
-        if(!bD){
-          alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); 
-          scrollToForm();
-        } else {
-          openSajuModal(); 
-          setTimeout(function(){
-            if(typeof window.renderSajuDirect === 'function'){
-              window.renderSajuDirect();
-            } else if(typeof calcSajuEngine === 'function'){
-              calcSajuEngine();
-            }
-          }, 150);
-        }
-      ">
-        <div class="cat-icon-circle"><i class="fa-solid fa-compass"></i></div>
-        <div class="cat-name">ซาจู (Saju)</div>
-        <div class="cat-sub">4 เสาชะตาเกาหลี</div>
-      </div>
-      <div class="cat-item" onclick="openFeatureModal('numerology')">
-        <div class="cat-icon-circle"><i class="fa-solid fa-arrow-down-9-1"></i></div>
-        <div class="cat-name">เลขศาสตร์/ชื่อ</div>
-        <div class="cat-sub">ตรวจอักษรกาลกิณี</div>
-      </div>
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openBaziModal();}">
+  <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
+  <div class="cat-name">ปาจื่อ (BaZi)</div>
+  <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
+</div>
 
       <div class="cat-item" onclick="openFeatureModal('phone')">
         <div class="cat-icon-circle"><i class="fa-solid fa-mobile-screen-button"></i></div>
@@ -2477,42 +2452,40 @@ function analyzeVipSpecificQuestion() {
     </div>
   </div>
 
-<!-- MODAL: ซาจู (Saju 4 เสาชะตาเกาหลี) -->
-<div class="modal-overlay" id="modal-saju">
+<!-- MODAL: ปาจื่อ (BaZi 4 เสาหลักจีน) -->
+<div class="modal-overlay" id="modal-bazi">
   <div class="modal-content" style="max-width: 890px;">
-    <div class="modal-close-btn" onclick="closeModal('modal-saju')"><i class="fa-solid fa-xmark"></i></div>
+    <div class="modal-close-btn" onclick="closeModal('modal-bazi'); var mb=document.getElementById('modal-bazi'); if(mb) mb.style.display='none';"><i class="fa-solid fa-xmark"></i></div>
     <div class="profile-astro-badge dynamic-user-badge"></div>
     <div class="tier-switcher" style="margin-bottom:14px;">
-      <button type="button" class="tier-btn active" id="btn-saju-free" onclick="switchSajuMode('free')">อิลจู & แก่นแท้ธาตุเกิด (ดูฟรี)</button>
-      <button type="button" class="tier-btn" id="btn-saju-vip" onclick="switchSajuMode('vip')"><i class="fa-solid fa-crown"></i> ผ่าดวงซาจู VIP & ชะตา 4 ฤดูจร (VIP)</button>
+      <button type="button" class="tier-btn active" id="btn-bazi-free" onclick="switchBaziMode('free')">ดิถีธาตุพื้นฐาน (ดูฟรี)</button>
+      <button type="button" class="tier-btn" id="btn-bazi-vip" onclick="switchBaziMode('vip')"><i class="fa-solid fa-crown"></i> 4 เสาหลัก, 10 เทพ & ฮวงจุ้ยชั้นสูง (VIP)</button>
     </div>
     <div style="text-align: center; margin-bottom: 15px;">
-      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-compass"></i> ซาจู พัลจา (사주팔자) โหราศาสตร์เกาหลีโบราณ</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์ 4 เสาหลักชะตาชีวิต (ปี/เดือน/วัน/ยาม) ถอดรหัสชอนกัน (Cheongon) จีจี (Jiji) และพลังงานอุนเซ (Wun-se)</p>
+      <h3 style="color: var(--gold-bright); font-size: 1.35rem;"><i class="fa-solid fa-yin-yang"></i> ปาจื่อ (BaZi) ดวงจีนโบราณ</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">วิเคราะห์พลังงาน 5 ธาตุ หยิน-หยาง และถอดรหัสกิ่งฟ้า-ก้านดิน 4 เสาหลัก (ระบบ พ.ศ.)</p>
     </div>
     <div style="background:rgba(20,28,55,0.7); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-bottom:14px;">
-      
       <!-- โหมดฟรี -->
-      <div id="saju-free-result" style="display:block; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
-        <h4 id="saju-free-title" style="color:#ffd700; margin-bottom:6px;">อิลจู (Ilju) เสาวันเกิดของคุณ: -</h4>
-        <p id="saju-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
+      <div id="bazi-free-result" style="display:block; margin-top:16px; background:rgba(14,20,38,0.9); padding:16px; border-radius:12px; border:1px solid var(--border-soft);">
+        <h4 id="bazi-free-title" style="color:#ffd700; margin-bottom:6px;">ดิถีธาตุกำเนิดของคุณ: -</h4>
+        <p id="bazi-free-desc" style="font-size:0.86rem; color:#cfd8dc; line-height:1.7;"></p>
       </div>
 
       <!-- โหมด VIP -->
-      <div id="saju-vip-result" style="display:none; margin-top: 18px;">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="saju-pillars-grid"></div>
+      <div id="bazi-vip-result" style="display:none; margin-top: 18px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;" id="bazi-pillars-grid"></div>
         <div style="background: rgba(14,20,38,0.95); padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-soft);">
-          <h4 id="saju-vip-strength-title" style="color:#ffd700; margin-bottom:6px;">-</h4>
-          <p id="saju-vip-element-analysis" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
-          <div id="saju-vip-extended-analysis" style="margin-top:12px; border-top:1px dashed var(--border-soft); padding-top:10px;"></div>
-          <div id="saju-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
+          <h4 id="bazi-vip-strength-title" style="color:#ffd700; margin-bottom:6px;">-</h4>
+          <p id="bazi-vip-element-analysis" style="font-size:0.88rem; color:#cfd8dc; line-height:1.8;"></p>
+          <div id="bazi-vip-extended-analysis" style="margin-top:12px; border-top:1px dashed var(--border-soft); padding-top:10px;"></div>
+          <div id="bazi-vip-luckcycle" style="margin-top:12px; font-size:0.86rem; color:#fff; line-height:1.8; background:rgba(0,0,0,0.3); padding:14px; border-radius:8px;"></div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
-
+  
   <!-- MODAL: 12 ราศี -->
   <div class="modal-overlay" id="modal-zodiac">
     <div class="modal-content" style="max-width: 850px;">
@@ -11798,18 +11771,15 @@ function renderBaziDirect() {
     let yongShen = (dayMaster.elem === 'ไม้') ? 'ธาตุน้ำ และ ธาตุไฟ' : (dayMaster.elem === 'ไฟ' ? 'ธาตุไม้ และ ธาตุดิน' : (dayMaster.elem === 'ดิน' ? 'ธาตุไฟ และ ธาตุทอง' : (dayMaster.elem === 'ทอง' ? 'ธาตุดิน และ ธาตุน้ำ' : 'ธาตุทอง (Metal) & ธาตุน้ำ (Water)')));
     let jiShen = (dayMaster.elem === 'ไม้') ? 'ธาตุทอง' : (dayMaster.elem === 'ไฟ' ? 'ธาตุน้ำ' : (dayMaster.elem === 'ดิน' ? 'ธาตุไม้' : (dayMaster.elem === 'ทอง' ? 'ธาตุไฟ' : 'ธาตุไม้ (Wood) & ธาตุไฟ (Fire)')));
 
-    // ดัชนีผูกตามวันเกิด + วันจรแบบไดนามิก ป้องกันการตกช่องซ้ำ
     let birthSeed = (d * 37) + (m * 19) + (yBE * 11) + (hHour * 13);
     let transitSeed = (tY * 883) + (tM * 79) + (tD * 47) + birthSeed;
 
-    // คำทำนายโหมดฟรี (Free Mode)
     const FREE_POOLS = [
       `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: เปรียบเสมือน${dayMaster.desc} เป็นคนมีวิสัยทัศน์เด็ดเดี่ยว มีความอดทนสูง วาสนาตั้งต้นสร้างขึ้นจากความสามารถเฉพาะตัว เสริมพลังชะตาด้วย <strong>${yongShen}</strong> และพึงระวังผลกระทบจาก <strong>${jiShen}</strong>`,
       `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: สถิตพลังงานแห่งปัญญาและความสุขุมรอบคอบ เป็นนักคิดนักวางแผนที่มองการณ์ไกล ปรับตัวเข้ากับยุคสมัยได้รวดเร็ว รับกระแสโชคลาภด้วย <strong>${yongShen}</strong> ควรเลี่ยงการตัดสินใจใจเร็วในสภาวะ <strong>${jiShen}</strong>`,
       `ดิถี <strong>${dayMaster.name} (${dayMaster.elem}${dayMaster.pol})</strong> พื้นดวงเกิดวันที่ ${d} ${bMName} ${yBE}: โครงสร้างชะตาโดดเด่นด้านมนุษยสัมพันธ์และเสน่ห์เมตตา มีไหวพริบในการคว้าโอกาสทางธุรกิจใหม่ๆ ได้อย่างแม่นยำ ธาตุเกื้อหนุนมงคลคือ <strong>${yongShen}</strong>`
     ];
 
-    // คำทำนายโหมด VIP 4 มิติ
     const WORK = [
       "<strong>• โครงสร้าง 10 เทพ (เจิ้งกวน & เจิ้งอิ้น):</strong> อิทธิพลดวงเกิด (" + d + "/" + m + "/" + yBE + ") หนุนนำให้ดิถี " + dayMaster.name + " (" + dayMaster.elem + ") มีสติปัญญาและอำนาจการบริหารที่เฉียบคม โดดเด่นในสายงานวางแผน การบริหารจัดการ ธุรกิจดิจิทัล และการประสานงานระดับสูง<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> กระแสธาตุจรส่งเสริมให้เกิดความก้าวหน้าครั้งสำคัญ ได้รับการทาบทามให้คุมโปรเจกต์ใหญ่ การเจรจาต่อรอง สัญญาร่วมทุน หรือการประมูลงานมีเกณฑ์ปิดดีลสำเร็จลุล่วงอย่างงดงาม ได้รับความไว้วางใจจากผู้ใหญ่และบริวารร่วมมือเต็มที่<br><strong>• ข้อควรระวัง:</strong> ระวังการแบกรับภาระงานหลายด้านพร้อมกันจนเกินกำลัง และควรทำข้อตกลงเป็นลายลักษณ์อักษรเสมอเพื่อป้องกันความคลาดเคลื่อน",
       "<strong>• โครงสร้าง 10 เทพ (ชีซา & ซางกวน):</strong> พลังงานดวงชะตากำเนิด (" + d + "/" + m + "/" + yBE + ") เด่นด้านความคิดสร้างสรรค์ การคิดนอกกรอบ และการแก้ปัญหาเฉพาะหน้า ไม่ชอบการทำงานที่ซ้ำซากจำเจ มีความเป็นผู้นำสูง พร้อมบุกเบิกสิ่งใหม่<br><strong>• จังหวะอิทธิพลวันจร (" + tD + " " + tMName + " " + tY + "):</strong> เป็นห้วงเวลาของการบุกเบิกตลาดใหม่ ขยายฐานลูกค้า หรือเปิดตัวธุรกิจส่วนตัว ผลงานเป็นที่ยอมรับและสร้างชื่อเสียงในวงกว้าง ผู้ใหญ่และหุ้นส่วนพร้อมเปิดทางสนับสนุนอย่างเต็มกำลัง<br><strong>• ข้อควรระวัง:</strong> ระวังความใจร้อนหรือคำพูดที่ตรงไปตรงมาเกินไปจนทำให้เพื่อนร่วมงานตามไม่ทัน ควรเน้นการประนีประนอมและการประสานไมตรีเป็นหลัก",
@@ -11840,16 +11810,12 @@ function renderBaziDirect() {
       "<strong>• ทิศรับทรัพย์มงคล:</strong> ปรับทิศทางการเจรจาหรือตั้งโต๊ะทำงานทาง <strong>ทิศตะวันออกเฉียงเหนือ หรือ ตะวันตกเฉียงใต้</strong> เพื่อความหนักแน่นมั่นคง<br><strong>• โทนสีและหินนำโชค:</strong> ใช้หินมงคล <strong>ไทเกอร์อายส์, ไหมเศรษฐี, นิลดำ</strong> ควบคู่กับเสื้อผ้าโทน <strong>สีเหลืองทอง, น้ำตาลอบอุ่น, เทาควันบุหรี่</strong><br><strong>• สิ่งมงคลตั้งโต๊ะ:</strong> วางวัตถุโลหะมันวาว นาฬิกาลูกตุ้ม หรือปิรามิดออร์โกไนท์ เพื่อปรับสมดุลสนามแม่เหล็กและสลายพลังงานลบในที่ทำงาน"
     ];
 
-    // คำนวณแบบสลับพูลเนื้อหาแท้จริงตามวันเกิดและวันจร
     let wIdx = Math.abs(transitSeed + tD) % WORK.length;
     let mIdx = Math.abs(transitSeed + tD * 3 + 1) % MONEY.length;
     let lIdx = Math.abs(transitSeed + tD * 7 + 2) % LOVE.length;
     let hIdx = Math.abs(transitSeed + tD * 5 + 3) % HEALTH.length;
     let fIdx = Math.abs(transitSeed + tD * 2 + 4) % FENG.length;
 
-    // -------------------------------------------------------------
-    // ตรวจสอบโหมดปัจจุบัน และสลับการแสดงผลอย่างเด็ดขาด
-    // -------------------------------------------------------------
     const currentMode = (typeof AppState !== 'undefined' && AppState.currentBaziMode) ? AppState.currentBaziMode : 'free';
     const vipRes = document.getElementById('bazi-vip-result');
     const freeRes = document.getElementById('bazi-free-result');
@@ -11872,12 +11838,9 @@ function renderBaziDirect() {
           </div>
         `;
       }
-      return; // สิ้นสุดการทำงานของโหมดฟรี (ไม่เรนเดอร์ VIP)
+      return;
     }
 
-    // -------------------------------------------------------------
-    // ส่วนเรนเดอร์เฉพาะโหมด VIP
-    // -------------------------------------------------------------
     if (freeRes) freeRes.style.display = 'none';
     if (vipRes) vipRes.style.display = 'block';
 
@@ -11942,13 +11905,46 @@ function renderBaziDirect() {
 }
 window.renderBaziDirect = renderBaziDirect;
 window.calcBaziEngine = renderBaziDirect;
-    // ฟังก์ชันเปิดโมดอลซาจู
+
+// ฟังก์ชันเปิดโมดอลปาจื่อ (BaZi Modal)
+function openBaziModal() {
+  const modal = document.getElementById('modal-bazi');
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
+  }
+  if (typeof AppState !== 'undefined') {
+    AppState.currentBaziMode = AppState.currentBaziMode || 'free';
+  }
+  setTimeout(renderBaziDirect, 120);
+}
+window.openBaziModal = openBaziModal;
+
+// ฟังก์ชันสลับโหมด ฟรี / VIP ของปาจื่อ
+function switchBaziMode(mode) {
+  if (typeof AppState !== 'undefined') {
+    AppState.currentBaziMode = mode;
+  }
+  const btnFree = document.getElementById('btn-bazi-free');
+  const btnVip = document.getElementById('btn-bazi-vip');
+  if (btnFree) btnFree.classList.toggle('active', mode === 'free');
+  if (btnVip) btnVip.classList.toggle('active', mode === 'vip');
+
+  const freeRes = document.getElementById('bazi-free-result');
+  const vipRes = document.getElementById('bazi-vip-result');
+  if (freeRes) freeRes.style.display = (mode === 'free') ? 'block' : 'none';
+  if (vipRes) vipRes.style.display = (mode === 'vip') ? 'block' : 'none';
+
+  renderBaziDirect();
+}
+window.switchBaziMode = switchBaziMode;
+
+// ฟังก์ชันเปิดโมดอลซาจู (Saju Modal)
 function openSajuModal() {
-  if (typeof openFeatureModal === 'function') {
-    openFeatureModal('saju');
-  } else {
-    const modal = document.getElementById('modal-saju');
-    if (modal) modal.style.display = 'flex';
+  const modal = document.getElementById('modal-saju');
+  if (modal) {
+    document.body.appendChild(modal);
+    modal.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
   }
   if (typeof AppState !== 'undefined') {
     AppState.currentSajuMode = AppState.currentSajuMode || 'free';
