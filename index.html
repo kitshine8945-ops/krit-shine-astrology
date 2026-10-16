@@ -6443,7 +6443,7 @@ function switchSajuMode(mode) {
   calcSajuEngine(mode);
 }
 
-// --- 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (มาตรฐานดาราศาสตร์ 4 เสาแท้ 100% ไดนามิกสด) ---
+// --- 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (มาตรฐานดาราศาสตร์ 4 เสาแท้ 100% ไดนามิกแท้จริง ไร้การฮาร์ดโค้ด) ---
 function calcSajuEngine(mode) {
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
@@ -6455,13 +6455,7 @@ function calcSajuEngine(mode) {
   const bYearEl = document.getElementById('birthYearBE');
   const bHourEl = document.getElementById('birthHour24');
 
-  const bD = bDayEl && bDayEl.value ? parseInt(bDayEl.value, 10) : 30;
-  const bM = bMonthEl && bMonthEl.value ? parseInt(bMonthEl.value, 10) : 4;
-  const bY = bYearEl && bYearEl.value ? parseInt(bYearEl.value, 10) : 2522;
-  const hHour = bHourEl && bHourEl.value ? parseInt(bHourEl.value, 10) : 1;
-  const yCE = bY > 2400 ? (bY - 543) : bY;
-
-  // ตรวจสอบความถูกต้อง
+  // ตรวจสอบความถูกต้อง: หากยังไม่ได้กรอกวันเกิดครบถ้วน ให้หยุดการทำงานทันที
   if (!bDayEl?.value || !bMonthEl?.value || !bYearEl?.value) {
     resultBox.style.display = 'block';
     resultBox.innerHTML = `
@@ -6474,21 +6468,27 @@ function calcSajuEngine(mode) {
     return;
   }
 
+  const bD = parseInt(bDayEl.value, 10);
+  const bM = parseInt(bMonthEl.value, 10);
+  const bY = parseInt(bYearEl.value, 10);
+  const hHour = bHourEl && bHourEl.value ? parseInt(bHourEl.value, 10) : 0;
+  const yCE = bY > 2400 ? (bY - 543) : bY;
+
   const birthText = `${bD}/${bM}/${bY}`;
 
-  // ดึงค่าวันเดือนปี "จร" สดๆ
+  // ดึงค่าวันเดือนปี "จร" สดๆ จากหน้าเว็บ
   const transitDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
   const transitMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
   const transitYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
 
-  const tD = transitDayEl && transitDayEl.value ? parseInt(transitDayEl.value, 10) : 16;
-  const tM = transitMonthEl && transitMonthEl.value ? parseInt(transitMonthEl.value, 10) : 10;
-  const tY = transitYearEl && transitYearEl.value ? parseInt(transitYearEl.value, 10) : 2569;
+  const tD = transitDayEl && transitDayEl.value ? parseInt(transitDayEl.value, 10) : 1;
+  const tM = transitMonthEl && transitMonthEl.value ? parseInt(transitMonthEl.value, 10) : 1;
+  const tY = transitYearEl && transitYearEl.value ? parseInt(transitYearEl.value, 10) : 2570;
   const tH = parseInt(document.getElementById('transitHour24')?.value, 10) || 6;
   const tMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 0;
   
   const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  const tMName = MONTH_NAMES[tM - 1] || 'ตุลาคม';
+  const tMName = MONTH_NAMES[tM - 1] || 'มกราคม';
   const transitDateStr = `${tD} ${tMName} พ.ศ. ${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
 
   let ageYang = (tY - bY) + 1;
@@ -6524,7 +6524,9 @@ function calcSajuEngine(mode) {
     { name: "해 (แฮ: กุน)", elem: "น้ำ" }
   ];
 
-  // 1. ยอนจู (เสาปี: 연주) - ตัดลี่ชุน
+  // ==========================================
+  // ๑. ยอนจู (เสาปี: 연주) - สารทลี่ชุน
+  // ==========================================
   let solarYear = yCE;
   if (bM < 2 || (bM === 2 && bD < 4)) solarYear = yCE - 1;
   let yStemIdx = (solarYear - 4) % 10;
@@ -6532,7 +6534,9 @@ function calcSajuEngine(mode) {
   let yBranchIdx = (solarYear - 4) % 12;
   if (yBranchIdx < 0) yBranchIdx += 12;
 
-  // 2. ว็อลจู (เสาเดือน: 월주) - 24 สารทเจี๋ยชี่
+  // ==========================================
+  // ๒. ว็อลจู (เสาเดือน: 월주) - 24 สารทเจี๋ยชี่
+  // ==========================================
   const JIE_QI_DAYS = [5, 4, 5, 5, 5, 5, 7, 7, 7, 8, 7, 7];
   let mBranchIdx = 0;
   if (bM === 1) mBranchIdx = (bD >= JIE_QI_DAYS[0]) ? 1 : 0;
@@ -6552,20 +6556,29 @@ function calcSajuEngine(mode) {
   let mOrderFromYin = (mBranchIdx - 2 + 12) % 12;
   let mStemIdx = (mStemStart[yStemIdx] + mOrderFromYin) % 10;
 
-  // 3. อิลจู (เสาวัน: 일주) - Absolute 60 Cycle (丁巳 / 정사 เป๊ะ 100%)
-  let sajuBaseDate = new Date(Date.UTC(1979, 3, 30));
-  let sajuCurrentDate = new Date(Date.UTC(yCE, bM - 1, bD));
-  let elapsedDays = Math.round((sajuCurrentDate - sajuBaseDate) / 86400000);
+  // ==========================================
+  // ๓. อิลจู (เสาวัน: 일주) - สูตรคำนวณสากล Julian Day Number ไร้วันที่ฮาร์ดโค้ด
+  // ==========================================
+  let aVal = Math.floor((14 - bM) / 12);
+  let yVal = yCE + 4800 - aVal;
+  let mVal = bM + 12 * aVal - 3;
+  let jdn = bD + Math.floor((153 * mVal + 2) / 5) + 365 * yVal + Math.floor(yVal / 4) - Math.floor(yVal / 100) + Math.floor(yVal / 400) - 32045;
 
-  let dCycleIdx = (53 + elapsedDays) % 60;
+  if (hHour >= 23) {
+    jdn += 1;
+  }
+
+  // Offset ทางดาราศาสตร์สากล (+49) ให้ผลลัพธ์ 丁巳 (정사) เป๊ะ 100%
+  let dCycleIdx = (jdn + 49) % 60;
   if (dCycleIdx < 0) dCycleIdx += 60;
-  if (hHour >= 23) dCycleIdx = (dCycleIdx + 1) % 60;
 
   let dStemIdx = dCycleIdx % 10;
   let dBranchIdx = dCycleIdx % 12;
   let dayMaster = cheongan[dStemIdx];
 
-  // 4. ชีจู (เสายาม: 시주) - เบญจมุสิก
+  // ==========================================
+  // ๔. ชีจู (เสายาม: 시주) - เบญจมุสิก
+  // ==========================================
   let hBranchIdx = Math.floor(((hHour + 1) % 24) / 2);
   let hStemStart = [0, 2, 4, 6, 8, 0, 2, 4, 6, 8];
   let hStemIdx = (hStemStart[dStemIdx] + hBranchIdx) % 10;
@@ -6575,7 +6588,9 @@ function calcSajuEngine(mode) {
   let dCol = dayMaster.kr + "<br>" + jiji[dBranchIdx].name;
   let hCol = cheongan[hStemIdx].kr + "<br>" + jiji[hBranchIdx].name;
 
-  // 5. วิเคราะห์สภาพพลังงาน & ยงชิน (Yongshin)
+  // ==========================================
+  // ๕. วิเคราะห์สภาพพลังงาน & ยงชิน (Yongshin)
+  // ==========================================
   let supportCount = 0;
   [yStemIdx, mStemIdx, hStemIdx].forEach(stIdx => {
     let stElem = cheongan[stIdx].elem;
@@ -6605,7 +6620,7 @@ function calcSajuEngine(mode) {
     } else {
       yongshin = "ธาตุไม้ (มก: 木) & ธาตุไฟ (ฮวา: 火)";
       gishin = "ธาตุน้ำ (ซู: 水) & ธาตุทอง (คึม: 金)";
-      fengDir = "ทิศตะวันออก หรือ ทิศใต้";
+      fengDir = "ทิศตะวันออก, ทิศตะวันออกเฉียงใต้ หรือ ทิศใต้";
       fengColor = "สีเขียวมรกต, สีส้มอิฐ, สีแดงชาด";
       fengItem = "ต้นไม้มงคลขนาดเล็ก, โคมไฟสีวอร์มไลท์";
       fengDesc = "เพื่อเสริมสร้างพลังชีวิตและความสว่างไสวแก่อิลจู";
@@ -6617,13 +6632,27 @@ function calcSajuEngine(mode) {
     fengColor = isStrong ? "สีแดง, สีส้ม, สีเหลืองอบอุ่น" : "สีเขียวสด, สีฟ้าคราม, สีดำ";
     fengItem = isStrong ? "หินทับทิม, ปิรามิดคริสตัล" : "ต้นไม้ดูดซับพลัง, อ่างบัวจำลอง";
     fengDesc = isStrong ? "เพื่อระบายพลังสร้างสรรค์โอกาสทางธุรกิจ" : "เพื่อเสริมรากฐานและพลังชีวิต";
+  } else if (dayMaster.elem === 'ดิน') {
+    yongshin = isStrong ? "ธาตุทอง & ธาตุน้ำ" : "ธาตุไฟ & ธาตุดิน";
+    gishin = isStrong ? "ธาตุไฟล้น" : "ธาตุไม้พิฆาต";
+    fengDir = isStrong ? "ทิศตะวันตก หรือ ทิศเหนือ" : "ทิศใต้ หรือ ทิศตะวันออกเฉียงเหนือ";
+    fengColor = isStrong ? "สีขาว, สีบรอนซ์เงิน, สีน้ำเงิน" : "สีแดง, สีส้ม, สีเหลืองดิน";
+    fengItem = isStrong ? "ลูกโลกโลหะ, แก้วน้ำใส" : "โคมไฟหินเกลือ, เครื่องปั้นดินเผา";
+    fengDesc = isStrong ? "เพื่อระบายพลังและดึงดูดทรัพย์" : "เพื่อเสริมความมั่นคงและบารมี";
+  } else if (dayMaster.elem === 'ทอง') {
+    yongshin = isStrong ? "ธาตุน้ำ & ธาตุไม้" : "ธาตุดิน & ธาตุทอง";
+    gishin = isStrong ? "ธาตุดินหนา" : "ธาตุไฟหลอม";
+    fengDir = isStrong ? "ทิศเหนือ หรือ ทิศตะวันออก" : "ทิศตะวันตกเฉียงใต้ หรือ ทิศตะวันตก";
+    fengColor = isStrong ? "สีดำ, สีน้ำเงิน, สีเขียว" : "สีขาวมุก, สีทอง, สีน้ำตาลดิน";
+    fengItem = isStrong ? "น้ำล้นตั้งโต๊ะ, ไม้กระถาง" : "คริสตัลควอตซ์, พระพุทธรูปโลหะ";
+    fengDesc = isStrong ? "เพื่อเพิ่มความพลิกแพลงและเปิดรับโชคลาภ" : "เพื่อเพิ่มความแข็งแกร่งและอำนาจ";
   } else {
-    yongshin = isStrong ? "ธาตุถ่ายเทระบายพลังงานส่วนเกิน" : "ธาตุเกื้อหนุนตามโครงสร้างดวง";
-    gishin = isStrong ? "ธาตุเดิมที่ล้นเกิน" : "ธาตุพิฆาต";
-    fengDir = "ทิศมงคลปรับสมดุลชี่";
-    fengColor = "โทนสีสว่างปรับสมดุลธาตุ";
-    fengItem = "เครื่องประดับหินธรรมชาติ";
-    fengDesc = "เพื่อความสมดุลกลมกลืน";
+    yongshin = isStrong ? "ธาตุไม้ & ธาตุไฟ" : "ธาตุทอง & ธาตุน้ำ";
+    gishin = isStrong ? "ธาตุทองล้น" : "ธาตุดินขวาง";
+    fengDir = isStrong ? "ทิศตะวันออก หรือ ทิศใต้" : "ทิศตะวันตก หรือ ทิศเหนือ";
+    fengColor = isStrong ? "สีเขียว, สีแดง, สีส้มสด" : "สีขาว, สีทอง, สีฟ้าคราม";
+    fengItem = isStrong ? "ต้นไม้ฟอกอากาศ, งานศิลปะสีสดใส" : "กระดิ่งลมโลหะ, แก้วน้ำใสสะอาด";
+    fengDesc = isStrong ? "เพื่อขับเคลื่อนปัญญาและชื่อเสียง" : "เพื่อเติมเต็มสายธารแห่งความสำเร็จ";
   }
 
   // คลังชุดคำทำนาย
@@ -6657,7 +6686,7 @@ function calcSajuEngine(mode) {
     `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
   ];
 
-  // 6. คำนวณ Index ไดนามิกแท้จริง (ขึ้นตรงกับวันเกิด + วันจร)
+  // คำนวณ Index ไดนามิกแท้จริงจากรหัส 4 เสากำเนิด + วันจร
   let birthCode = (bD * 7) + (bM * 13) + (bY % 100) + (dStemIdx * 11) + (dBranchIdx * 17);
   let transitCode = (tD * 3) + (tM * 5) + (tY % 100);
 
@@ -6668,7 +6697,7 @@ function calcSajuEngine(mode) {
 
   resultBox.style.display = 'block';
 
-  // 7. วาดผลลัพธ์ลง sajuResultBox
+  // วาดผลลัพธ์ลง sajuResultBox
   if (currentMode === 'free') {
     let fIdx = Math.abs(birthCode) % FREE_SAJU.length;
     resultBox.innerHTML = `
@@ -6682,7 +6711,6 @@ function calcSajuEngine(mode) {
       </div>
     `;
   } else {
-    // โหมด VIP: มีตาราง 4 เสาเกาหลี + บทวิเคราะห์ 4 มิติ
     resultBox.innerHTML = `
       <div style="background:linear-gradient(145deg, rgba(234,179,8,0.12), rgba(15,23,42,0.85)); border:1.5px solid #eab308; border-radius:12px; padding:16px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:8px; margin-bottom:14px;">
@@ -6690,7 +6718,7 @@ function calcSajuEngine(mode) {
           <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
         </div>
 
-        <!-- ตาราง 4 เสาชะตาเกาหลี (ยอนจู, ว็อลจู, อิลจู, ชีจู) -->
+        <!-- ตาราง 4 เสาชะตาเกาหลี -->
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
           <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
             <div style="font-size:0.72rem; color:#ffd700;">ยอนจู (เสาปี: รากฐาน)</div>
