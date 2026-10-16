@@ -11718,10 +11718,17 @@ function calcBaziEngine() {
     const freeDesc = document.getElementById('bazi-free-desc');
     if (freeDesc) freeDesc.textContent = dayMaster.desc;
 
-   // เปิดกล่อง VIP เฉพาะเมื่ออยู่ในโหมด VIP เท่านั้น
+// 1. เปิดกล่องหลักให้แสดงผล (ตาราง 4 เสา และกรอบดิถีธาตุจะกลับมาโชว์)
 const vipRes = document.getElementById('bazi-vip-result');
+if (vipRes) vipRes.style.display = 'block';
+
+// 2. สั่งซ่อนเฉพาะ "คัมภีร์ VIP 4 มิติเชิงลึก" ด้านล่าง ถ้าอยู่ในโหมดฟรี
 const curBaziMode = (typeof AppState !== 'undefined' && AppState.currentBaziMode) ? AppState.currentBaziMode : 'free';
-if (vipRes) vipRes.style.display = (curBaziMode === 'vip') ? 'block' : 'none';
+const extAnalysis = document.getElementById('bazi-vip-extended-analysis');
+const luckCycle = document.getElementById('bazi-vip-luckcycle');
+
+if (extAnalysis) extAnalysis.style.display = (curBaziMode === 'vip') ? 'block' : 'none';
+if (luckCycle) luckCycle.style.display = (curBaziMode === 'vip') ? 'block' : 'none';
 
     // วาดตาราง 4 เสาชะตาที่ถูกต้องแท้จริง
     const pillarsGrid = document.getElementById('bazi-pillars-grid');
