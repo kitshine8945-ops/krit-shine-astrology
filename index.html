@@ -32,11 +32,6 @@
     "https://www.youtube.com/@KritShineStation"
   ]
 }
-  /* เมื่อเปิดแท็บปาจื่อฟรี ให้ซ่อนคัมภีร์ VIP ด้านล่างอัตโนมัติ */
-#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-extended-analysis,
-#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-luckcycle {
-  display: none !important;
-}
 </script>
 <title>Krit Shine Astrology - ผูกดวงชะตา พยากรณ์ชีวิต & รายงาน VIP ครบวงจร</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,6 +43,13 @@
     /* ซ่อนแถบกล่องวันจรเฉพาะเมื่ออยู่ในโหมดเลข 7 ตัว 4 ฐาน (ฟรี) */
 #modal-num7base:has(#btn-num7-free.active) .transit-active-badge-bar,
 #modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
+  display: none !important;
+}
+    /* ซ่อนคัมภีร์ VIP ปาจื่อเมื่ออยู่ในโหมดฟรี */
+#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-extended-analysis,
+#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-luckcycle,
+#modal-bazi:has(#btn-bazi-free.active) [id*="bazi-vip-extended"],
+#modal-bazi:has(#btn-bazi-free.active) [style*="คัมภีร์ผ่าดวง"] {
   display: none !important;
 }
     :root {
