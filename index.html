@@ -32,6 +32,11 @@
     "https://www.youtube.com/@KritShineStation"
   ]
 }
+  /* เมื่อเปิดแท็บปาจื่อฟรี ให้ซ่อนคัมภีร์ VIP ด้านล่างอัตโนมัติ */
+#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-extended-analysis,
+#modal-bazi:has(#btn-bazi-free.active) #bazi-vip-luckcycle {
+  display: none !important;
+}
 </script>
 <title>Krit Shine Astrology - ผูกดวงชะตา พยากรณ์ชีวิต & รายงาน VIP ครบวงจร</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11718,19 +11723,9 @@ function calcBaziEngine() {
     const freeDesc = document.getElementById('bazi-free-desc');
     if (freeDesc) freeDesc.textContent = dayMaster.desc;
 
-// เปิดกล่องผลลัพธ์หลักเสมอ
+// เปิดกล่อง VIP แสดงผล
 const vipRes = document.getElementById('bazi-vip-result');
 if (vipRes) vipRes.style.display = 'block';
-
-// เช็กว่าผู้ใช้กำลังกดอยู่ที่แท็บ VIP หรือไม่
-const isVipTab = document.getElementById('btn-bazi-vip')?.classList.contains('active');
-
-// ถ้าอยู่แท็บ VIP ให้เปิดคัมภีร์ ถ้าอยู่แท็บฟรีให้ซ่อนคัมภีร์
-const extAnalysis = document.getElementById('bazi-vip-extended-analysis');
-const luckCycle = document.getElementById('bazi-vip-luckcycle');
-if (extAnalysis) extAnalysis.style.display = isVipTab ? 'block' : 'none';
-if (luckCycle) luckCycle.style.display = isVipTab ? 'block' : 'none';
-
     // วาดตาราง 4 เสาชะตาที่ถูกต้องแท้จริง
     const pillarsGrid = document.getElementById('bazi-pillars-grid');
     if (pillarsGrid) {
