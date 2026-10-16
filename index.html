@@ -52,6 +52,12 @@
 #modal-bazi:has(#btn-bazi-free.active) [style*="คัมภีร์ผ่าดวง"] {
   display: none !important;
 }
+    /* ซ่อนกล่อง 8 ดาวทิพย์ในยูเรเนียนเมื่ออยู่ในโหมดฟรี */
+#modal-uranian:has(#btn-uranian-free.active) [style*="ถอดรหัสอิทธิพล 8 ดาวทิพย์"],
+#modal-uranian:has(#btn-uranian-free.active) #uranianFreeBox > div:nth-child(2),
+#modal-uranian:has(#btn-uranian-free.active) .uranian-vip-block {
+  display: none !important;
+}
     :root {
       --bg-midnight: #040816;
       --bg-panel: rgba(10, 16, 35, 0.94);
