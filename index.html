@@ -6676,23 +6676,31 @@ function calcSajuEngine(mode) {
       `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สภาพดวง ${isStrong ? "เข้มแข็ง" : "อ่อนกำลัง"} ควรดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${transitDateStr}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
     ];
 
-// --- สูตรกระจาย Index บังคับให้เปลี่ยนตาม 4 เสากำเนิด + วันจร อย่างสมดุล ---
-    var curBE = (new Date().getFullYear()) + 543;
+// --- 1. ดึงวันเกิด (แตะเฉพาะช่องเกิด ไม่ยุ่งกับวันจร) ---
+    let b_Day   = parseInt(document.getElementById('birthDay') ? document.getElementById('birthDay').value : (typeof bD !== 'undefined' ? bD : 1), 10) || 1;
+    let b_Month = parseInt(document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : (typeof bM !== 'undefined' ? bM : 1), 10) || 1;
+    let b_Year  = parseInt(document.getElementById('birthYearBE') ? document.getElementById('birthYearBE').value : (typeof bY !== 'undefined' ? bY : 2522), 10) || 2522;
 
-    let bD_num = parseInt(bD, 10) || 1;
-    let bM_num = parseInt(bM, 10) || 1;
-    let bY_num = parseInt(bY, 10) || curBE;
+    // --- 2. ดึงวันจร (แตะเฉพาะช่องจร ไม่ยุ่งกับวันเกิด) ---
+    let t_DayEl   = document.getElementById('transitDayVIP') || document.getElementById('transitDay');
+    let t_MonthEl = document.getElementById('transitMonthVIP') || document.getElementById('transitMonth');
+    let t_YearEl  = document.getElementById('transitYearVIP') || document.getElementById('transitYearBE');
 
-    let tD_num = parseInt(tD, 10) || 1;
-    let tM_num = parseInt(tM, 10) || 1;
-    let tY_num = parseInt(tY, 10) || curBE;
+    let t_Day   = parseInt(t_DayEl ? t_DayEl.value : (typeof tD !== 'undefined' ? tD : 1), 10) || 1;
+    let t_Month = parseInt(t_MonthEl ? t_MonthEl.value : (typeof tM !== 'undefined' ? tM : 1), 10) || 1;
+    let t_Year  = parseInt(t_YearEl ? t_YearEl.value : (typeof tY !== 'undefined' ? tY : 2569), 10) || 2569;
 
-    // คำนวณ Seed แยกมิติเพื่อให้ทุกกล่องไม่ซ้ำกัน และเปลี่ยนทุกครั้งที่เปลี่ยนวันเกิด
-    let natalSeed = (bD_num * 37) + (bM_num * 19) + ((bY_num % 100) * 7);
-    let seedCareer = natalSeed + (tD_num * 7);
-    let seedWealth = (bD_num * 17) + (bM_num * 29) + ((bY_num % 100) * 11) + (tD_num * 13);
-    let seedLove   = (bD_num * 41) + (bM_num * 23) + ((bY_num % 100) * 7) + (tD_num * 17);
-    let seedHealth = (bD_num * 13) + (bM_num * 31) + ((bY_num % 100) * 5) + (tD_num * 23);
+    // --- 3. คำนวณแกนกำเนิด (อิงวันเกิด 100% วันจรเปลี่ยนตรงนี้ไม่ขยับ) ---
+    let natalSeed = (b_Day * 37) + (b_Month * 19) + ((b_Year % 100) * 7);
+
+    // --- 4. คำนวณแกนวันจร (รวม วัน + เดือน + ปีจร) ---
+    let transitSeed = (t_Day * 23) + (t_Month * 13) + ((t_Year % 100) * 5);
+
+    // ผลลัพธ์รวม: เปลี่ยนวันเกิดก็เปลี่ยน / เปลี่ยนวันจรก็เปลี่ยน แยกตัวแปรชัดเจนไม่ตีกัน
+    let seedCareer = natalSeed + transitSeed + (t_Day * 7);
+    let seedWealth = natalSeed + (transitSeed * 2) + (t_Month * 11);
+    let seedLove   = natalSeed + (transitSeed * 3) + (t_Year % 100);
+    let seedHealth = natalSeed + (transitSeed * 5) + (t_Day * 3);
 
     let wIdx = Math.abs(seedCareer) % SAJU_CAREER.length;
     let mIdx = Math.abs(seedWealth) % SAJU_WEALTH.length;
