@@ -11718,9 +11718,10 @@ function calcBaziEngine() {
     const freeDesc = document.getElementById('bazi-free-desc');
     if (freeDesc) freeDesc.textContent = dayMaster.desc;
 
-    // เปิดกล่อง VIP แสดงผล
-    const vipRes = document.getElementById('bazi-vip-result');
-    if (vipRes) vipRes.style.display = 'block';
+   // เปิดกล่อง VIP เฉพาะเมื่ออยู่ในโหมด VIP เท่านั้น
+const vipRes = document.getElementById('bazi-vip-result');
+const curBaziMode = (typeof AppState !== 'undefined' && AppState.currentBaziMode) ? AppState.currentBaziMode : 'free';
+if (vipRes) vipRes.style.display = (curBaziMode === 'vip') ? 'block' : 'none';
 
     // วาดตาราง 4 เสาชะตาที่ถูกต้องแท้จริง
     const pillarsGrid = document.getElementById('bazi-pillars-grid');
