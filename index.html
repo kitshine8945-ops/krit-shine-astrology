@@ -982,12 +982,12 @@ header.navbar {
         <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
       </div>
 
-      <!-- ปุ่มปาจื่อ (ปิดแท็กสมบูรณ์) -->
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openBaziModal();}">
-        <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
-        <div class="cat-name">ปาจื่อ (BaZi)</div>
-        <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
-      </div>
+ <!-- ปุ่มปาจื่อ (แก้ไขแล้ว) -->
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('bazi'); if(typeof calcBaziEngine==='function')calcBaziEngine();}">
+  <div class="cat-icon-circle"><i class="fa-solid fa-yin-yang"></i></div>
+  <div class="cat-name">ปาจื่อ (BaZi)</div>
+  <div class="cat-sub">4 เสาหลัก & ฮวงจุ้ย</div>
+</div>
 
       <!-- ปุ่มซาจู (กู้คืนกลับมา) -->
       <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openSajuModal();}">
@@ -12871,12 +12871,10 @@ function renderSajuDirect() {
       let daeunIdx = Math.abs((dVal * 19) + (mVal * 7) + (yVal % 100) + (tD * 13) + (tM * 5) + (tY % 100)) % DAEUN_POOLS.length;
       let selectedDaeunText = DAEUN_POOLS[daeunIdx];
 
-luck.innerHTML = "<strong><i class='fa-solid fa-compass'></i> มหาวัฏจักรแทอุน 10 ปี (Dae-un - 대운) อิงวันเกิด " + dVal + "/" + mVal + "/" + yVal + " และวันจร " + tD + " " + (typeof tMName !== 'undefined' ? tMName : tM) + " " + tY + ":</strong><br>กระแสอุนเซประจำปี พ.ศ. " + tY + " (วันจร " + tD + "/" + tM + "): " + selectedDaeunText;
-    }
+luck.innerHTML = "<strong><i class='fa-solid fa-compass'></i> มหาวัฏจักรแดอุน 10 ปี (Dae-un - 대운) อิงวันเกิด:</strong> " + selectedDaeunText;
   } catch (err) {
     console.error("Saju Render Error:", err);
   }
-}
 window.renderSajuDirect = renderSajuDirect;
 window.calcSajuEngine = renderSajuDirect;
 function handleOpenModal(type) {
