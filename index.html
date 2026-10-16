@@ -6676,22 +6676,7 @@ function calcSajuEngine(mode) {
       `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สภาพดวง ${isStrong ? "เข้มแข็ง" : "อ่อนกำลัง"} ควรดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${transitDateStr}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
     ];
 
-    // --- สูตรกระจาย Index บังคับให้เปลี่ยนตาม 4 เสากำเนิด + วันจร อย่างสมดุล ---
-// สูตรคำนวณดัชนีแบบ Dynamic กระจายตาม วันเกิด + เดือนเกิด + ปีเกิด + วันจร (ไร้ตัวเลขปีฮาร์ดโค้ด)
-    let currentYearBE = new Date().getFullYear() + 543;
-
-    let bD_num = parseInt(bD, 10) || 1;
-    let bM_num = parseInt(bM, 10) || 1;
-    let bY_num = parseInt(bY, 10) || currentYearBE;
-
-    let tD_num = parseInt(tD, 10) || 1;
-    let tM_num = parseInt(tM, 10) || 1;
-    let tY_num = parseInt(tY, 10) || currentYearBE;
-
-    // ประกาศ natalSeed เพื่อรองรับการคำนวณโหมดฟรีที่บรรทัด 6703
-    let natalSeed = (bD_num * 37) + (bM_num * 19) + ((bY_num % 100) * 7);
-
-// สูตรคำนวณดัชนีแบบ Dynamic กระจายตาม วันเกิด + เดือนเกิด + ปีเกิด + วันจร
+// --- สูตรกระจาย Index บังคับให้เปลี่ยนตาม 4 เสากำเนิด + วันจร อย่างสมดุล ---
     var curBE = (new Date().getFullYear()) + 543;
 
     let bD_num = parseInt(bD, 10) || 1;
