@@ -6675,8 +6675,9 @@ function calcSajuEngine(mode) {
     `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
   ];
 
-  let birthCode = (bD * 7) + (bM * 13) + (bY % 100) + (dStemIdx * 11) + (dBranchIdx * 17);
-  let transitCode = (tD * 3) + (tM * 5) + (tY % 100);
+// --- ๗. ปรับปรุงสูตร Index คำทำนายให้หมุนเวียนไดนามิกแท้จริง (ระบบคำนวณ 4 เสาคงเดิม 100%) ---
+  let birthCode = (bD * 17) + (bM * 31) + ((bY % 100) * 7) + (dStemIdx * 13) + (dBranchIdx * 19);
+  let transitCode = (tD * 23) + (tM * 11) + ((tY % 100) * 5);
 
   let wIdx = Math.abs(birthCode + transitCode) % SAJU_CAREER.length;
   let mIdx = Math.abs(birthCode * 2 + transitCode * 3 + 1) % SAJU_WEALTH.length;
