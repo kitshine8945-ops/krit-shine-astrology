@@ -6455,7 +6455,6 @@ function calcSajuEngine(mode) {
   const bYearEl = document.getElementById('birthYearBE');
   const bHourEl = document.getElementById('birthHour24');
 
-  // ตรวจสอบความถูกต้อง: หากยังไม่ได้กรอกวันเกิดครบถ้วน ให้หยุดการทำงานทันที
   if (!bDayEl?.value || !bMonthEl?.value || !bYearEl?.value) {
     resultBox.style.display = 'block';
     resultBox.innerHTML = `
@@ -6476,7 +6475,6 @@ function calcSajuEngine(mode) {
 
   const birthText = `${bD}/${bM}/${bY}`;
 
-  // ดึงค่าวันเดือนปี "จร" สดๆ จากหน้าเว็บ
   const transitDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
   const transitMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
   const transitYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
@@ -6524,9 +6522,7 @@ function calcSajuEngine(mode) {
     { name: "해 (แฮ: กุน)", elem: "น้ำ" }
   ];
 
-  // ==========================================
   // ๑. ยอนจู (เสาปี: 연주) - สารทลี่ชุน
-  // ==========================================
   let solarYear = yCE;
   if (bM < 2 || (bM === 2 && bD < 4)) solarYear = yCE - 1;
   let yStemIdx = (solarYear - 4) % 10;
@@ -6534,9 +6530,7 @@ function calcSajuEngine(mode) {
   let yBranchIdx = (solarYear - 4) % 12;
   if (yBranchIdx < 0) yBranchIdx += 12;
 
-  // ==========================================
   // ๒. ว็อลจู (เสาเดือน: 월주) - 24 สารทเจี๋ยชี่
-  // ==========================================
   const JIE_QI_DAYS = [5, 4, 5, 5, 5, 5, 7, 7, 7, 8, 7, 7];
   let mBranchIdx = 0;
   if (bM === 1) mBranchIdx = (bD >= JIE_QI_DAYS[0]) ? 1 : 0;
@@ -6556,9 +6550,7 @@ function calcSajuEngine(mode) {
   let mOrderFromYin = (mBranchIdx - 2 + 12) % 12;
   let mStemIdx = (mStemStart[yStemIdx] + mOrderFromYin) % 10;
 
-  // ==========================================
-  // ๓. อิลจู (เสาวัน: 일주) - สูตรคำนวณสากล Julian Day Number ไร้วันที่ฮาร์ดโค้ด
-  // ==========================================
+  // ๓. อิลจู (เสาวัน: 일주) - Julian Day Number ปรับ Offset สากลเป็น +51 (ตรงกับ 丁巳 100%)
   let aVal = Math.floor((14 - bM) / 12);
   let yVal = yCE + 4800 - aVal;
   let mVal = bM + 12 * aVal - 3;
@@ -6568,17 +6560,14 @@ function calcSajuEngine(mode) {
     jdn += 1;
   }
 
-  // Offset ทางดาราศาสตร์สากล (+49) ให้ผลลัพธ์ 丁巳 (정사) เป๊ะ 100%
-  let dCycleIdx = (jdn + 49) % 60;
+  let dCycleIdx = (jdn + 51) % 60;
   if (dCycleIdx < 0) dCycleIdx += 60;
 
   let dStemIdx = dCycleIdx % 10;
   let dBranchIdx = dCycleIdx % 12;
   let dayMaster = cheongan[dStemIdx];
 
-  // ==========================================
   // ๔. ชีจู (เสายาม: 시주) - เบญจมุสิก
-  // ==========================================
   let hBranchIdx = Math.floor(((hHour + 1) % 24) / 2);
   let hStemStart = [0, 2, 4, 6, 8, 0, 2, 4, 6, 8];
   let hStemIdx = (hStemStart[dStemIdx] + hBranchIdx) % 10;
@@ -6588,9 +6577,7 @@ function calcSajuEngine(mode) {
   let dCol = dayMaster.kr + "<br>" + jiji[dBranchIdx].name;
   let hCol = cheongan[hStemIdx].kr + "<br>" + jiji[hBranchIdx].name;
 
-  // ==========================================
   // ๕. วิเคราะห์สภาพพลังงาน & ยงชิน (Yongshin)
-  // ==========================================
   let supportCount = 0;
   [yStemIdx, mStemIdx, hStemIdx].forEach(stIdx => {
     let stElem = cheongan[stIdx].elem;
@@ -6622,7 +6609,7 @@ function calcSajuEngine(mode) {
       gishin = "ธาตุน้ำ (ซู: 水) & ธาตุทอง (คึม: 金)";
       fengDir = "ทิศตะวันออก, ทิศตะวันออกเฉียงใต้ หรือ ทิศใต้";
       fengColor = "สีเขียวมรกต, สีส้มอิฐ, สีแดงชาด";
-      fengItem = "ต้นไม้มงคลขนาดเล็ก, โคมไฟสีวอร์มไลท์";
+      fengItem = "ต้นไม้มงคลขนาดกะทัดรัด, โคมไฟสีวอร์มไลท์";
       fengDesc = "เพื่อเสริมสร้างพลังชีวิตและความสว่างไสวแก่อิลจู";
     }
   } else if (dayMaster.elem === 'ไม้') {
@@ -6630,7 +6617,7 @@ function calcSajuEngine(mode) {
     gishin = isStrong ? "ธาตุน้ำล้นเกิน" : "ธาตุทองหนัก";
     fengDir = isStrong ? "ทิศใต้ หรือ ทิศตะวันตกเฉียงใต้" : "ทิศเหนือ หรือ ทิศตะวันออก";
     fengColor = isStrong ? "สีแดง, สีส้ม, สีเหลืองอบอุ่น" : "สีเขียวสด, สีฟ้าคราม, สีดำ";
-    fengItem = isStrong ? "หินทับทิม, ปิรามิดคริสตัล" : "ต้นไม้ดูดซับพลัง, อ่างบัวจำลอง";
+    fengItem = isStrong ? "หินทับทิม, โคมไฟสว่าง" : "ต้นไม้ดูดซับพลัง, อ่างบัวจำลอง";
     fengDesc = isStrong ? "เพื่อระบายพลังสร้างสรรค์โอกาสทางธุรกิจ" : "เพื่อเสริมรากฐานและพลังชีวิต";
   } else if (dayMaster.elem === 'ดิน') {
     yongshin = isStrong ? "ธาตุทอง & ธาตุน้ำ" : "ธาตุไฟ & ธาตุดิน";
@@ -6655,7 +6642,6 @@ function calcSajuEngine(mode) {
     fengDesc = isStrong ? "เพื่อขับเคลื่อนปัญญาและชื่อเสียง" : "เพื่อเติมเต็มสายธารแห่งความสำเร็จ";
   }
 
-  // คลังชุดคำทำนาย
   const FREE_SAJU = [
     `อิลจู (일주: เสาวันเกิด) คือ <strong>${dayMaster.kr} (${dayMaster.elem} - ${dayMaster.sym})</strong>: แก่นแท้แห่ง${dayMaster.desc} สภาพพลังงานชะตาจัดอยู่ในเกณฑ์ <strong>${isStrong ? "เข้มแข็ง (Strong Saju)" : "อ่อนกำลัง (Weak Saju)"}</strong> พลังปรับสมดุลชีวิต (ยงชิน) คือ <strong>${yongshin}</strong> ควรระวังอิทธิพลจาก <strong>${gishin}</strong>`,
     `อิลจูประจำตัว <strong>${dayMaster.kr} (${dayMaster.elem})</strong>: เปรียบเสมือน${dayMaster.sym} สถิตพลังแห่งความรอบคอบสุขุม มีทักษะการตัดสินใจในยามวิกฤตได้เฉียบขาด เสริมความเจริญรุ่งเรืองด้วยพลัง <strong>${yongshin}</strong>`,
@@ -6686,7 +6672,6 @@ function calcSajuEngine(mode) {
     `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
   ];
 
-  // คำนวณ Index ไดนามิกแท้จริงจากรหัส 4 เสากำเนิด + วันจร
   let birthCode = (bD * 7) + (bM * 13) + (bY % 100) + (dStemIdx * 11) + (dBranchIdx * 17);
   let transitCode = (tD * 3) + (tM * 5) + (tY % 100);
 
@@ -6697,7 +6682,6 @@ function calcSajuEngine(mode) {
 
   resultBox.style.display = 'block';
 
-  // วาดผลลัพธ์ลง sajuResultBox
   if (currentMode === 'free') {
     let fIdx = Math.abs(birthCode) % FREE_SAJU.length;
     resultBox.innerHTML = `
@@ -6718,7 +6702,6 @@ function calcSajuEngine(mode) {
           <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
         </div>
 
-        <!-- ตาราง 4 เสาชะตาเกาหลี -->
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
           <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
             <div style="font-size:0.72rem; color:#ffd700;">ยอนจู (เสาปี: รากฐาน)</div>
@@ -6743,7 +6726,6 @@ function calcSajuEngine(mode) {
           <span style="color:#cbd5e1;"><strong>ธาตุเกื้อหนุนยงชิน (Yongshin):</strong> <span style="color:#81c784; font-weight:bold;">${yongshin}</span> | <strong>ธาตุควรระวัง (Gishin):</strong> <span style="color:#ff7675; font-weight:bold;">${gishin}</span></span>
         </div>
 
-        <!-- 4 มิติเชิงลึก -->
         <div style="display:flex; flex-direction:column; gap:12px; font-size:0.86rem; line-height:1.7;">
           <div style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; padding:10px 12px; border-radius:8px;">
             <strong style="color:#64b5f6;"><i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & ยศศักดิ์:</strong>
