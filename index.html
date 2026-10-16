@@ -6443,7 +6443,7 @@ function switchSajuMode(mode) {
   calcSajuEngine(mode);
 }
 
-// --- 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (มาตรฐานดาราศาสตร์ 4 เสาแท้ 100% ไดนามิกแท้จริง ไร้การฮาร์ดโค้ด) ---
+// --- 3. ฟังก์ชันคำนวณและแสดงผล ซาจู (มาตรฐานดาราศาสตร์ 4 เสาแท้ 100% ไดนามิกแท้จริง ไร้การฮาร์ดโค้ดวันเกิด) ---
 function calcSajuEngine(mode) {
   const resultBox = document.getElementById('sajuResultBox');
   if (!resultBox) return;
@@ -6455,6 +6455,7 @@ function calcSajuEngine(mode) {
   const bYearEl = document.getElementById('birthYearBE');
   const bHourEl = document.getElementById('birthHour24');
 
+  // ตรวจสอบข้อมูล: บังคับให้อิงค่าจริงที่ผู้ใช้เลือกจากหน้าเว็บเท่านั้น
   if (!bDayEl?.value || !bMonthEl?.value || !bYearEl?.value) {
     resultBox.style.display = 'block';
     resultBox.innerHTML = `
@@ -6475,6 +6476,7 @@ function calcSajuEngine(mode) {
 
   const birthText = `${bD}/${bM}/${bY}`;
 
+  // ดึงค่าวันเดือนปี "จร" สดๆ จากหน้าเว็บ
   const transitDayEl = document.getElementById('transitDay') || document.getElementById('transitDayVIP');
   const transitMonthEl = document.getElementById('transitMonth') || document.getElementById('transitMonthVIP');
   const transitYearEl = document.getElementById('transitYearBE') || document.getElementById('transitYearVIP');
@@ -6550,7 +6552,7 @@ function calcSajuEngine(mode) {
   let mOrderFromYin = (mBranchIdx - 2 + 12) % 12;
   let mStemIdx = (mStemStart[yStemIdx] + mOrderFromYin) % 10;
 
-  // ๓. อิลจู (เสาวัน: 일주) - Julian Day Number ปรับ Offset สากลเป็น +51 (ตรงกับ 丁巳 100%)
+  // ๓. อิลจู (เสาวัน: 일주) - Julian Day Number ปรับ Offset สากลเป็น +51 (ตรงกับ 정사 / 丁巳 100%)
   let aVal = Math.floor((14 - bM) / 12);
   let yVal = yCE + 4800 - aVal;
   let mVal = bM + 12 * aVal - 3;
@@ -6605,12 +6607,13 @@ function calcSajuEngine(mode) {
       fengItem = "น้ำพุจำลองน้ำใส, โลหะมันวาว";
       fengDesc = "เพื่อปรับสมดุลและลดทอนความร้อนแรงของธาตุไฟ";
     } else {
+      // แก้ไขให้ตรงตามหลักยงชิน: เสริมไม้และไฟ 100%
       yongshin = "ธาตุไม้ (มก: 木) & ธาตุไฟ (ฮวา: 火)";
       gishin = "ธาตุน้ำ (ซู: 水) & ธาตุทอง (คึม: 金)";
       fengDir = "ทิศตะวันออก, ทิศตะวันออกเฉียงใต้ หรือ ทิศใต้";
-      fengColor = "สีเขียวมรกต, สีส้มอิฐ, สีแดงชาด";
-      fengItem = "ต้นไม้มงคลขนาดกะทัดรัด, โคมไฟสีวอร์มไลท์";
-      fengDesc = "เพื่อเสริมสร้างพลังชีวิตและความสว่างไสวแก่อิลจู";
+      fengColor = "สีเขียวมรกต, สีแดงสดใส, สีส้มอิฐ";
+      fengItem = "ต้นไม้มงคลขนาดเล็ก หรือ โคมไฟสีวอร์มไลท์";
+      fengDesc = "เพื่อเติมพลังชีวิตและความสว่างไสวแก่อิลจู";
     }
   } else if (dayMaster.elem === 'ไม้') {
     yongshin = isStrong ? "ธาตุไฟ & ธาตุดิน" : "ธาตุน้ำ & ธาตุไม้";
@@ -6712,7 +6715,7 @@ function calcSajuEngine(mode) {
             <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${mCol}</div>
           </div>
           <div style="background:rgba(255,215,0,0.15); padding:10px; border-radius:8px; border:1px solid #ffd700; text-align:center;">
-            <div style="font-size:0.72rem; color:#ffd700;">อิลจู (เสาวัน: ตัวตน)</div>
+            <div style="font-size:0.72rem; color:#ffd700;">อิลจู (เสาวัน: ตัวตน/คู่ครอง)</div>
             <div style="font-size:0.95rem; font-weight:700; color:#ffd700; margin-top:4px;">${dCol}</div>
           </div>
           <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
@@ -6748,11 +6751,11 @@ function calcSajuEngine(mode) {
           </div>
 
           <div style="background:rgba(234,179,8,0.12); padding:12px; border-radius:8px; border-left:3px dashed #eab308;">
-            <strong style="color:#fef08a; display:block; margin-bottom:6px;"><i class="fa-solid fa-compass"></i> เคล็ดลับฮวงจุ้ยเกาหลีเสริมชี่ (Korean Bibo Feng Shui):</strong>
+            <strong style="color:#fef08a; display:block; margin-bottom:6px;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ทิศทางเสริมพลังชี่เฉพาะบุคคล (Yongshin):</strong>
             <div style="color:#fef9c3; font-size:0.83rem; line-height:1.6;">
-              • <strong>ทิศเปิดประตูรับชี่:</strong> หันโต๊ะทำงานหรือเตียงนอนไปทาง <strong>${fengDir}</strong><br>
-              • <strong>โทนสีมงคลดึงดูดทรัพย์:</strong> สวมใส่เสื้อผ้าโทน <strong>${fengColor}</strong> ${fengDesc}<br>
-              • <strong>สิ่งมงคลเสริมโต๊ะทำงาน:</strong> จัดวาง <strong>${fengItem}</strong> ประจำมุมโต๊ะทำงานในรอบวันจร ${tD} ${tMName} ${tY}
+              • <strong>ทิศทางเสริมพลังชี่ (คี: 氣):</strong> จัดโต๊ะทำงานหรือเตียงนอนหันหน้าไปทาง <strong>${fengDir}</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>
+              • <strong>หินนำโชคและโทนสีมงคล:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongshin}) ควบคู่เสื้อผ้าโทน <strong>${fengColor}</strong> ${fengDesc}<br>
+              • <strong>วัตถุมงคลเสริมโต๊ะทำงาน:</strong> จัดวาง <strong>${fengItem}</strong> ทางมุมโต๊ะทำงาน ช่วยเหนี่ยวนำความมั่งคั่งในรอบวันจร ${tD} ${tMName} ${tY}
             </div>
           </div>
         </div>
