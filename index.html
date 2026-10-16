@@ -3787,52 +3787,104 @@ function getAccurateTransitSign(planetKey, targetDate) {
 
         document.getElementById('vipRemedyFullText').innerHTML = transitInfo.remedy;
         
-        // ========================================================
-        // 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
-        // ========================================================
-        try {
-          var bD = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
-          var bM = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
-          var bY = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
-          var bH = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
-          var bMin = parseInt(document.getElementById('birthMinute24')?.value, 10) || AppState.birthMinute || 0;
+// ========================================================
+      // 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
+      // ========================================================
+      try {
+        // ดึงค่าจากฟอร์มหน้าเว็บ หรือจาก AppState ของผู้ใช้งานปัจจุบันเท่านั้น (ไม่มีการฮาร์ดโค้ดวันเกิดเดิมอีกต่อไป)
+        var bDEl = document.getElementById('birthDay');
+        var bMEl = document.getElementById('birthMonth');
+        var bYEl = document.getElementById('birthYearBE');
+        var bHEl = document.getElementById('birthHour24');
+        var bMinEl = document.getElementById('birthMinute24');
 
-          var curTD = parseInt(document.getElementById('transitDay')?.value, 10) || 12;
-          var curTM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
-          var curTY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-          var curTH = parseInt(document.getElementById('transitHour24')?.value, 10) || 10;
-          var curTMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || 30;
+        var bD = (bDEl && bDEl.value) ? parseInt(bDEl.value, 10) : (AppState?.birthDay || null);
+        var bM = (bMEl && bMEl.value) ? parseInt(bMEl.value, 10) : (AppState?.birthMonth || null);
+        var bY = (bYEl && bYEl.value) ? parseInt(bYEl.value, 10) : (AppState?.birthBE || null);
+        var bH = (bHEl && bHEl.value) ? parseInt(bHEl.value, 10) : (typeof AppState?.birthHour === 'number' ? AppState.birthHour : 0);
+        var bMin = (bMinEl && bMinEl.value) ? parseInt(bMinEl.value, 10) : (typeof AppState?.birthMinute === 'number' ? AppState.birthMinute : 0);
 
-          var natalTimeMin = bH * 60 + bMin;
-          var natalP = {
-            "00": { name: "ลัคนา (ล)", deg: (ascIndex * 30 + ((natalTimeMin % 120) / 4) + 1.25) % 360, kw: "สภาพแวดล้อม ความรู้สึก บรรยากาศ ใกล้ตัว สิ่งที่จะเกิดขึ้น" },
-            "1":  { name: "อาทิตย์ (๑)", deg: (sunSignIndex * 30 + (bD * 0.9856) + 0.35) % 360, kw: "ตัวตน ร่างกาย รวดเร็ว ดิ้นรน ยิ่งใหญ่ หรูหรา ยศศักดิ์ การบริหารจัดการ" },
-            "2":  { name: "จันทร์ (๒)", deg: ((bD * 13.176 + bM * 28.5 + (natalTimeMin * 0.009)) % 360), kw: "อ่อนโยน ให้บริการ ช่วยเหลือ จุกจิกหยุมหยิม เรื่องภายใน" },
-            "3":  { name: "อังคาร (๓)", deg: ((bY * 1.91 + bM * 18.2 + bD * 0.524) % 360), kw: "กระทำ ขยัน กระตือรือร้น ภาระ ความรุนแรง ขัดแย้ง ต่อสู้ อุบัติเหตุ" },
-            "4":  { name: "พุธ (๔)", deg: ((sunSignIndex * 30 + (bD * 1.38) + (bM * 3.2)) % 360), kw: "สื่อสาร พูด เขียน เอกสาร ตัวแทน ไหวพริบ การปรับตัว" },
-            "5":  { name: "พฤหัสบดี (๕)", deg: (((bY - 2400) * 30.35 + bM * 2.5 + bD * 0.08) % 360), kw: "คุณธรรม ศาสนา วิชาการ ความรู้ ครู พระ การพิพากษา" },
-            "6":  { name: "ศุกร์ (๖)", deg: ((sunSignIndex * 30 + (bD * 1.15) + 12.8) % 360), kw: "สวยงาม ความรัก ความหวัง ความสุข ศิลปะ ดนตรี การเงิน ความฟุ่มเฟือย" },
-            "7":  { name: "เสาร์ (๗)", deg: (((bY - 2400) * 12.22 + bM * 1.05 + bD * 0.033) % 360), kw: "เหนื่อยยาก อดทน ความทุกข์ เครียด โยกย้าย สันโดษ เรื้อรัง ล่าช้า ต้องรอ" },
-            "8":  { name: "ราหู (๘)", deg: (360 - (((bY - 2400) * 19.34 + bM * 1.6 + bD * 0.05) % 360)) % 360, kw: "ลุ่มหลง เล่ห์เหลี่ยม อบายมุข คดีความ ไหวพริบดี ภัยมืด อุบัติเหตุ ต่างแดน" },
-            "9":  { name: "เกตุ (๙)", deg: (((bY - 2400) * 19.34 + 180 + bD * 0.1) % 360), kw: "มรดก ของเก่า ต่างแดน ญาณ ลางสังหรณ์ สิ่งศักดิ์สิทธิ์ โหราศาสตร์" },
-            "0":  { name: "มฤตยู (๐)", deg: (((bY - 2400) * 4.28 + bM * 0.35 + 24.5) % 360), kw: "ปุบปับ ฉับพลัน กะทันหัน สิ่งใหม่ ๆ การเดินทาง โรคภัย อาเพศ" }
-          };
+        // ถ้าไม่มีข้อมูลวันเกิด ให้ข้ามการคำนวณและไม่แสดงกล่องค้าง
+        var targetBox = document.getElementById('transitAspectResultBox');
+        if (!bD || !bM || !bY) {
+          if (targetBox) {
+            targetBox.innerHTML = '<div style="background:rgba(255,255,255,0.03); border:1px dashed #ffd700; border-radius:12px; padding:16px; text-align:center; color:#94a3b8; margin:16px 0;">กรุณากรอก วัน/เดือน/ปีเกิด เพื่อคำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล</div>';
+            targetBox.style.display = 'block';
+          }
+          return;
+        }
 
-          var transitTimeMin = curTH * 60 + curTMin;
-          var transitP = {
-            "00": { name: "ลัคนา (ล)", deg: (transitAscIndex * 30 + ((transitTimeMin % 120) / 4) + 1.25) % 360, kw: "สภาพแวดล้อม ความรู้สึก บรรยากาศ ใกล้ตัว สิ่งที่จะเกิดขึ้น" },
-            "1":  { name: "อาทิตย์ (๑)", deg: (transitSunIndex * 30 + (curTD * 0.9856) + 0.35) % 360, kw: "ตัวตน ร่างกาย รวดเร็ว ดิ้นรน ยิ่งใหญ่ หรูหรา ยศศักดิ์ การบริหารจัดการ" },
-            "2":  { name: "จันทร์ (๒)", deg: ((curTD * 13.176 + curTM * 28.5 + (transitTimeMin * 0.009)) % 360), kw: "อ่อนโยน ให้บริการ ช่วยเหลือ จุกจิกหยุมหยิม เรื่องภายใน" },
-            "3":  { name: "อังคาร (๓)", deg: ((curTY * 1.91 + curTM * 18.2 + curTD * 0.524) % 360), kw: "กระทำ ขยัน กระตือรือร้น ภาระ ความรุนแรง ขัดแย้ง ต่อสู้ อุบัติเหตุ" },
-            "4":  { name: "พุธ (๔)", deg: ((transitSunIndex * 30 + (curTD * 1.38) + (curTM * 3.2)) % 360), kw: "สื่อสาร พูด เขียน เอกสาร ตัวแทน ไหวพริบ การปรับตัว" },
-            "5":  { name: "พฤหัสบดี (๕)", deg: (((curTY - 2400) * 30.35 + curTM * 2.5 + curTD * 0.08) % 360), kw: "คุณธรรม ศาสนา วิชาการ ความรู้ ครู พระ การพิพากษา" },
-            "6":  { name: "ศุกร์ (๖)", deg: ((transitSunIndex * 30 + (curTD * 1.15) + 12.8) % 360), kw: "สวยงาม ความรัก ความหวัง ความสุข ศิลปะ ดนตรี การเงิน ความฟุ่มเฟือย" },
-            "7":  { name: "เสาร์ (๗)", deg: (((curTY - 2400) * 12.22 + curTM * 1.05 + curTD * 0.033) % 360), kw: "เหนื่อยยาก อดทน ความทุกข์ เครียด โยกย้าย สันโดษ เรื้อรัง ล่าช้า ต้องรอ" },
-            "8":  { name: "ราหู (๘)", deg: (360 - (((curTY - 2400) * 19.34 + curTM * 1.6 + curTD * 0.05) % 360)) % 360, kw: "ลุ่มหลง เล่ห์เหลี่ยม อบายมุข คดีความ ไหวพริบดี ภัยมืด อุบัติเหตุ ต่างแดน" },
-            "9":  { name: "เกตุ (๙)", deg: (((curTY - 2400) * 19.34 + 180 + curTD * 0.1) % 360), kw: "มรดก ของเก่า ต่างแดน ญาณ ลางสังหรณ์ สิ่งศักดิ์สิทธิ์ โหราศาสตร์" },
-            "0":  { name: "มฤตยู (๐)", deg: (((curTY - 2400) * 4.28 + curTM * 0.35 + 24.5) % 360), kw: "ปุบปับ ฉับพลัน กะทันหัน สิ่งใหม่ ๆ การเดินทาง โรคภัย อาเพศ" }
-          };
+        // ดึงวันจร (หากไม่มีให้ใช้วันที่ปัจจุบันของเครื่อง)
+        var now = new Date();
+        var curTD = parseInt(document.getElementById('transitDay')?.value, 10) || now.getDate();
+        var curTM = parseInt(document.getElementById('transitMonth')?.value, 10) || (now.getMonth() + 1);
+        var curTY = parseInt(document.getElementById('transitYearBE')?.value, 10) || (now.getFullYear() + 543);
+        var curTH = parseInt(document.getElementById('transitHour24')?.value, 10) || now.getHours();
+        var curTMin = parseInt(document.getElementById('transitMinute24')?.value, 10) || now.getMinutes();
 
+        // คำนวณราศีเกิด (currentSunIndex) สดๆ ตามวันและเดือนเกิดจริงของคนนั้น
+        // 0=เมษ, 1=พฤษภ, 2=มิถุน, 3=กรกฎ, 4=สิงห์, 5=กันย์, 6=ตุลย์, 7=พิจิก, 8=ธนู, 9=มังกร, 10=กุมภ์, 11=มีน
+        var currentSunIndex = (bM === 4 && bD >= 14) || (bM === 5 && bD <= 14) ? 0 :
+                              (bM === 5 && bD >= 15) || (bM === 6 && bD <= 14) ? 1 :
+                              (bM === 6 && bD >= 15) || (bM === 7 && bD <= 15) ? 2 :
+                              (bM === 7 && bD >= 16) || (bM === 8 && bD <= 16) ? 3 :
+                              (bM === 8 && bD >= 17) || (bM === 9 && bD <= 16) ? 4 :
+                              (bM === 9 && bD >= 17) || (bM === 10 && bD <= 16) ? 5 :
+                              (bM === 10 && bD >= 17) || (bM === 11 && bD <= 15) ? 6 :
+                              (bM === 11 && bD >= 16) || (bM === 12 && bD <= 15) ? 7 :
+                              (bM === 12 && bD >= 16) || (bM === 1 && bD <= 14) ? 8 :
+                              (bM === 1 && bD >= 15) || (bM === 2 && bD <= 13) ? 9 :
+                              (bM === 2 && bD >= 14) || (bM === 3 && bD <= 14) ? 10 : 11;
+
+        // คำนวณราศีลัคนา (currentAscIndex) สดๆ ตามเวลาเกิดจริงของคนนั้น
+        var currentAscIndex = (typeof AppState?.currentCalculatedAscIndex === 'number' && AppState.birthDay === bD && AppState.birthMonth === bM)
+                              ? AppState.currentCalculatedAscIndex
+                              : Math.floor((currentSunIndex + Math.floor((bH * 60 + bMin) / 120)) % 12);
+
+        // คำนวณราศีของอาทิตย์และลัคนาฝั่ง "วันจร" สดๆ
+        var currentTransitSunIndex = (curTM === 4 && curTD >= 14) || (curTM === 5 && curTD <= 14) ? 0 :
+                                     (curTM === 5 && curTD >= 15) || (curTM === 6 && curTD <= 14) ? 1 :
+                                     (curTM === 6 && curTD >= 15) || (curTM === 7 && curTD <= 15) ? 2 :
+                                     (curTM === 7 && curTD >= 16) || (curTM === 8 && curTD <= 16) ? 3 :
+                                     (curTM === 8 && curTD >= 17) || (curTM === 9 && curTD <= 16) ? 4 :
+                                     (curTM === 9 && curTD >= 17) || (curTM === 10 && curTD <= 16) ? 5 :
+                                     (curTM === 10 && curTD >= 17) || (curTM === 11 && curTD <= 15) ? 6 :
+                                     (curTM === 11 && curTD >= 16) || (curTM === 12 && curTD <= 15) ? 7 :
+                                     (curTM === 12 && curTD >= 16) || (curTM === 1 && curTD <= 14) ? 8 :
+                                     (curTM === 1 && curTD >= 15) || (curTM === 2 && curTD <= 13) ? 9 :
+                                     (curTM === 2 && curTD >= 14) || (curTM === 3 && curTD <= 14) ? 10 : 11;
+
+        var currentTransitAscIndex = Math.floor((currentTransitSunIndex + Math.floor((curTH * 60 + curTMin) / 120)) % 12);
+
+        var natalTimeMin = bH * 60 + bMin;
+        var natalP = {
+          "00": { name: "ลัคนา (ล)", deg: (currentAscIndex * 30 + ((natalTimeMin % 120) / 4) + 1.25) % 360, kw: "สภาพแวดล้อม ความรู้สึก บรรยากาศ ใกล้ตัว สิ่งที่จะเกิดขึ้น" },
+          "1":  { name: "อาทิตย์ (๑)", deg: (currentSunIndex * 30 + (bD * 0.9856) + 0.35) % 360, kw: "ตัวตน ร่างกาย รวดเร็ว ดิ้นรน ยิ่งใหญ่ หรูหรา ยศศักดิ์ การบริหารจัดการ" },
+          "2":  { name: "จันทร์ (๒)", deg: ((bD * 13.176 + bM * 28.5 + (natalTimeMin * 0.009)) % 360), kw: "อ่อนโยน ให้บริการ ช่วยเหลือ จุกจิกหยุมหยิม เรื่องภายใน" },
+          "3":  { name: "อังคาร (๓)", deg: ((bY * 1.91 + bM * 18.2 + bD * 0.524) % 360), kw: "กระทำ ขยัน กระตือรือร้น ภาระ ความรุนแรง ขัดแย้ง ต่อสู้ อุบัติเหตุ" },
+          "4":  { name: "พุธ (๔)", deg: ((currentSunIndex * 30 + (bD * 1.38) + (bM * 3.2)) % 360), kw: "สื่อสาร พูด เขียน เอกสาร ตัวแทน ไหวพริบ การปรับตัว" },
+          "5":  { name: "พฤหัสบดี (๕)", deg: (((bY - 2400) * 30.35 + bM * 2.5 + bD * 0.08) % 360), kw: "คุณธรรม ศาสนา วิชาการ ความรู้ ครู พระ การพิพากษา" },
+          "6":  { name: "ศุกร์ (๖)", deg: ((currentSunIndex * 30 + (bD * 1.15) + 12.8) % 360), kw: "สวยงาม ความรัก ความหวัง ความสุข ศิลปะ ดนตรี การเงิน ความฟุ่มเฟือย" },
+          "7":  { name: "เสาร์ (๗)", deg: (((bY - 2400) * 12.22 + bM * 1.05 + bD * 0.033) % 360), kw: "เหนื่อยยาก อดทน ความทุกข์ เครียด โยกย้าย สันโดษ เรื้อรัง ล่าช้า ต้องรอ" },
+          "8":  { name: "ราหู (๘)", deg: (360 - (((bY - 2400) * 19.34 + bM * 1.6 + bD * 0.05) % 360)) % 360, kw: "ลุ่มหลง เล่ห์เหลี่ยม อบายมุข คดีความ ไหวพริบดี ภัยมืด อุบัติเหตุ ต่างแดน" },
+          "9":  { name: "เกตุ (๙)", deg: (((bY - 2400) * 19.34 + 180 + bD * 0.1) % 360), kw: "มรดก ของเก่า ต่างแดน ญาณ ลางสังหรณ์ สิ่งศักดิ์สิทธิ์ โหราศาสตร์" },
+          "0":  { name: "มฤตยู (๐)", deg: (((bY - 2400) * 4.28 + bM * 0.35 + 24.5) % 360), kw: "ปุบปับ ฉับพลัน กะทันหัน สิ่งใหม่ ๆ การเดินทาง โรคภัย อาเพศ" }
+        };
+
+        var transitTimeMin = curTH * 60 + curTMin;
+        var transitP = {
+          "00": { name: "ลัคนา (ล)", deg: (currentTransitAscIndex * 30 + ((transitTimeMin % 120) / 4) + 1.25) % 360, kw: "สภาพแวดล้อม ความรู้สึก บรรยากาศ ใกล้ตัว สิ่งที่จะเกิดขึ้น" },
+          "1":  { name: "อาทิตย์ (๑)", deg: (currentTransitSunIndex * 30 + (curTD * 0.9856) + 0.35) % 360, kw: "ตัวตน ร่างกาย รวดเร็ว ดิ้นรน ยิ่งใหญ่ หรูหรา ยศศักดิ์ การบริหารจัดการ" },
+          "2":  { name: "จันทร์ (๒)", deg: ((curTD * 13.176 + curTM * 28.5 + (transitTimeMin * 0.009)) % 360), kw: "อ่อนโยน ให้บริการ ช่วยเหลือ จุกจิกหยุมหยิม เรื่องภายใน" },
+          "3":  { name: "อังคาร (๓)", deg: ((curTY * 1.91 + curTM * 18.2 + curTD * 0.524) % 360), kw: "กระทำ ขยัน กระตือรือร้น ภาระ ความรุนแรง ขัดแย้ง ต่อสู้ อุบัติเหตุ" },
+          "4":  { name: "พุธ (๔)", deg: ((currentTransitSunIndex * 30 + (curTD * 1.38) + (curTM * 3.2)) % 360), kw: "สื่อสาร พูด เขียน เอกสาร ตัวแทน ไหวพริบ การปรับตัว" },
+          "5":  { name: "พฤหัสบดี (๕)", deg: (((curTY - 2400) * 30.35 + curTM * 2.5 + curTD * 0.08) % 360), kw: "คุณธรรม ศาสนา วิชาการ ความรู้ ครู พระ การพิพากษา" },
+          "6":  { name: "ศุกร์ (๖)", deg: ((currentTransitSunIndex * 30 + (curTD * 1.15) + 12.8) % 360), kw: "สวยงาม ความรัก ความหวัง ความสุข ศิลปะ ดนตรี การเงิน ความฟุ่มเฟือย" },
+          "7":  { name: "เสาร์ (๗)", deg: (((curTY - 2400) * 12.22 + curTM * 1.05 + curTD * 0.033) % 360), kw: "เหนื่อยยาก อดทน ความทุกข์ เครียด โยกย้าย สันโดษ เรื้อรัง ล่าช้า ต้องรอ" },
+          "8":  { name: "ราหู (๘)", deg: (360 - (((curTY - 2400) * 19.34 + curTM * 1.6 + curTD * 0.05) % 360)) % 360, kw: "ลุ่มหลง เล่ห์เหลี่ยม อบายมุข คดีความ ไหวพริบดี ภัยมืด อุบัติเหตุ ต่างแดน" },
+          "9":  { name: "เกตุ (๙)", deg: (((curTY - 2400) * 19.34 + 180 + curTD * 0.1) % 360), kw: "มรดก ของเก่า ต่างแดน ญาณ ลางสังหรณ์ สิ่งศักดิ์สิทธิ์ โหราศาสตร์" },
+          "0":  { name: "มฤตยู (๐)", deg: (((curTY - 2400) * 4.28 + curTM * 0.35 + 24.5) % 360), kw: "ปุบปับ ฉับพลัน กะทันหัน สิ่งใหม่ ๆ การเดินทาง โรคภัย อาเพศ" }
+        };
           // คลังคำทำนายเฉพาะคู่ดาว (Specific Aspect Interpretations)
           var pairSpecificDict = {
             // ๕ กับ ๕ (Jupiter Return)
