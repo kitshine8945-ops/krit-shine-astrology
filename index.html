@@ -5027,6 +5027,7 @@ const POOL_COLORS = ["สีเขียวมรกต, สีขาวไข�
 const POOL_DIRS = ["ทิศตะวันออก", "ทิศตะวันออกเฉียงเหนือ", "ทิศใต้", "ทิศตะวันตก", "ทิศตะวันตกเฉียงเหนือ", "ทิศเหนือ", "ทิศตะวันออกเฉียงใต้"];
 
 function updateDailyHoroscopeView() {
+    // 1. ดึงลัคนาเกิดจริงของผู้ใช้
     const bDayVal = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
     const bMonthVal = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
     
@@ -5035,16 +5036,24 @@ function updateDailyHoroscopeView() {
                         ? AppState.currentCalculatedAscIndex 
                         : zodiacIndex;
 
+    // 2. ดึง "วันจร" จริงจากหน้าจอ (ถ้าไม่มีให้ใช้วันปัจจุบัน)
+    const tDayInput = document.getElementById('transitDay');
+    const tMonthInput = document.getElementById('transitMonth');
+    const tYearInput = document.getElementById('transitYearBE');
+
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const date = now.getDate();
+    const date = tDayInput ? (parseInt(tDayInput.value, 10) || now.getDate()) : now.getDate();
+    const month = tMonthInput ? ((parseInt(tMonthInput.value, 10) - 1) || now.getMonth()) : now.getMonth();
+    
+    let rawYear = tYearInput ? (parseInt(tYearInput.value, 10) || (now.getFullYear() + 543)) : (now.getFullYear() + 543);
+    const yearAD = (rawYear > 2400) ? (rawYear - 543) : rawYear;
+    const yearBE = (rawYear > 2400) ? rawYear : (rawYear + 543);
     
     const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-    const dateStr = `${date} ${thMonths[month]} พ.ศ. ${year + 543}`;
+    const dateStr = `${date} ${thMonths[month]} พ.ศ. ${yearBE}`;
 
-    // สร้างตัวเลขสุ่มเฉพาะตัวที่แตกต่างกันในแต่ละหมวดหมู่ตามวันและลัคนา
-    const baseSeed = (year * 365) + (month * 31) + (date * 17) + (activeIndex * 13);
+    // 3. ผูกวันจรเข้ากับลัคนาเกิดจริง (ใช้วันจรขับเคลื่อน Seed รายวัน)
+    const baseSeed = (yearAD * 365) + (month * 31) + (date * 17) + (activeIndex * 13);
 
     const sumEl = document.getElementById('dailySummaryText');
     const workEl = document.getElementById('dailyWorkText');
@@ -5058,19 +5067,21 @@ function updateDailyHoroscopeView() {
     const ascEl = document.getElementById('daily-ascendant-label');
 
     if (dateEl) dateEl.textContent = dateStr;
-    const ascInfo = ZODIAC_DATA[activeIndex] || { name: "ราศีเมษ", elem: "ธาตุไฟ" };
+    const ascInfo = (typeof ZODIAC_DATA !== 'undefined' && ZODIAC_DATA[activeIndex]) 
+                    ? ZODIAC_DATA[activeIndex] 
+                    : { name: "ราศีเมษ", elem: "ธาตุไฟ" };
     if (ascEl) ascEl.textContent = `${ascInfo.name} (${ascInfo.elem})`;
 
-    // สลับเลือกข้อมูลแต่ละหมวดแบบอิสระต่อกัน (ผสมผสานกันจนแทบไม่ซ้ำเดิม)
+    // สลับเลือกข้อมูลแต่ละหมวดตาม Seed วันจรและลัคนา
     const ascText = ascInfo.name.includes("ราศี") ? ascInfo.name : "ราศี" + ascInfo.name;
-if (sumEl) sumEl.textContent = `ลัคนา${ascText} : ${POOL_SUMMARIES[Math.abs(baseSeed) % POOL_SUMMARIES.length]}`;
-    if (workEl) workEl.textContent = POOL_WORKS[Math.abs(baseSeed + 3) % POOL_WORKS.length];
-    if (moneyEl) moneyEl.textContent = POOL_MONEY[Math.abs(baseSeed + 7) % POOL_MONEY.length];
-    if (loveEl) loveEl.textContent = POOL_LOVES[Math.abs(baseSeed + 11) % POOL_LOVES.length];
-    if (healthEl) healthEl.textContent = POOL_HEALTH[Math.abs(baseSeed + 13) % POOL_HEALTH.length];
-    if (luckyNumEl) luckyNumEl.textContent = POOL_NUMBERS[Math.abs(baseSeed + 5) % POOL_NUMBERS.length];
-    if (luckyColorEl) luckyColorEl.textContent = POOL_COLORS[Math.abs(baseSeed + 2) % POOL_COLORS.length];
-    if (luckyDirEl) luckyDirEl.textContent = POOL_DIRS[Math.abs(baseSeed + 8) % POOL_DIRS.length];
+    if (sumEl && typeof POOL_SUMMARIES !== 'undefined') sumEl.textContent = `ลัคนา${ascText} : ${POOL_SUMMARIES[Math.abs(baseSeed) % POOL_SUMMARIES.length]}`;
+    if (workEl && typeof POOL_WORKS !== 'undefined') workEl.textContent = POOL_WORKS[Math.abs(baseSeed + 3) % POOL_WORKS.length];
+    if (moneyEl && typeof POOL_MONEY !== 'undefined') moneyEl.textContent = POOL_MONEY[Math.abs(baseSeed + 7) % POOL_MONEY.length];
+    if (loveEl && typeof POOL_LOVES !== 'undefined') loveEl.textContent = POOL_LOVES[Math.abs(baseSeed + 11) % POOL_LOVES.length];
+    if (healthEl && typeof POOL_HEALTH !== 'undefined') healthEl.textContent = POOL_HEALTH[Math.abs(baseSeed + 13) % POOL_HEALTH.length];
+    if (luckyNumEl && typeof POOL_NUMBERS !== 'undefined') luckyNumEl.textContent = POOL_NUMBERS[Math.abs(baseSeed + 5) % POOL_NUMBERS.length];
+    if (luckyColorEl && typeof POOL_COLORS !== 'undefined') luckyColorEl.textContent = POOL_COLORS[Math.abs(baseSeed + 2) % POOL_COLORS.length];
+    if (luckyDirEl && typeof POOL_DIRS !== 'undefined') luckyDirEl.textContent = POOL_DIRS[Math.abs(baseSeed + 8) % POOL_DIRS.length];
 }
 
 window.renderDailyHoroscope = updateDailyHoroscopeView;
