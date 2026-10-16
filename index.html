@@ -6651,120 +6651,121 @@ function calcSajuEngine(mode) {
     `ถอดรหัสเสาวัน <strong>${dayMaster.kr} (${dayMaster.elem})</strong>: พลังงานชอนกันสะท้อนถึงคนที่มีเสน่ห์เฉพาะตัวสูง ความคิดสร้างสรรค์เป็นเลิศ ยิ่งใช้พลังเกื้อหนุนของ <strong>${yongshin}</strong> ยิ่งเปิดทางสู่ความสำเร็จใหญ่`
   ];
 
-  const SAJU_CAREER = [
-    `<strong>• มิติยศศักดิ์และการบริหาร (ควันซ็อง & อินซ็อง):</strong> อิลจู ${dayMaster.kr} มีวิสัยทัศน์เฉียบคมและบารมีในการคุมคน เหมาะกับงานกลยุทธ์ การบริหารจัดการ และโครงการเชิงรุกระดับสูง<br><strong>• จังหวะอิทธิพลอุนเซจร (${tD} ${tMName} ${tY}):</strong> กระแสธาตุจรส่งผลให้เกิดความก้าวหน้าครั้งสำคัญ มีเกณฑ์ได้รับการแต่งตั้งให้คุมงานใหญ่ ปิดดีลธุรกิจหรือประมูลงานสำเร็จงดงาม<br><strong>• ข้อควรระวัง:</strong> หลีกเลี่ยงการแบกรับงานล้นมือ และจัดทำข้อตกลงเป็นลายลักษณ์อักษรเสมอ`,
-    `<strong>• มิติความคิดสร้างสรรค์และการบุกเบิก (ชิกซัง):</strong> พลังงานชะตาเด่นด้านการคิดนอกกรอบ ไหวพริบปฏิภาณเยี่ยม ไม่เหมาะกับระบบงานที่ซ้ำซากจำเจ มีความเป็นผู้นำสูง พร้อมบุกเบิกสิ่งใหม่<br><strong>• จังหวะอิทธิพลอุนเซจร (${tD} ${tMName} ${tY}):</strong> จังหวะทองในการปล่อยสินค้า บริการ หรือโปรเจกต์ใหม่ ผลงานเป็นที่ยอมรับและสร้างชื่อเสียงในวงกว้าง พันธมิตรพร้อมสนับสนุนเต็มกำลัง<br><strong>• ข้อควรระวัง:</strong> ระวังคำพูดที่ตรงไปตรงมาเกินไป ควรเน้นการสื่อสารเชิงสร้างสรรค์และการประนีประนอม`,
-    `<strong>• มิติความมั่นคงและระบบระเบียบ (คย็อกกุก):</strong> พื้นดวงเน้นความน่าเชื่อถือ วินัย และความเป็นมืออาชีพสูง บริวารและหุ้นส่วนให้ความไว้วางใจ เหมาะกับงานระบบและงานบริหารองค์กร<br><strong>• จังหวะอิทธิพลอุนเซจร (${tD} ${tMName} ${tY}):</strong> วงจรการงานนิ่งสงบแต่มั่นคงสูงสุด มีเกณฑ์ขยายขอบเขตอำนาจหน้าที่ หรือได้รับสัญญาระยะยาวที่สร้างผลประโยชน์ถาวร<br><strong>• ข้อควรระวัง:</strong> ตรวจสอบระบบบัญชีและเอกสารสัญญาให้รัดกุมรอบคอบ`
-  ];
+// --- คลังชุดคำทำนายแบบไดนามิก ดึงค่าจาก 4 เสาที่คำนวณได้จริง ---
+    const SAJU_CAREER = [
+      `<strong>• โครงสร้างควันซ็อง & อินซ็อง:</strong> ดวงกำเนิด (${birthText}) หนุนให้อิลจู ${dayMaster.kr} มีบารมีในการคุมคนและการวางแผนกลยุทธ์ขั้นสูง เสาวันสถิต ${jiji[dBranchIdx].name} โดดเด่นในงานบริหาร การค้าระหว่างประเทศ การประสานงานดิจิทัล และโปรเจกต์เชิงรุก<br><strong>• จังหวะอิทธิพลอุนเซจร (${transitDateStr}):</strong> กระแสธาตุส่งผลให้เกิดการเปลี่ยนแปลงทางอำนาจหน้าที่ มีเกณฑ์ได้รับการแต่งตั้งให้ดูแลงานใหญ่ ได้รับแรงสนับสนุนจากผู้ใหญ่และพันธมิตรทางธุรกิจ การเจรจาสัญญาสำคัญจะผ่านไปได้ด้วยความสำเร็จอันงดงาม<br><strong>• ข้อควรระวัง:</strong> อย่าด่วนตัดสินใจเรื่องคนตามอารมณ์ ควรกำกับเอกสารและเงื่อนไขเป็นลายลักษณ์อักษรเสมอ`,
+      `<strong>• มิติชิกซัง & ความคิดสร้างสรรค์:</strong> สำหรับอิลจู ${dayMaster.kr} ที่มีเสาวันเป็น ${jiji[dBranchIdx].name} พลังความคิดนอกกรอบกำลังขับเคลื่อนแรงกล้า เหมาะกับการบุกเบิกตลาดใหม่ การค้าขายออนไลน์ หรืองานสื่อสร้างสรรค์<br><strong>• จังหวะอิทธิพลอุนเซจร (${transitDateStr}):</strong> จังหวะทองในการปล่อยสินค้า บริการ หรือโปรเจกต์ใหม่ ผลงานเป็นที่ยอมรับและสร้างชื่อเสียงในวงกว้าง พันธมิตรพร้อมสนับสนุนเต็มกำลัง<br><strong>• ข้อควรระวัง:</strong> ระวังคำพูดที่ตรงไปตรงมาเกินไป ควรเน้นการสื่อสารเชิงสร้างสรรค์และการประนีประนอม`,
+      `<strong>• มิติเสถียรภาพ & ระบบระเบียบ:</strong> รหัสชะตาเกิด (${birthText}) ส่งผลให้อิลจู ${dayMaster.kr} มีความน่าเชื่อถือ วินัย และความเป็นมืออาชีพสูง บริวารและหุ้นส่วนให้ความไว้วางใจ เหมาะกับงานระบบและงานบริหารองค์กร<br><strong>• จังหวะอิทธิพลอุนเซจร (${transitDateStr}):</strong> วงจรการงานนิ่งสงบแต่มั่นคงสูงสุด มีเกณฑ์ขยายขอบเขตอำนาจหน้าที่ หรือได้รับสัญญาระยะยาวที่สร้างผลประโยชน์ถาวร<br><strong>• ข้อควรระวัง:</strong> ตรวจสอบระบบบัญชีและเอกสารสัญญาให้รัดกุมรอบคอบ`
+    ];
 
-  const SAJU_WEALTH = [
-    `<strong>• คลังโภคทรัพย์แจซ็อง (${dayMaster.kr}):</strong> สายธารเงินทองเปิดกว้าง มีกระแสเงินสดหมุนเวียนเข้ามาจากหลายทิศทาง ทั้งงานประจำ ธุรกิจส่วนตัว และการต่อยอดสินทรัพย์นำสมัย<br><strong>• จังหวะรับทรัพย์อุนเซจร (${tD} ${tMName} ${tY}):</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภผลจากการเจรจาธุรกิจ ปิดการขายอสังหาริมทรัพย์ หรือผลตอบแทนจากการลงทุนระยะยาว<br><strong>• การบริหารความเสี่ยง:</strong> จัดสรรเงินเข้าสินทรัพย์ถาวร และงดเว้นการค้ำประกันหรือให้ผู้อื่นหยิบยืมเงินเพื่อป้องกันหนี้สูญ`,
-    `<strong>• พย็อนแจเด่น (โชคลาภหมุนเวียนเร็ว):</strong> ชะตามีไหวพริบในการจับทิศทางตลาดและการค้าขายที่รวดเร็ว หาเงินเก่งและมองเห็นโอกาสทำกำไรได้ไวกว่าผู้อื่น<br><strong>• จังหวะรับทรัพย์อุนเซจร (${tD} ${tMName} ${tY}):</strong> กระแสเงินสดสะพัด การค้าออนไลน์หรือการเป็นตัวแทนเจรจาทำกำไรได้เกินเป้า มีเกณฑ์รับเงินปันผลหรือโบนัสก้อนใหญ่<br><strong>• การบริหารความเสี่ยง:</strong> ระวังรายจ่ายจรที่เกิดจากความใจใหญ่ ควรตั้งงบสำรองฉุกเฉินไว้อย่างเคร่งครัด`,
-    `<strong>• ช็องแจมั่นคง (ทรัพย์สินถาวรดั่งภูผา):</strong> วาสนาการเงินเติบโตจากการสะสมอสังหาริมทรัพย์และสินทรัพย์ที่มูลค่าเพิ่มตามกาลเวลาอย่างเป็นระบบ<br><strong>• จังหวะรับทรัพย์อุนเซจร (${tD} ${tMName} ${tY}):</strong> เป็นจังหวะดีในการปลดเปลื้องภาระหนี้สิน การขอสินเชื่อหรือปรับโครงสร้างการเงินจะได้รับอนุมัติในเงื่อนไขที่เป็นคุณอย่างยิ่ง<br><strong>• การบริหารความเสี่ยง:</strong> ตรวจสอบข้อกฎหมายและสัญญาทางการเงินระยะยาวอย่างละเอียดก่อนลงนาม`
-  ];
+    const SAJU_WEALTH = [
+      `<strong>• คลังโภคทรัพย์แจซ็อง:</strong> พื้นดวง (${birthText}) ชี้ชัดว่ามีคลังทรัพย์เปิดรับสภาพคล่องจากหลายช่องทาง ทั้งงานหลัก งานเสริม และการลงทุนนำสมัยประจำอิลจู ${dayMaster.kr}<br><strong>• จังหวะรับทรัพย์อุนเซจร (${transitDateStr}):</strong> มีเกณฑ์ได้รับเงินก้อนโต ลาภผลจากการค้าหรือผลตอบแทนการลงทุนระยะยาวที่เคยหว่านพืชไว้ เป็นช่วงสร้างฐานะและสะสมหลักทรัพย์<br><strong>• ข้อควรระวัง:</strong> แม้กระแสเงินจะเข้าดี แต่ควรแบ่งสัดส่วนเก็บเป็นสินทรัพย์ถาวร งดเว้นการค้ำประกันหรือให้หยิบยืมเงินเพื่อป้องกันหนี้สูญ`,
+      `<strong>• โชคลาภพย็อนแจหมุนเร็ว:</strong> อิลจู ${dayMaster.kr} สถิตฐาน ${jiji[dBranchIdx].name} มีไหวพริบในการจับทิศทางตลาดและการค้าขายที่รวดเร็ว มองเห็นโอกาสทำกำไรได้ไวกว่าผู้อื่น<br><strong>• จังหวะรับทรัพย์อุนเซจร (${transitDateStr}):</strong> กระแสเงินสดสะพัด การค้าออนไลน์หรือการเป็นตัวแทนเจรจาทำกำไรได้เกินเป้า มีเกณฑ์รับเงินปันผลหรือโบนัสก้อนใหญ่<br><strong>• ข้อควรระวัง:</strong> ระวังรายจ่ายจรที่เกิดจากความใจใหญ่ ควรตั้งงบสำรองฉุกเฉินไว้อย่างเคร่งครัด`,
+      `<strong>• วาสนาช็องแจมั่นคง:</strong> ฐานกำเนิด (${birthText}) หนุนนำทรัพย์สินเติบโตจากการสะสมอสังหาริมทรัพย์และสินทรัพย์ที่มูลค่าเพิ่มตามกาลเวลาอย่างเป็นระบบ<br><strong>• จังหวะรับทรัพย์อุนเซจร (${transitDateStr}):</strong> เป็นจังหวะดีในการปลดเปลื้องภาระหนี้สิน การขอสินเชื่อหรือปรับโครงสร้างการเงินจะได้รับอนุมัติในเงื่อนไขที่เป็นคุณอย่างยิ่ง<br><strong>• ข้อควรระวัง:</strong> ตรวจสอบข้อกฎหมายและสัญญาทางการเงินระยะยาวอย่างละเอียดก่อนลงนาม`
+    ];
 
-  const SAJU_LOVE = [
-    `<strong>• ฐานกุงคู่ครอง (เสาวัน ${jiji[dBranchIdx].name}):</strong> สะท้อนถึงคู่ชีวิตที่มีวุฒิภาวะสูง เฉลียวฉลาด เป็นคู่คิดและเสาหลักทางจิตใจที่ช่วยวางแผนอนาคตร่วมกันได้อย่างมั่นคง<br><strong>• สถานะคนมีคู่ (${tD} ${tMName} ${tY}):</strong> ความสัมพันธ์เกื้อหนุน มีเกณฑ์ได้ซื้อทรัพย์สินชิ้นใหญ่ บ้าน หรือยานพาหนะร่วมกัน ปัญหาในอดีตจะได้รับการคลี่คลายอย่างอบอุ่น<br><strong>• สถานะคนโสด:</strong> เสน่ห์เมตตาเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีหน้าที่การงานมั่นคงจากการติดต่องานหรือการเดินทาง`,
-    `<strong>• ฐานกุงคู่ครอง (เสาวัน ${jiji[dBranchIdx].name}):</strong> คนรักมีบุคลิกโดดเด่น คล่องแคล่ว มีเสน่ห์ทางสังคมสูง และมุ่งมั่นในเป้าหมายชีวิต ต่างฝ่ายต่างช่วยส่งเสริมเกียรติยศของกันและกัน<br><strong>• สถานะคนมีคู่ (${tD} ${tMName} ${tY}):</strong> ความรักสดใส มีชีวิตชีวา มีโอกาสได้เดินทางไกลร่วมกันเพื่อพักผ่อน ช่วยกระชับความผูกพันให้ลึกซึ้งยิ่งขึ้น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์สะดุดรักแบบกะทันหันกับคนที่อายุน้อยกว่า หรือพบเจอกันผ่านกิจกรรมสร้างสรรค์และสังคมออนไลน์`,
-    `<strong>• ฐานกุงคู่ครอง (เสาวัน ${jiji[dBranchIdx].name}):</strong> ความสัมพันธ์เน้นความมั่นคง ซื่อสัตย์ และเข้าใจในโลกส่วนตัวของกันและกัน ไม่หวือหวาแต่พร้อมเป็นที่พึ่งพาได้เสมอในทุกสถานการณ์<br><strong>• สถานะคนมีคู่ (${tD} ${tMName} ${tY}):</strong> ช่วงเวลาแห่งการรับฟังและปรับตัวเข้าหากัน ให้เกียรติซึ่งกันและกันแล้วชีวิตคู่จะราบรื่นร่มเย็น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์พบคนรู้ใจผ่านการแนะนำของผู้ใหญ่หรือมิตรสหายสนิท เป็นความสัมพันธ์ที่ค่อยเป็นค่อยไปแต่มั่นคง`
-  ];
+    const SAJU_LOVE = [
+      `<strong>• ฐานกุงคู่ครอง (일지):</strong> ฐานเสาวัน ${jiji[dBranchIdx].name} สะท้อนถึงคู่ชีวิตที่มีวุฒิภาวะสูง เฉลียวฉลาด เป็นคู่คิดและเสาหลักทางจิตใจที่ช่วยวางแผนอนาคตร่วมกันได้อย่างมั่นคง<br><strong>• สถานะคนมีคู่ (${transitDateStr}):</strong> ความสัมพันธ์เกื้อหนุน มีเกณฑ์ได้ซื้อทรัพย์สินชิ้นใหญ่ บ้าน หรือยานพาหนะร่วมกัน ปัญหาในอดีตจะได้รับการคลี่คลายอย่างอบอุ่น<br><strong>• สถานะคนโสด:</strong> เสน่ห์เมตตาเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีหน้าที่การงานมั่นคงจากการติดต่องานหรือการเดินทาง`,
+      `<strong>• ฐานกุงคู่ครอง (일지):</strong> พลังอิลจู ${dayMaster.kr} หนุนให้คนรักมีบุคลิกโดดเด่น คล่องแคล่ว มีเสน่ห์ทางสังคมสูง ต่างฝ่ายต่างช่วยส่งเสริมเกียรติยศของกันและกัน<br><strong>• สถานะคนมีคู่ (${transitDateStr}):</strong> ความรักสดใส มีชีวิตชีวา มีโอกาสได้เดินทางไกลร่วมกันเพื่อพักผ่อน ช่วยกระชับความผูกพันให้ลึกซึ้งยิ่งขึ้น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์สะดุดรักแบบกะทันหันกับคนที่อายุน้อยกว่า หรือพบเจอกันผ่านกิจกรรมสร้างสรรค์และสังคมออนไลน์`,
+      `<strong>• ฐานกุงคู่ครอง (일지):</strong> พื้นดวง (${birthText}) ชี้ถึงความสัมพันธ์ที่เน้นความมั่นคง ซื่อสัตย์ และเข้าใจในโลกส่วนตัวของกันและกัน ไม่หวือหวาแต่พร้อมเป็นที่พึ่งพาได้เสมอในทุกสถานการณ์<br><strong>• สถานะคนมีคู่ (${transitDateStr}):</strong> ช่วงเวลาแห่งการรับฟังและปรับตัวเข้าหากัน ให้เกียรติซึ่งกันและกันแล้วชีวิตคู่จะราบรื่นร่มเย็น<br><strong>• สถานะคนโสด:</strong> มีเกณฑ์พบคนรู้ใจผ่านการแนะนำของผู้ใหญ่หรือมิตรสหายสนิท เป็นความสัมพันธ์ที่ค่อยเป็นค่อยไปแต่มั่นคง`
+    ];
 
-  const SAJU_HEALTH = [
-    `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สำหรับอิลจู ${dayMaster.kr} (${dayMaster.elem}) ควรระวังระบบหมุนเวียนโลหิต ความดัน หรือสายตาล้าจากการโหมงานหน้าจอ<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ระวังอาการนอนไม่หลับ ออฟฟิศซินโดรม ปวดหลังช่วงเอว ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้ตรงเวลา`,
-    `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ระวังระบบย่อยอาหาร กระเพาะ ลำไส้ และอาการภูมิแพ้ที่เกิดจากการพักผ่อนไม่เพียงพอหรือรับประทานอาหารไม่เป็นเวลา<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> มีความเครียดสะสมจากภาระหน้าที่ ควรแบ่งเวลาออกกำลังกายเบาๆ ยืดเหยียดกล้ามเนื้อ และหลีกเลี่ยงอาหารรสจัดในช่วงดึก`,
-    `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> ดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${tD} ${tMName} ${tY}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
-  ];
+    const SAJU_HEALTH = [
+      `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สำหรับอิลจู ${dayMaster.kr} (${dayMaster.elem}) ควรระวังระบบหมุนเวียนโลหิต ความดัน หรือสายตาล้าจากการโหมงานหน้าจอ<br><strong>• สภาวะร่างกายช่วงวันจร (${transitDateStr}):</strong> ระวังอาการนอนไม่หลับ ออฟฟิศซินโดรม ปวดหลังช่วงเอว ควรดื่มน้ำสะอาดให้เพียงพอ พักผ่อนให้ตรงเวลา`,
+      `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> พื้นดวงเกิด (${birthText}) ควรระวังระบบย่อยอาหาร กระเพาะ ลำไส้ และอาการภูมิแพ้ที่เกิดจากการพักผ่อนไม่เพียงพอหรือรับประทานอาหารไม่เป็นเวลา<br><strong>• สภาวะร่างกายช่วงวันจร (${transitDateStr}):</strong> มีความเครียดสะสมจากภาระหน้าที่ ควรแบ่งเวลาออกกำลังกายเบาๆ ยืดเหยียดกล้ามเนื้อ และหลีกเลี่ยงอาหารรสจัดในช่วงดึก`,
+      `<strong>• ธาตุพร่องและระบบอวัยวะ:</strong> สภาพดวง ${isStrong ? "เข้มแข็ง" : "อ่อนกำลัง"} ควรดูแลระบบทางเดินหายใจ หลอดลม ปอด คอบ่าไหล่ และหลีกเลี่ยงสถานที่ที่มีฝุ่นควันหนาแน่น<br><strong>• สภาวะร่างกายช่วงวันจร (${transitDateStr}):</strong> ร่างกายฟื้นตัวได้ดี แต่ควรระวังอาการเคล็ดขัดยอกหรืออาการบาดเจ็บจากความเร่งรีบในการเดินทาง`
+    ];
 
-// --- ๗. ปรับปรุงสูตร Index คำทำนายให้หมุนเวียนไดนามิกแท้จริง (ระบบคำนวณ 4 เสาคงเดิม 100%) ---
-  let birthCode = (bD * 17) + (bM * 31) + ((bY % 100) * 7) + (dStemIdx * 13) + (dBranchIdx * 19);
-  let transitCode = (tD * 23) + (tM * 11) + ((tY % 100) * 5);
+    // --- สูตรกระจาย Index บังคับให้เปลี่ยนตาม 4 เสากำเนิด + วันจร อย่างสมดุล ---
+    let natalSeed = (dStemIdx * 7) + (dBranchIdx * 11) + (yStemIdx * 13) + (mStemIdx * 17) + bD;
+    let transitSeed = (tD * 5) + (tM * 7) + (tY % 100);
 
-  let wIdx = Math.abs(birthCode + transitCode) % SAJU_CAREER.length;
-  let mIdx = Math.abs(birthCode * 2 + transitCode * 3 + 1) % SAJU_WEALTH.length;
-  let lIdx = Math.abs(birthCode * 3 + transitCode * 7 + 2) % SAJU_LOVE.length;
-  let hIdx = Math.abs(birthCode * 5 + transitCode * 11 + 3) % SAJU_HEALTH.length;
+    let wIdx = Math.abs(natalSeed + transitSeed) % SAJU_CAREER.length;
+    let mIdx = Math.abs(natalSeed * 2 + transitSeed * 3 + 1) % SAJU_WEALTH.length;
+    let lIdx = Math.abs(natalSeed * 3 + transitSeed * 5 + 2) % SAJU_LOVE.length;
+    let hIdx = Math.abs(natalSeed * 5 + transitSeed * 7 + 3) % SAJU_HEALTH.length;
 
-  resultBox.style.display = 'block';
+    resultBox.style.display = 'block';
 
-  if (currentMode === 'free') {
-    let fIdx = Math.abs(birthCode) % FREE_SAJU.length;
-    resultBox.innerHTML = `
-      <div style="background:rgba(14,20,38,0.9); border:1px solid #38bdf8; border-radius:12px; padding:18px;">
-        <h4 style="color:#38bdf8; margin-bottom:8px;"><i class="fa-solid fa-user"></i> อิลจู (Ilju) เสาวันเกิดของคุณ: ${dayMaster.kr} (ธาตุ${dayMaster.elem}${dayMaster.pol})</h4>
-        <div style="background:rgba(56,189,248,0.08); padding:12px; border-radius:8px; border-left:3px solid #38bdf8; line-height:1.7; color:#d1d9ec; font-size:0.88rem;">
-          <strong>แก่นพลังงานชีวิตและสัญลักษณ์:</strong> ${dayMaster.sym} - ${dayMaster.desc}<br><br>
-          <i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8;"></i> <strong>บทวิเคราะห์พื้นดวงซาจูกำเนิด (อิงวันเกิด ${birthText}):</strong><br>
-          ${FREE_SAJU[fIdx]}
-        </div>
-      </div>
-    `;
-  } else {
-    resultBox.innerHTML = `
-      <div style="background:linear-gradient(145deg, rgba(234,179,8,0.12), rgba(15,23,42,0.85)); border:1.5px solid #eab308; border-radius:12px; padding:16px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:8px; margin-bottom:14px;">
-          <h4 style="color:#facc15; margin:0; font-size:1.08rem;">👑 คัมภีร์ซาจูฉบับสมบูรณ์ 4 เสาหลัก (VIP)</h4>
-          <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
-          <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
-            <div style="font-size:0.72rem; color:#ffd700;">ยอนจู (เสาปี: รากฐาน)</div>
-            <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${yCol}</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
-            <div style="font-size:0.72rem; color:#ffd700;">ว็อลจู (เสาเดือน: ธุรกิจ)</div>
-            <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${mCol}</div>
-          </div>
-          <div style="background:rgba(255,215,0,0.15); padding:10px; border-radius:8px; border:1px solid #ffd700; text-align:center;">
-            <div style="font-size:0.72rem; color:#ffd700;">อิลจู (เสาวัน: ตัวตน/คู่ครอง)</div>
-            <div style="font-size:0.95rem; font-weight:700; color:#ffd700; margin-top:4px;">${dCol}</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
-            <div style="font-size:0.72rem; color:#ffd700;">ชีจู (เสายาม: บริวาร)</div>
-            <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${hCol}</div>
+    if (currentMode === 'free') {
+      let fIdx = Math.abs(natalSeed) % FREE_SAJU.length;
+      resultBox.innerHTML = `
+        <div style="background:rgba(14,20,38,0.9); border:1px solid #38bdf8; border-radius:12px; padding:18px;">
+          <h4 style="color:#38bdf8; margin-bottom:8px;"><i class="fa-solid fa-user"></i> อิลจู (Ilju) เสาวันเกิดของคุณ: ${dayMaster.kr} (ธาตุ${dayMaster.elem}${dayMaster.pol})</h4>
+          <div style="background:rgba(56,189,248,0.08); padding:12px; border-radius:8px; border-left:3px solid #38bdf8; line-height:1.7; color:#d1d9ec; font-size:0.88rem;">
+            <strong>แก่นพลังงานชีวิตและสัญลักษณ์:</strong> ${dayMaster.sym} - ${dayMaster.desc}<br><br>
+            <i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8;"></i> <strong>บทวิเคราะห์พื้นดวงซาจูกำเนิด (อิงวันเกิด ${birthText}):</strong><br>
+            ${FREE_SAJU[fIdx]}
           </div>
         </div>
-
-        <div style="background:rgba(234,179,8,0.08); padding:10px 12px; border-radius:8px; border-left:3px solid #eab308; margin-bottom:14px; font-size:0.86rem; line-height:1.6;">
-          <strong style="color:#facc15;">🌟 สภาพพลังงาน: อิลจู ${dayMaster.kr} (${isStrong ? "เข้มแข็ง / Strong Saju" : "อ่อนกำลัง / Weak Saju"})</strong><br>
-          <span style="color:#cbd5e1;"><strong>ธาตุเกื้อหนุนยงชิน (Yongshin):</strong> <span style="color:#81c784; font-weight:bold;">${yongshin}</span> | <strong>ธาตุควรระวัง (Gishin):</strong> <span style="color:#ff7675; font-weight:bold;">${gishin}</span></span>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.86rem; line-height:1.7;">
-          <div style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; padding:10px 12px; border-radius:8px;">
-            <strong style="color:#64b5f6;"><i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & ยศศักดิ์:</strong>
-            <div style="color:#d1d9ec; margin-top:4px;">${SAJU_CAREER[wIdx]}</div>
+      `;
+    } else {
+      resultBox.innerHTML = `
+        <div style="background:linear-gradient(145deg, rgba(234,179,8,0.12), rgba(15,23,42,0.85)); border:1.5px solid #eab308; border-radius:12px; padding:16px; box-shadow:0 8px 25px rgba(0,0,0,0.6);">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(234,179,8,0.3); padding-bottom:8px; margin-bottom:14px;">
+            <h4 style="color:#facc15; margin:0; font-size:1.08rem;">👑 คัมภีร์ซาจูฉบับสมบูรณ์ 4 เสาหลัก (VIP)</h4>
+            <span style="font-size:0.75rem; color:#ffd700; background:rgba(234,179,8,0.15); padding:3px 8px; border-radius:4px; font-weight:bold;"><i class="fa-solid fa-satellite-dish"></i> วันจร: ${transitDateStr}</span>
           </div>
 
-          <div style="background:rgba(255,255,255,0.03); border-left:4px solid #ffd700; padding:10px 12px; border-radius:8px;">
-            <strong style="color:#ffd54f;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน โชคลาภ & คลังโภคทรัพย์:</strong>
-            <div style="color:#d1d9ec; margin-top:4px;">${SAJU_WEALTH[mIdx]}</div>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
+            <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:0.72rem; color:#ffd700;">ยอนจู (เสาปี: รากฐาน)</div>
+              <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${yCol}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:0.72rem; color:#ffd700;">ว็อลจู (เสาเดือน: ธุรกิจ)</div>
+              <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${mCol}</div>
+            </div>
+            <div style="background:rgba(255,215,0,0.15); padding:10px; border-radius:8px; border:1px solid #ffd700; text-align:center;">
+              <div style="font-size:0.72rem; color:#ffd700;">อิลจู (เสาวัน: ตัวตน/คู่ครอง)</div>
+              <div style="font-size:0.95rem; font-weight:700; color:#ffd700; margin-top:4px;">${dCol}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:0.72rem; color:#ffd700;">ชีจู (เสายาม: บริวาร)</div>
+              <div style="font-size:0.95rem; font-weight:700; margin-top:4px;">${hCol}</div>
+            </div>
           </div>
 
-          <div style="background:rgba(255,255,255,0.03); border-left:4px solid #f48fb1; padding:10px 12px; border-radius:8px;">
-            <strong style="color:#f48fb1;"><i class="fa-solid fa-heart"></i> ๓. มิติความรัก คู่ครอง & หุ้นส่วนชะตา:</strong>
-            <div style="color:#d1d9ec; margin-top:4px;">${SAJU_LOVE[lIdx]}</div>
+          <div style="background:rgba(234,179,8,0.08); padding:10px 12px; border-radius:8px; border-left:3px solid #eab308; margin-bottom:14px; font-size:0.86rem; line-height:1.6;">
+            <strong style="color:#facc15;">🌟 สภาพพลังงาน: อิลจู ${dayMaster.kr} (${isStrong ? "เข้มแข็ง / Strong Saju" : "อ่อนกำลัง / Weak Saju"})</strong><br>
+            <span style="color:#cbd5e1;"><strong>ธาตุเกื้อหนุนยงชิน (Yongshin):</strong> <span style="color:#81c784; font-weight:bold;">${yongshin}</span> | <strong>ธาตุควรระวัง (Gishin):</strong> <span style="color:#ff7675; font-weight:bold;">${gishin}</span></span>
           </div>
 
-          <div style="background:rgba(255,255,255,0.03); border-left:4px solid #ff7675; padding:10px 12px; border-radius:8px;">
-            <strong style="color:#ff7675;"><i class="fa-solid fa-shield-heart"></i> ๔. มิติสุขภาพ ธาตุพร่อง & เคราะห์ระวัง:</strong>
-            <div style="color:#d1d9ec; margin-top:4px;">${SAJU_HEALTH[hIdx]}</div>
-          </div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:0.86rem; line-height:1.7;">
+            <div style="background:rgba(255,255,255,0.03); border-left:4px solid #64b5f6; padding:10px 12px; border-radius:8px;">
+              <strong style="color:#64b5f6;"><i class="fa-solid fa-briefcase"></i> ๑. มิติการงาน บารมี & ยศศักดิ์:</strong>
+              <div style="color:#d1d9ec; margin-top:4px;">${SAJU_CAREER[wIdx]}</div>
+            </div>
 
-          <div style="background:rgba(234,179,8,0.12); padding:12px; border-radius:8px; border-left:3px dashed #eab308;">
-            <strong style="color:#fef08a; display:block; margin-bottom:6px;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ทิศทางเสริมพลังชี่เฉพาะบุคคล (Yongshin):</strong>
-            <div style="color:#fef9c3; font-size:0.83rem; line-height:1.6;">
-              • <strong>ทิศทางเสริมพลังชี่ (คี: 氣):</strong> จัดโต๊ะทำงานหรือเตียงนอนหันหน้าไปทาง <strong>${fengDir}</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>
-              • <strong>หินนำโชคและโทนสีมงคล:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongshin}) ควบคู่เสื้อผ้าโทน <strong>${fengColor}</strong> ${fengDesc}<br>
-              • <strong>วัตถุมงคลเสริมโต๊ะทำงาน:</strong> จัดวาง <strong>${fengItem}</strong> ทางมุมโต๊ะทำงาน ช่วยเหนี่ยวนำความมั่งคั่งในรอบวันจร ${tD} ${tMName} ${tY}
+            <div style="background:rgba(255,255,255,0.03); border-left:4px solid #ffd700; padding:10px 12px; border-radius:8px;">
+              <strong style="color:#ffd54f;"><i class="fa-solid fa-coins"></i> ๒. มิติการเงิน โชคลาภ & คลังโภคทรัพย์:</strong>
+              <div style="color:#d1d9ec; margin-top:4px;">${SAJU_WEALTH[mIdx]}</div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border-left:4px solid #f48fb1; padding:10px 12px; border-radius:8px;">
+              <strong style="color:#f48fb1;"><i class="fa-solid fa-heart"></i> ๓. มิติความรัก คู่ครอง & หุ้นส่วนชะตา:</strong>
+              <div style="color:#d1d9ec; margin-top:4px;">${SAJU_LOVE[lIdx]}</div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border-left:4px solid #ff7675; padding:10px 12px; border-radius:8px;">
+              <strong style="color:#ff7675;"><i class="fa-solid fa-shield-heart"></i> ๔. มิติสุขภาพ ธาตุพร่อง & เคราะห์ระวัง:</strong>
+              <div style="color:#d1d9ec; margin-top:4px;">${SAJU_HEALTH[hIdx]}</div>
+            </div>
+
+            <div style="background:rgba(234,179,8,0.12); padding:12px; border-radius:8px; border-left:3px dashed #eab308;">
+              <strong style="color:#fef08a; display:block; margin-bottom:6px;"><i class="fa-solid fa-compass"></i> ๕. เคล็ดลับฮวงจุ้ย & ทิศทางเสริมพลังชี่เฉพาะบุคคล (Yongshin):</strong>
+              <div style="color:#fef9c3; font-size:0.83rem; line-height:1.6;">
+                • <strong>ทิศทางเสริมพลังชี่ (คี: 氣):</strong> จัดโต๊ะทำงานหรือเตียงนอนหันหน้าไปทาง <strong>${fengDir}</strong> เพื่อเปิดรับกระแสพลังชี่ที่ดีที่สุด<br>
+                • <strong>หินนำโชคและโทนสีมงคล:</strong> เสริมพลังด้วยหินมงคลโทนสีประจำธาตุให้คุณ (${yongshin}) ควบคู่เสื้อผ้าโทน <strong>${fengColor}</strong> ${fengDesc}<br>
+                • <strong>วัตถุมงคลเสริมโต๊ะทำงาน:</strong> จัดวาง <strong>${fengItem}</strong> ทางมุมโต๊ะทำงาน ช่วยเหนี่ยวนำความมั่งคั่งในรอบวันจร ${tD} ${tMName} ${tY}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `;
-  }
+      `;
+    }
 
-  resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 window.calcSajuEngine = calcSajuEngine;
 window.renderSajuDirect = calcSajuEngine;
