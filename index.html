@@ -6677,13 +6677,25 @@ function calcSajuEngine(mode) {
     ];
 
     // --- สูตรกระจาย Index บังคับให้เปลี่ยนตาม 4 เสากำเนิด + วันจร อย่างสมดุล ---
-    let natalSeed = (dStemIdx * 7) + (dBranchIdx * 11) + (yStemIdx * 13) + (mStemIdx * 17) + bD;
-    let transitSeed = (tD * 5) + (tM * 7) + (tY % 100);
+// สูตรคำนวณดัชนีแบบ Dynamic กระจายตาม วันเกิด + เดือนเกิด + ปีเกิด + วันจร
+    let bD_num = parseInt(bD, 10) || 1;
+    let bM_num = parseInt(bM, 10) || 1;
+    let bY_num = parseInt(bY, 10) || 2522;
 
-    let wIdx = Math.abs(natalSeed + transitSeed) % SAJU_CAREER.length;
-    let mIdx = Math.abs(natalSeed * 2 + transitSeed * 3 + 1) % SAJU_WEALTH.length;
-    let lIdx = Math.abs(natalSeed * 3 + transitSeed * 5 + 2) % SAJU_LOVE.length;
-    let hIdx = Math.abs(natalSeed * 5 + transitSeed * 7 + 3) % SAJU_HEALTH.length;
+    let tD_num = parseInt(tD, 10) || 1;
+    let tM_num = parseInt(tM, 10) || 1;
+    let tY_num = parseInt(tY, 10) || 2569;
+
+    // คำนวณ Seed แยกมิติเพื่อให้ทุกกล่องไม่ซ้ำกัน และเปลี่ยนทุกครั้งที่เปลี่ยนวันเกิด
+    let seedCareer = (bD_num * 37) + (bM_num * 19) + ((bY_num % 100) * 3) + (tD_num * 7);
+    let seedWealth = (bD_num * 17) + (bM_num * 29) + ((bY_num % 100) * 11) + (tD_num * 13);
+    let seedLove   = (bD_num * 41) + (bM_num * 23) + ((bY_num % 100) * 7) + (tD_num * 17);
+    let seedHealth = (bD_num * 13) + (bM_num * 31) + ((bY_num % 100) * 5) + (tD_num * 23);
+
+    let wIdx = Math.abs(seedCareer) % SAJU_CAREER.length;
+    let mIdx = Math.abs(seedWealth) % SAJU_WEALTH.length;
+    let lIdx = Math.abs(seedLove) % SAJU_LOVE.length;
+    let hIdx = Math.abs(seedHealth) % SAJU_HEALTH.length;
 
     resultBox.style.display = 'block';
 
@@ -6769,7 +6781,33 @@ function calcSajuEngine(mode) {
 }
 window.calcSajuEngine = calcSajuEngine;
 window.renderSajuDirect = calcSajuEngine;
-    
+
+// ========================================================
+// ดักจับ Event เมื่อผู้ใช้เปลี่ยน วัน/เดือน/ปีเกิด หรือ วันจร
+// เพื่อสั่งคำนวณและเปลี่ยนคำทำนายซาจูอัตโนมัติทันที 100%
+// ========================================================
+(function bindSajuAutoUpdate() {
+  const watchIds = [
+    'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24',
+    'transitDay', 'transitMonth', 'transitYearBE',
+    'transitDayVIP', 'transitMonthVIP', 'transitYearVIP'
+  ];
+
+  watchIds.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.removeEventListener('change', triggerSajuUpdate);
+      el.addEventListener('change', triggerSajuUpdate);
+    }
+  });
+
+  function triggerSajuUpdate() {
+    if (typeof calcSajuEngine === 'function') {
+      calcSajuEngine();
+    }
+  }
+})();
+ 
     function closeModal(id) { 
       const el = document.getElementById(id);
       if (el) el.style.display = 'none'; 
