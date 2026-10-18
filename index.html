@@ -12541,6 +12541,7 @@ function renderBaziDirect() {
         '</div>';
     }
 
+try {
     const luck = document.getElementById('bazi-vip-luckcycle');
     if (luck) {
       luck.innerHTML = "<strong><i class='fa-solid fa-compass'></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars) อิงวันจร " + tD + " " + tMName + " " + tY + ":</strong><br>วัฏจักรพลังงานประจำปี พ.ศ. " + tY + " (วันจร " + tD + "/" + tM + "): ธาตุให้คุณส่งกำลังหนุนนำ ทำให้การเจรจาค้าขายและการขยายเครือข่ายเติบโตอย่างก้าวกระโดดสำหรับดิถี " + dayMaster.name;
