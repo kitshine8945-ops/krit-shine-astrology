@@ -12549,9 +12549,9 @@ try {
   } catch (err) {
     console.error("BaZi Render Error:", err);
   }
-}
-window.renderBaziDirect = renderBaziDirect;
-window.calcBaziEngine = renderBaziDirect;
+
+  window.renderBaziDirect = renderBaziDirect;
+  window.calcBaziEngine = renderBaziDirect;
 // ฟังก์ชันเปิดโมดอลปาจื่อ (BaZi Modal)
 function openBaziModal() {
   const modal = document.getElementById('modal-bazi');
