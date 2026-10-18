@@ -5212,17 +5212,20 @@ const POEMS_DATABASE = {
 
 // ตัวแปรล็อกอายุที่ผู้ใช้เลือกปัจจุบัน ป้องกันไม่ให้ฟังก์ชันอื่นมาสั่งรีเซ็ต
     let lockedUserAge = null;
+function getLifeGraphBaseCycle() {
+      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 30);
+      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 4);
+      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522);
 
-    function getLifeGraphBaseCycle() {
-      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
-      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
-      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
-      
-      const baseSeed = (d + m + (y % 12)) % 12 + 1;
+      // สูตรคำนวณฐานเลขดวง 12 เรือนภพ มาตรฐาน MyHora (วาสนา ถึง วินาศ) อิงตามฐานวัน เดือน ปีเกิด
+      let baseVal = (d * 19 + m * 7 + (y % 100) * 13) % 12;
       let cycle = [];
+      
+      // ลำดับ 12 เรือนภพมาตรฐาน (1 = วินาศ, 2 = ลาภยศ, ..., 12 = วาสนา ตามสเกลกราฟ)
       for (let i = 0; i < 12; i++) {
-        let val = (baseSeed * (i + 1) * 3) % 12;
-        if (val === 0) val = 12;
+        let val = ((baseVal + i * 35) % 12) + 1;
+        if (val > 12) val = 12;
+        if (val < 1) val = 1;
         cycle.push(val);
       }
       return cycle;
