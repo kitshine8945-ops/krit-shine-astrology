@@ -12916,17 +12916,14 @@ function handleOpenModal(type) {
     return;
   }
 
-  // ปิด Modal อื่นๆ ทั้งหมดก่อน
   document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
 
-  // สั่งเปิด Modal ที่เลือก
   const targetModal = document.getElementById('modal-' + type);
   if (targetModal) {
     document.body.appendChild(targetModal);
     targetModal.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
   }
 
-  // สั่งคำนวณและวาดเนื้อหาทันที
   if (type === 'bazi' && typeof renderBaziDirect === 'function') {
     renderBaziDirect();
   } else if (type === 'saju' && typeof renderSajuDirect === 'function') {
