@@ -2753,16 +2753,27 @@ function analyzeVipSpecificQuestion() {
     let currentProfile = null;
     let isSignUpMode = false;
 window.downloadVipEbook = function() {
+    // 1. ตรวจสอบว่าเข้าสู่ระบบหรือยัง (เช็คจากตัวแปร currentUser ที่ใช้เก็บสถานะล็อกอิน)
+    if (typeof currentUser === 'undefined' || !currentUser) {
+        alert('⚠️ กรุณาเข้าสู่ระบบก่อนทำการดาวน์โหลด หรือสมัครสมาชิก VIP ครับ');
+        if (typeof openAuthModal === 'function') {
+            openAuthModal();
+        }
+        return;
+    }
+
+    // 2. ตรวจสอบสถานะ VIP
     var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
     
     if (!isVip) {
-        alert("ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น กรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม");
+        alert('⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น\nกรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม');
         if (typeof openFeatureModal === 'function') {
             openFeatureModal('member');
         }
         return;
     }
     
+    // 3. ถ้าล็อกอินและเป็น VIP แล้ว ให้ดาวน์โหลดไฟล์ทันที
     var fileName = 'ebook_prayer_vip.pdf';
     var link = document.createElement('a');
     link.href = fileName;
