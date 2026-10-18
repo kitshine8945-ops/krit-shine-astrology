@@ -925,7 +925,10 @@ header.navbar {
       ให้เราเป็นส่วนหนึ่งในการค้นหาคำตอบของชีวิต ผ่านการดูดวงที่แม่นยำ พร้อมคำแนะนำที่ช่วยให้คุณก้าวไปข้างหน้าได้อย่างมั่นใจ
     </p>
     <a href="#birth-form" class="btn-hero-start">เริ่มดูดวงเลย <i class="fa-solid fa-chevron-right"></i></a>
-
+<!-- ปุ่มดาวน์โหลด E-Book เฉพาะสมาชิก VIP -->
+<button type="button" onclick="downloadVipEbook()" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #1a0f00; font-weight: 700; padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); display: inline-flex; align-items: center; gap: 8px;">
+  <i class="fa-solid fa-download"></i> ดาวน์โหลดคู่มือสวดมนต์ VIP (PDF)
+</button>
     <div>
       <div class="hero-thai-banner-bar">
         <span><i class="fa-solid fa-om"></i> ดูดวงรายวัน-เดือน-ปี <i class="fa-solid fa-om"></i></span>
@@ -12926,6 +12929,25 @@ function handleOpenModal(type) {
   }
 }
 window.handleOpenModal = handleOpenModal;    
+function downloadVipEbook() {
+  var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  
+  if (!isVip) {
+    alert('⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น\nกรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม');
+    if (typeof openFeatureModal === 'function') {
+      openFeatureModal('member');
+    }
+    return;
+  }
+  
+  var fileName = 'ebook_prayer_vip.pdf';
+  var link = document.createElement('a');
+  link.href = fileName;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}   
 </script>
 </body>
 </html>
