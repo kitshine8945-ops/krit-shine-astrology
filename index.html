@@ -5553,7 +5553,7 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. คำนวณเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
+  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
   // ==========================================
   const birthBeYear = AppState.birthBE;   
   const inputDay = AppState.dayBase;       
@@ -5580,7 +5580,7 @@ function initMyHoraLifeChart(focusAge) {
   else if (solarMonth === 9) calculatedMonthBase = 11; 
   else if (solarMonth === 10) calculatedMonthBase = 12; 
 
-  // 🔹 นำผลคำนวณ 3 ฐานแนวตั้งมารวมกันเพื่อสร้างเลขดวงชุดคงที่ 12 ช่อง
+  // คำนวณบวกเลขแนวตั้ง 3 ฐานสร้างเลขดวงชุดคงที่ 12 คอลัมน์ [วาสนา...วินาศ] เข้าสู่ระบบ Canvas
   const cycle = new Array(12);
   for (let i = 0; i < 12; i++) {
     let d = ((inputDay + i - 1) % 7) + 1;
@@ -5592,13 +5592,13 @@ function initMyHoraLifeChart(focusAge) {
     if (score === 0) {
       score = 12;
     }
-    cycle[i] = score; // บันทึกผลคะแนนเลขดวงล็อกคงที่ในแต่ละเรือนภพ
+    cycle[i] = score; 
   }
 
   let graphPoints = []; 
 
   // ==========================================
-  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop ของเดิมที่คุณให้มา)
+  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
   // ==========================================
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
@@ -5606,19 +5606,16 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา (ของเดิมที่คุณให้มา)
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
   // ==========================================
   for (let col = 0; col < 12; col++) {
     const currentAge = startAgeCycle + col; 
 
-    // หาอินเด็กซ์ของเรือนภพประจำตัวเลขดวง (ดัชนี 0 ถึง 11)
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    // ดึงคะแนนตรงตามช่องผลคำนวณประจำเรือนภพที่ได้จากลอจิกส่วนที่ 1
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
     
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (ของเดิมที่คุณให้มา)
     const row = 12 - safeScore; 
 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
@@ -5634,7 +5631,7 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต (ของเดิมของคุณที่ลากเส้นขึ้นพุ่งสวยงาม)
+  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
   // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
@@ -5647,7 +5644,6 @@ function initMyHoraLifeChart(focusAge) {
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // ลากเส้นกราฟวิถีชีวิตชะตาเชื่อมโยงจากซ้ายไปขวา
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
@@ -5661,7 +5657,6 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จรวิ่งเวียนใต้จุด
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
