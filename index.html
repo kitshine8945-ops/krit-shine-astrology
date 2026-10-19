@@ -10515,33 +10515,33 @@ window.calcBaziEngine = function() {
     </div>
 </div>
 
-<!-- มหาวัฏจักร 10 ปี -->
-<div style="background: rgba(234,179,8,0.1); border: 1.5px dashed #ffd700; padding: 18px 20px; border-radius: 14px; font-size: 0.9rem; color: #fff; line-height: 1.85; width: 100%; box-sizing: border-box;">
+// มหาวัฏจักร 10 ปี เต็มความกว้าง
+  <div style="background: rgba(234,179,8,0.1); border: 1.5px dashed #ffd700; padding: 18px 20px; border-radius: 14px; font-size: 0.9rem; color: #fff; line-height: 1.85; width: 100%; box-sizing: border-box;">
     <strong style="color:#ffd700; font-size: 0.95rem;"><i class="fa-solid fa-chart-line"></i> มหาวัฏจักรโชคชะตา 10 ปี (Luck Pillars):</strong><br>
-    วัฏจักรพลังงานประจำปี พ.ศ. ${tY} (วันจร ${tD}/${tM}): อิทธิพลธาตุหนุน (${yongShen}) กำลังส่งคลื่นพลังงานเปิดทางให้เกิดการเติบโตอย่างก้าวกระโดดสำหรับดิถี ${dayMaster.name} การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายธุรกิจจะผลิดอกออกผลอย่างงดงามและมั่นคงถาวร
-</div>
-`;
-        }
-    }
+    วงจรชีวิตในทศวรรษนี้กำลังเคลื่อนเข้าสู่จุดเปลี่ยนสำคัญ ธาตุให้คุณเริ่มส่งกำลังหนุนนำ ทำให้การติดต่อค้าขาย การลงทุน และการขยายเครือข่ายเติบโตอย่างก้าวกระโดด ไร้อุปสรรคขวางกั้น
+  </div>
+  `;
+  }
+}
 };
+
 // 3. ระบบคำนวณมหาทักษาเทวดาเสวยอายุ (เช็ควันเกิดจริง ไม่โชว์ค่ามั่ว)
 window.calcMahataksa = function() {
-    var ageDisp = document.getElementById('taksaAgeDisp');
-    var majEl = document.getElementById('taksaMajorDisp');
-    var minEl = document.getElementById('taksaMinorDisp');
-    var effEl = document.getElementById('taksaEffect');
-    var prayEl = document.getElementById('taksaPray');
+  var ageDisp = document.getElementById('taksaAgeDisp');
+  var majEl = document.getElementById('taksaMajorDisp');
+  var minEl = document.getElementById('taksaMinorDisp');
+  var effEl = document.getElementById('taksaEffect');
+  var prayEl = document.getElementById('taksaPray');
 
-    // ถ้ายังไม่ได้กรอกวันเกิด ให้เคลียร์เป็นขีด (-) และแจ้งเตือนให้กรอก
-    if (!checkUserHasEnteredBirth()) {
-        if (ageDisp) ageDisp.textContent = '-';
-        if (majEl) majEl.textContent = '-';
-        if (minEl) minEl.textContent = '-';
-        if (effEl) effEl.innerHTML = '<span style="color:#f59e0b;"><i class="fa-solid fa-circle-exclamation"></i> กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรกเพื่อคำนวณเทวดาเสวยอายุเฉพาะบุคคล</span>';
-        if (prayEl) prayEl.textContent = '-';
-        return;
-    }
-
+  // ถ้ายังไม่ได้กรอกวันเกิด ให้เคลียร์เป็นขีด (-) และแจ้งเตือนให้กรอก  
+  if (!checkUserHasEnteredBirth()) {
+    if (ageDisp) ageDisp.textContent = '-';
+    if (majEl) majEl.textContent = '-';
+    if (minEl) minEl.textContent = '-';
+    if (effEl) effEl.innerHTML = '<span style="color:#f59e0b;"><i class="fa-solid fa-circle-exclamation"></i> กรุณากรอก วัน / เดือน / ปีเกิด ที่หน้าแรกเพื่อคำนวณเทวดาเสวยอายุเฉพาะบุคคล</span>';
+    if (prayEl) prayEl.textContent = '-';
+    return;
+  }
     var bYear = parseInt(document.getElementById('birthYearBE').value, 10);
     var bMonth = parseInt(document.getElementById('birthMonth').value, 10);
     var bDay = parseInt(document.getElementById('birthDay').value, 10);
