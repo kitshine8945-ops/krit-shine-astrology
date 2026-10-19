@@ -2551,16 +2551,16 @@ function analyzeVipSpecificQuestion() {
 
   <!-- ส่วนแสดงกราฟและแกนซ้าย-ขวา -->
   <div style="display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; align-items: stretch;">
-    <!-- แกนภูมิชะตาด้านซ้ายแบ่งสัดส่วน 12 แถวตามความสูงจริง (สวรรค์ 4 แถว, มนุษย์ 4 แถว, นรก 4 แถว) -->
+    <!-- แกนภูมิชะตาด้านซ้ายแบ่งสัดส่วน 12 แถวตามความสูงจริง -->
     <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: var(--gold-main); font-weight: 700; text-align: center; border-right: 1px dashed rgba(255,255,255,0.15); height: 100%;">
       <div style="grid-row: 1 / span 4; color:#ffd700; display: flex; flex-direction: column; justify-content: center; align-items: center;">สวรรค์ภูมิ<br><small>(9 - 12)</small></div>
       <div style="grid-row: 5 / span 4; color:#81c784; display: flex; flex-direction: column; justify-content: center; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); border-bottom: 1px dashed rgba(255,255,255,0.08);">มนุษย์ภูมิ<br><small>(5 - 8)</small></div>
       <div style="grid-row: 9 / span 4; color:#ff7675; display: flex; flex-direction: column; justify-content: center; align-items: center;">นรกภูมิ<br><small>(1 - 4)</small></div>
     </div>
 
-    <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเบื้องหลังเป็นสี่เหลี่ยมจัตุรัสอัตราส่วน 1:1 เป๊ะ ๆ -->
+    <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเบื้องหลังเป็นสี่เหลี่ยมจัตุรัสอัตราส่วน 1:1 -->
     <div style="position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; background: rgba(255,255,255,0.015); border-radius: 4px; overflow: hidden;">
-      <!-- Canvas ลากเส้นกราฟครอบทับพิกัดพอดี 100% ไม่บิดเบี้ยว -->
+      <!-- Canvas ลากเส้นกราฟครอบทับพิกัดพอดี 100% -->
       <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></canvas>
     </div>
     
@@ -2584,7 +2584,11 @@ function analyzeVipSpecificQuestion() {
 
 <div id="yearly-prediction-card" style="background: rgba(30,20,10,0.85); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
   <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
-    <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
+      <!-- ไอดีสำหรับแสดงผลตัวเลขอายุย่างแบบไดนามิกเฉพาะของกราฟชีวิต -->
+      <span id="yearly-prediction-age-display" style="color: var(--gold-main); font-size: 1.15rem; font-weight: 700;"></span>
+    </div>
     <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
   </div>
   <div id="yearly-poem-box" style="display: flex; justify-content: center; font-size: 0.95rem; color: #fff; line-height: 2; background: rgba(0,0,0,0.45); padding: 18px; border-radius: 8px;"></div>
@@ -13049,7 +13053,6 @@ renderBaziDirect();
 // วางฟังก์ชันคำนวณอายุย่างสากล (เฉพาะกราฟชีวิต) ต่อท้ายตรงนี้ได้เลย (บรรทัด 13159 เดิม)
 // ====================================================================
 function calculateLifeChartAstrologyAge(birthYearBE, transitYearBE) {
-    // ใช้ปีจรปัจจุบันตามที่หน้าจอคอมพิวเตอร์ดึงค่าได้ (ถ้าไม่มีระบบจะใช้ปี พ.ศ. 2569 ตามหน้าเว็บปัจจุบันของคุณ)
     let currentYearBE = transitYearBE;
     if (!currentYearBE) {
         currentYearBE = (typeof AppState !== 'undefined' && AppState.transitBE) 
@@ -13057,13 +13060,11 @@ function calculateLifeChartAstrologyAge(birthYearBE, transitYearBE) {
             : (parseInt(document.getElementById('transitYearBE')?.value, 10) || new Date().getFullYear() + 543);
     }
     
-    // คำนวณอายุเต็มในรอบปี (ลบกันตรง ๆ จากข้อมูลของสมาชิกคนนั้น ๆ)
     let fullAge = currentYearBE - birthYearBE;
     if (fullAge < 0) fullAge = 0;
 
-    // แปลงเข้าระบบ "อายุย่างทางโหราศาสตร์ไทย" (+1 ปี เสมอสำหรับสมาชิกทุกคน)
+    // ระบบอายุย่างทางโหราศาสตร์ไทยสำหรับทุกคน (+1 เสมอ)
     let astrologyAge = fullAge + 1; 
-    
     return astrologyAge;
 }
 
@@ -13074,39 +13075,37 @@ function initMyHoraLifeChart(focusAge) {
     const canvas = document.getElementById('lifeChartCanvas');
     if (!canvas) return;
 
-    // 1. ดึงฐานลูปคะแนน 12 ภพชะตาประจำตัวของสมาชิกที่กรอกเข้ามา (ไม่มีผลกระทบกับลัคนาพยากรณ์)
+    // 1. ดึงฐานลูปคะแนน 12 ภพชะตาประจำดวงชะตาของแต่ละคนขึ้นมาทำงาน (ไม่รบกวนลัคนาพยากรณ์)
     const cycle = getLifeGraphBaseCycle(); 
 
-    // 2. ดึงปีเกิด พ.ศ. ไดนามิกของสมาชิกจาก AppState หรือช่องอินพุตบนฟอร์มจริงของคุณ (birthYearBE)
+    // 2. ดึงปีเกิด พ.ศ. ไดนามิกของสมาชิกจากข้อมูลในระบบ
     const birthYearBE = (typeof AppState !== 'undefined' && AppState.birthBE) 
         ? AppState.birthBE 
         : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
 
-    // 3. ตรวจสอบเงื่อนไขการคำนวณครั้งแรกเมื่อเปิดหน้าจอขึ้นมา
+    // 3. จัดการเงื่อนไขประมวลผลคำนวณเริ่มต้นหน้าระบบ
     if (!focusAge) {
-        // ดึงปีจรปัจจุบันแบบไดนามิกจากระบบของหน้าเว็บ ณ ขณะนั้น
         const currentYearBE = (typeof AppState !== 'undefined' && AppState.transitBE) 
             ? AppState.transitBE 
             : (parseInt(document.getElementById('transitYearBE')?.value, 10) || new Date().getFullYear() + 543);
             
-        // ส่งค่าไปคำนวณระบบอายุย่างโดยอัตโนมัติ (ไม่ล็อกค่าดวงชะตาของใครคนใดคนหนึ่ง)
         focusAge = calculateLifeChartAstrologyAge(birthYearBE, currentYearBE);
-        
-        // อัปเดตตัวเลขแสดงผลบนหน้าจอให้ตรงกับอายุย่างจริงของสมาชิกคนนั้น
-        const ageDisplay = document.getElementById('yearly-prediction-age-display');
-        if (ageDisplay) ageDisplay.innerText = `อายุ ${focusAge} ปี`;
     }
 
-    // 4. ตัดเศษ 12 หาตำแหน่งเวียนเรือนภพประจำอายุย่างจรปีนั้น ๆ ของสมาชิก
+    // อัปเดตป้ายตัวเลขบอกอายุย่างจรของสมาชิกปัจจุบันบนหน้าจอ
+    const ageDisplay = document.getElementById('yearly-prediction-age-display');
+    if (ageDisplay) ageDisplay.innerText = `อายุ ${focusAge} ปี`;
+
+    // 4. ตัดเศษ 12 เพื่อหาตำแหน่งภพจรปัจจุบัน (ไม่มีการ Hardcode ล็อกข้อมูลใคร)
     let transitRemainder = focusAge % 12;
     if (transitRemainder === 0) transitRemainder = 12; 
 
     let graphPoints = []; 
 
-    // 5. วนลูปพล็อตจุดชะตาเรียงล็อกคอลัมน์แนวนอนตาม 12 เรือนภพถาวรจากซ้ายไปขวา
+    // 5. วนลูปคำนวณพิกัดดวงชะตาทอดยาวในแนวนอนตามตำแหน่ง 12 เรือนภพจากซ้ายไปขวา
     for (let col = 0; col < 12; col++) {
         const houseNumber = col + 1; 
-        const score = cycle[col]; // ดึงระดับคะแนนจริงของสมาชิกแต่ละคน (จะไม่มีคะแนน 0)
+        const score = cycle[col]; 
         const row = 12 - score; 
         const isFocus = (houseNumber === transitRemainder);
 
@@ -13119,7 +13118,7 @@ function initMyHoraLifeChart(focusAge) {
         });
     }
 
-    // 6. กลไกการวาดเส้นกราฟชีวิตในแผ่นแคนวาสให้ตรงล็อกช่องสี่เหลี่ยมจัตุรัสแบบใหม่
+    // 6. ลากเส้นกราฟวิถีชีวิตลงผืนผ้าใบ Canvas ครอบทับช่องสี่เหลี่ยมจัตุรัสแบบไดนามิก
     setTimeout(() => {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width;
@@ -13128,14 +13127,14 @@ function initMyHoraLifeChart(focusAge) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // แบ่งพื้นที่ใน Canvas เป็นล็อกช่องย่อยสัดส่วน 12 x 12 ช่องเท่ากันเป๊ะ ๆ ทุกด้าน
+        // คำนวณแบ่งช่องใน Canvas ออกเป็น 12 x 12 บล็อกย่อยเท่ากันเป๊ะ ๆ
         const cellWidth = canvas.width / 12;
         const cellHeight = canvas.height / 12;
 
-        // --- วาดเส้นกราฟชีวิตแนวนอนยาวจากซ้ายไปขวา (ภพที่ 1 ถึง 12) ---
+        // วาดเส้นกราฟเชื่อมโยงจากซ้ายไปขวา (แนวนอนชะตาชีวิต)
         ctx.beginPath();
         ctx.lineWidth = 3;
-        ctx.strokeStyle = '#2ecc71'; // เส้นวิถีชีวิตสีเขียวสด
+        ctx.strokeStyle = '#2ecc71'; // สีเขียว
         ctx.lineJoin = 'round';
 
         graphPoints.forEach((pt, idx) => {
@@ -13146,14 +13145,14 @@ function initMyHoraLifeChart(focusAge) {
         });
         ctx.stroke();
 
-        // --- วาดปุ่มจุดวงกลมคะแนนชะตาลงในล็อกช่องตาราง ---
+        // วาดจุดปักหมุดวงกลมพลังชะตา
         graphPoints.forEach((pt) => {
             const x = (pt.gridX * cellWidth) + (cellWidth / 2);
             const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
             ctx.beginPath();
             if (pt.isFocus) {
-                // วงกลมจุดดวงจรปัจจุบันของอายุย่างปีนั้น (สีแดงสดขอบทองสว่างระบบ VIP)
+                // จุดดวงจรปัจจุบันปักลงล็อกตรงช่องเรือนภพที่คำนวณได้จริง (สีแดงสดขอบทองสว่าง VIP)
                 ctx.arc(x, y, 9, 0, 2 * Math.PI);
                 ctx.fillStyle = '#ff4757';
                 ctx.fill();
@@ -13161,7 +13160,7 @@ function initMyHoraLifeChart(focusAge) {
                 ctx.strokeStyle = '#f5c469';
                 ctx.stroke();
             } else {
-                // จุดระดับคะแนนประจำปีอื่น ๆ ตามดวงชะตาของสมาชิก (สีเหลืองทองดั้งเดิม)
+                // จุดระดับปีอื่น ๆ ของสมาชิก (สีเหลืองทองดั้งเดิม)
                 ctx.arc(x, y, 5, 0, 2 * Math.PI);
                 ctx.fillStyle = '#ffd700';
                 ctx.fill();
@@ -13170,9 +13169,8 @@ function initMyHoraLifeChart(focusAge) {
                 ctx.stroke();
             }
         });
-    }, 100); 
+    }, 150); // เพิ่มดีเลย์สั้น ๆ เพื่อให้โครง CSS จัดรูปทรงสี่เหลี่ยมให้เสร็จเรียบร้อยก่อนลงเส้นวาด
 }
-
 
 window.handleOpenModal = handleOpenModal;
 </script>
