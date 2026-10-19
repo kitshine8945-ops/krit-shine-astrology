@@ -13189,7 +13189,84 @@ function initMyHoraLifeChart(focusAge) {
         });
     }, 150); 
 }
+// ฟังก์ชันดักบั๊กและเรนเดอร์กราฟชีวิตตามพิกัดอายุย่างจริง
+function renderLifeGraph(astrologyAge, birthYearBE) {
+    // 1. ตรวจสอบความถูกต้องของอายุย่าง
+    let age = parseInt(astrologyAge, 10);
+    if (isNaN(age) || age < 1 || age > 80) {
+        console.warn("อายุย่างไม่ถูกต้อง ระบบทำการปรับค่าให้อยู่ในช่วงมาตรฐาน (อายุย่าง 1 ปี)");
+        age = 1; // Fallback กลับมาค่าเริ่มต้นที่ปลอดภัย
+    }
 
+    // 2. คำนวณเศษเรือนภพสำหรับแกนนอน (columnIdx 1 - 12)
+    let columnIdx = age % 12;
+    if (columnIdx === 0) columnIdx = 12;
+
+    // 3. ดึงค่าคะแนนดวงจากฐานข้อมูล (แกนตั้ง scoreY)
+    let scoreY = database.getScoreByColumn(columnIdx);
+
+    // 4. ดักบั๊กกรณีค่าคะแนนจากฐานข้อมูลพัง หรือหาพิกัดปีจรไม่เจอ
+    if (!scoreY || isNaN(scoreY)) {
+        console.error("ระบบไม่สามารถคำนวณจุดอายุจรได้ เนื่องจากฐานข้อมูลคะแนนคลาดเคลื่อน");
+        // Fallback กลับมาใช้ค่ากลางที่อยู่ในเรนจ์ปลอดภัย (เช่น คะแนน 6 ภพมนุษย์ภูมิ)
+        scoreY = 6; 
+    }
+
+    // 5. คำนวณปี พ.ศ. ปัจจุบันตามสูตรที่ถูกต้อง: ปีเกิด พ.ศ. + อายุย่าง
+    let targetYearBE = (birthYearBE ? parseInt(birthYearBE, 10) : 2522) + age;
+    console.log(`พยากรณ์อายุย่าง ${age} ปี ตรงกับพ.ศ. ${targetYearBE} | ภพที่: ${columnIdx} | คะแนน: ${scoreY}`);
+
+    // 6. ทำการวาดจุดสีส้มและเส้นกราฟลงในหน้าจอตามพิกัดที่ถูกต้อง
+    drawChartPoint(columnIdx, scoreY, targetYearBE);
+}
+      // 1. ฟังก์ชันดักบั๊กและเรนเดอร์กราฟชีวิตตามพิกัดอายุย่างจริง
+function renderLifeGraph(astrologyAge) {
+    let age = parseInt(astrologyAge, 10);
+    if (isNaN(age) || age < 1 || age > 80) {
+        age = 1;
+    }
+
+    let columnIdx = age % 12;
+    if (columnIdx === 0) columnIdx = 12;
+
+    let scoreY = database.getScoreByColumn(columnIdx);
+
+    if (!scoreY || isNaN(scoreY)) {
+        console.error("ระบบไม่สามารถคำนวณจุดอายุจรได้ เนื่องจากฐานข้อมูลคะแนนคลาดเคลื่อน");
+        scoreY = 6; 
+    }
+
+    let birthYearInput = document.getElementById('birthYearBE');
+    let bYear = birthYearInput ? parseInt(birthYearInput.value, 10) : 0;
+    
+    let targetYearBE = bYear > 0 ? (bYear + age) : 0;
+    
+    drawChartPoint(columnIdx, scoreY, targetYearBE);
+}
+
+// 2. ฟังก์ชันอัปเดต Dropdown ปี พ.ศ. ตามอายุย่างจริง (อิงจากปีเกิดที่ผู้ใช้กรอกจริง)
+function updateYearDropdown() {
+    const selectElement = document.getElementById('selectYearAgeDirect');
+    if (!selectElement) return;
+    
+    selectElement.innerHTML = '';
+    
+    let birthYearInput = document.getElementById('birthYearBE');
+    let bYear = birthYearInput ? parseInt(birthYearInput.value, 10) : NaN;
+
+    if (isNaN(bYear)) {
+        console.warn("ยังไม่ได้ระบุปีเกิด พ.ศ. ในระบบ");
+        return;
+    }
+
+    for (let age = 1; age <= 80; age++) {
+        let correspondingYearBE = bYear + age; // สูตร: ปีเกิดจริง + อายุย่าง
+        let option = document.createElement('option');
+        option.value = age;
+        option.textContent = `อายุ ${age} ปี (พ.ศ. ${correspondingYearBE})`;
+        selectElement.appendChild(option);
+    }
+}
 window.handleOpenModal = handleOpenModal;
 </script>
 </body>
