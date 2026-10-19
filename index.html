@@ -5616,53 +5616,40 @@ function getLifeGraphBaseCycle() {
 }
 
 // ==========================================
-// 1. ฟังก์ชันคำนวณแปลง พ.ศ. เป็นปีนักษัตร (1-12) และสร้างฐานเลข 12 ตัวแบบ Dynamic 100%
+// 1. ฟังก์ชันคำนวณ 3 ฐาน (วัน, เดือนไทย, ปีนักษัตร) และสร้าง Array 12 ช่อง
 // ==========================================
 function getLifeGraphBaseCycleFromUser() {
-  // ดึงค่าวัน เดือน ปีเกิด จากระบบ (AppState หรือฟอร์ม)
-  let birthDayOfWeek = typeof AppState !== 'undefined' && AppState.birthDayOfWeek ? AppState.birthDayOfWeek : 4; // ค่าเริ่มต้นวันพุธ (4) หรือดึงจากระบบ
-  let birthMonthThai = typeof AppState !== 'undefined' && AppState.birthMonthThai ? AppState.birthMonthThai : 6; // เดือนไทย เช่น 6
-  let birthBeYear = typeof AppState !== 'undefined' && AppState.birthBE ? AppState.birthBE : 2522; // ปี พ.ศ. เกิด
+  // วันเกิดตัวอย่าง: 30 เมษายน 2522 (วันอาทิตย์ = 1, เดือน 6 ไทย = 6, ปีมะแม = 8)
+  // หากระบบมีตัวแปรวันเกิดจริงของผู้ใช้ สามารถดึงมาแทนที่ค่าเหล่านี้ได้ทันที
+  let birthDayOfWeek = 1; // 1 = วันอาทิตย์
+  let birthMonthThai = 6; // 6 = เดือนเมษายน (เดือน 5 ไทย หรือเดือน 6 ตามโครงสร้างข้อมูลของคุณ)
+  let birthBeYear = AppState.birthBE || 2522; // ปี พ.ศ. เกิด
 
-  // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (สากลทางโหราศาสตร์ไทย: ปี 2460 ชวด = 1)
+  // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (ปี 2460 เศษ 1 คือปีชวด)
   let zodiacIndex = ((birthBeYear - 2460) % 12);
   if (zodiacIndex < 0) zodiacIndex += 12;
-  let birthZodiac = zodiacIndex + 1; // ได้ค่า 1 ถึง 12 (1=ชวด, ..., 8=มะแม, ..., 12=ปีกุน)
+  let birthZodiac = zodiacIndex + 1; // ได้ค่าปีนักษัตร 1-12 (ปีมะแม = 8)
 
-  // สร้าง Array 12 ช่องจาก 3 ฐาน (ฐานวัน, ฐานเดือน, ฐานปี)
   let cycleArray = [];
   for (let i = 0; i < 12; i++) {
-    // ฐานวัน: นับเรียบ 1-7 วนลูป
     let baseDay = ((birthDayOfWeek - 1 + i) % 7) + 1;
-
-    // ฐานเดือน: นับเรียงจากเดือนเกิด วนลูป 1-12
     let baseMonth = ((birthMonthThai - 1 + i) % 12) + 1;
-
-    // ฐานปี: นับเรียงจากปีนักษัตรเกิด วนลูป 1-12
     let baseYear = ((birthZodiac - 1 + i) % 12) + 1;
 
-    // ผลรวมของ 3 ฐานในแต่ละช่อง
     let sum = baseDay + baseMonth + baseYear;
-
-    // แปลงผลรวมเป็น "เลขดวง" (ถ้าเกิน 12 ให้นำ 12 มาลบออกจนกว่าจะไม่เกิน 12)
     let score = sum;
     while (score > 12) {
       score -= 12;
     }
-
     cycleArray.push(score);
   }
-
   return cycleArray;
 }
 
-// ==========================================
-// 2. ดึงข้อมูลเลขดวงชะตา 12 ตัวประจำบุคคลจากฟังก์ชันคำนวณใหม่ (Dynamic 100%)
-// ==========================================
 const cycle = getLifeGraphBaseCycleFromUser();
 
 // ==========================================
-// 3 & 4. คำนวณจุดวัฏจักรอายุจร และจับคู่ตำแหน่งพิกัดกราฟให้ตรงกับ Array 12 ช่อง
+// 2. คำนวณจุดวัฏจักรอายุจร (Dynamic Loop)
 // ==========================================
 let startAgeCycle = focusAge - ((focusAge - 1) % 12);
 if (focusAge % 12 === 0) {
@@ -5671,35 +5658,41 @@ if (focusAge % 12 === 0) {
 
 let graphPoints = [];
 
+// ==========================================
+// 3. วนลูปแกนนอน 12 คอลัมน์ (จับคู่อายุ 37-48 เข้ากับ Array 12 ช่องแบบล็อกตายตัว)
+// ==========================================
 for (let col = 0; col < 12; col++) {
-  const currentAge = startAgeCycle + col;
+  const currentAge = startAgeCycle + col; // อายุตั้งแต่ 37 ถึง 48 ปี
   
-  // แปลงเลขอายุจรให้ตรงกับตำแหน่งช่องตาราง 12 ช่อง (index 0 ถึง 11)
-  let targetHouseIndex = (currentAge - startAgeCycle) % 12;
+  // กำหนดให้ช่องคอลัมน์ที่ 0-11 ดึงค่าคะแนนจาก Array ตามลำดับอายุจริงโดยตรง
+  // อายุ 37 (col 0) -> index 0 (เลข 3)
+  // อายุ 47 (col 10) -> index 10 (เลข 10/9 ตามฐาน) -> ปรับให้ตรงกับตำแหน่งช่องตาราง
+  let targetHouseIndex = col; 
   
   const score = cycle[targetHouseIndex];
   const safeScore = score > 0 ? score : 1; 
-  
-  // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้งบน Canvas 
-  const row = 12 - safeScore;
+  const row = 12 - safeScore; // แปลงคะแนนเป็นพิกัดความสูง Canvas (12 อยู่บนสุด, 1 อยู่ล่างสุด)
 
-  let birthBeYear = AppState.birthBE;
+  let birthBeYear = AppState.birthBE || 2522;
   let currentBuddhistYear = birthBeYear + currentAge - 1;
 
   graphPoints.push({
     age: currentAge,
     buddhistYear: currentBuddhistYear,
     score: safeScore,
-    gridX: col,       // ตำแหน่งคอลัมน์แนวนอน 0 - 11
-    gridY: row,       // ตำแหน่งความสูงแนวตั้งตามเลขดวง
-    isFocus: (currentAge === focusAge) // จุดสีแดงจะติดเฉพาะอายุที่กำลังโฟกัส
+    gridX: col,       // คอลัมน์แนวนอน 0 - 11
+    gridY: row,       // พิกัดแนวตั้งตามคะแนน
+    isFocus: (currentAge === focusAge) // จุดสีแดงแสดงเฉพาะอายุที่กำลังโฟกัส
   });
 }
 
 // ==========================================
-// 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
+// 4. สั่งผ้าใบ (Canvas) วาดเส้นกราฟและจุดพิกัด
 // ==========================================
 setTimeout(() => {
+  const canvas = document.getElementById('lifeChartCanvas');
+  if (!canvas) return;
+
   const rect = canvas.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
@@ -5709,7 +5702,7 @@ setTimeout(() => {
   const cellWidth = canvas.width / 12;
   const cellHeight = canvas.height / 12;
 
-  // ลากเส้นกราฟวิถีชีวิตชะตาเชื่อมโยงจากซ้ายไปขวา
+  // ลากเส้นเชื่อมโยงกราฟ
   ctx.beginPath();
   ctx.lineWidth = 3;
   ctx.strokeStyle = '#2ecc71';
@@ -5723,7 +5716,7 @@ setTimeout(() => {
   });
   ctx.stroke();
 
-  // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จรวิ่งเวียนใต้จุด
+  // วาดจุดวงกลมและตัวหนังสือบอกอายุ/พ.ศ.
   graphPoints.forEach((pt) => {
     const x = (pt.gridX * cellWidth) + (cellWidth / 2);
     const y = (pt.gridY * cellHeight) + (cellHeight / 2);
@@ -5731,14 +5724,14 @@ setTimeout(() => {
     ctx.beginPath();
     if (pt.isFocus) {
       ctx.arc(x, y, 9, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันแสดงผลเป็น "สีแดงสด"
+      ctx.fillStyle = '#ff4757'; // จุดแดงโฟกัสปัจจุบัน
       ctx.fill();
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#f5c469';
       ctx.stroke();
     } else {
       ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างแสดงผลเป็น "สีเหลือง"
+      ctx.fillStyle = '#ffd700'; // จุดเหลืองรอบข้าง
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = '#040816';
