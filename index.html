@@ -5555,7 +5555,7 @@ const POEMS_DATABASE = {
         "วินาศ": { heaven: "เปลี่ยนวิกฤตเป็นโอกาส สิ่งที่ซ่อนเร้นหรือปัญหาลับๆ กลับคลี่คลายให้ผลดี", human: "มีรายจ่ายเบ็ดเตล็ดทั่วไปตามวิถีชีวิต ไม่มีเรื่องเสียหายรุนแรง", hell: "ระวังทรัพย์สินสูญหาย เอกสารผิดพลาด หรือรายจ่ายกะทันหันที่ไม่คาดคิด" }
       };
 
-      document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
+document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
         let sc = cycle[i];
         let realm = sc >= 9 ? 'สวรรค์ภูมิ' : (sc >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ');
         let realmKey = sc >= 9 ? 'heaven' : (sc >= 5 ? 'human' : 'hell');
@@ -5568,29 +5568,28 @@ const POEMS_DATABASE = {
             <p style="font-size:0.78rem; color:#cfd8dc; margin-top:2px;">${descText}</p>
           </div>
         `;
-      }).join('');
+    }).join('');
 
-      initMyHoraLifeChart(age);
+    initMyHoraLifeChart(age);
 
-      setTimeout(() => { isChangingAge = false; }, 50);
-    }
+    setTimeout(() => { isChangingAge = false; }, 50);
+} // <--- ปีกกาปิดของฟังก์ชัน applyAgeChange ที่ถูกต้องสมบูรณ์
 
-    function updateAgeFromSlider(age) { 
-      let a = parseInt(age, 10);
-      lockedUserAge = a;
-      applyAgeChange(a); 
-    }
-    
-    function updateAgeFromInput(age) { 
-      let a = parseInt(age, 10);
-      lockedUserAge = a;
-      applyAgeChange(a); 
-    }
+function updateAgeFromSlider(age) { 
+    let a = parseInt(age, 10);
+    lockedUserAge = a;
+    applyAgeChange(a); 
+}
 
-    document.addEventListener('DOMContentLoaded', function() {
-      initAgeSelectOptions();
-    });
+function updateAgeFromInput(age) { 
+    let a = parseInt(age, 10);
+    lockedUserAge = a;
+    applyAgeChange(a); 
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    initAgeSelectOptions();
+});
 // --- 1. ข้อมูลพื้นฐาน 10 สวรรค์ (STEMS) และ 12 ภพภูมิ (BRANCHES) ---
 const STEMS = [
       { name: "甲 (เจี่ย)", elem: "ไม้", pol: "หยาง", nature: "ต้นไม้ใหญ่ หนักแน่น มั่นคง", desc: "เปรียบประดุจ ต้นไม้ใหญ่ หนักแน่น มั่นคง มีเป้าหมายชีวิตชัดเจน ยืนหยัดในคุณธรรมและความถูกต้อง มีความเป็นผู้นำสูง" },
