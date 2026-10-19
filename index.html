@@ -5552,43 +5552,60 @@ function initMyHoraLifeChart(focusAge) {
   const canvas = document.getElementById('lifeChartCanvas');
   if (!canvas) return;
 
-  // 1. ดึงฐานข้อมูลรอบคะแนนดวงชะตา (Array คะแนน 12 เรือนภพคงที่ของเจ้าชะตา)
-  // ปกติ getLifeGraphBaseCycle() จะคืนค่าเป็น Array 12 ช่อง เช่น [9, 3, 5, ...] ตามเรือนภพที่ 1 ถึง 12
+  // 1. ดึงฐานลูปคะแนน 12 ภพชะตาจากดวงชะตาของสมาชิกคนนั้น ๆ มาพล็อตเส้นหลัก (วาดแยกไม่ยุ่งกับลัคนาพยากรณ์)
   const cycle = getLifeGraphBaseCycle(); 
 
-  // 2. คำนวณหา "เศษอายุจร" เพื่อหาตำแหน่งเรือนภพที่อายุจรปัจจุบันตกอยู่
-  // สูตร: อายุ ÷ 12 -> เศษ 1 = วิถีชีวิต, เศษ 2 = วาสนา ... เศษ 11 = ลาภยศ, เศษ 0 (หารลงตัว) = วินาศ
+  // 2. ตรวจสอบเงื่อนไขเปิดหน้าเว็บครั้งแรก (หากยังไม่มีการเลื่อนสไลเดอร์ส่งค่า focusAge เข้ามา)
+  if (!focusAge) {
+    let rawBirthDate = "";
+
+    // พยายามดึงวันที่จาก AppState ของกราฟชีวิต หรือช่องอินพุตบนหน้าจอ
+    if (typeof AppState !== 'undefined' && AppState.birthDateISO) {
+      rawBirthDate = AppState.birthDateISO; 
+    } else {
+      const inputEl = document.getElementById('birthDate');
+      if (inputEl && inputEl.value) {
+        rawBirthDate = inputEl.value;
+      }
+    }
+
+    // เรียกฟังก์ชันคำนวณอายุย่างสากลตัวเฉพาะของกราฟชีวิต
+    if (rawBirthDate) {
+      focusAge = calculateLifeChartAstrologyAge(rawBirthDate, null);
+    } else {
+      focusAge = 40; 
+    }
+    
+    // อัปเดตป้ายระบุอายุบนตัวสไลเดอร์เฉพาะของส่วนกราฟชีวิต
+    const ageDisplay = document.getElementById('yearly-prediction-age-display');
+    if (ageDisplay) ageDisplay.innerText = `อายุ ${focusAge} ปี`;
+  }
+
+  // 3. ตัดเศษ 12 หาตำแหน่งเวียนเรือนภพประจำอายุย่างจรปีนั้น ๆ ของสมาชิก
   let transitRemainder = focusAge % 12;
-  if (transitRemainder === 0) transitRemainder = 12; // เศษ 0 คือเรือนที่ 12 (วินาศ)
+  if (transitRemainder === 0) transitRemainder = 12; 
 
   let graphPoints = []; 
 
-  // 3. วนลูปตาม "เรือนภพ" จากซ้ายไปขวา (คอลัมน์ที่ 0 ถึง 11) ไม่ใช่วนตามอายุจร
+  // 4. วนลูปพล็อตจุดชะตาเรียงล็อกคอลัมน์แนวนอนตาม 12 เรือนภพจากซ้ายไปขวา
   for (let col = 0; col < 12; col++) {
-    const houseNumber = col + 1; // เรือนภพที่ 1 ถึง 12
-    
-    // ดึงคะแนนประจำเรือนภพนั้น ๆ จากฐานดวงชะตา (ลบ 1 เพราะ Array เริ่มจาก index 0)
-    // สูตรนี้จะบล็อกให้คะแนนเป็นไปตามฐาน วัน+เดือน+ปี เกิดจริง จะไม่มีคะแนน 0 ตกลงมาในตาราง
-    const score = cycle[col]; 
-
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้งใน CSS Grid
-    // คะแนน 12 อยู่บนสุด (index 0) ... คะแนน 1 อยู่ล่างสุด (index 11)
+    const houseNumber = col + 1; 
+    const score = cycle[col]; // คะแนน วัน+เดือน+ปี เกิดจริงของสมาชิกคนนั้น ๆ
     const row = 12 - score; 
 
-    // เช็กว่าเรือนภพนี้ตรงกับเรือนภพที่อายุจรปัจจุบันตกอยู่หรือไม่
-    // เช่น อายุ 47 ปี -> เศษ 11 จะทำการไฮไลต์สีแดงที่ภพ "ลาภยศ" (col index 10) ทันที
+    // จุดไฮไลต์สีแดงขอบทองจะวิ่งไปสถิตตามเศษอายุย่างจริงของผู้ใช้งานโดยอัตโนมัติ
     const isFocus = (houseNumber === transitRemainder);
 
     graphPoints.push({
       house: houseNumber,
       score: score,
-      gridX: col, // ล็อกตามคอลัมน์เรือนภพด้านบนเป๊ะ ๆ
-      gridY: row, // ล็อกตามระดับคะแนนเรือนภพด้านขวา
+      gridX: col, 
+      gridY: row, 
       isFocus: isFocus
     });
   }
 
-  // 4. สั่ง Canvas รีเซ็ตขนาดและวาดเส้นกราฟ
+  // 5. กระบวนการวาดเส้นกราฟชีวิตใน Canvas
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -5597,14 +5614,13 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // แบ่งสัดส่วนช่องตาราง Grid ใน Canvas เป็น 12 x 12 ช่องเท่ากัน
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // --- วาดเส้นกราฟวิถีชีวิตเชื่อมโยงจากภพที่ 1 ไปถึง 12 ---
+    // --- วาดเส้นกราฟชีวิตแนวนอนยาวจากซ้ายไปขวา (ภพที่ 1 ถึง 12) ---
     ctx.beginPath();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = '#2ecc71'; // เส้นกราฟสีเขียว
+    ctx.strokeStyle = '#2ecc71'; // เส้นวิถีชีวิตสีเขียวสด
     ctx.lineJoin = 'round';
 
     graphPoints.forEach((pt, idx) => {
@@ -5615,14 +5631,14 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // --- วาดจุดพิกัดวงกลมบอกตำแหน่งคะแนนแต่ละเรือนภพ ---
+    // --- วาดปุ่มจุดวงกลมคะแนนแต่ละเรือนภพ ---
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
       ctx.beginPath();
       if (pt.isFocus) {
-        // วงกลมจุดดวงจรปัจจุบัน อายุ 47 ปี ตกภพลาภยศ (สีแดงสดขอบทองสว่าง)
+        // วงกลมจุดดวงจรปัจจุบันเมื่อคำนวณอายุย่าง (สีแดงสดขอบทองสว่างสะดุดตา)
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
         ctx.fillStyle = '#ff4757';
         ctx.fill();
@@ -5630,7 +5646,7 @@ function initMyHoraLifeChart(focusAge) {
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
-        // จุดเรือนภพอื่น ๆ (สีเหลืองทองดั้งเดิม)
+        // จุดระดับคะแนนประจำปีอื่น ๆ (สีเหลืองทองดั้งเดิม)
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
@@ -5641,6 +5657,7 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100); 
 }
+
 
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
@@ -13139,6 +13156,124 @@ renderBaziDirect();
     renderSajuDirect();
   }
 } 
+// ====================================================================
+// วางฟังก์ชันคำนวณอายุย่างสากล (เฉพาะกราฟชีวิต) ต่อท้ายตรงนี้ได้เลย (บรรทัด 13159 เดิม)
+// ====================================================================
+function calculateLifeChartAstrologyAge(birthDateInput, transitDateInput) {
+    if (!birthDateInput) return 40; 
+
+    const birth = new Date(birthDateInput);
+    const target = transitDateInput ? new Date(transitDateInput) : new Date();
+
+    let fullAge = target.getFullYear() - birth.getFullYear();
+    let monthDiff = target.getMonth() - birth.getMonth();
+    let dayDiff = target.getDate() - birth.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        fullAge--;
+    }
+
+    let astrologyAge = fullAge + 1;
+    return astrologyAge;
+}
+
+// ====================================================================
+// วางฟังก์ชัน initMyHoraLifeChart ตัวใหม่ต่อท้ายลงมาในบริเวณเดียวกัน
+// ====================================================================
+function initMyHoraLifeChart(focusAge) {
+    const canvas = document.getElementById('lifeChartCanvas');
+    if (!canvas) return;
+
+    const cycle = getLifeGraphBaseCycle(); 
+
+    if (!focusAge) {
+        let rawBirthDate = "";
+        if (typeof AppState !== 'undefined' && AppState.birthDateISO) {
+            rawBirthDate = AppState.birthDateISO; 
+        } else {
+            const inputEl = document.getElementById('birthDate');
+            if (inputEl && inputEl.value) {
+                rawBirthDate = inputEl.value;
+            }
+        }
+
+        if (rawBirthDate) {
+            focusAge = calculateLifeChartAstrologyAge(rawBirthDate, null);
+        } else {
+            focusAge = 40; 
+        }
+        
+        const ageDisplay = document.getElementById('yearly-prediction-age-display');
+        if (ageDisplay) ageDisplay.innerText = `อายุ ${focusAge} ปี`;
+    }
+
+    let transitRemainder = focusAge % 12;
+    if (transitRemainder === 0) transitRemainder = 12; 
+
+    let graphPoints = []; 
+
+    for (let col = 0; col < 12; col++) {
+        const houseNumber = col + 1; 
+        const score = cycle[col]; 
+        const row = 12 - score; 
+        const isFocus = (houseNumber === transitRemainder);
+
+        graphPoints.push({
+            house: houseNumber,
+            score: score,
+            gridX: col, 
+            gridY: row, 
+            isFocus: isFocus
+        });
+    }
+
+    setTimeout(() => {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const cellWidth = canvas.width / 12;
+        const cellHeight = canvas.height / 12;
+
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#2ecc71'; 
+        ctx.lineJoin = 'round';
+
+        graphPoints.forEach((pt, idx) => {
+            const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+            const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+            if (idx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        graphPoints.forEach((pt) => {
+            const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+            const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+
+            ctx.beginPath();
+            if (pt.isFocus) {
+                ctx.arc(x, y, 9, 0, 2 * Math.PI);
+                ctx.fillStyle = '#ff4757';
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#f5c469';
+                ctx.stroke();
+            } else {
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#ffd700';
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#040816';
+                ctx.stroke();
+            }
+        });
+    }, 100); 
+}
 
 window.handleOpenModal = handleOpenModal;
 </script>
