@@ -5328,24 +5328,21 @@ const POEMS_DATABASE = {
 
 // ตัวแปรล็อกอายุที่ผู้ใช้เลือกปัจจุบัน ป้องกันไม่ให้ฟังก์ชันอื่นมาสั่งรีเซ็ต
     let lockedUserAge = null;
-   // ตารางตรวจสอบอายุจรสำหรับนำไปพล็อตจุดสีส้มและเขียนคำทำนายด้านล่างให้ตรงตามรูปที่ 2
-function getLifeGraphBaseCycle() {
-    // 1. ดึงฐานวัน (1-7), ฐานเดือน (1-12), ฐานปีนักษัตร (1-12) ตามจริงของยูสเซอร์
-    const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value || 1, 10));
-    const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value || 1, 10));
-    const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value || 2522, 10));
 
-    // 2. สร้าง Array แกน Y ทั้ง 12 เรือนภพ แบบ Dynamic วนลูปบวกเพิ่มช่องละ 1 อัตโนมัติ ตามตำราโบราณ
-    let cycle = [];
-    for (let i = 0; i < 12; i++) {
-        // สูตรกราฟชีวิตแท้: แถววัน+i, แถวเดือน+i, แถวปี+i แล้วหาเศษด้วย 12 (หากลงตัวได้ 12 คะแนนเต็ม)
-        let sumRow = ((d + i) + (m + i) + (y + i));
-        let score = sumRow % 12 === 0 ? 12 : sumRow % 12;
-        cycle.push(score);
+    function getLifeGraphBaseCycle() {
+      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
+      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
+      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      
+      const baseSeed = (d + m + (y % 12)) % 12 + 1;
+      let cycle = [];
+      for (let i = 0; i < 12; i++) {
+        let val = (baseSeed * (i + 1) * 3) % 12;
+        if (val === 0) val = 12;
+        cycle.push(val);
+      }
+      return cycle;
     }
-
-    return cycle;
-}
 
     function initAgeSelectOptions() {
       const selectEl = document.getElementById('selectYearAgeDirect');
@@ -5509,109 +5506,42 @@ function getLifeGraphBaseCycle() {
         </div>
       `;
 
-// ห่อโค้ดทั้งหมดให้อยู่ในฟังก์ชันกลาง เพื่อให้ปุ่มและสไลเดอร์เรียกคำนวณใหม่ได้ทุกครั้ง
-function updateVipGraphAspects(age) {
-    // 1. ดึงอายุจรแบบอัตโนมัติ: ถ้าไม่มีการเลื่อนสไลเดอร์ส่งมา ให้คำนวณอายุจรจริงจากฐานดวง (ไม่ใช้ 47 แล้ว)
-    let currentSelectedAgeEl = document.getElementById('selectYearAgeDirect');
-    let dynamicDefaultAge = 47; // ค่าสำรองฉุกเฉินสูงสุดกรณี DOM พัง
-    if (typeof AppState !== 'undefined' && AppState.activeAge) {
-        dynamicDefaultAge = AppState.activeAge;
-    } else if (currentSelectedAgeEl && currentSelectedAgeEl.value) {
-        dynamicDefaultAge = parseInt(currentSelectedAgeEl.value, 10);
-    }
-    
-    let targetAge = typeof age !== 'undefined' ? age : dynamicDefaultAge;
-    let currentCycleScores = getLifeGraphBaseCycle();
-    
-    // 2. คำนวณเศษอายุจรตามเกณฑ์มาตรฐานทั่วไป [อายุ % 12]
-    let stdHouseIdx = 0;
-    let stdAgeModulo = targetAge % 12;
-    if (stdAgeModulo === 0) {
-        stdHouseIdx = 11; // เศษ 0 ตกวินาศ
-    } else {
-        stdHouseIdx = stdAgeModulo - 1; // แปลงเป็น Index 0-10
-    }
+      document.getElementById('vip-graph-aspects-content').innerHTML = `
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]} (${cycle[0]>=9?'สวรรค์ภูมิ':(cycle[0]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง ในช่วงอายุ ${age} ปีนี้</p></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]} (${cycle[1]>=9?'สวรรค์ภูมิ':(cycle[1]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน</p></div>
+        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]} (${cycle[2]>=9?'สวรรค์ภูมิ':(cycle[2]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ความสัมพันธ์รอบตัวราบรื่น ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ</p></div>
+      `;
 
-    const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
-    let houseName = houseNames[stdHouseIdx];
-    let score = currentCycleScores[stdHouseIdx];
+      const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
+      const houseDescriptions = {
+        "วาสนา": { heaven: "ดวงชะตารุ่งโรจน์ มีบารมีและผู้ใหญ่เกื้อหนุน ทำสิ่งใดก็ราบรื่นโดดเด่น", human: "ชีวิตดำเนินไปอย่างมั่นคง พึ่งพาความสามารถตนเองได้ดี ไม่มีเรื่องเดือดร้อน", hell: "ระวังอุปสรรคและความเหน็ดเหนื่อย ต้องใช้ความอดทนและสติในการประคับประคองตัว" },
+        "ทรัพย์": { heaven: "กระแสการเงินเฟื่องฟู มีลาภก้อนโต ค้าขายได้กำไร และการลงทุนงอกเงย", human: "การเงินหมุนเวียนปกติ มีใช้ไม่ขาดมือ บริหารจัดการรายรับรายจ่ายได้ลงตัว", hell: "ระวังรายจ่ายฉุกเฉินและปัญหาการเงินฝืดเคือง ควืองดเว้นการลงทุนที่มีความเสี่ยงสูง" },
+        "เพื่อน": { heaven: "ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ สังคมรอบข้างให้การยอมรับและสนับสนุน", human: "มิตรสหายและเพื่อนร่วมงานพูดคุยปรึกษาหารือกันได้ดี ความสัมพันธ์ปกติสุข", hell: "ระวังความขัดแย้งหรือการถูกเอาเปรียบจากคนใกล้ตัว หรือเพื่อนฝูงนำพาเรื่องเดือดร้อนมาให้" },
+        "ญาติ": { heaven: "ญาติพี่น้องพึ่งพาได้ มีข่าวดีหรือความสำเร็จจากคนในครอบครัว", human: "ความสัมพันธ์ในเครือญาติอบอุ่นราบรื่น ต่างคนต่างทำหน้าที่ของตนได้ดี", hell: "อาจมีเรื่องจุกจิกกวนใจหรือภาระความรับผิดชอบภายในครอบครัวที่ต้องเร่งสะสาง" },
+        "บริวาร": { heaven: "ได้บริวารซื่อสัตย์ ลูกน้องทำงานขยันขันแข็งและสร้างผลงานเป็นที่น่าพอใจ", human: "ผู้ใต้บังคับบัญชาหรือทีมงานปฏิบัติตามหน้าที่ได้ตามมาตรฐานทั่วไป", hell: "บริวารหรือคนใต้ปกครองสร้างปัญหาให้ต้องตามแก้ไข ควรตรวจสอบงานอย่างใกล้ชิด" },
+        "ศัตรู": { heaven: "ศัตรูหรือคู่แข่งแพ้ภัยตนเอง อุปสรรคมลายหายสิ้น ทางสะดวกไร้คนขัดขวาง", human: "มีการแข่งขันบ้างตามสนามธุรกิจ แต่สามารถใช้ความสามารถเอาชนะได้ด้วยดี", hell: "ระวังคู่แข่งในที่ลับ การถูกใส่ร้ายป้ายสี หรือปัญหาข้อพิพาททางกฎหมาย" },
+        "คู่ครอง": { heaven: "ความรักหวานชื่น คู่ครองเกื้อกูลหนุนดวง มีเกณฑ์ร่วมสร้างฐานะความมั่นคง", human: "ความสัมพันธ์เรียบง่าย เข้าอกเข้าใจกันดี ต่างให้กำลังใจซึ่งกันและกัน", hell: "มีเรื่องกระทบกระทั่งหรือความไม่เข้าใจกันจากอารมณ์ ควรลดทิฐิและหันหน้าคุยกัน" },
+        "โรคภัย": { heaven: "สุขภาพแข็งแรง ปราศจากโรคภัยเบียดเบียน พลังกายพลังใจสดใสเต็มเปี่ยม", human: "ร่างกายสมบูรณ์ดีตามวัย มีอาการอ่อนล้าเล็กน้อยจากการทำงานแต่พักผ่อนก็หาย", hell: "ระวังปัญหาสุขภาพ ความเครียดสะสม และอาการเจ็บป่วยกะทันหัน ควรดูแลตัวเองเป็นพิเศษ" },
+        "ความสุข": { heaven: "จิตใจเบิกบาน มีความสุขสมปรารถนา ครอบครัวร่มเย็นเป็นสุข ไร้กังวล", human: "ความสงบสุขทางใจตามอัตภาพ มีความสุขกับสิ่งรอบตัวในชีวิตประจำวัน", hell: "มีความกังวลใจหรือความเครียดรุมเร้า ควรหาเวลาพักผ่อนและทำสมาธิผ่อนคลายสมอง" },
+        "การงาน": { heaven: "การงานก้าวหน้าขั้นใหญ่ มีโอกาสเลื่อนขั้น เลื่อนตำแหน่ง หรือขยายกิจการสำเร็จ", human: "การงานดำเนินไปอย่างมั่นคง งานประจำและภารกิจต่างๆ ลุล่วงตามเป้าหมาย", hell: "งานติดขัด มีภาระความรับผิดชอบหนักหนา ควรวางแผนบริหารเวลาให้รอบคอบ" },
+        "ลาภยศ": { heaven: "มีโชคลาภก้อนโต เกียรติยศชื่อเสียงเด่นสง่า เป็นที่ยอมรับของสังคม", human: "มีลาภผลเล็กน้อยตามสมควร ผลงานเป็นที่น่าพอใจในระดับมาตรฐาน", hell: "ควรงดเว้นการเสี่ยงโชคหรือการลงทุนที่มีความเสี่ยงสูง ระวังลาภหาย" },
+        "วินาศ": { heaven: "เปลี่ยนวิกฤตเป็นโอกาส สิ่งที่ซ่อนเร้นหรือปัญหาลับๆ กลับคลี่คลายให้ผลดี", human: "มีรายจ่ายเบ็ดเตล็ดทั่วไปตามวิถีชีวิต ไม่มีเรื่องเสียหายรุนแรง", hell: "ระวังทรัพย์สินสูญหาย เอกสารผิดพลาด หรือรายจ่ายกะทันหันที่ไม่คาดคิด" }
+      };
 
-    let zone = "มนุษย์ภูมิ";
-    if (score >= 9) zone = "สวรรค์ภูมิ";
-    else if (score <= 4) zone = "นรกภูมิ";
+      document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
+        let sc = cycle[i];
+        let realm = sc >= 9 ? 'สวรรค์ภูมิ' : (sc >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ');
+        let realmKey = sc >= 9 ? 'heaven' : (sc >= 5 ? 'human' : 'hell');
+        let colorCode = sc >= 9 ? '#ffd700' : (sc >= 5 ? '#81c784' : '#ff7675');
+        let descText = houseDescriptions[name] ? houseDescriptions[name][realmKey] : `พลังเรือนภพประจำตัวส่งผลต่อการดำเนินชีวิตในด้าน${name}`;
 
-    // 3. อัปเดตโครงสร้างแผนภูมิ (Datasets[0] = เส้นหลักสีเขียว | Datasets[1] = จุดเคลื่อนที่สีส้ม)
-    if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
-        if (lifeChartInstance.data && lifeChartInstance.data.datasets) {
-            // คืนค่าและวาดเส้นกราฟสีเขียวหลักประจำดวงชะตาวันเกิดให้สมบูรณ์
-            if (lifeChartInstance.data.datasets[0]) {
-                lifeChartInstance.data.datasets[0].data = currentCycleScores;
-            }
-            // พล็อตปักหมุดเฉพาะจุดกลมสีส้มประจำปีลงในคอลัมน์ชะตาจรจริง
-            if (lifeChartInstance.data.datasets[1]) {
-                let orangeDotDataset = Array(12).fill(null);
-                orangeDotDataset[stdHouseIdx] = score;
-                lifeChartInstance.data.datasets[1].data = orangeDotDataset;
-            }
-            lifeChartInstance.update();
-        }
-    }
-
-    // 4. พ่นข้อความเรนเดอร์คำทำนายแสดงผลด้านล่างหน้าเว็บ
-    document.getElementById('vip-graph-aspects-content').innerHTML = `
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${targetAge} ปี (เลข ${score})</strong></div>
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${score}/12 คะแนน (${zone})</strong></div>
-        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${houseName}</strong></div>
-    `;
-}
-
-// ผูกฟังก์ชันเข้ากับ Global Context
-window.updateVipGraphAspects = updateVipGraphAspects;
-
-// สั่งทำงานตั้งต้นตามอายุคำนวณจริงของระบบ
-if (typeof AppState !== 'undefined' && AppState.activeAge) {
-    updateVipGraphAspects(AppState.activeAge);
-} else {
-    let initialAgeEl = document.getElementById('selectYearAgeDirect');
-    updateVipGraphAspects(initialAgeEl ? parseInt(initialAgeEl.value, 10) : 47);
-}
-
-// คลังคำทำนายพื้นดวง 12 ช่อง
-const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
-const houseDescriptions = {
-    "วาสนา": { heaven: "ดวงชะตารุ่งโรจน์ มีบารมีและผู้ใหญ่เกื้อหนุน ทำสิ่งใดก็ราบรื่นโดดเด่น", human: "ชีวิตดำเนินไปอย่างมั่นคง พึ่งความสามารถตนเองได้ดี ไม่มีเรื่องเดือดร้อน", hell: "ระวังอุปสรรคและความเหน็ดเหนื่อย ต้องฝ่าฟันด้วยตนเองเป็นหลัก" },
-    "ทรัพย์": { heaven: "กระแสการเงินไหลเวียนดี มีลาภก้อนโต ค้าขายได้กำไร และการลงทุนงอกเงย", human: "การเงินหมุนเวียนปกติ มีใช้ไม่ขาดมือ บริหารจัดการรายรับรายจ่ายได้ลงตัว", hell: "ระวังรายจ่ายฉุกเฉินและปัญหาการเงิน ตรวจสอบสัญญาก่อนลงทุนให้รอบคอบ" },
-    "เพื่อน": { heaven: "ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ สังคมรอบข้างให้การยอมรับและสนับสนุน", human: "มิตรสหายและเพื่อนร่วมงานพูดคุยปรึกษาหรือกันได้ดี ความสัมพันธ์ปกติสุข", hell: "ระวังความขัดแย้งและการถูกเอาเปรียบจากคนใกล้ตัว อย่าค้ำประกันให้ใคร" },
-    "ญาติ": { heaven: "ญาติพี่น้องพึ่งพาได้ มีข่าวดีหรือความสำเร็จจากคนในครอบครัว", human: "ความสัมพันธ์ในเครือญาติอบอุ่นราบรื่น ต่างคนต่างทำหน้าที่ของตนได้ดี", hell: "อาจมีเรื่องจุกจิกใจหรือภาระความรับผิดชอบภายในครอบครัวเพิ่มขึ้น" },
-    "บริวาร": { heaven: "ได้รับบริวารที่ดี ลูกน้องทำงานขยันขันแข็งและสร้างผลงานเป็นที่น่าพอใจ", human: "ผู้ใต้บังคับบัญชาหรือทีมงานปฏิบัติหน้าที่ได้ตามมาตรฐานทั่วไป", hell: "บริวารหรือคนใต้ปกครองสร้างปัญหาให้ต้องตามแก้ไข มีเกณฑ์ขัดแย้งกับลูกน้อง" },
-    "ศัตรู": { heaven: "ศัตรูคู่แข่งแพ้ภัยตนเอง อุปสรรคสลายหายสิ้น ทางสะดวกไร้คนขัดขวาง", human: "มีการแข่งขันบ้างตามสามัญธุรกิจ แต่สามารถใช้ความสามารถเอาชนะได้ด้วยดี", hell: "ระวังคู่แข่งในที่ลับ การถูกใส่ร้ายป้ายสี หรือมีคนพยายามขัดขวางผลงาน" },
-    "คู่ครอง": { heaven: "ความรักหวานชื่น คู่ครองเกื้อกูลหนุนดวง มีเกณฑ์ร่วมสร้างฐานะความมั่นคง", human: "ความสัมพันธ์เรียบง่าย เข้าอกเข้าใจกันดี ต่างให้กำลังใจซึ่งกันและกัน", hell: "มีเรื่องกระทบกระทั่งหรือความไม่เข้าใจกันกับคนรัก ควรใช้เหตุผลมากกว่าอารมณ์" },
-    "โรคภัย": { heaven: "สุขภาพแข็งแรง ปราศจากโรคภัยเบียดเบียน พลังกายพลังใจสดชื่นเต็มเปี่ยม", human: "ร่างกายสมบูรณ์ดีตามวัย มีอาการอ่อนล้าเล็กน้อยจากการทำงานแต่พักผ่อนก็หาย", hell: "ระวังปัญหาสู่สุขภาพ ความเครียดสะสม หรือโรคเก่ากำเริบ ควรตรวจสุขภาพประจำปี" },
-    "ความสุข": { heaven: "จิตใจเบิกบาน มีความสุขสมปรารถนา ครอบครัวร่มเย็นเป็นสุข ไร้กังวล", human: "ความสุขตามอัตภาพ มีความสบายใจกับสิ่งรอบตัวในชีวิตประจำวัน", hell: "มีความกังวลใจหรือความเครียดรุมเร้า ควรหาเวลาพักผ่อนและปล่อยวาง" },
-    "การงาน": { heaven: "การงานก้าวหน้าครั้งใหญ่ มีโอกาสเลื่อนขั้น เลื่อนตำแหน่ง หรือขยายกิจการสำเร็จ", human: "การงานดำเนินไปอย่างมั่นคง งานประจำและภารกิจต่างๆ ลุล่วงตามเป้าหมาย", hell: "งานติดขัด มีความเครียดสูง หน้าที่ความรับผิดชอบล้นมือ ระวังความผิดพลาดในงาน" },
-    "ลาภยศ": { heaven: "มีโชคลาภก้อนโต มีชื่อเสียงโดดเด่นเลิศล้ำ เป็นที่ยอมรับของสังคม", human: "มีลาภผลเล็กน้อยตามสมควร ผลงานเป็นที่น่าพอใจในระดับมาตรฐาน", hell: "ควรลดละการเสี่ยงโชคหรือการลงทุนที่มีความเสี่ยงสูง ระวังเสียชื่อเสียง" },
-    "วินาศ": { heaven: "เปลี่ยนวิกฤตเป็นโอกาส สิ่งที่ซ่อนเร้นหรือปัญหาต่างๆ กลับคลี่คลายให้ผลดี", human: "มีรายจ่ายเบ็ดเตล็ดทั่วไปตามวิถีชีวิต ไม่มีเรื่องเสียหายรุนแรง", hell: "ระวังทรัพย์สินสูญหาย เอกสารผิดพลาด หรือรายจ่ายเกินตัวอย่างกะทันหัน" }
-};
-
-// เรนเดอร์คำทำนายพื้นดวงแยก 12 ช่อง
-let stdCycle = getLifeGraphBaseCycle();
-document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
-    let sc = stdCycle[i];
-    let realm = sc >= 9 ? 'สวรรค์ภูมิ' : (sc >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ');
-    let realmKey = sc >= 9 ? 'heaven' : (sc >= 5 ? 'human' : 'hell');
-    let colorCode = sc >= 9 ? '#ffd700' : (sc >= 5 ? '#81c784' : '#ff7675');
-    
-    return `
-        <div style="margin-bottom: 16px; padding: 12px; border: 1px solid rgba(255,215,0,0.1); border-radius: 6px; background: rgba(255,215,0,0.02);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <strong style="color: var(--gold-bright); font-size: 0.95rem;">${i+1}. ภพ${name} (เลข ${sc})</strong>
-                <span style="font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: ${colorCode}22; color: ${colorCode}; border: 1px solid ${colorCode}44;">${realm}</span>
-            </div>
-            <p style="color: #ccc; font-size: 0.85rem; line-height: 1.5; margin: 0;">${houseDescriptions[name][realmKey]}</p>
-        </div>
-    `;
-}).join('');
-
+        return `
+          <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
+            <strong style="color:${colorCode};">${name} เลข ${sc} (${realm})</strong>
+            <p style="font-size:0.78rem; color:#cfd8dc; margin-top:2px;">${descText}</p>
+          </div>
+        `;
+      }).join('');
 
       initMyHoraLifeChart(age);
 
@@ -11405,6 +11335,11 @@ function updateAllVipFeaturesByTransit() {
     updateTransitForPremiumModal('wealth_result', t);
 }
 
+// ฟังก์ชันช่วยสลับข้อความใน 4 ป๊อปอัปพรีเมียมตามวันจร
+function updateTransitForPremiumModal(elementId, t) {
+    const el = document.getElementById(elementId);
+    if (!el || el.style.display === 'none') return;
+    
     // เติมป้ายกำกับวันจรกำกับไว้ที่หัวข้อผลลัพธ์ เพื่อให้ผู้ใช้รู้ว่ากำลังดูคำทำนาย ณ วันใด
     let transitBadge = el.querySelector('.transit-date-tag');
     if (!transitBadge) {
@@ -11416,48 +11351,25 @@ function updateAllVipFeaturesByTransit() {
     transitBadge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลคำทำนายเจาะลึก ณ วันจร: ${t.string}`;
 }
 
-// --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด ---
-[
-    'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 
-    'birthDay', 'birthMonth', 'birthYearBE', 'selectYearAgeDirect'
-].forEach(id => {
+// --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
+  // --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
+['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        // ดักจับเหตุการณ์เมื่อมีการกดเปลี่ยนค่า (Dropdown / Select)
         el.addEventListener('change', function() {
             try {
                 if (typeof updateAllVipFeaturesByTransit === 'function') {
                     updateAllVipFeaturesByTransit();
                 }
-                
-       // สั่งฟังก์ชันกราฟชีวิต 12 เรือนภพให้คำนวณตำแหน่งและจุดส้มใหม่ทันทีเมื่อสไลเดอร์ขยับ
-                if (typeof window.updateVipGraphAspects === 'function') {
-                    let currentAgeVal = parseInt(document.getElementById('selectYearAgeDirect')?.value || 47, 10);
-                    window.updateVipGraphAspects(currentAgeVal);
-                }
-
                 if (typeof calcNum7Base === 'function') {
                     calcNum7Base();
                 }
             } catch (err) {
-                console.error("Transit Update Error (Change): ", err);
+                console.error("Transit Update Error: ", err);
             }
         });
-
-             // ดักจับเหตุการณ์สำหรับ Slider ปรับอายุโดยเฉพาะ (เวลากดลากเลื่อนจุดสีส้มจะวิ่งตามทันทีแบบ Real-time)
-              if (id === 'selectYearAgeDirect') {
-            el.addEventListener('input', function() {
-                try {
-                    if (typeof window.updateVipGraphAspects === 'function') {
-                        let currentAgeVal = parseInt(document.getElementById('selectYearAgeDirect')?.value || 47, 10);
-                        window.updateVipGraphAspects(currentAgeVal);
-                    }
-                } catch (err) {
-                    console.error("Slider Real-time Update Error: ", err);
-                }
-            });
-        }
-
+    }
+});
 // --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
 function getCleanTransitBadgeString() {
     var dEl = document.getElementById('transitDay');
