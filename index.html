@@ -5552,33 +5552,43 @@ function initMyHoraLifeChart(focusAge) {
   const canvas = document.getElementById('lifeChartCanvas');
   if (!canvas) return;
 
-  // 1. ดึงฐานข้อมูลลูปคะแนนดั้งเดิมประจำชะตาชีวิตของคุณ
+  // 1. ดึงฐานข้อมูลรอบคะแนนดวงชะตา (Array คะแนน 12 เรือนภพคงที่ของเจ้าชะตา)
+  // ปกติ getLifeGraphBaseCycle() จะคืนค่าเป็น Array 12 ช่อง เช่น [9, 3, 5, ...] ตามเรือนภพที่ 1 ถึง 12
   const cycle = getLifeGraphBaseCycle(); 
-  
-  // 2. คำนวณช่วงอายุ (ย้อนหลัง 5 ปี และลากไปข้างหน้า รวมเป็น 12 ช่องคอลัมน์แนวนอน)
-  let startAge = Math.max(1, focusAge - 5);
-  let endAge = Math.min(80, startAge + 11);
-  
+
+  // 2. คำนวณหา "เศษอายุจร" เพื่อหาตำแหน่งเรือนภพที่อายุจรปัจจุบันตกอยู่
+  // สูตร: อายุ ÷ 12 -> เศษ 1 = วิถีชีวิต, เศษ 2 = วาสนา ... เศษ 11 = ลาภยศ, เศษ 0 (หารลงตัว) = วินาศ
+  let transitRemainder = focusAge % 12;
+  if (transitRemainder === 0) transitRemainder = 12; // เศษ 0 คือเรือนที่ 12 (วินาศ)
+
   let graphPoints = []; 
 
-  // 3. ปรับการแมปพิกัด: ให้วนลูปตามแกนนอนคอลัมน์อายุ (0 ถึง 11) เพื่อให้กราฟลากเป็นแนวนอน
+  // 3. วนลูปตาม "เรือนภพ" จากซ้ายไปขวา (คอลัมน์ที่ 0 ถึง 11) ไม่ใช่วนตามอายุจร
   for (let col = 0; col < 12; col++) {
-    const currentAge = startAge + col;
-    const score = cycle[(currentAge - 1) % 12]; // คะแนนจริงจากระบบ (1 ถึง 12)
+    const houseNumber = col + 1; // เรือนภพที่ 1 ถึง 12
+    
+    // ดึงคะแนนประจำเรือนภพนั้น ๆ จากฐานดวงชะตา (ลบ 1 เพราะ Array เริ่มจาก index 0)
+    // สูตรนี้จะบล็อกให้คะแนนเป็นไปตามฐาน วัน+เดือน+ปี เกิดจริง จะไม่มีคะแนน 0 ตกลงมาในตาราง
+    const score = cycle[col]; 
 
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่แถวบนสุด index 0, คะแนน 1 อยู่แถวล่างสุด index 11)
+    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้งใน CSS Grid
+    // คะแนน 12 อยู่บนสุด (index 0) ... คะแนน 1 อยู่ล่างสุด (index 11)
     const row = 12 - score; 
 
+    // เช็กว่าเรือนภพนี้ตรงกับเรือนภพที่อายุจรปัจจุบันตกอยู่หรือไม่
+    // เช่น อายุ 47 ปี -> เศษ 11 จะทำการไฮไลต์สีแดงที่ภพ "ลาภยศ" (col index 10) ทันที
+    const isFocus = (houseNumber === transitRemainder);
+
     graphPoints.push({
-      age: currentAge,
+      house: houseNumber,
       score: score,
-      gridX: col,  // พิกัดคอลัมน์แนวนอนตรงกับหัวข้อด้านบน
-      gridY: row,  // พิกัดแถวตั้งตรงกับชื่อเรือนภพด้านขวา
-      isFocus: (currentAge === focusAge)
+      gridX: col, // ล็อกตามคอลัมน์เรือนภพด้านบนเป๊ะ ๆ
+      gridY: row, // ล็อกตามระดับคะแนนเรือนภพด้านขวา
+      isFocus: isFocus
     });
   }
 
-  // 4. สั่งผ้าใบ (Canvas) รีเซ็ตพิกัดและเริ่มวาดเส้นชะตาแนวนอน
+  // 4. สั่ง Canvas รีเซ็ตขนาดและวาดเส้นกราฟ
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -5587,14 +5597,14 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // แบ่งสัดส่วนตารางพื้นหลังเป็น 12 ช่อง เท่ากันเป๊ะ ๆ ทุกด้าน
+    // แบ่งสัดส่วนช่องตาราง Grid ใน Canvas เป็น 12 x 12 ช่องเท่ากัน
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงจากซ้ายไปขวา (แนวนอน)
+    // --- วาดเส้นกราฟวิถีชีวิตเชื่อมโยงจากภพที่ 1 ไปถึง 12 ---
     ctx.beginPath();
     ctx.lineWidth = 3;
-    ctx.strokeStyle = '#2ecc71'; 
+    ctx.strokeStyle = '#2ecc71'; // เส้นกราฟสีเขียว
     ctx.lineJoin = 'round';
 
     graphPoints.forEach((pt, idx) => {
@@ -5605,22 +5615,22 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // วาดจุดพิกัดวงกลมกำกับบนเส้นดวงชะตา
+    // --- วาดจุดพิกัดวงกลมบอกตำแหน่งคะแนนแต่ละเรือนภพ ---
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
       ctx.beginPath();
       if (pt.isFocus) {
-        // วงกลมจุดดวงจรปัจจุบัน (สีแดงสดขอบทองตามดีไซน์ VIP)
+        // วงกลมจุดดวงจรปัจจุบัน อายุ 47 ปี ตกภพลาภยศ (สีแดงสดขอบทองสว่าง)
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
         ctx.fillStyle = '#ff4757';
         ctx.fill();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
-        // จุดดวงจรปีอื่น ๆ ในล็อก (สีเหลืองทองดั้งเดิม)
+        // จุดเรือนภพอื่น ๆ (สีเหลืองทองดั้งเดิม)
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
@@ -5631,6 +5641,7 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100); 
 }
+
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
       lockedUserAge = a;
