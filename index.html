@@ -5553,53 +5553,88 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
+  // 1. คำนวณตารางฐานดวงชะตา 12 ช่องแบบเวียนตำแหน่งจันทรคติคงที่ (Dynamic 100%)
   // ==========================================
-  // ระบบหลักของคุณจะคำนวณเศษปฏิทินจันทรคติ (วัน+เดือน+ปี) แล้วส่งออกมาเป็น Array ขนาด 12 ช่อง
-  // ตัวอย่างสำหรับชะตานี้คือ [3, 6, 9, 12, 3, 6, 9, 4, 6, 8, 10, 12] ซึ่งเปลี่ยนไปตามวันเกิดแต่ละคนอัตโนมัติ
-  const cycle = getLifeGraphBaseCycle(); 
-  
-  let graphPoints = []; 
+  const birthBeYear = AppState.birthBE;   
+  const inputDay = AppState.dayBase;       
+  const solarMonth = AppState.solarMonth; 
+
+  // 🔹 [สูตรที่ 1] อัลกอริทึมแปลงปี พ.ศ. เกิด เป็นเลขปีนักษัตรไทย (1 - 12) ตามเกณฑ์จันทรคติ
+  let calculatedYearBase = ((birthBeYear - 2503) % 12);
+  if (calculatedYearBase <= 0) {
+      calculatedYearBase += 12;
+  }
+
+  // 🔹 [สูตรที่ 2] แมปเดือนเกิดสากลให้เป็นเลขเดือนจันทรคติไทย (1 - 12) ตามตารางมาตรฐานของคุณ
+  let calculatedMonthBase = 0;
+  if (solarMonth === 11) calculatedMonthBase = 1;  
+  else if (solarMonth === 12) calculatedMonthBase = 2; 
+  else if (solarMonth === 1) calculatedMonthBase = 3;  
+  else if (solarMonth === 2) calculatedMonthBase = 4;  
+  else if (solarMonth === 3) calculatedMonthBase = 5;  
+  else if (solarMonth === 4) calculatedMonthBase = 6;  
+  else if (solarMonth === 5) calculatedMonthBase = 7;  
+  else if (solarMonth === 6) calculatedMonthBase = 8;  
+  else if (solarMonth === 7) calculatedMonthBase = 9;  
+  else if (solarMonth === 8) calculatedMonthBase = 10; 
+  else if (solarMonth === 9) calculatedMonthBase = 11; 
+  else if (solarMonth === 10) calculatedMonthBase = 12; 
+
+  // สร้างตารางคะแนนเลขดวงชะตา 12 ช่องคงที่ประจำบุคคล [วาสนา...วินาศ]
+  let cycle = new Array(12);
+
+  for (let i = 0; i < 12; i++) {
+    // ฐานวัน: นับเวียนเพิ่มช่องละ 1 แต้ม (1 ถึง 7) แล้ววนลูปกลับมาเริ่มใหม่
+    let d = ((inputDay + i - 1) % 7) + 1;
+    
+    // ฐานเดือน: ตั้งตามเลขเดือนไทย ขยับวนรอบเพิ่มช่องละ 1 (ถ้าเกิน 12 ให้ปัดเศษเริ่ม 1 ใหม่)
+    let m = (calculatedMonthBase + i) % 12 === 0 ? 12 : (calculatedMonthBase + i) % 12;
+    
+    // ฐานปี: ตั้งตามเลขปีนักษัตรที่คำนวณได้จาก พ.ศ. ขยับวนรอบเพิ่มช่องละ 1 (ถ้าเกิน 12 ให้ปัดเศษเริ่ม 1 ใหม่)
+    let y = (calculatedYearBase + i) % 12 === 0 ? 12 : (calculatedYearBase + i) % 12;
+
+    let total = d + m + y;
+    let score = total % 12;
+    if (score === 0) {
+      score = 12;
+    }
+    
+    cycle[i] = score; 
+  }
 
   // ==========================================
   // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
   // ==========================================
-  // ลอจิกคณิตศาสตร์จะคำนวณหาจุดสตาร์ทของรอบอายุจรปัจจุบันโดยอัตโนมัติทุกวันเกิด 
-  // เช่น เมื่อ focusAge = 47 จะได้ startAgeCycle = 37 ทันที (หรือถ้า focusAge = 25 จะได้ startAgeCycle = 13)
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
     startAgeCycle = focusAge - 11;
   }
 
+  let graphPoints = []; 
+
   // ==========================================
   // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
   // ==========================================
   for (let col = 0; col < 12; col++) {
-    // เลขอายุในแต่ละคอลัมน์จะเดินหน้าเรียงจากซ้ายไปขวาอย่างราบรื่น ไม่เรียงลำดับมั่ว
-    // เช่น เริ่มตั้งแต่ 37, 38, 39 ... ไปจนถึงอายุ 48 ปี 
     const currentAge = startAgeCycle + col; 
 
     // หาอินเด็กซ์ของเรือนภพประจำตัวเลขดวง (ดัชนี 0 ถึง 11)
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    // ดึงคะแนนตรงตามช่องผลคำนวณที่ได้จาก Array (คะแนนจะล็อกคงที่ตามดวงชะตาบุคคลนั้น)
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
     
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่ index 0 บนสุด, คะแนน 1 อยู่ index 11 ล่างสุด)
     const row = 12 - safeScore; 
 
-    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงในระบบของสมาชิกคนนั้นๆ (AppState.birthBE)
-    let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
 
     graphPoints.push({
       age: currentAge,
       buddhistYear: currentBuddhistYear,
       score: safeScore,
-      gridX: col,  // พิกัดคอลัมน์แนวนอน 0 - 11
-      gridY: row,  // พิกัดความสูงแนวตั้งขยับตามระดับคะแนนเลขดวง
-      isFocus: (currentAge === focusAge) // จุดโฟกัสสีแดงจะติดไฟเฉพาะตำแหน่งเลขอายุจรปัจจุบัน
+      gridX: col,  
+      gridY: row,  
+      isFocus: (currentAge === focusAge) 
     });
   }
 
@@ -5639,21 +5674,20 @@ function initMyHoraLifeChart(focusAge) {
       ctx.beginPath();
       if (pt.isFocus) {
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันแสดงผลเป็น "สีแดงสด"
+        ctx.fillStyle = '#ff4757'; 
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างแสดงผลเป็น "สีเหลือง"
+        ctx.fillStyle = '#ffd700'; 
         ctx.fill();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = '#040816';
         ctx.stroke();
       }
 
-      // แสดงพิมพ์ข้อความ พ.ศ. จร และ เลขอายุ ใต้จุดกลมแต่ละจุดอย่างสวยงาม
       ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
       ctx.font = '10px Sarabun, sans-serif';
       ctx.textAlign = 'center';
@@ -5663,7 +5697,6 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100);
 }
-
 
 // =================================================================
 // ฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% (วางไว้ต่อท้ายสุดของไฟล์)
