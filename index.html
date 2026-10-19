@@ -5670,13 +5670,15 @@ let startAgeCycle = focusAge - ((focusAge - 1) % 12);
 if (focusAge % 12 === 0) {
   startAgeCycle = focusAge - 11;
 }
-
 // ==========================================
 // 4. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
 // ==========================================
 for (let col = 0; col < 12; col++) {
   const currentAge = startAgeCycle + col;
+  
+  // ใช้ค่า col (0 ถึง 11) เป็นอินเด็กซ์ดึงข้อมูลจาก Array ให้ตรงกับคอลัมน์บนกราฟและคำทำนาย
   let targetHouseIndex = col;
+  
   const score = cycle[targetHouseIndex];
   const safeScore = score > 0 ? score : 1;
   const row = 12 - safeScore;
@@ -5693,7 +5695,6 @@ for (let col = 0; col < 12; col++) {
     isFocus: (currentAge === focusAge)
   });
 }
-
 // ==========================================
 // 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
 // ==========================================
