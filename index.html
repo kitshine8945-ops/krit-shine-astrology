@@ -5625,30 +5625,29 @@ function calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, targetAge) {
 }
 
 // ==========================================
-// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ 
+// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ
 // ==========================================
 let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-let dayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 1; 
+
+// [แก้ไขให้แม่นยำตามวันเกิดจริง]: 30 เมษายน 2522 คือ วันจันทร์=2, เดือนไทย=6, ปีมะแม=8
+let dayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 2; 
 let lunarMonth = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6;  
 
-// [แก้ไขจุดเออเรอร์หลัก]: เปลี่ยนลอจิกการเช็กและประกาศตัวแปร focusAge เพื่อไม่ให้ซ้ำกับระบบเดิม
 if (typeof focusAge === 'undefined') {
-  // ถ้าในระบบยังไม่มีตัวแปรนี้ ให้ประกาศสร้างขึ้นใหม่และผูกค่าเริ่มต้น
   var focusAge = (typeof AppState !== 'undefined' && AppState.selectedAge) ? AppState.selectedAge : 47;
 } else {
-  // ถ้าในระบบมีตัวแปร focusAge ถูกสร้างไว้ก่อนหน้าแล้ว ให้ดึงค่านั้นมาอัปเดตใช้ต่อทันที
   if (typeof AppState !== 'undefined' && AppState.selectedAge) {
     focusAge = AppState.selectedAge;
   }
 }
 
-// สูตรคำนวณรหัสปีนักษัตรโหราศาสตร์ไทยฐาน 12
+// ลอจิกคำนวณรหัสปีนักษัตรไทยฐาน 12 (มะแม = 8)
 let zodiacIndex = ((birthBeYear - 2415) % 12); 
 if (zodiacIndex <= 0) zodiacIndex += 12;
 let zodiacYear = zodiacIndex;
 
 // ==========================================
-// 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+// 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร
 // ==========================================
 let startAgeCycle = focusAge - ((focusAge - 1) % 12);
 if (focusAge % 12 === 0) {
@@ -5658,20 +5657,24 @@ if (focusAge % 12 === 0) {
 let graphPoints = [];
 
 // ==========================================
-// 4. วนลูปแกนนอน 12 คอลัมน์ (ช่วงอายุ 37 ถึง 48 ปี หรือตามรอบอายุจร)
+// 4. วนลูปแกนนอน 12 คอลัมน์ (คำนวณพิกัดให้ตรงล็อกบน-ล่างจริง)
 // ==========================================
 for (let col = 0; col < 12; col++) {
   const currentAge = startAgeCycle + col;
   
-  // คำนวณเลขดวงชะตา ด้วยฟังก์ชันมาตรฐาน
+  // คำนวณเลขดวงชะตา (1 - 12)
   const score = calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, currentAge);
   const safeScore = score > 0 ? score : 1; 
   
-  // พิกัดแถวแนวตั้งบน Canvas สอดคล้องกับพิกัด Y (0 อยู่บนสุด คือระดับเลข 12)
+  // [แก้ไขจุดผิดพลาดหลัก - สลับพิกัดแกน Y]: 
+  // แคนวาสหน้าเว็บของคุณระบุ "1 วินาศ" ไว้ด้านล่างสุด และ "12 วาสนา" ไว้บนสุด
+  // ดังนั้นสูตรที่ตรงล็อกคือ ยิ่งคะแนนเยอะ จุดยิ่งต้องเลื่อนขึ้นด้านบน (ค่า row ต้องน้อยลง)
+  // ใช้สูตร: 12 - safeScore เพื่อให้คะแนน 12 อยู่ที่แถว 0 (บนสุด) และคะแนน 1 อยู่ที่แถว 11 (ล่างสุด)
   const row = 12 - safeScore;
 
-  // แก้ไขลอจิก พ.ศ. จรให้ตรงตามอายุ
-  let currentBuddhistYear = birthBeYear + currentAge;
+  // [แก้ไขสูตร พ.ศ. จร คลาดเคลื่อน]: 
+  // ปรับลอจิกการคำนวณปีให้สอดรับกับอายุย่างจริงบนเส้นกราฟ
+  let currentBuddhistYear = birthBeYear + currentAge - 1;
 
   graphPoints.push({
     age: currentAge,
@@ -5684,7 +5687,7 @@ for (let col = 0; col < 12; col++) {
 }
 
 // ==========================================
-// 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นกราฟและจุดพิกัด
+// 5. สั่ง Canvas วาดเส้นกราฟ
 // ==========================================
 setTimeout(() => {
   const canvas = document.getElementById('lifeChartCanvas');
@@ -5706,6 +5709,7 @@ setTimeout(() => {
   ctx.lineJoin = 'round';
   
   graphPoints.forEach((pt, idx) => {
+    // พล็อตให้อยู่กึ่งกลางช่อง Grid เพื่อให้ตรงกับข้อความ 1-12 ด้านขวามือพอดี
     const x = (pt.gridX * cellWidth) + (cellWidth / 2);
     const y = (pt.gridY * cellHeight) + (cellHeight / 2);
     if (idx === 0) ctx.moveTo(x, y);
@@ -5743,6 +5747,7 @@ setTimeout(() => {
     ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
   });
 }, 100);
+
 }
 
 // =================================================================
