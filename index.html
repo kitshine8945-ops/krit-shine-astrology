@@ -5449,7 +5449,7 @@ const POEMS_DATABASE = {
 
       setTimeout(() => { isChangingAge = false; }, 50);
     }
-    // ฟังก์ชันวาดกราฟเส้น Chart.js แบบนิ่งสนิท ไม่วิ่งไปมา
+// ฟังก์ชันวาดกราฟเส้น Chart.js แบบนิ่งสนิท ไม่วิ่งไปมา
     function initMyHoraLifeChart(focusAge) {
       const ctx = document.getElementById('lifeChartCanvas');
       if (!ctx) return;
@@ -5479,7 +5479,20 @@ const POEMS_DATABASE = {
           responsive: true,
           animation: false,
           scales: {
-            y: { min: 1, max: 12, ticks: { stepSize: 1, color: '#ffd700' }, grid: { color: 'rgba(255,255,255,0.08)' } },
+            y: { 
+              min: 0, 
+              max: 13, 
+              ticks: { 
+                stepSize: 1, 
+                callback: function(value) { return (value >= 1 && value <= 12) ? value : ''; },
+                color: '#ffd700' 
+              }, 
+              grid: { 
+                color: function(context) { 
+                  return (context.tick.value >= 1 && context.tick.value <= 12) ? 'rgba(255,255,255,0.08)' : 'transparent'; 
+                } 
+              } 
+            },
             x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.08)' } }
           },
           plugins: { legend: { display: false } }
