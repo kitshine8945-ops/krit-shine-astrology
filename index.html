@@ -5549,80 +5549,40 @@ const POEMS_DATABASE = {
     }
 // ฟังก์ชันวาดกราฟเส้น Chart.js แบบล็อกช่องและสัดส่วนตรงกับตาราง 100%
 function initMyHoraLifeChart(focusAge) {
-  const container = document.getElementById('horalifeTableWrapper');
   const canvas = document.getElementById('lifeChartCanvas');
-  if (!container || !canvas) return;
+  if (!canvas) return;
 
+  // 1. ดึงฐานข้อมูลลูปคะแนนกราฟชีวิตประจำดวงชะตาจากระบบของคุณ
   const cycle = getLifeGraphBaseCycle(); 
-  const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
   
+  // 2. คำนวณช่วงอายุที่จะแสดงบนหน้าจอ (ย้อนหลัง 5 ปี ข้างหน้า 6 ปี รวมเป็น 12 ช่อง)
   let startAge = Math.max(1, focusAge - 5);
   let endAge = Math.min(80, startAge + 11);
   
-  const oldDynamic = container.querySelectorAll('.hl-cell, .hl-axis-right, .hl-footer-bottom');
-  oldDynamic.forEach(el => el.remove());
+  let graphPoints = []; // กล่องสำหรับเก็บพิกัดเพื่อนำไปลากเส้น
 
-  const houses = [
-    "12 วาสนา", "11 ทรัพย์", "10 เพื่อน", "9 ญาติ", 
-    "8 บริวาร", "7 ศัตรู", "6 คู่ครอง", "5 โรคภัย", 
-    "4 ความสุข", "3 การงาน", "2 ลาภยศ", "1 วินาศ"
-  ];
-
-  let graphPoints = [];
-
+  // 3. คำนวณสัดส่วนพิกัดแนวตั้ง 12 แถว (คะแนน 12 อยู่บนสุด ไล่ลงมาถึงคะแนน 1 อยู่ล่างสุด)
   for (let i = 0; i < 12; i++) {
     const currentScore = 12 - i;
 
+    // คำนวณสัดส่วนพิกัดแนวนอน 12 คอลัมน์ (ตามช่วงอายุ)
     for (let a = startAge; a <= endAge; a++) {
       const score = cycle[(a - 1) % 12];
-      const cell = document.createElement('div');
-      cell.className = 'hl-cell';
-      
-      if (currentScore === 9 || currentScore === 5) {
-        cell.className += ' hl-cell-border-bold';
-      }
 
-      cell.style.gridRow = i + 2;
-      cell.style.gridColumn = (a - startAge) + 2;
-
+      // เก็บบันทึกตำแหน่งเมื่อระดับคะแนนของดวงชะตาตรงกับแถวนั้นๆ
       if (score === currentScore) {
         graphPoints.push({
           age: a,
           score: score,
-          gridX: (a - startAge),
-          gridY: i,
+          gridX: (a - startAge), // อยู่คอลัมน์ที่เท่าไหร่ (0 - 11)
+          gridY: i,             // อยู่แถวตั้งที่เท่าไหร่ (0 - 11)
           isFocus: (a === focusAge)
         });
       }
-      container.appendChild(cell);
     }
-
-    const rightAxis = document.createElement('div');
-    rightAxis.className = 'hl-axis-right';
-    if (currentScore === 9 || currentScore === 5) rightAxis.className += ' hl-cell-border-bold';
-    rightAxis.style.gridRow = i + 2;
-    rightAxis.innerText = houses[i];
-    container.appendChild(rightAxis);
   }
 
-  const footerLeftBlank = document.createElement('div');
-  footerLeftBlank.className = 'hl-footer-bottom';
-  footerLeftBlank.style.gridColumn = 1;
-  container.appendChild(footerLeftBlank);
-
-  for (let a = startAge; a <= endAge; a++) {
-    const footerCell = document.createElement('div');
-    footerCell.className = 'hl-footer-bottom';
-    footerCell.style.gridColumn = (a - startAge) + 2;
-    footerCell.innerHTML = `<span style="color:#fff; font-weight:600;">${birthYear + a}</span><br>(${a}ปี)`;
-    container.appendChild(footerCell);
-  }
-
-  const footerRightBlank = document.createElement('div');
-  footerRightBlank.className = 'hl-footer-bottom';
-  footerRightBlank.style.gridColumn = 14;
-  container.appendChild(footerRightBlank);
-
+  // 4. สั่งให้ Canvas ปรับขนาดของตัวเองให้เต็มพื้นที่กล่องสี่เหลี่ยมจัตุรัสแบบใหม่
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -5631,11 +5591,13 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // แบ่งพื้นที่ในแผ่นวาดภาพออกเป็น 12 x 12 ช่องเท่า ๆ กันตามสัดส่วน Grid จริง
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
+    // วาดเส้นกราฟเชื่อมโยงทางชะตาสีเขียวสดใส พาดผ่านกึ่งกลางช่องพอดีเป๊ะ
     ctx.beginPath();
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
     ctx.lineJoin = 'round';
 
@@ -5647,12 +5609,14 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
+    // วาดจุดวงกลมพิกัดดวงชะตาลงบนเส้น
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
       ctx.beginPath();
       if (pt.isFocus) {
+        // วงกลมจุดดวงจรประจำปีปัจจุบัน สีแดงสดขอบทองสว่างตามแบบระบบ VIP
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
         ctx.fillStyle = '#ff4757';
         ctx.fill();
@@ -5660,6 +5624,7 @@ function initMyHoraLifeChart(focusAge) {
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
+        // จุดอายุจรปีอื่น ๆ ในวงรอบ สีเหลืองทองนวลตา
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
@@ -5668,7 +5633,7 @@ function initMyHoraLifeChart(focusAge) {
         ctx.stroke();
       }
     });
-  }, 60);
+  }, 100); // ดีเลย์เล็กน้อยเพื่อให้ตัวเบราว์เซอร์คำนวณขนาดความกว้างของกล่องใหม่เสร็จสมบูรณ์ก่อนลากเส้น
 }
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
