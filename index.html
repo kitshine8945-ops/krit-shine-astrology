@@ -40,107 +40,100 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .horalife-container {
-    background: rgba(5,8,18,0.95);
-    color: #f8fafc;
-    border: 1.5px solid rgba(234, 179, 8, 0.5);
-    border-radius: 18px;
-    padding: 18px;
-    font-family: 'Prompt', sans-serif;
-    max-width: 100%;
-    overflow-x: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-  }
+ /* =======================================================
+   สไตล์ตารางกราฟชีวิตแบบสี่เหลี่ยมจัตุรัส พิกัดตรงช่อง (Dark Mode)
+   ======================================================= */
+.horalife-container {
+  background: linear-gradient(180deg, rgba(14, 22, 46, 0.95) 0%, rgba(4, 7, 18, 0.98) 100%);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 18px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.horalife-table-wrapper {
+  position: relative;
+  display: grid;
+  grid-template-rows: 40px repeat(12, minmax(30px, 1fr)) 42px;
+  grid-template-columns: 80px repeat(12, 1fr) 100px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(5, 8, 18, 0.6);
+}
+.hl-header-top {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold-main);
+  border-bottom: 1px solid rgba(245, 196, 105, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(14, 22, 46, 0.8);
+}
+.hl-axis-left {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-right: 1px dashed rgba(245, 196, 105, 0.35);
+}
+.hl-region-1 { grid-row: 10 / span 4; color: #ff7675; background: rgba(255, 118, 117, 0.03); }
+.hl-region-2 { grid-row: 6 / span 4; color: #81c784; background: rgba(129, 199, 132, 0.03); border-top: 1px dashed rgba(255,255,255,0.15); border-bottom: 1px dashed rgba(255,255,255,0.15); }
+.hl-region-3 { grid-row: 2 / span 4; color: #ffd700; background: rgba(255, 215, 0, 0.03); }
+.hl-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  aspect-ratio: 1 / 1;
+  position: relative;
+  z-index: 1;
+}
+.hl-cell-border-bold {
+  border-bottom: 1px dashed rgba(245, 196, 105, 0.35) !important;
+}
+.hl-axis-right {
+  grid-column: 14;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 0.75rem;
+  color: var(--text-white);
+  border-left: 1px dashed rgba(245, 196, 105, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(14, 22, 46, 0.4);
+}
+.hl-footer-bottom {
+  grid-row: 14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(245, 196, 105, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 7, 18, 0.8);
+  line-height: 1.3;
+  padding: 3px 0;
+}
+.hl-canvas-overlay {
+  position: absolute;
+  top: 40px;
+  left: 80px;
+  width: calc(100% - 180px);
+  height: calc(100% - 82px);
+  pointer-events: none;
+  z-index: 5;
+}
 
-  .horalife-table-wrapper {
-    position: relative;
-    display: grid;
-    grid-template-rows: 40px repeat(12, minmax(28px, 1fr)) 45px;
-    grid-template-columns: 80px repeat(12, 1fr) 100px;
-    border: 1px solid rgba(234, 179, 8, 0.3);
-    background: #040816;
-  }
-
-  .hl-header-top {
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.72rem;
-    font-weight: bold;
-    color: var(--gold-bright, #ffe49e);
-    border-bottom: 2px solid rgba(234, 179, 8, 0.5);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .hl-axis-left {
-    grid-column: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-    border-right: 2px solid rgba(234, 179, 8, 0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .hl-region-1 { grid-row: 2 / span 4; background: rgba(239, 68, 68, 0.12); color: #ff7675; } /* นรกภูมิ */
-  .hl-region-2 { grid-row: 6 / span 4; background: rgba(46, 204, 113, 0.1); color: #81c784; } /* มนุษย์ภูมิ */
-  .hl-region-3 { grid-row: 10 / span 4; background: rgba(245, 158, 11, 0.1); color: #ffd700; } /* สวรรค์ภูมิ */
-
-  .hl-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    aspect-ratio: 1 / 1;
-    position: relative;
-    z-index: 1;
-  }
-
-  .hl-cell-border-bold {
-    border-bottom: 2px solid rgba(234, 179, 8, 0.6) !important;
-  }
-
-  .hl-axis-right {
-    grid-column: 14;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    font-size: 0.75rem;
-    color: #cbd5e1;
-    border-left: 2px solid rgba(234, 179, 8, 0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    background: rgba(15, 23, 42, 0.9);
-  }
-
-  .hl-footer-bottom {
-    grid-row: 14;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.68rem;
-    color: #94a3b8;
-    border-top: 2px solid rgba(234, 179, 8, 0.5);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    background: rgba(15, 23, 42, 0.9);
-    line-height: 1.2;
-    padding: 2px 0;
-  }
-
-  .hl-canvas-overlay {
-    position: absolute;
-    top: 40px;
-    left: 80px;
-    width: calc(100% - 180px);
-    height: calc(100% - 85px);
-    pointer-events: none;
-    z-index: 5;
-  }
     /* ซ่อนแถบกล่องวันจรเฉพาะเมื่ออยู่ในโหมดเลข 7 ตัว 4 ฐาน (ฟรี) */
 #modal-num7base:has(#btn-num7-free.active) .transit-active-badge-bar,
 #modal-num7base:has(#btn-num7-free.active) [style*="อิงวันจรลัคนาพยากรณ์"] {
@@ -2548,64 +2541,65 @@ function analyzeVipSpecificQuestion() {
           </div>
 
 <!-- ตารางกราฟชีวิตที่มีหัวข้อเรือนภพทั้งด้านบนและด้านขวาประกบคู่กัน -->
-          <div style="background: rgba(5,8,18,0.95); border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 18px;">
-            <!-- หัวข้อเรือนภพด้านบน -->
-            <div style="display: grid; grid-template-columns: 80px repeat(12, 1fr) 100px; gap: 2px; margin-bottom: 8px; text-align: center; font-size: 0.72rem; color: var(--gold-main); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px;">
-              <div>วิถีชีวิต</div>
-              <div>วาสนา</div><div>ทรัพย์</div><div>เพื่อน</div><div>ญาติ</div><div>บริวาร</div><div>ศัตรู</div><div>คู่ครอง</div><div>โรคภัย</div><div>ความสุข</div><div>การงาน</div><div>ลาภยศ</div><div>วินาศ</div>
-              <div>ภูมิชะตา</div>
-            </div>
+<div style="background: rgba(5,8,18,0.95); border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 18px;">
+  <!-- หัวข้อเรือนภพด้านบน -->
+  <div style="display: grid; grid-template-columns: 80px repeat(12, 1fr) 100px; gap: 2px; margin-bottom: 8px; text-align: center; font-size: 0.72rem; color: var(--gold-main); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px;">
+    <div>วิถีชีวิต</div>
+    <div>วาสนา</div><div>ทรัพย์</div><div>เพื่อน</div><div>ญาติ</div><div>บริวาร</div><div>ศัตรู</div><div>คู่ครอง</div><div>โรคภัย</div><div>ความสุข</div><div>การงาน</div><div>ลาภยศ</div><div>วินาศ</div>
+    <div>ภูมิชะตา</div>
+  </div>
 
-            <!-- ส่วนแสดงกราฟและแกนซ้าย-ขวา -->
-            <div style="display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; align-items: center;">
-              <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.8rem; color: var(--gold-main); font-weight: 700; text-align: center; border-right: 1px dashed rgba(255,255,255,0.15); height: 100%;">
-                <div style="color:#ffd700;">สวรรค์ภูมิ<br><small>(9 - 12)</small></div>
-                <div style="color:#81c784;">มนุษย์ภูมิ<br><small>(5 - 8)</small></div>
-                <div style="color:#ff7675;">นรกภูมิ<br><small>(1 - 4)</small></div>
-              </div>
+  <!-- ส่วนแสดงกราฟและแกนซ้าย-ขวา -->
+  <div style="display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; align-items: stretch;">
+    <!-- แกนภูมิชะตาด้านซ้ายแบ่งสัดส่วน 12 แถวตามความสูงจริง (สวรรค์ 4 แถว, มนุษย์ 4 แถว, นรก 4 แถว) -->
+    <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: var(--gold-main); font-weight: 700; text-align: center; border-right: 1px dashed rgba(255,255,255,0.15); height: 100%;">
+      <div style="grid-row: 1 / span 4; color:#ffd700; display: flex; flex-direction: column; justify-content: center; align-items: center;">สวรรค์ภูมิ<br><small>(9 - 12)</small></div>
+      <div style="grid-row: 5 / span 4; color:#81c784; display: flex; flex-direction: column; justify-content: center; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); border-bottom: 1px dashed rgba(255,255,255,0.08);">มนุษย์ภูมิ<br><small>(5 - 8)</small></div>
+      <div style="grid-row: 9 / span 4; color:#ff7675; display: flex; flex-direction: column; justify-content: center; align-items: center;">นรกภูมิ<br><small>(1 - 4)</small></div>
+    </div>
 
-              <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเป็นสี่เหลี่ยมจัตุรัส -->
-              <div style="position: relative; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr); aspect-ratio: 12 / 12; width: 100%;">
-                <!-- สร้างตารางเส้นตารางตารางพิกัดพื้นหลัง (Optional) -->
-                <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></canvas>
-              </div>
-              
-              <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ให้สอดรับกับ 12 แถวพอดีเป๊ะ) -->
-              <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 100%; align-items: center; box-sizing: border-box;">
-                <div>12 วาสนา</div>
-                <div>11 ทรัพย์</div>
-                <div>10 เพื่อน</div>
-                <div>9 ญาติ</div>
-                <div>8 บริวาร</div>
-                <div>7 ศัตรู</div>
-                <div>6 คู่ครอง</div>
-                <div>5 โรคภัย</div>
-                <div>4 ความสุข</div>
-                <div>3 การงาน</div>
-                <div>2 ลาภยศ</div>
-                <div>1 วินาศ</div>
-              </div>
-            </div>
-          </div>
-          <div id="yearly-prediction-card" style="background: rgba(30,20,10,0.85); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
-              <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
-              <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
-            </div>
-            <div id="yearly-poem-box" style="display: flex; justify-content: center; font-size: 0.95rem; color: #fff; line-height: 2; background: rgba(0,0,0,0.45); padding: 18px; border-radius: 8px;"></div>
-          </div>
-          <div id="vip-graph-full-details" style="display:none;">
-            <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
-              <h4 style="color: #ffd700; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๑. ทำนายพื้นดวง (ความสัมพันธ์จุดพยากรณ์ในกราฟ VIP)</h4>
-              <div id="vip-graph-aspects-content"></div>
-            </div>
-            <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px;">
-              <h4 style="color: #64b5f6; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๒. ทำนายความหมายประจำเรือนภพ (12 ภพชะตาละเอียด)</h4>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;" id="vip-graph-12houses-content"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเบื้องหลังเป็นสี่เหลี่ยมจัตุรัสอัตราส่วน 1:1 เป๊ะ ๆ -->
+    <div style="position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; background: rgba(255,255,255,0.015); border-radius: 4px; overflow: hidden;">
+      <!-- Canvas ลากเส้นกราฟครอบทับพิกัดพอดี 100% ไม่บิดเบี้ยว -->
+      <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></canvas>
+    </div>
+    
+    <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ดิ่งตรงตามแนวกึ่งกลางแถวพิกัดของตารางเป๊ะ ๆ) -->
+    <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 10px; height: 100%; align-items: center; box-sizing: border-box;">
+      <div style="display: flex; align-items: center;">12 วาสนา</div>
+      <div style="display: flex; align-items: center;">11 ทรัพย์</div>
+      <div style="display: flex; align-items: center;">10 เพื่อน</div>
+      <div style="display: flex; align-items: center;">9 ญาติ</div>
+      <div style="display: flex; align-items: center;">8 บริวาร</div>
+      <div style="display: flex; align-items: center;">7 ศัตรู</div>
+      <div style="display: flex; align-items: center;">6 คู่ครอง</div>
+      <div style="display: flex; align-items: center;">5 โรคภัย</div>
+      <div style="display: flex; align-items: center;">4 ความสุข</div>
+      <div style="display: flex; align-items: center;">3 การงาน</div>
+      <div style="display: flex; align-items: center;">2 ลาภยศ</div>
+      <div style="display: flex; align-items: center;">1 วินาศ</div>
+    </div>
+  </div>
+</div>
+
+<div id="yearly-prediction-card" style="background: rgba(30,20,10,0.85); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
+    <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
+    <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
+  </div>
+  <div id="yearly-poem-box" style="display: flex; justify-content: center; font-size: 0.95rem; color: #fff; line-height: 2; background: rgba(0,0,0,0.45); padding: 18px; border-radius: 8px;"></div>
+</div>
+
+<div id="vip-graph-full-details" style="display:none;">
+  <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+    <h4 style="color: #ffd700; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๑. ทำนายพื้นดวง (ความสัมพันธ์จุดพยากรณ์ในกราฟ VIP)</h4>
+    <div id="vip-graph-aspects-content"></div>
+  </div>
+  <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px;">
+    <h4 style="color: #64b5f6; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๒. ทำนายความหมายประจำเรือนภพ (12 ภพชะตาละเอียด)</h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;" id="vip-graph-12houses-content"></div>
+  </div>
+</div>
 
 <!-- MODAL: ปาจื่อ (BaZi 4 เสาหลักจีน) -->
 <div class="modal-overlay" id="modal-bazi">
@@ -5555,81 +5549,127 @@ const POEMS_DATABASE = {
     }
 // ฟังก์ชันวาดกราฟเส้น Chart.js แบบล็อกช่องและสัดส่วนตรงกับตาราง 100%
 function initMyHoraLifeChart(focusAge) {
-    const canvas = document.getElementById('lifeChartCanvas');
-    if (!canvas) return;
+  const container = document.getElementById('horalifeTableWrapper');
+  const canvas = document.getElementById('lifeChartCanvas');
+  if (!container || !canvas) return;
 
-    const cycle = getLifeGraphBaseCycle(); // ดึงลูปคะแนน 1-12 ตามระบบเดิม
-    let startAge = Math.max(1, focusAge - 5);
-    let endAge = Math.min(80, startAge + 11);
-    
-    let pointsData = [];
+  const cycle = getLifeGraphBaseCycle(); 
+  const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+  
+  let startAge = Math.max(1, focusAge - 5);
+  let endAge = Math.min(80, startAge + 11);
+  
+  const oldDynamic = container.querySelectorAll('.hl-cell, .hl-axis-right, .hl-footer-bottom');
+  oldDynamic.forEach(el => el.remove());
+
+  const houses = [
+    "12 วาสนา", "11 ทรัพย์", "10 เพื่อน", "9 ญาติ", 
+    "8 บริวาร", "7 ศัตรู", "6 คู่ครอง", "5 โรคภัย", 
+    "4 ความสุข", "3 การงาน", "2 ลาภยศ", "1 วินาศ"
+  ];
+
+  let graphPoints = [];
+
+  for (let i = 0; i < 12; i++) {
+    const currentScore = 12 - i;
 
     for (let a = startAge; a <= endAge; a++) {
       const score = cycle[(a - 1) % 12];
-      // คำนวณตำแหน่ง Grid คอลัมน์ (0 ถึง 11) และแถว (0 ถึง 11 โดยคะแนน 12 อยู่แถว 0 และคะแนน 1 อยู่แถว 11)
-      const gridX = a - startAge;
-      const gridY = 12 - score;
+      const cell = document.createElement('div');
+      cell.className = 'hl-cell';
+      
+      if (currentScore === 9 || currentScore === 5) {
+        cell.className += ' hl-cell-border-bold';
+      }
 
-      pointsData.push({
-        age: a,
-        score: score,
-        gridX: gridX,
-        gridY: gridY,
-        isFocus: (a === focusAge)
-      });
+      cell.style.gridRow = i + 2;
+      cell.style.gridColumn = (a - startAge) + 2;
+
+      if (score === currentScore) {
+        graphPoints.push({
+          age: a,
+          score: score,
+          gridX: (a - startAge),
+          gridY: i,
+          isFocus: (a === focusAge)
+        });
+      }
+      container.appendChild(cell);
     }
 
-    setTimeout(() => {
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) return;
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const cellWidth = canvas.width / 12;
-      const cellHeight = canvas.height / 12;
-
-      // วาดเส้นกราฟเชื่อมจุด
-      ctx.beginPath();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#2ecc71';
-      ctx.lineJoin = 'round';
-
-      pointsData.forEach((pt, index) => {
-        const x = (pt.gridX * cellWidth) + (cellWidth / 2);
-        const y = (pt.gridY * cellHeight) + (cellHeight / 2);
-
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-
-      // วาดวงกลมจุดพิกัดอายุ
-      pointsData.forEach((pt) => {
-        const x = (pt.gridX * cellWidth) + (cellWidth / 2);
-        const y = (pt.gridY * cellHeight) + (cellHeight / 2);
-
-        ctx.beginPath();
-        if (pt.isFocus) {
-          ctx.arc(x, y, 10, 0, 2 * Math.PI);
-          ctx.fillStyle = '#ff4757';
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = '#ffffff';
-          ctx.stroke();
-        } else {
-          ctx.arc(x, y, 6, 0, 2 * Math.PI);
-          ctx.fillStyle = '#98d85b';
-          ctx.fill();
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = '#ffffff';
-          ctx.stroke();
-        }
-      });
-    }, 50);
+    const rightAxis = document.createElement('div');
+    rightAxis.className = 'hl-axis-right';
+    if (currentScore === 9 || currentScore === 5) rightAxis.className += ' hl-cell-border-bold';
+    rightAxis.style.gridRow = i + 2;
+    rightAxis.innerText = houses[i];
+    container.appendChild(rightAxis);
   }
+
+  const footerLeftBlank = document.createElement('div');
+  footerLeftBlank.className = 'hl-footer-bottom';
+  footerLeftBlank.style.gridColumn = 1;
+  container.appendChild(footerLeftBlank);
+
+  for (let a = startAge; a <= endAge; a++) {
+    const footerCell = document.createElement('div');
+    footerCell.className = 'hl-footer-bottom';
+    footerCell.style.gridColumn = (a - startAge) + 2;
+    footerCell.innerHTML = `<span style="color:#fff; font-weight:600;">${birthYear + a}</span><br>(${a}ปี)`;
+    container.appendChild(footerCell);
+  }
+
+  const footerRightBlank = document.createElement('div');
+  footerRightBlank.className = 'hl-footer-bottom';
+  footerRightBlank.style.gridColumn = 14;
+  container.appendChild(footerRightBlank);
+
+  setTimeout(() => {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cellWidth = canvas.width / 12;
+    const cellHeight = canvas.height / 12;
+
+    ctx.beginPath();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#2ecc71'; 
+    ctx.lineJoin = 'round';
+
+    graphPoints.forEach((pt, idx) => {
+      const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+      const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    graphPoints.forEach((pt) => {
+      const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+      const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+
+      ctx.beginPath();
+      if (pt.isFocus) {
+        ctx.arc(x, y, 9, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ff4757';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#f5c469';
+        ctx.stroke();
+      } else {
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffd700';
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#040816';
+        ctx.stroke();
+      }
+    });
+  }, 60);
+}
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
       lockedUserAge = a;
