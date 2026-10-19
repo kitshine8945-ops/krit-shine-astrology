@@ -5530,49 +5530,60 @@ const ageTransitMapping = {
         </div>
       `;
 
-// 1. ดึงตัวแปรอายุจากสไลเดอร์หน้าเว็บจริงโดยตรง (แก้ปัญหาจุดส้มค้างไม่ขยับ)
-let stdActiveAge = typeof AppState !== 'undefined' && AppState.selectedAge ? AppState.selectedAge : (parseInt(document.getElementById('selectYearAgeDirect')?.value) || 47);
+// ห่อโค้ดทั้งหมดให้อยู่ในฟังก์ชันกลาง เพื่อให้ปุ่มและสไลเดอร์เรียกคำนวณใหม่ได้ทุกครั้ง
+function updateVipGraphAspects(ageInput) {
+    // 1. ดึงอายุจากสไลเดอร์หน้าเว็บจริง (ปรับให้อ่านค่าตรงจากหน้าจอ)
+    let selectedAgeEl = document.getElementById('selectYearAgeDirect');
+    let stdActiveAge = ageInput || (selectedAgeEl ? parseInt(selectedAgeEl.value, 10) : 47);
 
-// 2. ดึงค่าคะแนนแกนกราฟ 12 ช่องของคนนั้น ๆ มาใช้งาน
-let stdCycleScores = getLifeGraphBaseCycle(); 
-
-// 3. คำนวณหาช่องตกจร (Index ภพจร) ตามสูตรมาตรฐานทั่วไป [อายุ % 12]
-let stdHouseIdx = 0;
-let stdAgeModulo = stdActiveAge % 12;
-
-// สูตรลัดเศษ: เศษ 1=วาสนา(0), เศษ 2=ทรัพย์(1)... เศษ 0=วินาศ(11)
-if (stdAgeModulo === 0) {
-    stdHouseIdx = 11; // เศษ 0 ตกวินาศ
-} else {
-    stdHouseIdx = stdAgeModulo - 1; // เศษอื่น ๆ ลบ 1 เพื่อแปลงเป็น Index 0 - 10
-}
-
-// 4. ดึงชื่อภพและค่าคะแนนแกน Y ประจำดวงของคนนั้นออกทำงานอัตโนมัติ
-const stdHouseNamesList = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
-let stdHouseNameStr = stdHouseNamesList[stdHouseIdx];
-let stdScoreNum = stdCycleScores[stdHouseIdx];
-
-// กำหนดภูมิชะตาตามเกณฑ์คะแนนมาตรฐาน (1-4 นรก | 5-8 มนุษย์ | 9-12 สวรรค์)
-let stdZoneStr = "มนุษย์ภูมิ";
-if (stdScoreNum >= 9) stdZoneStr = "สวรรค์ภูมิ";
-else if (stdScoreNum <= 4) stdZoneStr = "นรกภูมิ";
-
-// 5. สั่งตัวกราฟให้เคลียร์ตำแหน่งเก่า แล้วปักหมุดจุดสีส้มในคอลัมน์จรจริง
-if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
-    if (lifeChartInstance.data && lifeChartInstance.data.datasets) {
-        // ล้างข้อมูลเก่าของจุดจรในแกนกราฟทั้งหมด แล้วระบุคะแนนลงช่องจรใหม่โดยเฉพาะ
-        lifeChartInstance.data.datasets.data = Array(12).fill(null);
-        lifeChartInstance.data.datasets.data[stdHouseIdx] = stdScoreNum;
-        lifeChartInstance.update();
+    // 2. เรียกฐานคะแนนแกน Y ของผู้ใช้คนนั้นๆ
+    let stdCycleScores = getLifeGraphBaseCycle(); 
+    if (!stdCycleScores || stdCycleScores.length < 12) {
+        stdCycleScores =; // Fallback หากดึงค่าฐานไม่สำเร็จ
     }
+
+    // 3. คำนวณเศษอายุจรดลัดเวียนตารางทั่วไป [อายุ % 12]
+    let stdHouseIdx = 0;
+    let stdAgeModulo = stdActiveAge % 12;
+
+    if (stdAgeModulo === 0) {
+        stdHouseIdx = 11; // เศษ 0 ตกวินาศ
+    } else {
+        stdHouseIdx = stdAgeModulo - 1; // เศษอื่นแปลงเป็น Index 0-10
+    }
+
+    const stdHouseNamesList = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
+    let stdHouseNameStr = stdHouseNamesList[stdHouseIdx];
+    let stdScoreNum = stdCycleScores[stdHouseIdx];
+
+    let stdZoneStr = "มนุษย์ภูมิ";
+    if (stdScoreNum >= 9) stdZoneStr = "สวรรค์ภูมิ";
+    else if (stdScoreNum <= 4) stdZoneStr = "นรกภูมิ";
+
+    // 4. สั่งตัวกราฟขยับจุดแดง (datasets[1]): เคลียร์ตำแหน่งเก่า 12 ช่อง แล้วปักหมุดช่องปัจจุบัน
+    if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
+        if (lifeChartInstance.data && lifeChartInstance.data.datasets && lifeChartInstance.data.datasets[1]) {
+            let orangeDotDataset = Array(12).fill(null);
+            orangeDotDataset[stdHouseIdx] = stdScoreNum;
+            
+            lifeChartInstance.data.datasets[1].data = orangeDotDataset;
+            lifeChartInstance.update();
+        }
+    }
+
+    // 5. พ่นโค้ดเรนเดอร์กล่องคำทำนายด้านล่าง
+    document.getElementById('vip-graph-aspects-content').innerHTML = `
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${stdActiveAge} ปี (เลข ${stdScoreNum})</strong></div>
+        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${stdScoreNum}/12 คะแนน (${stdZoneStr})</strong></div>
+        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${stdHouseNameStr}</strong></div>
+    `;
 }
 
-// 6. พ่นโค้ดเรนเดอร์กล่องคำทำนายด้านล่างด้วยเครื่องหมาย Backtick (`) ที่ถูกต้อง
-document.getElementById('vip-graph-aspects-content').innerHTML = `
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${stdActiveAge} ปี (เลข ${stdScoreNum})</strong></div>
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${stdScoreNum}/12 คะแนน (${stdZoneStr})</strong></div>
-    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${stdHouseNameStr}</strong></div>
-`;
+// ผูกฟังก์ชันเข้ากับ window เพื่อความเสถียรในการเรียกข้ามบรรทัดโค้ด
+window.updateVipGraphAspects = updateVipGraphAspects;
+
+// สั่งรันครั้งแรกตอนโหลดหน้าเว็บให้เปิดมาเจอ อายุ 47 ปี
+updateVipGraphAspects(47);
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       const houseDescriptions = {
@@ -11397,11 +11408,6 @@ function updateAllVipFeaturesByTransit() {
     updateTransitForPremiumModal('wealth_result', t);
 }
 
-// ฟังก์ชันช่วยสลับข้อความใน 4 ป๊อปอัปพรีเมียมตามวันจร
-function updateTransitForPremiumModal(elementId, t) {
-    const el = document.getElementById(elementId);
-    if (!el || el.style.display === 'none') return;
-    
     // เติมป้ายกำกับวันจรกำกับไว้ที่หัวข้อผลลัพธ์ เพื่อให้ผู้ใช้รู้ว่ากำลังดูคำทำนาย ณ วันใด
     let transitBadge = el.querySelector('.transit-date-tag');
     if (!transitBadge) {
@@ -11427,9 +11433,10 @@ function updateTransitForPremiumModal(elementId, t) {
                     updateAllVipFeaturesByTransit();
                 }
                 
-                // สั่งฟังก์ชันกราฟชีวิต 12 เรือนภพให้คำนวณตำแหน่งและจุดส้มใหม่ทันที
-                if (typeof updateVipGraphAspects === 'function') {
-                    updateVipGraphAspects();
+       // สั่งฟังก์ชันกราฟชีวิต 12 เรือนภพให้คำนวณตำแหน่งและจุดส้มใหม่ทันทีเมื่อสไลเดอร์ขยับ
+                if (typeof window.updateVipGraphAspects === 'function') {
+                    let currentAgeVal = parseInt(document.getElementById('selectYearAgeDirect')?.value || 47, 10);
+                    window.updateVipGraphAspects(currentAgeVal);
                 }
 
                 if (typeof calcNum7Base === 'function') {
@@ -11440,20 +11447,19 @@ function updateTransitForPremiumModal(elementId, t) {
             }
         });
 
-        // ดักจับเหตุการณ์สำหรับ Slider ปรับอายุโดยเฉพาะ (เวลากดลากเลื่อนจุดสีส้มจะวิ่งตามทันทีแบบ Real-time)
-        if (id === 'selectYearAgeDirect') {
+             // ดักจับเหตุการณ์สำหรับ Slider ปรับอายุโดยเฉพาะ (เวลากดลากเลื่อนจุดสีส้มจะวิ่งตามทันทีแบบ Real-time)
+              if (id === 'selectYearAgeDirect') {
             el.addEventListener('input', function() {
                 try {
-                    if (typeof updateVipGraphAspects === 'function') {
-                        updateVipGraphAspects();
+                    if (typeof window.updateVipGraphAspects === 'function') {
+                        let currentAgeVal = parseInt(document.getElementById('selectYearAgeDirect')?.value || 47, 10);
+                        window.updateVipGraphAspects(currentAgeVal);
                     }
                 } catch (err) {
                     console.error("Slider Real-time Update Error: ", err);
                 }
             });
         }
-    }
-});
 
 // --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
 function getCleanTransitBadgeString() {
