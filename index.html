@@ -5553,19 +5553,19 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
+  // 1. [แก้ไขเฉพาะจุดนี้] คำนวณเลขดวงชะตา 12 ตัวคงที่แทนระบบ getLifeGraphBaseCycle() เดิม
   // ==========================================
-  const birthBeYear = AppState.birthBE;   
-  const inputDay = AppState.dayBase;       
-  const solarMonth = AppState.solarMonth; 
+  const birthBeYear = AppState.birthBE;   // ปี พ.ศ. เกิดจริงของผู้ใช้งาน ( dynamic )
+  const inputDay = AppState.dayBase;       // เลขวันเกิดจริงประจำสัปดาห์ ( dynamic )
+  const solarMonth = AppState.solarMonth; // เลขเดือนเกิดสากล ( dynamic )
 
-  // 🔹 [สูตรที่ 1] อัลกอริทึมแปลงปี พ.ศ. เกิด เป็นเลขปีนักษัตรไทย (1 - 12) ตามเกณฑ์จันทรคติ
+  // 🔹 สูตรที่ 1: คำนวณเปลี่ยนปี พ.ศ. เกิด ให้กลายเป็นเลขฐานปีนักษัตร (1 - 12) แม่นยำทุกชะตาชีวิต
   let calculatedYearBase = ((birthBeYear - 2503) % 12);
   if (calculatedYearBase <= 0) {
       calculatedYearBase += 12;
   }
 
-  // 🔹 [สูตรที่ 2] แมปเดือนเกิดสากลให้เป็นเลขเดือนจันทรคติไทย (1 - 12) ตามตารางมาตรฐานของคุณ
+  // 🔹 สูตรที่ 2: แปลงเดือนเกิดสากล ให้กลายเป็นเลขเดือนไทยจันทรคติ (1 - 12) ตามตารางมาตรฐานของคุณ
   let calculatedMonthBase = 0;
   if (solarMonth === 11) calculatedMonthBase = 1;  
   else if (solarMonth === 12) calculatedMonthBase = 2; 
@@ -5580,11 +5580,16 @@ function initMyHoraLifeChart(focusAge) {
   else if (solarMonth === 9) calculatedMonthBase = 11; 
   else if (solarMonth === 10) calculatedMonthBase = 12; 
 
-  // คำนวณบวกเลขแนวตั้ง 3 ฐานสร้างเลขดวงชุดคงที่ 12 คอลัมน์ [วาสนา...วินาศ] เข้าสู่ระบบ Canvas
+  // 🔹 ตั้งลูปคำนวณผลรวม 3 ฐานแนวตั้งให้ตรงสัดส่วนกับตำแหน่ง Array ประมวลผลของ Canvas คุณ
   const cycle = new Array(12);
   for (let i = 0; i < 12; i++) {
+    // ฐานวัน: นับเรียงก้าวลำดับไปข้างหน้าทีละช่อง 1 ถึง 7 รอบตาราง
     let d = ((inputDay + i - 1) % 7) + 1;
+    
+    // ฐานเดือน: ตั้งเลขเริ่มต้นตามฐานเดือนจันทรคติไทย วนรอบ 12 คอลัมน์
     let m = (calculatedMonthBase + i) % 12 === 0 ? 12 : (calculatedMonthBase + i) % 12;
+    
+    // ฐานปี: ตั้งเลขเริ่มต้นตามเลขปีนักษัตร วนรอบ 12 คอลัมน์
     let y = (calculatedYearBase + i) % 12 === 0 ? 12 : (calculatedYearBase + i) % 12;
 
     let total = d + m + y;
@@ -5592,13 +5597,15 @@ function initMyHoraLifeChart(focusAge) {
     if (score === 0) {
       score = 12;
     }
+    
+    // เก็บแต้มเลขดวงที่ได้ลงตัวแปร cycle เพื่อนำไปลากจุด Canvas ด้านล่าง
     cycle[i] = score; 
   }
 
   let graphPoints = []; 
 
   // ==========================================
-  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (ห้ามแตะต้อง - โค้ดเดิมของคุณ)
   // ==========================================
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
@@ -5606,14 +5613,14 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา (ห้ามแตะต้อง - โค้ดเดิมของคุณ)
   // ==========================================
   for (let col = 0; col < 12; col++) {
     const currentAge = startAgeCycle + col; 
 
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    const score = cycle[targetHouseIndex]; 
+    const score = cycle[targetHouseIndex];
     const safeScore = score > 0 ? score : 1;
     
     const row = 12 - safeScore; 
@@ -5631,7 +5638,7 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
+  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต (ห้ามแตะต้อง - โค้ดเดิมของคุณที่ลากฟันปลาถูกต้อง)
   // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
@@ -5687,6 +5694,7 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100);
 }
+
 
 // =================================================================
 // ฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% (วางไว้ต่อท้ายสุดของไฟล์)
