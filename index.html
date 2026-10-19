@@ -2752,36 +2752,7 @@ function analyzeVipSpecificQuestion() {
     let currentUser = null;
     let currentProfile = null;
     let isSignUpMode = false;
-window.downloadVipEbook = function() {
-    // 1. ตรวจสอบว่าเข้าสู่ระบบหรือยัง (เช็คจากตัวแปร currentUser ที่ใช้เก็บสถานะล็อกอิน)
-    if (typeof currentUser === 'undefined' || !currentUser) {
-        alert('⚠️ กรุณาเข้าสู่ระบบก่อนทำการดาวน์โหลด หรือสมัครสมาชิก VIP ครับ');
-        if (typeof openAuthModal === 'function') {
-            openAuthModal();
-        }
-        return;
-    }
 
-    // 2. ตรวจสอบสถานะ VIP
-    var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-    
-    if (!isVip) {
-        alert('⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น\nกรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม');
-        if (typeof openFeatureModal === 'function') {
-            openFeatureModal('member');
-        }
-        return;
-    }
-    
-    // 3. ถ้าล็อกอินและเป็น VIP แล้ว ให้ดาวน์โหลดไฟล์ทันที
-    var fileName = 'ebook_prayer_vip.pdf';
-    var link = document.createElement('a');
-    link.href = fileName;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};
     // --- 2. ฟังก์ชันเปิด/ปิด/สลับหน้าต่างสมัครและล็อกอิน ---
     function openAuthModal() {
     const modal = document.getElementById('authModal');
@@ -5212,20 +5183,17 @@ const POEMS_DATABASE = {
 
 // ตัวแปรล็อกอายุที่ผู้ใช้เลือกปัจจุบัน ป้องกันไม่ให้ฟังก์ชันอื่นมาสั่งรีเซ็ต
     let lockedUserAge = null;
-function getLifeGraphBaseCycle() {
-      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 30);
-      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 4);
-      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522);
 
-      // สูตรคำนวณฐานเลขดวง 12 เรือนภพ มาตรฐาน MyHora (วาสนา ถึง วินาศ) อิงตามฐานวัน เดือน ปีเกิด
-      let baseVal = (d * 19 + m * 7 + (y % 100) * 13) % 12;
-      let cycle = [];
+    function getLifeGraphBaseCycle() {
+      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
+      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
+      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
       
-      // ลำดับ 12 เรือนภพมาตรฐาน (1 = วินาศ, 2 = ลาภยศ, ..., 12 = วาสนา ตามสเกลกราฟ)
+      const baseSeed = (d + m + (y % 12)) % 12 + 1;
+      let cycle = [];
       for (let i = 0; i < 12; i++) {
-        let val = ((baseVal + i * 35) % 12) + 1;
-        if (val > 12) val = 12;
-        if (val < 1) val = 1;
+        let val = (baseSeed * (i + 1) * 3) % 12;
+        if (val === 0) val = 12;
         cycle.push(val);
       }
       return cycle;
@@ -12963,14 +12931,34 @@ function handleOpenModal(type) {
     targetModal.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
   }
 
- if (type === 'bazi' && typeof renderBaziDirect === 'function') {
-renderBaziDirect();
+  if (type === 'bazi' && typeof renderBaziDirect === 'function') {
+    renderBaziDirect();
   } else if (type === 'saju' && typeof renderSajuDirect === 'function') {
     renderSajuDirect();
   }
-} 
+}
+window.handleOpenModal = handleOpenModal;    
 
-window.handleOpenModal = handleOpenModal;
+// ฟังก์ชันตรวจสอบสิทธิ์ VIP และดาวน์โหลด E-Book
+window.downloadVipEbook = function() {
+  var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  
+  if (!isVip) {
+    alert('⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น\nกรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม');
+    if (typeof openFeatureModal === 'function') {
+      openFeatureModal('member');
+    }
+    return;
+  }
+  
+  var fileName = 'ebook_prayer_vip.pdf';
+  var link = document.createElement('a');
+  link.href = fileName;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 </script>
 </body>
 </html>
