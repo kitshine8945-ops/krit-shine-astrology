@@ -5616,19 +5616,18 @@ function getLifeGraphBaseCycle() {
 }
 
 // ==========================================
-// 1. ฟังก์ชันคำนวณ 3 ฐาน (วัน, เดือนไทย, ปีนักษัตร) และสร้าง Array 12 ช่อง
+// 1. ฟังก์ชันคำนวณ 3 ฐาน (วัน, เดือนไทย, ปีนักษัตร) และสร้าง Array 12 ช่องแบบ Dynamic
 // ==========================================
 function getLifeGraphBaseCycleFromUser() {
-  // วันเกิดตัวอย่าง: 30 เมษายน 2522 (วันอาทิตย์ = 1, เดือน 6 ไทย = 6, ปีมะแม = 8)
-  // หากระบบมีตัวแปรวันเกิดจริงของผู้ใช้ สามารถดึงมาแทนที่ค่าเหล่านี้ได้ทันที
-  let birthDayOfWeek = 1; // 1 = วันอาทิตย์
-  let birthMonthThai = 6; // 6 = เดือนเมษายน (เดือน 5 ไทย หรือเดือน 6 ตามโครงสร้างข้อมูลของคุณ)
-  let birthBeYear = AppState.birthBE || 2522; // ปี พ.ศ. เกิด
+  // ดึงค่าจริงจากระบบหรือฟอร์มของผู้ใช้งาน (ถ้าไม่มีให้ใช้ค่ากลางสำรอง)
+  let birthDayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 1; 
+  let birthMonthThai = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6; 
+  let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
 
-  // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (ปี 2460 เศษ 1 คือปีชวด)
+  // สูตรแปลงปี พ.ศ. ที่ผู้ใช้กรอกจริง ให้เป็นปีนักษัตร 12 ปี (ปี 2460 เศษ 1 คือปีชวด)
   let zodiacIndex = ((birthBeYear - 2460) % 12);
   if (zodiacIndex < 0) zodiacIndex += 12;
-  let birthZodiac = zodiacIndex + 1; // ได้ค่าปีนักษัตร 1-12 (ปีมะแม = 8)
+  let birthZodiac = zodiacIndex + 1; // ได้ค่าปีนักษัตรจริง 1-12 ตามปีเกิดของผู้ใช้
 
   let cycleArray = [];
   for (let i = 0; i < 12; i++) {
@@ -5659,30 +5658,27 @@ if (focusAge % 12 === 0) {
 let graphPoints = [];
 
 // ==========================================
-// 3. วนลูปแกนนอน 12 คอลัมน์ (จับคู่อายุ 37-48 เข้ากับ Array 12 ช่องแบบล็อกตายตัว)
+// 3. วนลูปแกนนอน 12 คอลัมน์ 
 // ==========================================
 for (let col = 0; col < 12; col++) {
-  const currentAge = startAgeCycle + col; // อายุตั้งแต่ 37 ถึง 48 ปี
-  
-  // กำหนดให้ช่องคอลัมน์ที่ 0-11 ดึงค่าคะแนนจาก Array ตามลำดับอายุจริงโดยตรง
-  // อายุ 37 (col 0) -> index 0 (เลข 3)
-  // อายุ 47 (col 10) -> index 10 (เลข 10/9 ตามฐาน) -> ปรับให้ตรงกับตำแหน่งช่องตาราง
-  let targetHouseIndex = col; 
+  const currentAge = startAgeCycle + col;
+  let targetHouseIndex = (currentAge - 1) % 12;
   
   const score = cycle[targetHouseIndex];
   const safeScore = score > 0 ? score : 1; 
-  const row = 12 - safeScore; // แปลงคะแนนเป็นพิกัดความสูง Canvas (12 อยู่บนสุด, 1 อยู่ล่างสุด)
+  const row = 12 - safeScore;
 
-  let birthBeYear = AppState.birthBE || 2522;
+  // ดึงปี พ.ศ. เกิดจริงของผู้ใช้มาคำนวณ พ.ศ. จร
+  let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
   let currentBuddhistYear = birthBeYear + currentAge - 1;
 
   graphPoints.push({
     age: currentAge,
     buddhistYear: currentBuddhistYear,
     score: safeScore,
-    gridX: col,       // คอลัมน์แนวนอน 0 - 11
-    gridY: row,       // พิกัดแนวตั้งตามคะแนน
-    isFocus: (currentAge === focusAge) // จุดสีแดงแสดงเฉพาะอายุที่กำลังโฟกัส
+    gridX: col,
+    gridY: row,
+    isFocus: (currentAge === focusAge)
   });
 }
 
@@ -5702,7 +5698,6 @@ setTimeout(() => {
   const cellWidth = canvas.width / 12;
   const cellHeight = canvas.height / 12;
 
-  // ลากเส้นเชื่อมโยงกราฟ
   ctx.beginPath();
   ctx.lineWidth = 3;
   ctx.strokeStyle = '#2ecc71';
@@ -5716,7 +5711,6 @@ setTimeout(() => {
   });
   ctx.stroke();
 
-  // วาดจุดวงกลมและตัวหนังสือบอกอายุ/พ.ศ.
   graphPoints.forEach((pt) => {
     const x = (pt.gridX * cellWidth) + (cellWidth / 2);
     const y = (pt.gridY * cellHeight) + (cellHeight / 2);
@@ -5724,14 +5718,14 @@ setTimeout(() => {
     ctx.beginPath();
     if (pt.isFocus) {
       ctx.arc(x, y, 9, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ff4757'; // จุดแดงโฟกัสปัจจุบัน
+      ctx.fillStyle = '#ff4757';
       ctx.fill();
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#f5c469';
       ctx.stroke();
     } else {
       ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffd700'; // จุดเหลืองรอบข้าง
+      ctx.fillStyle = '#ffd700';
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = '#040816';
