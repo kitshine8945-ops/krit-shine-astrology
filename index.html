@@ -5546,17 +5546,25 @@ const ageTransitMapping = {
     48: { houseIndex: 12, houseName: "วินาศ",   score: 12, zone: "สวรรค์ภูมิ" }  // อายุ 48 ตกวินาศ 12 คะแนน
 };
 
-// 2. ดึงค่าอายุที่ผู้ใช้เลือก (ให้เปลี่ยนคำว่า targetAge เป็นชื่อตัวแปรอายุในระบบของคุณ เช่น age หรือ currentAge)
-let currentSelectedAge = typeof targetAge !== 'undefined' ? targetAge : 47; 
-let activeTransit = ageTransitMapping[currentSelectedAge] || { houseIndex: 11, houseName: "ลาภยศ", score: 10, zone: "สวรรค์ภูมิ" };
+// 1. ดึงตัวแปรอายุที่ใช้งานปัจจุบัน (เปลี่ยนคำว่า age ข้างล่างให้เป็นชื่อตัวแปรรับเข้าของฟังก์ชันนี้)
+let activeAge = typeof age !== 'undefined' ? age : 47; 
 
-// 3. นำค่าที่คำนวณได้ตามตรรกะใหม่ไปเรนเดอร์ใน innerHTML
+// 2. ดึงข้อมูลตำแหน่งและคะแนนจากตาราง Mapping
+let activeTransit = ageTransitMapping[activeAge] || { index: 11, houseName: "ลาภยศ", score: 10, zone: "สวรรค์ภูมิ" };
+
+// 3. ปรับโค้ดพล็อตจุดสีส้มบนกราฟ (ถ้าในฟังก์ชันนี้มีตัวแปรวาดกราฟ ให้สวมค่าตรงนี้)
+if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
+    // ลอจิกอัปเดตพิกัดจุดสีส้มตัวกราฟ: แกน X ไปที่ช่องลาภยศ (index 11), แกน Y ไปที่คะแนน 10
+    lifeChartInstance.data.datasets[1].data = [activeTransit.score]; // หรือปรับตามโครงสร้างชุดข้อมูลจุดส้มของคุณ
+    lifeChartInstance.update();
+}
+
+// 4. แก้ไขในส่วนของ innerHTML ให้แสดงผลลัพธ์
 document.getElementById('vip-graph-aspects-content').innerHTML = `
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${currentSelectedAge} ปี (เลข ${activeTransit.score})</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${activeAge} ปี (เลข ${activeTransit.score})</strong></div>
     <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${activeTransit.score}/12 คะแนน (${activeTransit.zone})</strong></div>
     <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${activeTransit.houseName}</strong></div>
 `;
-
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       const houseDescriptions = {
