@@ -5553,19 +5553,19 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. [แก้ไขไส้ใน] แปลงปี พ.ศ. / เดือนเกิดสากล ให้เป็นเลขฐานจันทรคติไทยคงที่ (Dynamic 100%)
+  // 1. [แก้ไขจุดนี้] คำนวณเลขดวงชะตา 12 ช่องคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
   // ==========================================
   const birthBeYear = AppState.birthBE;   
   const inputDay = AppState.dayBase;       
   const solarMonth = AppState.solarMonth; 
 
-  // 🔹 สูตรที่ 1: แปลงปี พ.ศ. เกิด เป็นเลขปีนักษัตรไทย (1 - 12) เสมอทุกดวงชะตา
+  // 🔹 สูตรที่ 1: อัลกอริทึมแปลงปี พ.ศ. เกิด เป็นเลขปีนักษัตรไทย (1 - 12) ตามเกณฑ์จันทรคติ
   let calculatedYearBase = ((birthBeYear - 2503) % 12);
   if (calculatedYearBase <= 0) {
       calculatedYearBase += 12;
   }
 
-  // 🔹 สูตรที่ 2: แปลงเดือนเกิดสากล ให้เป็นเลขเดือนจันทรคติไทย (1 - 12) ตามตารางมาตรฐาน MyHora
+  // 🔹 สูตรที่ 2: แมปเดือนเกิดสากลให้เป็นเลขเดือนจันทรคติไทย (1 - 12) ตามตารางมาตรฐานของคุณ
   let calculatedMonthBase = 0;
   if (solarMonth === 11) calculatedMonthBase = 1;  
   else if (solarMonth === 12) calculatedMonthBase = 2; 
@@ -5580,7 +5580,7 @@ function initMyHoraLifeChart(focusAge) {
   else if (solarMonth === 9) calculatedMonthBase = 11; 
   else if (solarMonth === 10) calculatedMonthBase = 12; 
 
-  // 🔹 สร้าง Array คำนวณเลขดวงชะตา 12 ช่องคงที่ขึ้นมาใช้งานโดยตรง (ไม่ใช้ getLifeGraphBaseCycle ตัวเดิมแล้ว)
+  // คำนวณบวกเลขแนวตั้ง 3 ฐานแบบก้าวหน้าทีละช่องเพื่อสร้างเลขดวงชุดคงที่ 12 คอลัมน์ [วาสนา...วินาศ]
   let cycle = new Array(12);
   for (let i = 0; i < 12; i++) {
     let d = ((inputDay + i - 1) % 7) + 1;
@@ -5592,13 +5592,13 @@ function initMyHoraLifeChart(focusAge) {
     if (score === 0) {
       score = 12;
     }
-    cycle[i] = score; 
+    cycle[i] = score; // บันทึกผลคะแนนชะตาชีวิตล็อกคงที่ในแต่ละเรือนภพแทน getLifeGraphBaseCycle() เดิม
   }
   
   let graphPoints = []; 
 
   // ==========================================
-  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop ของเดิมที่คุณให้มา)
+  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop ของเดิมของคุณ)
   // ==========================================
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
@@ -5606,17 +5606,19 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา (ของเดิมของคุณ)
   // ==========================================
   for (let col = 0; col < 12; col++) {
     const currentAge = startAgeCycle + col; 
 
+    // หาอินเด็กซ์ของเรือนภพประจำตัวเลขดวง (ดัชนี 0 ถึง 11)
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    // ดึงคะแนนตรงตามช่องผลคำนวณประจำเรือนภพที่ได้จากลอจิกส่วนที่ 1 
+    // ดึงคะแนนตรงตามช่องผลคำนวณที่ได้จาก Array (คะแนนจะล็อกคงที่ตามดวงชะตาบุคคลนั้น)
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
     
+    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง
     const row = 12 - safeScore; 
 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
@@ -5632,7 +5634,7 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต (ของเดิมที่คุณให้มา)
+  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต (ของเดิมของคุณที่ลากเส้นขึ้นพุ่งสวยงาม)
   // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
@@ -5690,6 +5692,7 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100);
 }
+
 
 
 // =================================================================
