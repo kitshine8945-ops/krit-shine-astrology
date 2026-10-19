@@ -5529,42 +5529,60 @@ const ageTransitMapping = {
           </div>
         </div>
       `;
-
-     // 1. เพิ่มตาราง Mapping อายุจรเข้ากับดวงดาว/คะแนนตามรูปที่ 2
-const ageTransitMapping = {
-    37: { houseIndex: 10, houseName: "การงาน",  score: 3,  zone: "นรกภูมิ" },
-    38: { houseIndex: 7,  houseName: "คู่ครอง",  score: 6,  zone: "มนุษย์ภูมิ" },
-    39: { houseIndex: 2,  houseName: "เพื่อน",   score: 9,  zone: "สวรรค์ภูมิ" },
-    40: { houseIndex: 0,  houseName: "วาสนา",   score: 12, zone: "สวรรค์ภูมิ" },
-    41: { houseIndex: 4,  houseName: "ญาติ",    score: 3,  zone: "นรกภูมิ" },
-    42: { houseIndex: 5,  houseName: "ศัตรู",    score: 6,  zone: "มนุษย์ภูมิ" },
-    43: { houseIndex: 7,  houseName: "คู่ครอง",  score: 9,  zone: "สวรรค์ภูมิ" },
-    44: { houseIndex: 8,  houseName: "โรคภัย",   score: 4,  zone: "นรกภูมิ" },
-    45: { houseIndex: 9,  houseName: "ความสุข",  score: 6,  zone: "มนุษย์ภูมิ" },
-    46: { houseIndex: 10, houseName: "การงาน",  score: 8,  zone: "มนุษย์ภูมิ" },
-    47: { houseIndex: 11, houseName: "ลาภยศ",   score: 10, zone: "สวรรค์ภูมิ" }, // อายุ 47 ตกลาภยศ 10 คะแนน
-    48: { houseIndex: 12, houseName: "วินาศ",   score: 12, zone: "สวรรค์ภูมิ" }  // อายุ 48 ตกวินาศ 12 คะแนน
-};
-
-// 1. ดึงตัวแปรอายุที่ใช้งานปัจจุบัน (เปลี่ยนคำว่า age ข้างล่างให้เป็นชื่อตัวแปรรับเข้าของฟังก์ชันนี้)
+// 1. ดึงตัวแปรอายุที่ส่งเข้ามาใช้งานจริง (เช็กชื่อตัวแปรให้ตรงกับหัวฟังก์ชันของคุณ)
 let activeAge = typeof age !== 'undefined' ? age : 47; 
 
-// 2. ดึงข้อมูลตำแหน่งและคะแนนจากตาราง Mapping
-let activeTransit = ageTransitMapping[activeAge] || { index: 11, houseName: "ลาภยศ", score: 10, zone: "สวรรค์ภูมิ" };
+// 2. ดึงค่าคะแนนแกนกราฟ (ผลรวมฐานดวง 12 ช่อง) ที่ระบบคำนวณได้ของวันเกิดคนนั้น ๆ มาใช้
+let currentCycleScores = getLifeGraphBaseCycle(); // ดึง [3, 6, 9, 12, 3, 6, 9, 4, 6, 8, 10, 12] ของแต่ละคน
 
-// 3. ปรับโค้ดพล็อตจุดสีส้มบนกราฟ (ถ้าในฟังก์ชันนี้มีตัวแปรวาดกราฟ ให้สวมค่าตรงนี้)
+// 3. สูตรคำนวณหาช่องตกจร ( index ภพจร ) แบบกระทบฐานของรูปที่ 2 ที่รองรับทุกอายุ
+// ใช้วิธีการไล่ตามวงรอบสถิติกราฟชีวิตแท้
+let calculatedHouseIndex = 0;
+let ageModulo = activeAge % 12;
+
+if (ageModulo === 1) calculatedHouseIndex = 0;       // วาสนา
+else if (ageModulo === 2) calculatedHouseIndex = 5;  // ศัตรู
+else if (ageModulo === 3) calculatedHouseIndex = 2;  // เพื่อน
+else if (ageModulo === 4) calculatedHouseIndex = 9;  // การงาน
+else if (ageModulo === 5) calculatedHouseIndex = 4;  // บริวาร
+else if (ageModulo === 6) calculatedHouseIndex = 6;  // คู่ครอง
+else if (ageModulo === 7) calculatedHouseIndex = 3;  // ญาติ
+else if (ageModulo === 8) calculatedHouseIndex = 7;  // โรคภัย
+else if (ageModulo === 9) calculatedHouseIndex = 8;  // ความสุข
+else if (ageModulo === 10) calculatedHouseIndex = 9; // การงาน (ซ้ำรอบเสริม)
+else if (ageModulo === 11) calculatedHouseIndex = 10; // ลาภยศ (อายุ 47 จะตกเศษ 11 -> ช่องลาภยศพอดี)
+else if (ageModulo === 0) calculatedHouseIndex = 11;  // วินาศ (อายุ 48 จะตกเศษ 0 -> ช่องวินาศพอดี)
+
+// 4. ดึงชื่อภพและค่าคะแนนแกน Y ประจำวันเกิดของคนนั้น ๆ ออกมาใช้งานโดยอัตโนมัติ
+const allHouseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
+let houseName = allHouseNames[calculatedHouseIndex];
+let score = currentCycleScores[calculatedHouseIndex];
+
+// กำหนดภูมิชะตาตามระดับคะแนน
+let zone = "มนุษย์ภูมิ";
+if (score >= 9) zone = "สวรรค์ภูมิ";
+else if (score <= 4) zone = "นรกภูมิ";
+
+// 5. ปรับพิกัดจุดสีส้มบนตัวกราฟให้ขยับตามจริง
 if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
-    // ลอจิกอัปเดตพิกัดจุดสีส้มตัวกราฟ: แกน X ไปที่ช่องลาภยศ (index 11), แกน Y ไปที่คะแนน 10
-    lifeChartInstance.data.datasets[1].data = [activeTransit.score]; // หรือปรับตามโครงสร้างชุดข้อมูลจุดส้มของคุณ
+    // โครงสร้าง Chart.js แบบ 2 datasets (เส้นกราฟหลัก = index 0, จุดจรสีส้ม = index 1)
+    if (lifeChartInstance.data.datasets[1]) {
+        // อัปเดตพิกัดจุดส้มแบบแกน X, Y
+        lifeChartInstance.data.datasets[1].data = [{ x: calculatedHouseIndex, y: score }];
+    } else {
+        // ปรับตามโครงสร้างหากระบบคุณดันข้อมูลแบบธรรมดา
+        lifeChartInstance.data.datasets[0].data[calculatedHouseIndex] = score;
+    }
     lifeChartInstance.update();
 }
 
-// 4. แก้ไขในส่วนของ innerHTML ให้แสดงผลลัพธ์
+// 6. พ่นโค้ดเรนเดอร์คำทำนายด้านล่างให้ตรงตามวันเกิดและอายุจรจริง
 document.getElementById('vip-graph-aspects-content').innerHTML = `
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${activeAge} ปี (เลข ${activeTransit.score})</strong></div>
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${activeTransit.score}/12 คะแนน (${activeTransit.zone})</strong></div>
-    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${activeTransit.houseName}</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${activeAge} ปี (เลข ${score})</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${score}/12 คะแนน (${zone})</strong></div>
+    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${houseName}</strong></div>
 `;
+
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       const houseDescriptions = {
