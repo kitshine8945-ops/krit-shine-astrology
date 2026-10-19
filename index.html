@@ -13210,32 +13210,96 @@ function initMyHoraLifeChart(focusAge) {
         });
     }, 150); 
 }
-// 1. ฟังก์ชันดักบั๊กและเรนเดอร์กราฟชีวิตตามพิกัดอายุย่างจริง
+// 1. ฟังก์ชันหลักสำหรับเปลี่ยนอายุและอัปเดตกราฟ
+    function applyAgeChange(age) {
+        if (typeof isChangingAge !== 'undefined' && isChangingAge) return;
+        isChangingAge = true;
+
+        age = parseInt(age, 10);
+        if (isNaN(age)) age = 1;
+        if (age < 1) age = 1;
+        if (age > 80) age = 80;
+
+        if (typeof lockedUserAge !== 'undefined') lockedUserAge = age;
+        if (typeof AppState !== 'undefined') AppState.currentGraphAge = age;
+        
+        const birthYearInput = document.getElementById('birthYearBE');
+        const bYear = birthYearInput ? parseInt(birthYearInput.value, 10) : (AppState?.birthBE || 2522);
+        
+        let calBE = bYear + age; // สูตรคำนวณปี พ.ศ. = ปีเกิดจริง + อายุย่าง
+
+        const slider = document.getElementById('ageRangeSlider');
+        const selectEl = document.getElementById('selectYearAgeDirect');
+        
+        if (slider && parseInt(slider.value, 10) !== age) slider.value = age;
+        if (selectEl && parseInt(selectEl.value, 10) !== age) selectEl.value = age;
+
+        const cycle = getLifeGraphBaseCycle();
+        let score = cycle[(age - 1) % 12];
+
+        const sliderYearDisplay = document.getElementById('slider-year-display');
+        if (sliderYearDisplay) {
+            sliderYearDisplay.textContent = `(พ.ศ. ${calBE})`;
+        }
+        const sliderAgeDisplay = document.getElementById('slider-age-display');
+        if (sliderAgeDisplay) {
+            sliderAgeDisplay.textContent = `อายุ ${age} ปี`;
+        }
+
+        if (typeof houseNames !== 'undefined' && typeof houseDescriptions !== 'undefined') {
+            document.getElementById('vip-graph-12houses-content').innerHTML = houseNames.map((name, i) => {
+                let sc = cycle[i];
+                let realm = sc >= 9 ? 'สวรรค์ภูมิ' : (sc >= 5 ? 'มนุษย์ภูมิ' : 'นรกภูมิ');
+                let realmKey = sc >= 9 ? 'heaven' : (sc >= 5 ? 'human' : 'hell');
+                let colorCode = sc >= 9 ? '#ffd700' : (sc >= 5 ? '#81c784' : '#ff7675');
+                let descText = houseDescriptions[name] ? houseDescriptions[name][realmKey] : `พลังเรือนภพประจำตัวส่งผลต่อการดำเนินชีวิตในด้าน${name}`;
+
+                return `
+                  <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:8px;">
+                    <strong style="color:${colorCode};">${name} เลข ${sc} (${realm})</strong>
+                    <p style="font-size:0.78rem; color:#cfd8dc; margin-top:2px;">${descText}</p>
+                  </div>
+                `;
+            }).join('');
+        }
+
+        if (typeof initMyHoraLifeChart === 'function') {
+            initMyHoraLifeChart(age);
+        }
+
+        setTimeout(() => { isChangingAge = false; }, 50);
+    }
+
+    function updateAgeFromSlider(age) { 
+        let a = parseInt(age, 10);
+        lockedUserAge = a;
+        applyAgeChange(a); 
+    }
+    
+    function updateAgeFromInput(age) { 
+        let a = parseInt(age, 10);
+        lockedUserAge = a;
+        applyAgeChange(a); 
+    }
+
     function renderLifeGraph(astrologyAge) {
         let age = parseInt(astrologyAge, 10);
-        if (isNaN(age) || age < 1 || age > 80) {
-            age = 1;
-        }
+        if (isNaN(age) || age < 1 || age > 80) age = 1;
 
         let columnIdx = age % 12;
         if (columnIdx === 0) columnIdx = 12;
 
         let scoreY = database.getScoreByColumn(columnIdx);
-
-        if (!scoreY || isNaN(scoreY)) {
-            console.error("ระบบไม่สามารถคำนวณจุดอายุจรได้ เนื่องจากฐานข้อมูลคะแนนคลาดเคลื่อน");
-            scoreY = 6; 
-        }
+        if (!scoreY || isNaN(scoreY)) scoreY = 6; 
 
         let birthYearInput = document.getElementById('birthYearBE');
         let bYear = birthYearInput ? parseInt(birthYearInput.value, 10) : 0;
-        
         let targetYearBE = bYear > 0 ? (bYear + age) : 0;
         
         drawChartPoint(columnIdx, scoreY, targetYearBE);
     }
 
-    // 2. ฟังก์ชันอัปเดต Dropdown ปี พ.ศ. ตามอายุย่างจริง (อิงจากปีเกิดที่ผู้ใช้กรอกจริง)
+    // 2. ฟังก์ชันอัปเดต Dropdown ปี พ.ศ. ตามอายุย่างจริง
     function updateYearDropdown() {
         const selectElement = document.getElementById('selectYearAgeDirect');
         if (!selectElement) return;
