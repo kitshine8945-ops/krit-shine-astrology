@@ -2464,9 +2464,9 @@ function analyzeVipSpecificQuestion() {
               </div>
               <div style="position: relative;"><canvas id="lifeChartCanvas" style="max-height: 290px;"></canvas></div>
               
-              <!-- หัวข้อเรือนภพด้านขวา (เพิ่มแถวเว้นว่างด้านบนและด้านล่างตามที่พี่กฤศแนะนำ เพื่อดันระยะให้ตรงกับเส้นตาราง 100%) -->
-              <div style="display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 290px; box-sizing: border-box;">
-                <div style="height: calc(100% / 14); visibility: hidden;">ช่องว่างบน</div>
+              <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ตรงเป๊ะตามตาราง 14 ช่อง) -->
+              <div style="display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 262px; padding-top: 4px; padding-bottom: 4px; box-sizing: border-box;">
+                <div style="height: calc(100% / 14); display: flex; align-items: center;"></div> <!-- ช่องจำลองด้านบนสุด -->
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">12 วาสนา</div>
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">11 ทรัพย์</div>
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">10 เพื่อน</div>
@@ -2479,7 +2479,7 @@ function analyzeVipSpecificQuestion() {
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">3 การงาน</div>
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">2 ลาภยศ</div>
                 <div style="height: calc(100% / 14); display: flex; align-items: center;">1 วินาศ</div>
-                <div style="height: calc(100% / 14); visibility: hidden;">ช่องว่างล่าง</div>
+                <div style="height: calc(100% / 14); display: flex; align-items: center;"></div> <!-- ช่องจำลองด้านล่างสุด -->
               </div>
             </div>
           </div>
