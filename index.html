@@ -13048,21 +13048,22 @@ renderBaziDirect();
 // ====================================================================
 // วางฟังก์ชันคำนวณอายุย่างสากล (เฉพาะกราฟชีวิต) ต่อท้ายตรงนี้ได้เลย (บรรทัด 13159 เดิม)
 // ====================================================================
-function calculateLifeChartAstrologyAge(birthDateInput, transitDateInput) {
-    if (!birthDateInput) return 40; 
-
-    const birth = new Date(birthDateInput);
-    const target = transitDateInput ? new Date(transitDateInput) : new Date();
-
-    let fullAge = target.getFullYear() - birth.getFullYear();
-    let monthDiff = target.getMonth() - birth.getMonth();
-    let dayDiff = target.getDate() - birth.getDate();
-
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-        fullAge--;
+function calculateLifeChartAstrologyAge(birthYearBE, transitYearBE) {
+    // ใช้ปีจรปัจจุบันตามที่หน้าจอคอมพิวเตอร์ดึงค่าได้ (ถ้าไม่มีระบบจะใช้ปี พ.ศ. 2569 ตามหน้าเว็บปัจจุบันของคุณ)
+    let currentYearBE = transitYearBE;
+    if (!currentYearBE) {
+        currentYearBE = (typeof AppState !== 'undefined' && AppState.transitBE) 
+            ? AppState.transitBE 
+            : (parseInt(document.getElementById('transitYearBE')?.value, 10) || new Date().getFullYear() + 543);
     }
+    
+    // คำนวณอายุเต็มในรอบปี (ลบกันตรง ๆ จากข้อมูลของสมาชิกคนนั้น ๆ)
+    let fullAge = currentYearBE - birthYearBE;
+    if (fullAge < 0) fullAge = 0;
 
-    let astrologyAge = fullAge + 1;
+    // แปลงเข้าระบบ "อายุย่างทางโหราศาสตร์ไทย" (+1 ปี เสมอสำหรับสมาชิกทุกคน)
+    let astrologyAge = fullAge + 1; 
+    
     return astrologyAge;
 }
 
@@ -13073,37 +13074,39 @@ function initMyHoraLifeChart(focusAge) {
     const canvas = document.getElementById('lifeChartCanvas');
     if (!canvas) return;
 
+    // 1. ดึงฐานลูปคะแนน 12 ภพชะตาประจำตัวของสมาชิกที่กรอกเข้ามา (ไม่มีผลกระทบกับลัคนาพยากรณ์)
     const cycle = getLifeGraphBaseCycle(); 
 
-    if (!focusAge) {
-        let rawBirthDate = "";
-        if (typeof AppState !== 'undefined' && AppState.birthDateISO) {
-            rawBirthDate = AppState.birthDateISO; 
-        } else {
-            const inputEl = document.getElementById('birthDate');
-            if (inputEl && inputEl.value) {
-                rawBirthDate = inputEl.value;
-            }
-        }
+    // 2. ดึงปีเกิด พ.ศ. ไดนามิกของสมาชิกจาก AppState หรือช่องอินพุตบนฟอร์มจริงของคุณ (birthYearBE)
+    const birthYearBE = (typeof AppState !== 'undefined' && AppState.birthBE) 
+        ? AppState.birthBE 
+        : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
 
-        if (rawBirthDate) {
-            focusAge = calculateLifeChartAstrologyAge(rawBirthDate, null);
-        } else {
-            focusAge = 40; 
-        }
+    // 3. ตรวจสอบเงื่อนไขการคำนวณครั้งแรกเมื่อเปิดหน้าจอขึ้นมา
+    if (!focusAge) {
+        // ดึงปีจรปัจจุบันแบบไดนามิกจากระบบของหน้าเว็บ ณ ขณะนั้น
+        const currentYearBE = (typeof AppState !== 'undefined' && AppState.transitBE) 
+            ? AppState.transitBE 
+            : (parseInt(document.getElementById('transitYearBE')?.value, 10) || new Date().getFullYear() + 543);
+            
+        // ส่งค่าไปคำนวณระบบอายุย่างโดยอัตโนมัติ (ไม่ล็อกค่าดวงชะตาของใครคนใดคนหนึ่ง)
+        focusAge = calculateLifeChartAstrologyAge(birthYearBE, currentYearBE);
         
+        // อัปเดตตัวเลขแสดงผลบนหน้าจอให้ตรงกับอายุย่างจริงของสมาชิกคนนั้น
         const ageDisplay = document.getElementById('yearly-prediction-age-display');
         if (ageDisplay) ageDisplay.innerText = `อายุ ${focusAge} ปี`;
     }
 
+    // 4. ตัดเศษ 12 หาตำแหน่งเวียนเรือนภพประจำอายุย่างจรปีนั้น ๆ ของสมาชิก
     let transitRemainder = focusAge % 12;
     if (transitRemainder === 0) transitRemainder = 12; 
 
     let graphPoints = []; 
 
+    // 5. วนลูปพล็อตจุดชะตาเรียงล็อกคอลัมน์แนวนอนตาม 12 เรือนภพถาวรจากซ้ายไปขวา
     for (let col = 0; col < 12; col++) {
         const houseNumber = col + 1; 
-        const score = cycle[col]; 
+        const score = cycle[col]; // ดึงระดับคะแนนจริงของสมาชิกแต่ละคน (จะไม่มีคะแนน 0)
         const row = 12 - score; 
         const isFocus = (houseNumber === transitRemainder);
 
@@ -13116,6 +13119,7 @@ function initMyHoraLifeChart(focusAge) {
         });
     }
 
+    // 6. กลไกการวาดเส้นกราฟชีวิตในแผ่นแคนวาสให้ตรงล็อกช่องสี่เหลี่ยมจัตุรัสแบบใหม่
     setTimeout(() => {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width;
@@ -13124,12 +13128,14 @@ function initMyHoraLifeChart(focusAge) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // แบ่งพื้นที่ใน Canvas เป็นล็อกช่องย่อยสัดส่วน 12 x 12 ช่องเท่ากันเป๊ะ ๆ ทุกด้าน
         const cellWidth = canvas.width / 12;
         const cellHeight = canvas.height / 12;
 
+        // --- วาดเส้นกราฟชีวิตแนวนอนยาวจากซ้ายไปขวา (ภพที่ 1 ถึง 12) ---
         ctx.beginPath();
         ctx.lineWidth = 3;
-        ctx.strokeStyle = '#2ecc71'; 
+        ctx.strokeStyle = '#2ecc71'; // เส้นวิถีชีวิตสีเขียวสด
         ctx.lineJoin = 'round';
 
         graphPoints.forEach((pt, idx) => {
@@ -13140,12 +13146,14 @@ function initMyHoraLifeChart(focusAge) {
         });
         ctx.stroke();
 
+        // --- วาดปุ่มจุดวงกลมคะแนนชะตาลงในล็อกช่องตาราง ---
         graphPoints.forEach((pt) => {
             const x = (pt.gridX * cellWidth) + (cellWidth / 2);
             const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
             ctx.beginPath();
             if (pt.isFocus) {
+                // วงกลมจุดดวงจรปัจจุบันของอายุย่างปีนั้น (สีแดงสดขอบทองสว่างระบบ VIP)
                 ctx.arc(x, y, 9, 0, 2 * Math.PI);
                 ctx.fillStyle = '#ff4757';
                 ctx.fill();
@@ -13153,6 +13161,7 @@ function initMyHoraLifeChart(focusAge) {
                 ctx.strokeStyle = '#f5c469';
                 ctx.stroke();
             } else {
+                // จุดระดับคะแนนประจำปีอื่น ๆ ตามดวงชะตาของสมาชิก (สีเหลืองทองดั้งเดิม)
                 ctx.arc(x, y, 5, 0, 2 * Math.PI);
                 ctx.fillStyle = '#ffd700';
                 ctx.fill();
@@ -13163,6 +13172,7 @@ function initMyHoraLifeChart(focusAge) {
         });
     }, 100); 
 }
+
 
 window.handleOpenModal = handleOpenModal;
 </script>
