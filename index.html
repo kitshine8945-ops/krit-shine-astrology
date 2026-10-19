@@ -5616,51 +5616,33 @@ function getLifeGraphBaseCycle() {
 }
 
 // ==========================================
-// 1. ฟังก์ชันคำนวณ 3 ฐานแบบ Dynamic ตามวันเดือนปีเกิดจริงของผู้ใช้
+// 1. ฟังก์ชันคำนวณเลขดวงชะตา 12 เรือนภพ (เทียบเท่า HoroscopeGraphService ใน Java)
 // ==========================================
-function getLifeGraphBaseCycleFromUser() {
-  // ดึงข้อมูลวัน เดือน ปีเกิดจริงจากระบบของผู้ใช้แต่ละคน (หากไม่มีให้ใช้ค่ากลางสำรอง)
-  let birthDayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 1; // 1=อาทิตย์ ถึง 7=เสาร์
-  let birthMonthThai = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6; // เดือนไทย (เช่น เดือน 5, 6, ...)
-  let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522; // ปี พ.ศ. เกิดจริง
-
-  // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (สากลทางโหราศาสตร์ไทย: ปี 2460 เศษ 1 คือปีชวด)
-  let zodiacIndex = ((birthBeYear - 2460) % 12);
-  if (zodiacIndex < 0) zodiacIndex += 12;
-  let birthZodiac = zodiacIndex + 1; // ได้ค่า 1 ถึง 12 (1=ชวด, ..., 8=มะแม, ..., 12=ปีกุน)
-
-  let cycleArray = [];
+function calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, targetAge) {
+  // คะแนนฐานตั้งต้น (วัน + เดือน + ปีนักษัตร)
+  let baseScore = dayOfWeek + lunarMonth + zodiacYear;
   
-  // วนลูปสร้างตาราง 12 ช่องตามหลัก 3 ฐาน (ฐานวัน, ฐานเดือน, ฐานปี)
-  for (let i = 0; i < 12; i++) {
-    // ฐานวัน: นับเรียงวันในสัปดาห์ 1-7 วนลูป
-    let baseDay = ((birthDayOfWeek - 1 + i) % 7) + 1;
-
-    // ฐานเดือน: นับเรียงเดือนไทย วนลูป 1-12
-    let baseMonth = ((birthMonthThai - 1 + i) % 12) + 1;
-
-    // ฐานปี: นับเรียงปีนักษัตร วนลูป 1-12
-    let baseYear = ((birthZodiac - 1 + i) % 12) + 1;
-
-    // ผลรวมของ 3 ฐาน
-    let sum = baseDay + baseMonth + baseYear;
-
-    // แปลงผลรวมเป็น "เลขดวง" (ถ้าเกิน 12 ให้นำ 12 มาลบออกจนกว่าจะไม่เกิน 12)
-    let score = sum;
-    while (score > 12) {
-      score -= 12;
-    }
-    
-    cycleArray.push(score);
-  }
+  // ขยับตัวเลขตามอายุย่าง โดยวนลูปฐาน 12
+  let result = (baseScore + (targetAge - 1)) % 12;
   
-  return cycleArray;
+  // ถ้าเศษเป็น 0 ให้แปลงเป็นเลข 12
+  return (result === 0) ? 12 : result;
 }
 
-const cycle = getLifeGraphBaseCycleFromUser();
+// ==========================================
+// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ (AppState หรือค่ากลางสำรอง)
+// ==========================================
+let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
+let dayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 1; // 1=อาทิตย์, 2=จันทร์, ...
+let lunarMonth = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6;  // เดือนไทย เช่น 6
+
+// คำนวณปีนักษัตรจากปี พ.ศ. เกิด (ปี 2460 ชวด = 1)
+let zodiacIndex = ((birthBeYear - 2460) % 12);
+if (zodiacIndex < 0) zodiacIndex += 12;
+let zodiacYear = zodiacIndex + 1;
 
 // ==========================================
-// 2. คำนวณจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+// 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
 // ==========================================
 let startAgeCycle = focusAge - ((focusAge - 1) % 12);
 if (focusAge % 12 === 0) {
@@ -5670,34 +5652,33 @@ if (focusAge % 12 === 0) {
 let graphPoints = [];
 
 // ==========================================
-// 3. วนลูปแกนนอน 12 คอลัมน์ (จับคู่ตำแหน่งอายุจรกับ Array 12 ช่อง)
+// 4. วนลูปแกนนอน 12 คอลัมน์ (ช่วงอายุ 37 ถึง 48 ปี หรือตามรอบอายุจร)
 // ==========================================
 for (let col = 0; col < 12; col++) {
-  const currentAge = startAgeCycle + col; 
+  const currentAge = startAgeCycle + col;
   
-  // แปลงอายุจรให้วิ่งวนซ้ำใน 12 ช่อง (index 0 ถึง 11) ตามวัฏจักรกราฟชีวิต 12 ปี
-  let targetHouseIndex = (currentAge - 1) % 12; 
-  
-  const score = cycle[targetHouseIndex];
+  // คำนวณเลขดวงชะตา (1 - 12) ด้วยฟังก์ชันมาตรฐาน
+  const score = calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, currentAge);
   const safeScore = score > 0 ? score : 1; 
-  const row = 12 - safeScore; // แปลงคะแนนเป็นพิกัดความสูง Canvas (12 อยู่บนสุด, 1 อยู่ล่างสุด)
+  
+  // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้งบน Canvas (คะแนน 12 อยู่บนสุด, คะแนน 1 อยู่ล่างสุด)
+  const row = 12 - safeScore;
 
-  // ดึงปี พ.ศ. เกิดจริงของผู้ใช้มาคำนวณ พ.ศ. จร
-  let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
+  // คำนวณปี พ.ศ. จรให้สัมพันธ์กับอายุโดยอัตโนมัติ
   let currentBuddhistYear = birthBeYear + currentAge - 1;
 
   graphPoints.push({
     age: currentAge,
     buddhistYear: currentBuddhistYear,
     score: safeScore,
-    gridX: col,       // ตำแหน่งคอลัมน์แนวนอน 0 ถึง 11
-    gridY: row,       // พิกัดแนวตั้งตามคะแนนเลขดวง
-    isFocus: (currentAge === focusAge) // จุดสีแดงแสดงเฉพาะอายุที่กำลังโฟกัส
+    gridX: col,       // ตำแหน่งคอลัมน์แนวนอน 0 - 11
+    gridY: row,       // พิกัดความสูงแนวตั้งตรงกับเลขดวง
+    isFocus: (currentAge === focusAge) // จุดสีแดงจะแสดงเฉพาะอายุที่กำลังโฟกัส
   });
 }
 
 // ==========================================
-// 4. สั่งผ้าใบ (Canvas) วาดเส้นกราฟและจุดพิกัด
+// 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นกราฟและจุดพิกัด
 // ==========================================
 setTimeout(() => {
   const canvas = document.getElementById('lifeChartCanvas');
@@ -5712,7 +5693,7 @@ setTimeout(() => {
   const cellWidth = canvas.width / 12;
   const cellHeight = canvas.height / 12;
 
-  // ลากเส้นเชื่อมโยงกราฟจากซ้ายไปขวา
+  // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงจากซ้ายไปขวา
   ctx.beginPath();
   ctx.lineWidth = 3;
   ctx.strokeStyle = '#2ecc71';
@@ -5726,7 +5707,7 @@ setTimeout(() => {
   });
   ctx.stroke();
 
-  // วาดจุดวงกลมบนเส้น พร้อมพิมพ์ พ.ศ. และเลขอายุใต้จุด
+  // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จร
   graphPoints.forEach((pt) => {
     const x = (pt.gridX * cellWidth) + (cellWidth / 2);
     const y = (pt.gridY * cellHeight) + (cellHeight / 2);
@@ -5734,14 +5715,14 @@ setTimeout(() => {
     ctx.beginPath();
     if (pt.isFocus) {
       ctx.arc(x, y, 9, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ff4757'; // จุดสีแดงสดเฉพาะอายุที่เลือกโฟกัส
+      ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันแสดงผลเป็น "สีแดงสด"
       ctx.fill();
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#f5c469';
       ctx.stroke();
     } else {
       ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffd700'; // จุดสีเหลืองสำหรับอายุรอบข้าง
+      ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างแสดงผลเป็น "สีเหลือง"
       ctx.fill();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = '#040816';
