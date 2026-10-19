@@ -11413,25 +11413,48 @@ function updateTransitForPremiumModal(elementId, t) {
     transitBadge.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ผลคำทำนายเจาะลึก ณ วันจร: ${t.string}`;
 }
 
-// --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
-  // --- --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด --- ---
-['transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 'birthDay', 'birthMonth', 'birthYearBE'].forEach(id => {
+// --- 3. ผูก Event Listener เข้ากับช่องเลือกวันจรทั้งหมด ---
+[
+    'transitDay', 'transitMonth', 'transitYearBE', 'transitHour24', 'transitMinute24', 
+    'birthDay', 'birthMonth', 'birthYearBE', 'selectYearAgeDirect'
+].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
+        // ดักจับเหตุการณ์เมื่อมีการกดเปลี่ยนค่า (Dropdown / Select)
         el.addEventListener('change', function() {
             try {
                 if (typeof updateAllVipFeaturesByTransit === 'function') {
                     updateAllVipFeaturesByTransit();
                 }
+                
+                // สั่งฟังก์ชันกราฟชีวิต 12 เรือนภพให้คำนวณตำแหน่งและจุดส้มใหม่ทันที
+                if (typeof updateVipGraphAspects === 'function') {
+                    updateVipGraphAspects();
+                }
+
                 if (typeof calcNum7Base === 'function') {
                     calcNum7Base();
                 }
             } catch (err) {
-                console.error("Transit Update Error: ", err);
+                console.error("Transit Update Error (Change): ", err);
             }
         });
+
+        // ดักจับเหตุการณ์สำหรับ Slider ปรับอายุโดยเฉพาะ (เวลากดลากเลื่อนจุดสีส้มจะวิ่งตามทันทีแบบ Real-time)
+        if (id === 'selectYearAgeDirect') {
+            el.addEventListener('input', function() {
+                try {
+                    if (typeof updateVipGraphAspects === 'function') {
+                        updateVipGraphAspects();
+                    }
+                } catch (err) {
+                    console.error("Slider Real-time Update Error: ", err);
+                }
+            });
+        }
     }
 });
+
 // --- 1. ฟังก์ชันสร้างมาตรฐานแถบวันจร ---
 function getCleanTransitBadgeString() {
     var dEl = document.getElementById('transitDay');
