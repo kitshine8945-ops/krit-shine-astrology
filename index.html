@@ -2566,10 +2566,7 @@ function analyzeVipSpecificQuestion() {
 
               <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเป็นสี่เหลี่ยมจัตุรัส -->
               <div style="position: relative; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr); aspect-ratio: 12 / 12; width: 100%;">
-                <!-- สร้างตารางช่องสี่เหลี่ยมจัตุรัสจำลองพื้นหลังให้ตรงกับเส้นแกน -->
-                <script>
-                  // (หากใช้โครงสร้างนี้ ร่วมกับฟังก์ชันวาด Canvas ทับ สามารถวาง canvas ซ้อนทับได้ทันทีครับ)
-                </script>
+                <!-- สร้างตารางเส้นตารางตารางพิกัดพื้นหลัง (Optional) -->
                 <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></canvas>
               </div>
               
@@ -5558,81 +5555,29 @@ const POEMS_DATABASE = {
     }
 // ฟังก์ชันวาดกราฟเส้น Chart.js แบบล็อกช่องและสัดส่วนตรงกับตาราง 100%
 function initMyHoraLifeChart(focusAge) {
-    const container = document.getElementById('horalifeTableWrapper');
     const canvas = document.getElementById('lifeChartCanvas');
-    if (!container || !canvas) return;
+    if (!canvas) return;
 
-    const cycle = getLifeGraphBaseCycle();
-    const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
-    
+    const cycle = getLifeGraphBaseCycle(); // ดึงลูปคะแนน 1-12 ตามระบบเดิม
     let startAge = Math.max(1, focusAge - 5);
     let endAge = Math.min(80, startAge + 11);
     
-    // เคลียร์ช่องตารางเก่า (ยกเว้นหัวข้อหลักและแคนวาส)
-    const dynamicElements = container.querySelectorAll('.hl-cell, .hl-axis-right, .hl-footer-bottom');
-    dynamicElements.forEach(el => el.remove());
-
-    const houses = [
-      "12 วาสนา", "11 ทรัพย์", "10 เพื่อน", "9 ญาติ", 
-      "8 บริวาร", "7 ศัตรู", "6 คู่ครอง", "5 โรคภัย", 
-      "4 ความสุข", "3 การงาน", "2 ลาภยศ", "1 วินาศ"
-    ];
-
     let pointsData = [];
 
-    for (let i = 0; i < 12; i++) {
-      const currentScore = 12 - i;
-
-      for (let a = startAge; a <= endAge; a++) {
-        const score = cycle[(a - 1) % 12];
-        const cell = document.createElement('div');
-        cell.className = 'hl-cell';
-        
-        if (currentScore === 9 || currentScore === 5) {
-          cell.className += ' hl-cell-border-bold';
-        }
-
-        cell.style.gridRow = i + 2;
-        cell.style.gridColumn = (a - startAge) + 2;
-
-        if (score === currentScore) {
-          pointsData.push({
-            age: a,
-            score: score,
-            gridX: (a - startAge),
-            gridY: i,
-            isFocus: (a === focusAge)
-          });
-        }
-
-        container.appendChild(cell);
-      }
-
-      const rightAxis = document.createElement('div');
-      rightAxis.className = 'hl-axis-right';
-      if (currentScore === 9 || currentScore === 5) rightAxis.className += ' hl-cell-border-bold';
-      rightAxis.style.gridRow = i + 2;
-      rightAxis.innerText = houses[i];
-      container.appendChild(rightAxis);
-    }
-
-    const emptyFooterLeft = document.createElement('div');
-    emptyFooterLeft.className = 'hl-footer-bottom';
-    emptyFooterLeft.style.gridColumn = 1;
-    container.appendChild(emptyFooterLeft);
-
     for (let a = startAge; a <= endAge; a++) {
-      const footerCell = document.createElement('div');
-      footerCell.className = 'hl-footer-bottom';
-      footerCell.style.gridColumn = (a - startAge) + 2;
-      footerCell.innerHTML = `<strong>${birthYear + a}</strong><br>(${a}ปี)`;
-      container.appendChild(footerCell);
-    }
+      const score = cycle[(a - 1) % 12];
+      // คำนวณตำแหน่ง Grid คอลัมน์ (0 ถึง 11) และแถว (0 ถึง 11 โดยคะแนน 12 อยู่แถว 0 และคะแนน 1 อยู่แถว 11)
+      const gridX = a - startAge;
+      const gridY = 12 - score;
 
-    const emptyFooterRight = document.createElement('div');
-    emptyFooterRight.className = 'hl-footer-bottom';
-    emptyFooterRight.style.gridColumn = 14;
-    container.appendChild(emptyFooterRight);
+      pointsData.push({
+        age: a,
+        score: score,
+        gridX: gridX,
+        gridY: gridY,
+        isFocus: (a === focusAge)
+      });
+    }
 
     setTimeout(() => {
       const rect = canvas.getBoundingClientRect();
@@ -5646,6 +5591,7 @@ function initMyHoraLifeChart(focusAge) {
       const cellWidth = canvas.width / 12;
       const cellHeight = canvas.height / 12;
 
+      // วาดเส้นกราฟเชื่อมจุด
       ctx.beginPath();
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#2ecc71';
@@ -5660,6 +5606,7 @@ function initMyHoraLifeChart(focusAge) {
       });
       ctx.stroke();
 
+      // วาดวงกลมจุดพิกัดอายุ
       pointsData.forEach((pt) => {
         const x = (pt.gridX * cellWidth) + (cellWidth / 2);
         const y = (pt.gridY * cellHeight) + (cellHeight / 2);
@@ -5683,7 +5630,6 @@ function initMyHoraLifeChart(focusAge) {
       });
     }, 50);
   }
-
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
       lockedUserAge = a;
