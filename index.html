@@ -2425,54 +2425,81 @@ function analyzeVipSpecificQuestion() {
     </div>
   </div>
 
-  <!-- MODAL: กราฟชีวิต -->
-  <div class="modal-overlay" id="modal-lifegraph">
-    <div class="modal-content" style="max-width: 950px;">
-      <div class="modal-close-btn" onclick="closeModal('modal-lifegraph')"><i class="fa-solid fa-xmark"></i></div>
-      <div class="profile-astro-badge dynamic-user-badge"></div>
-      <div class="tier-switcher" style="margin-bottom:14px;">
-        <button type="button" class="tier-btn active" id="btn-graph-free" onclick="switchGraphMode('free')">กราฟและบทกลอนประจำปี (ดูฟรี)</button>
-        <button type="button" class="tier-btn" id="btn-graph-vip" onclick="switchGraphMode('vip')"><i class="fa-solid fa-crown"></i> ทำนายเต็มรูปแบบตามตำรา (VIP)</button>
-      </div>
-      <div style="text-align: center; margin-bottom: 12px;">
-        <h3 style="color: var(--gold-bright); font-size: 1.4rem;"><i class="fa-solid fa-chart-line"></i> กราฟชีวิต มาตรฐานพุทธมนต์ 12 เรือนภพ</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">ถอดรหัสจุดพยากรณ์ 3 ภูมิ (สวรรค์/มนุษย์/นรก) และเกณฑ์ชะตารายปี</p>
-      </div>
-      <div style="background: rgba(20, 28, 55, 0.85); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-          <div><span style="font-size:0.85rem; color:var(--text-muted);">เลือกอายุที่ต้องการพยากรณ์:</span> <strong id="slider-age-display" style="font-size:1.25rem; color:#ffd700; margin-left:6px;">อายุ 48 ปี</strong> <span id="slider-year-display" style="font-size:0.85rem; color:#81c784; margin-left:6px;">(พ.ศ. 2570)</span></div>
-          <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.8rem; color:#ccc;">หรือเลือกปี:</span> <select id="selectYearAgeDirect" class="form-control" style="width:auto; padding:4px 10px; font-size:0.82rem;" onchange="updateAgeFromInput(this.value)"></select></div>
+<!-- MODAL: กราฟชีวิต -->
+      <div class="modal-overlay" id="modal-lifegraph">
+        <div class="modal-content" style="max-width: 950px;">
+          <div class="modal-close-btn" onclick="closeModal('modal-lifegraph')"><i class="fa-solid fa-xmark"></i></div>
+          <div class="profile-astro-badge dynamic-user-badge"></div>
+          <div class="tier-switcher" style="margin-bottom:14px;">
+            <button type="button" class="tier-btn active" id="btn-graph-free" onclick="switchGraphMode('free')">กราฟและบทกลอนประจำปี (ดูฟรี)</button>
+            <button type="button" class="tier-btn" id="btn-graph-vip" onclick="switchGraphMode('vip')"><i class="fa-solid fa-crown"></i> ทำนายเต็มรูปแบบตามตำรา (VIP)</button>
+          </div>
+          <div style="text-align: center; margin-bottom: 12px;">
+            <h3 style="color: var(--gold-bright); font-size: 1.4rem;"><i class="fa-solid fa-chart-line"></i> กราฟชีวิต มาตรฐานพุทธมนต์ 12 เรือนภพ</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">ถอดรหัสจุดพยากรณ์ 3 ภูมิ (สวรรค์/มนุษย์/นรก) และเกณฑ์ชะตารายปี</p>
+          </div>
+          <div style="background: rgba(20, 28, 55, 0.85); border: 1.5px solid var(--gold-main); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+              <div><span style="font-size:0.85rem; color:var(--text-muted);">เลือกอายุที่ต้องการพยากรณ์:</span> <strong id="slider-age-display" style="font-size:1.25rem; color:#ffd700; margin-left:6px;">อายุ 48 ปี</strong> <span id="slider-year-display" style="font-size:0.85rem; color:#81c784; margin-left:6px;">(พ.ศ. 2570)</span></div>
+              <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.8rem; color:#ccc;">หรือเลือกปี:</span> <select id="selectYearAgeDirect" class="form-control" style="width:auto; padding:4px 10px; font-size:0.82rem;" onchange="updateAgeFromInput(this.value)"></select></div>
+            </div>
+            <input type="range" id="ageRangeSlider" style="width:100%; height:8px; border-radius:5px; background:#1c2744; outline:none; cursor:pointer;" min="1" max="80" value="48" oninput="updateAgeFromSlider(this.value)">
+          </div>
+
+          <!-- ตารางกราฟชีวิตที่มีหัวข้อเรือนภพทั้งด้านบนและด้านขวาประกบคู่กัน -->
+          <div style="background: rgba(5,8,18,0.95); border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 18px;">
+            <!-- หัวข้อเรือนภพด้านบน -->
+            <div style="display: grid; grid-template-columns: 80px repeat(12, 1fr) 100px; gap: 2px; margin-bottom: 8px; text-align: center; font-size: 0.72rem; color: var(--gold-main); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px;">
+              <div>วิถีชีวิต</div>
+              <div>วาสนา</div><div>ทรัพย์</div><div>เพื่อน</div><div>ญาติ</div><div>บริวาร</div><div>ศัตรู</div><div>คู่ครอง</div><div>โรคภัย</div><div>ความสุข</div><div>การงาน</div><div>ลาภยศ</div><div>วินาศ</div>
+              <div>ภูมิชะตา</div>
+            </div>
+
+            <!-- ส่วนแสดงกราฟและแกนซ้าย-ขวา -->
+            <div style="display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; align-items: center;">
+              <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.8rem; color: var(--gold-main); font-weight: 700; text-align: center; border-right: 1px dashed rgba(255,255,255,0.15); height: 100%;">
+                <div style="color:#ffd700;">สวรรค์ภูมิ<br><small>(9 - 12)</small></div>
+                <div style="color:#81c784;">มนุษย์ภูมิ<br><small>(5 - 8)</small></div>
+                <div style="color:#ff7675;">นรกภูมิ<br><small>(1 - 4)</small></div>
+              </div>
+              <div><canvas id="lifeChartCanvas" style="max-height: 290px;"></canvas></div>
+              <!-- หัวข้อเรือนภพด้านขวา -->
+              <div style="display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 100%;">
+                <div>12 วาสนา</div>
+                <div>11 ทรัพย์</div>
+                <div>10 เพื่อน</div>
+                <div>9 ญาติ</div>
+                <div>8 บริวาร</div>
+                <div>7 ศัตรู</div>
+                <div>6 คู่ครอง</div>
+                <div>5 โรคภัย</div>
+                <div>4 ความสุข</div>
+                <div>3 การงาน</div>
+                <div>2 ลาภยศ</div>
+                <div>1 วินาศ</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="yearly-prediction-card" style="background: rgba(30,20,10,0.85); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
+              <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
+              <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
+            </div>
+            <div id="yearly-poem-box" style="display: flex; justify-content: center; font-size: 0.95rem; color: #fff; line-height: 2; background: rgba(0,0,0,0.45); padding: 18px; border-radius: 8px;"></div>
+          </div>
+          <div id="vip-graph-full-details" style="display:none;">
+            <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+              <h4 style="color: #ffd700; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๑. ทำนายพื้นดวง (ความสัมพันธ์จุดพยากรณ์ในกราฟ VIP)</h4>
+              <div id="vip-graph-aspects-content"></div>
+            </div>
+            <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px;">
+              <h4 style="color: #64b5f6; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๒. ทำนายความหมายประจำเรือนภพ (12 ภพชะตาละเอียด)</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;" id="vip-graph-12houses-content"></div>
+            </div>
+          </div>
         </div>
-        <input type="range" id="ageRangeSlider" style="width:100%; height:8px; border-radius:5px; background:#1c2744; outline:none; cursor:pointer;" min="1" max="80" value="48" oninput="updateAgeFromSlider(this.value)">
       </div>
-      <div style="display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; background: rgba(5,8,18,0.95); border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 18px;">
-        <div style="display: flex; flex-direction: column; justify-content: space-around; font-size: 0.8rem; color: var(--gold-main); font-weight: 700; text-align: center; border-right: 1px dashed rgba(255,255,255,0.15);">
-          <div style="color:#ffd700;">สวรรค์ภูมิ<br><small>(9 - 12)</small></div><div style="color:#81c784;">มนุษย์ภูมิ<br><small>(5 - 8)</small></div><div style="color:#ff7675;">นรกภูมิ<br><small>(1 - 4)</small></div>
-        </div>
-        <div><canvas id="lifeChartCanvas" style="max-height: 290px;"></canvas></div>
-        <div style="display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px;">
-          <div>12 วาสนา</div><div>11 ทรัพย์</div><div>10 เพื่อน</div><div>9 ญาติ</div><div>8 บริวาร</div><div>7 ศัตรู</div><div>6 คู่ครอง</div><div>5 โรคภัย</div><div>4 ความสุข</div><div>3 การงาน</div><div>2 ลาภยศ</div><div>1 วินาศ</div>
-        </div>
-      </div>
-      <div id="yearly-prediction-card" style="background: rgba(30,20,10,0.85); border: 1.5px solid var(--gold-main); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
-          <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
-          <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
-        </div>
-        <div id="yearly-poem-box" style="display: flex; justify-content: center; font-size: 0.95rem; color: #fff; line-height: 2; background: rgba(0,0,0,0.45); padding: 18px; border-radius: 8px;"></div>
-      </div>
-      <div id="vip-graph-full-details" style="display:none;">
-        <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px; margin-bottom: 16px;">
-          <h4 style="color: #ffd700; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๑. ทำนายพื้นดวง (ความสัมพันธ์จุดพยากรณ์ในกราฟ VIP)</h4>
-          <div id="vip-graph-aspects-content"></div>
-        </div>
-        <div style="background: rgba(14,20,38,0.95); border: 1px solid var(--border-soft); border-radius: 12px; padding: 18px;">
-          <h4 style="color: #64b5f6; font-size: 1.05rem; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft); padding-bottom: 6px;">๒. ทำนายความหมายประจำเรือนภพ (12 ภพชะตาละเอียด)</h4>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;" id="vip-graph-12houses-content"></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
 <!-- MODAL: ปาจื่อ (BaZi 4 เสาหลักจีน) -->
 <div class="modal-overlay" id="modal-bazi">
