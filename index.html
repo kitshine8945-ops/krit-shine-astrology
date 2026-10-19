@@ -5532,24 +5532,21 @@ const ageTransitMapping = {
 
 // ห่อโค้ดทั้งหมดให้อยู่ในฟังก์ชันกลาง เพื่อให้ปุ่มและสไลเดอร์เรียกคำนวณใหม่ได้ทุกครั้ง
 function updateVipGraphAspects(ageInput) {
-    // 1. ดึงอายุจากสไลเดอร์หน้าเว็บจริง (ปรับให้อ่านค่าตรงจากหน้าจอ)
+    // 1. ดึงอายุจากสไลเดอร์หน้าเว็บจริง
     let selectedAgeEl = document.getElementById('selectYearAgeDirect');
     let stdActiveAge = ageInput || (selectedAgeEl ? parseInt(selectedAgeEl.value, 10) : 47);
 
-    // 2. เรียกฐานคะแนนแกน Y ของผู้ใช้คนนั้นๆ
+    // 2. เรียกฐานคะแนนแกน Y ประจำดวงชะตา (ลบท่อนที่เขียนค้างพังออกเรียบร้อยแล้ว)
     let stdCycleScores = getLifeGraphBaseCycle(); 
-    if (!stdCycleScores || stdCycleScores.length < 12) {
-        stdCycleScores =; // Fallback หากดึงค่าฐานไม่สำเร็จ
-    }
 
-    // 3. คำนวณเศษอายุจรดลัดเวียนตารางทั่วไป [อายุ % 12]
+    // 3. สูตรคำนวณหาช่องตกจร (Index ภพจร)
     let stdHouseIdx = 0;
     let stdAgeModulo = stdActiveAge % 12;
 
     if (stdAgeModulo === 0) {
-        stdHouseIdx = 11; // เศษ 0 ตกวินาศ
+        stdHouseIdx = 11; 
     } else {
-        stdHouseIdx = stdAgeModulo - 1; // เศษอื่นแปลงเป็น Index 0-10
+        stdHouseIdx = stdAgeModulo - 1; 
     }
 
     const stdHouseNamesList = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
@@ -5560,18 +5557,17 @@ function updateVipGraphAspects(ageInput) {
     if (stdScoreNum >= 9) stdZoneStr = "สวรรค์ภูมิ";
     else if (stdScoreNum <= 4) stdZoneStr = "นรกภูมิ";
 
-    // 4. สั่งตัวกราฟขยับจุดแดง (datasets[1]): เคลียร์ตำแหน่งเก่า 12 ช่อง แล้วปักหมุดช่องปัจจุบัน
+    // 4. อัปเดตพิกัดจุดส้มในตัวกราฟ
     if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
         if (lifeChartInstance.data && lifeChartInstance.data.datasets && lifeChartInstance.data.datasets[1]) {
             let orangeDotDataset = Array(12).fill(null);
             orangeDotDataset[stdHouseIdx] = stdScoreNum;
-            
             lifeChartInstance.data.datasets[1].data = orangeDotDataset;
             lifeChartInstance.update();
         }
     }
 
-    // 5. พ่นโค้ดเรนเดอร์กล่องคำทำนายด้านล่าง
+    // 5. เรนเดอร์กล่องข้อความคำทำนายด้านล่าง
     document.getElementById('vip-graph-aspects-content').innerHTML = `
         <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${stdActiveAge} ปี (เลข ${stdScoreNum})</strong></div>
         <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${stdScoreNum}/12 คะแนน (${stdZoneStr})</strong></div>
@@ -5579,11 +5575,12 @@ function updateVipGraphAspects(ageInput) {
     `;
 }
 
-// ผูกฟังก์ชันเข้ากับ window เพื่อความเสถียรในการเรียกข้ามบรรทัดโค้ด
+// ผูกฟังก์ชันเข้ากับ Global Object
 window.updateVipGraphAspects = updateVipGraphAspects;
 
-// สั่งรันครั้งแรกตอนโหลดหน้าเว็บให้เปิดมาเจอ อายุ 47 ปี
+// สั่งทำงานครั้งแรกทันที
 updateVipGraphAspects(47);
+
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       const houseDescriptions = {
