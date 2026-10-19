@@ -13298,7 +13298,7 @@ function initMyHoraLifeChart(focusAge) {
         drawChartPoint(columnIdx, scoreY, targetYearBE);
     }
 
-    // 2. ฟังก์ชันอัปเดต Dropdown ปี พ.ศ. ตามอายุย่างจริง
+// ฟังก์ชันอัปเดต Dropdown ปี พ.ศ. ตามอายุย่างจริง
     function updateYearDropdown() {
         const selectElement = document.getElementById('selectYearAgeDirect');
         if (!selectElement) return;
@@ -13314,17 +13314,15 @@ function initMyHoraLifeChart(focusAge) {
         }
 
         for (let age = 1; age <= 80; age++) {
-            let correspondingYearBE = bYear + age; // สูตร: ปีเกิดจริง + อายุย่าง
+            let correspondingYearBE = bYear + age;
             let option = document.createElement('option');
             option.value = age;
             option.textContent = `อายุ ${age} ปี (พ.ศ. ${correspondingYearBE})`;
             selectElement.appendChild(option);
         }
     }
-   }
-      
-window.handleOpenModal = handleOpenModal;
-    }
+
+    window.handleOpenModal = handleOpenModal;
 </script>
 </body>
 </html>
