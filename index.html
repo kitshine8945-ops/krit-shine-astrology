@@ -5552,37 +5552,33 @@ function initMyHoraLifeChart(focusAge) {
   const canvas = document.getElementById('lifeChartCanvas');
   if (!canvas) return;
 
-  // 1. ดึงฐานข้อมูลลูปคะแนนกราฟชีวิตประจำดวงชะตาจากระบบของคุณ
+  // 1. ดึงฐานข้อมูลลูปคะแนนดั้งเดิมประจำชะตาชีวิตของคุณ
   const cycle = getLifeGraphBaseCycle(); 
   
-  // 2. คำนวณช่วงอายุที่จะแสดงบนหน้าจอ (ย้อนหลัง 5 ปี ข้างหน้า 6 ปี รวมเป็น 12 ช่อง)
+  // 2. คำนวณช่วงอายุ (ย้อนหลัง 5 ปี และลากไปข้างหน้า รวมเป็น 12 ช่องคอลัมน์แนวนอน)
   let startAge = Math.max(1, focusAge - 5);
   let endAge = Math.min(80, startAge + 11);
   
-  let graphPoints = []; // กล่องสำหรับเก็บพิกัดเพื่อนำไปลากเส้น
+  let graphPoints = []; 
 
-  // 3. คำนวณสัดส่วนพิกัดแนวตั้ง 12 แถว (คะแนน 12 อยู่บนสุด ไล่ลงมาถึงคะแนน 1 อยู่ล่างสุด)
-  for (let i = 0; i < 12; i++) {
-    const currentScore = 12 - i;
+  // 3. ปรับการแมปพิกัด: ให้วนลูปตามแกนนอนคอลัมน์อายุ (0 ถึง 11) เพื่อให้กราฟลากเป็นแนวนอน
+  for (let col = 0; col < 12; col++) {
+    const currentAge = startAge + col;
+    const score = cycle[(currentAge - 1) % 12]; // คะแนนจริงจากระบบ (1 ถึง 12)
 
-    // คำนวณสัดส่วนพิกัดแนวนอน 12 คอลัมน์ (ตามช่วงอายุ)
-    for (let a = startAge; a <= endAge; a++) {
-      const score = cycle[(a - 1) % 12];
+    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่แถวบนสุด index 0, คะแนน 1 อยู่แถวล่างสุด index 11)
+    const row = 12 - score; 
 
-      // เก็บบันทึกตำแหน่งเมื่อระดับคะแนนของดวงชะตาตรงกับแถวนั้นๆ
-      if (score === currentScore) {
-        graphPoints.push({
-          age: a,
-          score: score,
-          gridX: (a - startAge), // อยู่คอลัมน์ที่เท่าไหร่ (0 - 11)
-          gridY: i,             // อยู่แถวตั้งที่เท่าไหร่ (0 - 11)
-          isFocus: (a === focusAge)
-        });
-      }
-    }
+    graphPoints.push({
+      age: currentAge,
+      score: score,
+      gridX: col,  // พิกัดคอลัมน์แนวนอนตรงกับหัวข้อด้านบน
+      gridY: row,  // พิกัดแถวตั้งตรงกับชื่อเรือนภพด้านขวา
+      isFocus: (currentAge === focusAge)
+    });
   }
 
-  // 4. สั่งให้ Canvas ปรับขนาดของตัวเองให้เต็มพื้นที่กล่องสี่เหลี่ยมจัตุรัสแบบใหม่
+  // 4. สั่งผ้าใบ (Canvas) รีเซ็ตพิกัดและเริ่มวาดเส้นชะตาแนวนอน
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -5591,11 +5587,11 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // แบ่งพื้นที่ในแผ่นวาดภาพออกเป็น 12 x 12 ช่องเท่า ๆ กันตามสัดส่วน Grid จริง
+    // แบ่งสัดส่วนตารางพื้นหลังเป็น 12 ช่อง เท่ากันเป๊ะ ๆ ทุกด้าน
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // วาดเส้นกราฟเชื่อมโยงทางชะตาสีเขียวสดใส พาดผ่านกึ่งกลางช่องพอดีเป๊ะ
+    // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงจากซ้ายไปขวา (แนวนอน)
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
@@ -5609,14 +5605,14 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // วาดจุดวงกลมพิกัดดวงชะตาลงบนเส้น
+    // วาดจุดพิกัดวงกลมกำกับบนเส้นดวงชะตา
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
       ctx.beginPath();
       if (pt.isFocus) {
-        // วงกลมจุดดวงจรประจำปีปัจจุบัน สีแดงสดขอบทองสว่างตามแบบระบบ VIP
+        // วงกลมจุดดวงจรปัจจุบัน (สีแดงสดขอบทองตามดีไซน์ VIP)
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
         ctx.fillStyle = '#ff4757';
         ctx.fill();
@@ -5624,7 +5620,7 @@ function initMyHoraLifeChart(focusAge) {
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
-        // จุดอายุจรปีอื่น ๆ ในวงรอบ สีเหลืองทองนวลตา
+        // จุดดวงจรปีอื่น ๆ ในล็อก (สีเหลืองทองดั้งเดิม)
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = '#ffd700';
         ctx.fill();
@@ -5633,7 +5629,7 @@ function initMyHoraLifeChart(focusAge) {
         ctx.stroke();
       }
     });
-  }, 100); // ดีเลย์เล็กน้อยเพื่อให้ตัวเบราว์เซอร์คำนวณขนาดความกว้างของกล่องใหม่เสร็จสมบูรณ์ก่อนลากเส้น
+  }, 100); 
 }
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
