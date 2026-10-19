@@ -5676,7 +5676,7 @@ if (focusAge % 12 === 0) {
 // ==========================================
 for (let col = 0; col < 12; col++) {
   const currentAge = startAgeCycle + col;
-  let targetHouseIndex = (currentAge - 1) % 12;
+  let targetHouseIndex = col;
   const score = cycle[targetHouseIndex];
   const safeScore = score > 0 ? score : 1;
   const row = 12 - safeScore;
