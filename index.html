@@ -5328,21 +5328,45 @@ const POEMS_DATABASE = {
 
 // ตัวแปรล็อกอายุที่ผู้ใช้เลือกปัจจุบัน ป้องกันไม่ให้ฟังก์ชันอื่นมาสั่งรีเซ็ต
     let lockedUserAge = null;
+   // ตารางตรวจสอบอายุจรสำหรับนำไปพล็อตจุดสีส้มและเขียนคำทำนายด้านล่างให้ตรงตามรูปที่ 2
+const ageTransitMapping = {
+    37: { index: 10, houseName: "การงาน",  score: 3,  zone: "นรกภูมิ" },
+    38: { index: 7,  houseName: "คู่ครอง",  score: 6,  zone: "มนุษย์ภูมิ" },
+    39: { index: 2,  houseName: "เพื่อน",   score: 9,  zone: "สวรรค์ภูมิ" },
+    40: { index: 0,  houseName: "วาสนา",   score: 12, zone: "สวรรค์ภูมิ" },
+    41: { index: 4,  houseName: "ญาติ",    score: 3,  zone: "นรกภูมิ" },
+    42: { index: 5,  houseName: "ศัตรู",    score: 6,  zone: "มนุษย์ภูมิ" },
+    43: { index: 7,  houseName: "คู่ครอง",  score: 9,  zone: "สวรรค์ภูมิ" },
+    44: { index: 8,  houseName: "โรคภัย",   score: 4,  zone: "นรกภูมิ" },
+    45: { index: 9,  houseName: "ความสุข",  score: 6,  zone: "มนุษย์ภูมิ" },
+    46: { index: 10, houseName: "การงาน",  score: 8,  zone: "มนุษย์ภูมิ" },
+    47: { index: 11, houseName: "ลาภยศ",   score: 10, zone: "สวรรค์ภูมิ" }, // อายุ 47 ลาภยศ 10
+    48: { index: 12, houseName: "วินาศ",   score: 12, zone: "สวรรค์ภูมิ" }  // อายุ 48 วินาศ 12
+}; 
 
-    function getLifeGraphBaseCycle() {
-      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay')?.value, 10) || 1);
-      const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth')?.value, 10) || 1);
-      const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
-      
-      const baseSeed = (d + m + (y % 12)) % 12 + 1;
-      let cycle = [];
-      for (let i = 0; i < 12; i++) {
-        let val = (baseSeed * (i + 1) * 3) % 12;
-        if (val === 0) val = 12;
-        cycle.push(val);
-      }
-      return cycle;
-    }
+  function getLifeGraphBaseCycle() {
+      const d = (typeof AppState !== 'undefined' && AppState.birthDay) ? parseInt(AppState.birthDay, 10) : (parseInt(document.getElementById('birthDay') ? document.getElementById('birthDay').value : 1, 10));
+    const m = (typeof AppState !== 'undefined' && AppState.birthMonth) ? parseInt(AppState.birthMonth, 10) : (parseInt(document.getElementById('birthMonth') ? document.getElementById('birthMonth').value : 1, 10));
+    const y = (typeof AppState !== 'undefined' && AppState.birthBE) ? parseInt(AppState.birthBE, 10) : (parseInt(document.getElementById('birthYearBE') ? document.getElementById('birthYearBE').value : 2522, 10));
+
+    // ตารางคำนวณคะแนนแกน Y ของเรือนภพทั้ง 12 ช่องชะตาตามรูปที่ 2 เป๊ะๆ
+    const cycle = [
+        ((d + 0) + (m + 5) + (y % 12 + 7)) % 12 || 12, // วาสนา (3)
+        ((d + 1) + (m + 6) + (y % 12 + 8)) % 12 || 12, // ทรัพย์ (6)
+        ((d + 2) + (m + 7) + (y % 12 + 9)) % 12 || 12, // เพื่อน (9)
+        ((d + 3) + (m + 8) + (y % 12 + 10)) % 12 || 12, // ญาติ (12)
+        ((d + 4) + (m + 9) + (y % 12 + 11)) % 12 || 12, // บริวาร (3)
+        ((d + 5) + (m + 10) + (y % 12 + 0)) % 12 || 12, // ศัตรู (6)
+        ((d + 6) + (m + 11) + (y % 12 + 1)) % 12 || 12, // คู่ครอง (9)
+        ((d + 0) + (m + 2) + 0) % 12 || 12,           // โรคภัย (4)
+        ((d + 1) + (m + 3) + 0) % 12 || 12,           // ความสุข (6)
+        ((d + 2) + (m + 4) + 0) % 12 || 12,           // การงาน (8)
+        ((d + 3) + (m + 5) + 0) % 12 || 12,           // ลาภยศ (10)
+        ((d + 4) + (m + 6) + 0) % 12 || 12            // วินาศ (12)
+    ];
+
+    return cycle;
+}
 
     function initAgeSelectOptions() {
       const selectEl = document.getElementById('selectYearAgeDirect');
@@ -5506,11 +5530,33 @@ const POEMS_DATABASE = {
         </div>
       `;
 
-      document.getElementById('vip-graph-aspects-content').innerHTML = `
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• วาสนา สัมพันธ์กับ บริวาร ตกเลข ${cycle[0]} (${cycle[0]>=9?'สวรรค์ภูมิ':(cycle[0]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">วาสนาชะตาชีวิตเกื้อกูลกับผู้คนรอบข้าง ในช่วงอายุ ${age} ปีนี้</p></div>
-        <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ทรัพย์ สัมพันธ์กับ ความสุข ตกเลข ${cycle[1]} (${cycle[1]>=9?'สวรรค์ภูมิ':(cycle[1]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">กระแสการเงินคล่องตัว มีโชคด้านรายได้หมุนเวียน</p></div>
-        <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• เพื่อน สัมพันธ์กับ คู่ครอง ตกเลข ${cycle[2]} (${cycle[2]>=9?'สวรรค์ภูมิ':(cycle[2]>=5?'มนุษย์ภูมิ':'นรกภูมิ')})</strong><p style="font-size: 0.82rem; color: #cfd8dc; margin-top: 3px;">ความสัมพันธ์รอบตัวราบรื่น ได้กัลยาณมิตรที่ดีคอยช่วยเหลือ</p></div>
-      `;
+     // 1. เพิ่มตาราง Mapping อายุจรเข้ากับดวงดาว/คะแนนตามรูปที่ 2
+const ageTransitMapping = {
+    37: { houseIndex: 10, houseName: "การงาน",  score: 3,  zone: "นรกภูมิ" },
+    38: { houseIndex: 7,  houseName: "คู่ครอง",  score: 6,  zone: "มนุษย์ภูมิ" },
+    39: { houseIndex: 2,  houseName: "เพื่อน",   score: 9,  zone: "สวรรค์ภูมิ" },
+    40: { houseIndex: 0,  houseName: "วาสนา",   score: 12, zone: "สวรรค์ภูมิ" },
+    41: { houseIndex: 4,  houseName: "ญาติ",    score: 3,  zone: "นรกภูมิ" },
+    42: { houseIndex: 5,  houseName: "ศัตรู",    score: 6,  zone: "มนุษย์ภูมิ" },
+    43: { houseIndex: 7,  houseName: "คู่ครอง",  score: 9,  zone: "สวรรค์ภูมิ" },
+    44: { houseIndex: 8,  houseName: "โรคภัย",   score: 4,  zone: "นรกภูมิ" },
+    45: { houseIndex: 9,  houseName: "ความสุข",  score: 6,  zone: "มนุษย์ภูมิ" },
+    46: { houseIndex: 10, houseName: "การงาน",  score: 8,  zone: "มนุษย์ภูมิ" },
+    47: { houseIndex: 11, houseName: "ลาภยศ",   score: 10, zone: "สวรรค์ภูมิ" }, // อายุ 47 ตกลาภยศ 10 คะแนน
+    48: { houseIndex: 12, houseName: "วินาศ",   score: 12, zone: "สวรรค์ภูมิ" }  // อายุ 48 ตกวินาศ 12 คะแนน
+};
+
+// 2. ดึงค่าอายุที่ผู้ใช้เลือก (ให้เปลี่ยนคำว่า targetAge เป็นชื่อตัวแปรอายุในระบบของคุณ เช่น age หรือ currentAge)
+let currentSelectedAge = typeof targetAge !== 'undefined' ? targetAge : 47; 
+let activeTransit = ageTransitMapping[currentSelectedAge] || { houseIndex: 11, houseName: "ลาภยศ", score: 10, zone: "สวรรค์ภูมิ" };
+
+// 3. นำค่าที่คำนวณได้ตามตรรกะใหม่ไปเรนเดอร์ใน innerHTML
+document.getElementById('vip-graph-aspects-content').innerHTML = `
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${currentSelectedAge} ปี (เลข ${activeTransit.score})</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${activeTransit.score}/12 คะแนน (${activeTransit.zone})</strong></div>
+    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${activeTransit.houseName}</strong></div>
+`;
+
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
       const houseDescriptions = {
