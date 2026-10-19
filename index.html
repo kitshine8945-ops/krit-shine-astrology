@@ -5449,7 +5449,7 @@ const POEMS_DATABASE = {
 
       setTimeout(() => { isChangingAge = false; }, 50);
     }
-// ฟังก์ชันวาดกราฟเส้น Chart.js ให้ช่องตารางเป็นสี่เหลี่ยมจัตุรัสทุกช่อง
+// ฟังก์ชันวาดกราฟเส้น Chart.js แบบล็อกช่องและสัดส่วนตรงกับตาราง 100%
   function initMyHoraLifeChart(focusAge) {
     const ctx = document.getElementById('lifeChartCanvas');
     if (!ctx) return;
@@ -5477,7 +5477,7 @@ const POEMS_DATABASE = {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // เปิดอิสระให้ปรับความสูงตามพื้นที่กล่อง HTML
+        maintainAspectRatio: false,
         animation: false,
         scales: {
           y: { 
