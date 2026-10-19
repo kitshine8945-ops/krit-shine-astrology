@@ -2464,22 +2464,20 @@ function analyzeVipSpecificQuestion() {
               </div>
               <div style="position: relative;"><canvas id="lifeChartCanvas" style="max-height: 290px;"></canvas></div>
               
-              <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ตรงเป๊ะตามตาราง 14 ช่อง) -->
-              <div style="display: flex; flex-direction: column; justify-content: space-between; font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 262px; padding-top: 4px; padding-bottom: 4px; box-sizing: border-box;">
-                <div style="height: calc(100% / 14); display: flex; align-items: center;"></div> <!-- ช่องจำลองด้านบนสุด -->
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">12 วาสนา</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">11 ทรัพย์</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">10 เพื่อน</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">9 ญาติ</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">8 บริวาร</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">7 ศัตรู</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">6 คู่ครอง</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">5 โรคภัย</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">4 ความสุข</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">3 การงาน</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">2 ลาภยศ</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;">1 วินาศ</div>
-                <div style="height: calc(100% / 14); display: flex; align-items: center;"></div> <!-- ช่องจำลองด้านล่างสุด -->
+              <!-- หัวข้อเรือนภพด้านขวา (ใช้ CSS Grid 12 แถว บังคับให้ช่องตรงกับเส้นตารางฝั่งซ้าย 100%) -->
+              <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 8px; height: 100%; align-items: center; box-sizing: border-box;">
+                <div>12 วาสนา</div>
+                <div>11 ทรัพย์</div>
+                <div>10 เพื่อน</div>
+                <div>9 ญาติ</div>
+                <div>8 บริวาร</div>
+                <div>7 ศัตรู</div>
+                <div>6 คู่ครอง</div>
+                <div>5 โรคภัย</div>
+                <div>4 ความสุข</div>
+                <div>3 การงาน</div>
+                <div>2 ลาภยศ</div>
+                <div>1 วินาศ</div>
               </div>
             </div>
           </div>
