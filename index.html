@@ -2752,7 +2752,25 @@ function analyzeVipSpecificQuestion() {
     let currentUser = null;
     let currentProfile = null;
     let isSignUpMode = false;
-
+window.downloadVipEbook = function() {
+    var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+    
+    if (!isVip) {
+        alert("ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น กรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม");
+        if (typeof openFeatureModal === 'function') {
+            openFeatureModal('member');
+        }
+        return;
+    }
+    
+    var fileName = 'ebook_prayer_vip.pdf';
+    var link = document.createElement('a');
+    link.href = fileName;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
     // --- 2. ฟังก์ชันเปิด/ปิด/สลับหน้าต่างสมัครและล็อกอิน ---
     function openAuthModal() {
     const modal = document.getElementById('authModal');
@@ -12931,34 +12949,14 @@ function handleOpenModal(type) {
     targetModal.style.cssText = 'display:flex !important; position:fixed !important; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999999; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:15px; box-sizing:border-box;';
   }
 
-  if (type === 'bazi' && typeof renderBaziDirect === 'function') {
-    renderBaziDirect();
+ if (type === 'bazi' && typeof renderBaziDirect === 'function') {
+renderBaziDirect();
   } else if (type === 'saju' && typeof renderSajuDirect === 'function') {
     renderSajuDirect();
   }
-}
-window.handleOpenModal = handleOpenModal;    
+} 
 
-// ฟังก์ชันตรวจสอบสิทธิ์ VIP และดาวน์โหลด E-Book
-window.downloadVipEbook = function() {
-  var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  
-  if (!isVip) {
-    alert('⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น\nกรุณาสมัครสมาชิก VIP เพื่อดาวน์โหลดคู่มือสวดมนต์ฉบับเต็ม');
-    if (typeof openFeatureModal === 'function') {
-      openFeatureModal('member');
-    }
-    return;
-  }
-  
-  var fileName = 'ebook_prayer_vip.pdf';
-  var link = document.createElement('a');
-  link.href = fileName;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+window.handleOpenModal = handleOpenModal;
 </script>
 </body>
 </html>
