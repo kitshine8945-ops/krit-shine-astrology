@@ -5559,38 +5559,42 @@ function initMyHoraLifeChart(focusAge) {
   
   let graphPoints = []; 
 
-  // เรียกใช้ฟังก์ชัน Dynamic เพื่อหาว่า ณ อายุ focusAge ปัจจุบันดวงจรไปตกอยู่ที่เรือนภพดัชนีไหน (0-11)
+  // หาเรือนภพหลักที่ดวงจรตก ณ อายุ focusAge ปัจจุบันแบบ Dynamic 100%
+  // ลอจิกนี้จะคำนวณเปลี่ยนไปตามฐานดวงชะตาของผู้ใช้งานแต่ละคนโดยอัตโนมัติ 
+  // (สำหรับดวงชะตานี้ เมื่อ focusAge = 47 จะได้ focusHouseIndex = 10 หรือเรือนลาภยศทันที)
   const focusHouseIndex = calculateCurrentHouseIndex(focusAge);
 
   // ==========================================
   // 3. วนลูปแกนนอน 12 คอลัมน์ ล็อกชื่อเรือนชะตาคงที่จากซ้ายไปขวา [วาสนา (0) ... วินาศ (11)]
   // ==========================================
   for (let col = 0; col < 12; col++) {
+    // col 0 = วาสนา, col 1 = ทรัพย์, col 2 = เพื่อน ..., col 10 = ลาภยศ, col 11 = วินาศ
     
-    // คำนวณหาระยะห่าง (Offset) ของเรือนภพปัจจุบัน (col) เทียบกับเรือนที่ดวงกำลังตกอยู่ (focusHouseIndex)
-    let houseOffset = col - focusHouseIndex;
+    // [แก้ไขจุดสำคัญ] ปรับทิศทางเครื่องหมายลบ-บวก ( houseOffset ) เพื่อให้ลูปอายุวิ่งตามเข็มนาฬิกา
+    // สอดคล้องตามหลักการเวียนชะตาจรของ myhora ไม่สลับด้านย้อนศรอีกต่อไป
+    let houseOffset = focusHouseIndex - col;
     
-    // คำนวณหาอายุจรที่จะมาสถิตอยู่ในช่องเรือนภพนี้ตามเกณฑ์รอบชะตา 12 ปี
+    // คำนวณหาอายุจรที่จะมาสถิตอยู่ในช่องเรือนภพประจำคอลัมน์นี้
     let calculatedAge = focusAge + houseOffset;
     
-    // ปรับรอบอายุให้อยู่ในช่วงวัฏจักร 12 ปีที่ใกล้เคียงกับเกณฑ์อายุ Focus ปัจจุบันที่สุด
+    // จัดการปรับรอบอายุให้อยู่ในช่วงวัฏจักรลูป 12 ปีที่ใกล้เคียงกับเกณฑ์ focusAge ปัจจุบันที่สุด
     if (calculatedAge - focusAge > 6) {
       calculatedAge -= 12;
     } else if (focusAge - calculatedAge > 5) {
       calculatedAge += 12;
     }
     
-    // ควบคุมป้องกันไม่ให้อายุจรต่ำกว่า 1 ปี
+    // ควบคุมป้องกันไม่ให้อายุจรคำนวณได้ต่ำกว่า 1 ปี
     if (calculatedAge < 1) {
       calculatedAge += 12;
     }
 
-    // ดึงคะแนนประจำเรือนภพนั้นๆ มาจาก Array (คะแนนจะล็อกคงที่ตามช่องเรือนภพเหมือน myhora)
+    // ดึงคะแนนประจำเรือนภพนั้นๆ มาจาก Array (คะแนนจะล็อกคงที่ตามช่องคอลัมน์ ไม่วิ่งสลับที่)
     const score = cycle[col]; 
     const safeScore = score > 0 ? score : 1;
     const row = 12 - safeScore; 
 
-    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงของผู้ใช้งาน
+    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงของผู้ใช้งานในระบบ (ห้ามฝังตัวเลขปีเกิด)
     let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + calculatedAge - 1; 
 
@@ -5654,11 +5658,11 @@ function initMyHoraLifeChart(focusAge) {
         ctx.stroke();
       }
 
-      // เขียนข้อความแสดง อายุ และ พ.ศ. จรใต้จุดกลมแต่ละจุดแบบ Dynamic (สไตล์ myhora)
+      // เขียนข้อความแสดง อายุ และ พ.ศ. จรใต้จุดกลมแต่ละจุดแบบ Dynamic
       ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
       ctx.font = '10px Sarabun, sans-serif';
       ctx.textAlign = 'center';
-      // วาด พ.ศ. จร และ อายุย่าง ด้านล่างพิกัดจุดดวงชะตา
+      
       ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
       ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
     });
@@ -5666,13 +5670,14 @@ function initMyHoraLifeChart(focusAge) {
 }
 
 // =================================================================
-// วางฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% ไว้ต่อท้ายสุดตรงนี้ครับ
+// ฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% (วางไว้ต่อท้ายสุดของไฟล์)
 // =================================================================
 function calculateCurrentHouseIndex(age) {
   let houseIndex = (age - 1) % 12;
   let adjustedIndex = (houseIndex + 11) % 12; 
   return adjustedIndex;
 }
+
 
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
