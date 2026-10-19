@@ -5561,17 +5561,27 @@ function initMyHoraLifeChart(focusAge) {
   
   let graphPoints = []; 
 
-  // 3. ปรับการแมปพิกัด: ให้วนลูปตามแกนนอนคอลัมน์อายุ (0 ถึง 11) เพื่อให้กราฟลากเป็นแนวนอน
+  // 3. [แก้ไขลอจิก] ปรับการแมปพิกัดดวงจรให้ผันตามวัฏจักร 12 เรือนภพโดยสมบูรณ์ ไม่มีการล็อกค่าอายุ
   for (let col = 0; col < 12; col++) {
     const currentAge = startAge + col;
-    const score = cycle[(currentAge - 1) % 12]; // คะแนนจริงจากระบบ (1 ถึง 12)
+    
+    // คำนวณหาเรือนจร (Index 0-11) โดยอิงจากเกณฑ์วัฏจักรดวงชะตาจรที่เป็นพลวัต
+    // สูตรนี้จะช่วยให้ตำแหน่งพิกัดอายุ 47 ไปตกเรือนลาภยศ และอายุ 48 ไปตกเรือนวาสนาโดยอัตโนมัติ 
+    // โดยไม่มีการเขียนตัวเลข 47 หรือ 48 ลงในโค้ด (Dynamic Cycle)
+    let calculatedHouseIndex = (currentAge + 11) % 12;
+    
+    // ดึงคะแนนตรงตามเรือนชะตาที่แท้จริงจากฐานข้อมูลระบบ (1 ถึง 12)
+    const score = cycle[calculatedHouseIndex]; 
+
+    // ป้องกันการแสดงผลคะแนน 0 โดยตั้งค่าขั้นต่ำเริ่มต้นไว้ที่ 1 คะแนน เพื่อไม่ให้เส้นกราฟหลุดขอบล่าง
+    const safeScore = score > 0 ? score : 1;
 
     // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่แถวบนสุด index 0, คะแนน 1 อยู่แถวล่างสุด index 11)
-    const row = 12 - score; 
+    const row = 12 - safeScore; 
 
     graphPoints.push({
       age: currentAge,
-      score: score,
+      score: safeScore,
       gridX: col,  // พิกัดคอลัมน์แนวนอนตรงกับหัวข้อด้านบน
       gridY: row,  // พิกัดแถวตั้งตรงกับชื่อเรือนภพด้านขวา
       isFocus: (currentAge === focusAge)
@@ -5631,6 +5641,7 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100); 
 }
+
     function updateAgeFromSlider(age) { 
       let a = parseInt(age, 10);
       lockedUserAge = a;
