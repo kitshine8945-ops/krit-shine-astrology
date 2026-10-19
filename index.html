@@ -5553,10 +5553,9 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
+  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำชะตาชีวิต ( Array ขนาด 12 ช่อง )
   // ==========================================
-  // ระบบหลักของคุณจะคำนวณเศษปฏิทินจันทรคติ (วัน+เดือน+ปี) แล้วส่งออกมาเป็น Array ขนาด 12 ช่อง
-  // ตัวอย่างสำหรับชะตานี้คือ [3, 6, 9, 12, 3, 6, 9, 4, 6, 8, 10, 12] ซึ่งเปลี่ยนไปตามวันเกิดแต่ละคนอัตโนมัติ
+  // ดึงค่าผลรวมแบบ Dynamic จากฐานข้อมูลหลักของระบบ (เช่น)
   const cycle = getLifeGraphBaseCycle(); 
   
   let graphPoints = []; 
@@ -5564,32 +5563,32 @@ function initMyHoraLifeChart(focusAge) {
   // ==========================================
   // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
   // ==========================================
-  // ลอจิกคณิตศาสตร์จะคำนวณหาจุดสตาร์ทของรอบอายุจรปัจจุบันโดยอัตโนมัติทุกวันเกิด 
-  // เช่น เมื่อ focusAge = 47 จะได้ startAgeCycle = 37 ทันที (หรือถ้า focusAge = 25 จะได้ startAgeCycle = 13)
+  // คำนวณหาจุดสตาร์ทของรอบชะตาปัจจุบันโดยอัตโนมัติทุกวันเกิด 
+  // เช่น เมื่อ focusAge = 47 จะได้ startAgeCycle = 37 ทันที
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
     startAgeCycle = focusAge - 11;
   }
 
   // ==========================================
-  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและคะแนนให้ลงล็อกพิกัด
   // ==========================================
   for (let col = 0; col < 12; col++) {
-    // เลขอายุในแต่ละคอลัมน์จะเดินหน้าเรียงจากซ้ายไปขวาอย่างราบรื่น ไม่เรียงลำดับมั่ว
-    // เช่น เริ่มตั้งแต่ 37, 38, 39 ... ไปจนถึงอายุ 48 ปี 
+    // เลขอายุเดินหน้าเรียงจากซ้ายไปขวาอย่างถูกต้อง (37, 38, 39 ... จนถึง 48)
     const currentAge = startAgeCycle + col; 
 
-    // หาอินเด็กซ์ของเรือนภพประจำตัวเลขดวง (ดัชนี 0 ถึง 11)
+    // คำนวณหาอินเด็กซ์ในการดึงคะแนนจาก Array cycle (0 ถึง 11)
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    // ดึงคะแนนตรงตามช่องผลคำนวณที่ได้จาก Array (คะแนนจะล็อกคงที่ตามดวงชะตาบุคคลนั้น)
+    // ดึงค่าคะแนนจริงประจำดวงชะตา (1 ถึง 12)
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
     
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่ index 0 บนสุด, คะแนน 1 อยู่ index 11 ล่างสุด)
+    // [แก้ไขจุดสำคัญ] ปรับลอจิกการคำนวณแกนตั้ง (แกน Y) ใหม่ให้สัมพันธ์กับความสูงของผ้าใบ Canvas
+    // คะแนนสูงสุด (12) จะอยู่ด้านบนสุด และคะแนนต่ำสุด (1) จะอยู่ด้านล่างสุด ไม่กลับหัวกลับหาง
     const row = 12 - safeScore; 
 
-    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงในระบบของสมาชิกคนนั้นๆ (AppState.birthBE)
+    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงในระบบ (AppState.birthBE)
     let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
 
@@ -5597,14 +5596,14 @@ function initMyHoraLifeChart(focusAge) {
       age: currentAge,
       buddhistYear: currentBuddhistYear,
       score: safeScore,
-      gridX: col,  // พิกัดคอลัมน์แนวนอน 0 - 11
-      gridY: row,  // พิกัดความสูงแนวตั้งขยับตามระดับคะแนนเลขดวง
-      isFocus: (currentAge === focusAge) // จุดโฟกัสสีแดงจะติดไฟเฉพาะตำแหน่งเลขอายุจรปัจจุบัน
+      gridX: col,  // พิกัดคอลัมน์แนวนอนเรียงจาก 0 - 11
+      gridY: row,  // พิกัดความสูงแกนตั้งที่แก้ไขตำแหน่งให้วิ่งขึ้นลงถูกต้องแล้ว
+      isFocus: (currentAge === focusAge) // จุดสีแดงจะติดเฉพาะอายุจรปัจจุบันที่เลือก
     });
   }
 
   // ==========================================
-  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
+  // 4. สั่งผ้าใบ (Canvas) วาดเส้นกราฟฟันปลาและจุดพิกัดชะตาชีวิต
   // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
@@ -5614,16 +5613,18 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // คำนวณขนาดบล็อกตารางพื้นหลังแบบสมส่วน 12 ช่อง
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // ลากเส้นกราฟวิถีชีวิตชะตาเชื่อมโยงจากซ้ายไปขวา
+    // ลากเส้นกราฟวิถีชีวิต (ลากขึ้นลงเป็นฟันปลาตามพิกัดคะแนนจริง)
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
     ctx.lineJoin = 'round';
 
     graphPoints.forEach((pt, idx) => {
+      // คำนวณจุดกึ่งกลางของแต่ละบล็อกเพื่อให้เส้นพิกัดเกาะอยู่ตรงกลางช่องพอดี
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
       if (idx === 0) ctx.moveTo(x, y);
@@ -5631,7 +5632,7 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จรวิ่งเวียนใต้จุด
+    // วาดจุดวงกลมแสดงตำแหน่ง พ.ศ. และอายุจร
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
@@ -5639,21 +5640,21 @@ function initMyHoraLifeChart(focusAge) {
       ctx.beginPath();
       if (pt.isFocus) {
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันแสดงผลเป็น "สีแดงสด"
+        ctx.fillStyle = '#ff4757'; // จุดอายุจรปัจจุบัน = สีแดงสด
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างแสดงผลเป็น "สีเหลือง"
+        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้าง = สีเหลือง
         ctx.fill();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = '#040816';
         ctx.stroke();
       }
 
-      // แสดงพิมพ์ข้อความ พ.ศ. จร และ เลขอายุ ใต้จุดกลมแต่ละจุดอย่างสวยงาม
+      // พิมพ์ข้อความแสดง ปี พ.ศ. และ อายุจร ไว้ใต้จุดพิกัดในแต่ละช่อง
       ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
       ctx.font = '10px Sarabun, sans-serif';
       ctx.textAlign = 'center';
@@ -5663,7 +5664,6 @@ function initMyHoraLifeChart(focusAge) {
     });
   }, 100);
 }
-
 
 // =================================================================
 // ฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% (วางไว้ต่อท้ายสุดของไฟล์)
