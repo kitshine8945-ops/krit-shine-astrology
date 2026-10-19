@@ -5671,17 +5671,24 @@ if (focusAge % 12 === 0) {
   startAgeCycle = focusAge - 11;
 }
 // ==========================================
-// 4. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+// แก้ไขโค้ดส่วนวนลูป 12 คอลัมน์ (อายุ 37 ถึง 48)
 // ==========================================
+let graphPoints = [];
+
+// สมมติ startAgeCycle คือจุดเริ่มต้นอายุในรอบนั้น (เช่น 37)
+let startAgeCycle = focusAge - ((focusAge - 1) % 12);
+if (focusAge % 12 === 0) {
+  startAgeCycle = focusAge - 11;
+}
+
 for (let col = 0; col < 12; col++) {
-  const currentAge = startAgeCycle + col;
+  const currentAge = startAgeCycle + col; // จะได้ 37, 38, 39, ..., 48
   
-  // ใช้ค่า col (0 ถึง 11) เป็นอินเด็กซ์ดึงข้อมูลจาก Array ให้ตรงกับคอลัมน์บนกราฟและคำทำนาย
-  let targetHouseIndex = col;
-  
-  const score = cycle[targetHouseIndex];
+  // ใช้ col (0 ถึง 11) เป็นตัวดึงข้อมูลจาก Array เลขดวงโดยตรง 
+  // เพื่อให้ช่องซ้ายสุด (อายุ 37) ตรงกับช่องแรกของตาราง และขวาสุด (อายุ 48) ตรงกับช่องที่ 12
+  const score = cycle[col]; 
   const safeScore = score > 0 ? score : 1;
-  const row = 12 - safeScore;
+  const row = 12 - safeScore; // แปลงคะแนนเป็นพิกัดความสูงบน Canvas
 
   let birthBeYear = AppState.birthBE;
   let currentBuddhistYear = birthBeYear + currentAge - 1;
@@ -5690,9 +5697,9 @@ for (let col = 0; col < 12; col++) {
     age: currentAge,
     buddhistYear: currentBuddhistYear,
     score: safeScore,
-    gridX: col,
-    gridY: row,
-    isFocus: (currentAge === focusAge)
+    gridX: col,       // ตำแหน่งคอลัมน์แนวนอน 0 - 11
+    gridY: row,       // ตำแหน่งความสูงแนวตั้งตามคะแนนเลขดวง
+    isFocus: (currentAge === focusAge) // เช็กว่าใช่อายุที่เลือก (จุดแดง) หรือไม่
   });
 }
 // ==========================================
