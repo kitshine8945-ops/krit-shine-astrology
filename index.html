@@ -5553,19 +5553,118 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
 // ==========================================
-// 1. ข้อมูลมาตรฐานศาสตร์กราฟชีวิต (เลข 12 ตัว) ครบถ้วน
+// 0. ฟังก์ชันแปลงปี พ.ศ. ให้เป็นปีนักษัตร (1-12)
 // ==========================================
-// 📅 ฐานวัน: 1=อาทิตย์, 2=จันทร์, 3=อังคาร, 4=พุธ, 5=พฤหัสบดี, 6=ศุกร์, 7=เสาร์
-// 🌙 ฐานเดือน: 1=พฤศจิกายน (ด.12), 2=ธันวาคม (ด.อ้าย), 3=มกราคม (ด.ยี่), 4=กุมภาพันธ์ (ด.3) ... 12=ตุลาคม (ด.11)
-// 🐀 ฐานปี: 1=ชวด, 2=ฉลู, 3=ขาล, 4=เถาะ, 5=มะโรง, 6=มะเส็ง, 7=มะเมีย, 8=มะแม, 9=วอก, 10=ระกา, 11=จอ, 12=กุน
+function getZodiacFromBE(beYear) {
+  // ปี พ.ศ. 2500 ตรงกับปีชวด (นักษัตรที่ 1) เป็นฐานในการคำนวณเศษ modulo 12
+  // สูตร: ((BE - 2500) % 12) + 1 โดยหากติดลบให้วนกลับมาบวก 12
+  let diff = (beYear - 2500) % 12;
+  let zodiacIndex = diff < 0 ? diff + 12 : diff;
+  return zodiacIndex === 0 ? 12 : zodiacIndex; 
+  // 1=ชวด, 2=ฉลู, 3=ขาล, 4=เถาะ, 5=มะโรง, 6=มะเส็ง, 7=มะเมีย, 8=มะแม, 9=วอก, 10=ระกา, 11=จอ, 12=กุน
+}
 
-// ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
-// ระบบหลักของคุณจะคำนวณเศษปฏิทินจันทรคติ (วัน+เดือน+ปีนักษัตร) แล้วส่งออกมาเป็น Array ขนาด 12 ช่อง
-const cycle = getLifeGraphBaseCycle(); 
+// ==========================================
+// 0.1 ฟังก์ชันคำนวณฐาน 3 ฐาน (วัน, เดือน, ปี) เป็น Array 12 ช่อง (Dynamic 100%)
+// ==========================================
+function getLifeGraphBaseCycle() {
+  // ดึงค่าวัน เดือน ปี เกิดจากฟอร์มของผู้ใช้งานจริงในระบบ
+  const bDayInput = document.getElementById('birthDay');
+  const bMonthInput = document.getElementById('birthMonth');
+  const bYearInput = document.getElementById('birthYearBE');
+  const bHourInput = document.getElementById('birthHour24');
+
+  // ค่าสำรองกันเหนียว (กรณีหน้าเว็บยังไม่โหลด element)
+  let dayVal = bDayInput ? parseInt(bDayInput.value, 10) || 1 : 1;
+  let monthVal = bMonthInput ? parseInt(bMonthInput.value, 10) || 1 : 1;
+  let yearBEVal = bYearInput ? parseInt(bYearInput.value, 10) || 2522 : 2522;
+  let hourVal = bHourInput ? parseInt(bHourInput.value, 10) || 6 : 6;
+
+  // 1. ฐานวัน: คำนวณวันในสัปดาห์จาก วัน/เดือน/ปีเกิดจริง (1=อาทิตย์ ถึง 7=เสาร์)
+  // หากระบบของคุณมีตัวแปรเก็บวันในสัปดาห์อยู่แล้ว สามารถแทนที่ตรงนี้ได้เลย
+  let birthDateObj = new Date(yearBEVal - 543, monthVal - 1, dayVal);
+  if (hourVal < 6) birthDateObj.setDate(birthDateObj.getDate() - 1); // ตัดวันตามเวลาโหรไทยก่อน 06:00 น.
+  let dayOfWeek = birthDateObj.getDay() + 1; // getDay(): 0=อาทิตย์ ถึง 6=เสาร์ (+1 ให้ตรงกับ 1-7)
+
+  // 2. ฐานเดือน: แปลงเดือนปฏิทินสากลเป็นเดือนไทย/จันทรคติ (ช่องแรกเริ่มที่เดือนเกิด)
+  // ตัวอย่าง: เกิดเดือนเมษายน (เดือน 5 ไทย) ค่าเริ่มต้นฐานเดือนคือ 6
+  let startMonthThai = ((monthVal + 1) % 12) + 1; 
+
+  // 3. ฐานปี: แปลงปี พ.ศ. เป็นปีนักษัตร (1-12)
+  let startZodiac = getZodiacFromBE(yearBEVal);
+
+  let cycleArray = [];
+
+  // วนลูปสร้างตาราง 12 ช่อง
+  for (let i = 0; i < 12; i++) {
+    let baseDay = ((dayOfWeek - 1 + i) % 7) + 1;
+    let baseMonth = ((startMonthThai - 1 + i) % 12) + 1;
+    let baseYear = ((startZodiac - 1 + i) % 12) + 1;
+
+    let sum = baseDay + baseMonth + baseYear;
+
+    // แปลงผลรวมเป็น "เลขดวง" (ถ้าเกิน 12 ให้นำ 12 มาลบออกจนกว่าจะไม่เกิน 12)
+    let score = sum;
+    while (score > 12) {
+      score -= 12;
+    }
+
+    cycleArray.push(score);
+  }
+
+  return cycleArray;
+}
+
+// ==========================================
+// 1. ฟังก์ชันคำนวณแปลง พ.ศ. เป็นปีนักษัตร (1-12) และสร้างฐานเลข 12 ตัวแบบ Dynamic 100%
+// ==========================================
+function getLifeGraphBaseCycleFromUser() {
+  // ดึงค่าวัน เดือน ปีเกิด จากระบบ (AppState หรือฟอร์ม)
+  let birthDayOfWeek = typeof AppState !== 'undefined' && AppState.birthDayOfWeek ? AppState.birthDayOfWeek : 4; // ค่าเริ่มต้นวันพุธ (4) หรือดึงจากระบบ
+  let birthMonthThai = typeof AppState !== 'undefined' && AppState.birthMonthThai ? AppState.birthMonthThai : 6; // เดือนไทย เช่น 6
+  let birthBeYear = typeof AppState !== 'undefined' && AppState.birthBE ? AppState.birthBE : 2522; // ปี พ.ศ. เกิด
+
+  // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (สากลทางโหราศาสตร์ไทย: ปี 2460 ชวด = 1)
+  // พ.ศ. 2460 หารด้วย 12 เหลือเศษ 1 คือปีชวด
+  let zodiacIndex = ((birthBeYear - 2460) % 12);
+  if (zodiacIndex < 0) zodiacIndex += 12;
+  let birthZodiac = zodiacIndex + 1; // ได้ค่า 1 ถึง 12 (1=ชวด, ..., 8=มะแม, ..., 12=ปีกุน)
+
+  // สร้าง Array 12 ช่องจาก 3 ฐาน (ฐานวัน, ฐานเดือน, ฐานปี)
+  let cycleArray = [];
+  for (let i = 0; i < 12; i++) {
+    // ฐานวัน: นับเรียบ 1-7 วนลูป
+    let baseDay = ((birthDayOfWeek - 1 + i) % 7) + 1;
+
+    // ฐานเดือน: นับเรียงจากเดือนเกิด วนลูป 1-12
+    let baseMonth = ((birthMonthThai - 1 + i) % 12) + 1;
+
+    // ฐานปี: นับเรียงจากปีนักษัตรเกิด วนลูป 1-12
+    let baseYear = ((birthZodiac - 1 + i) % 12) + 1;
+
+    // ผลรวมของ 3 ฐานในแต่ละช่อง
+    let sum = baseDay + baseMonth + baseYear;
+
+    // แปลงผลรวมเป็น "เลขดวง" (ถ้าเกิน 12 ให้นำ 12 มาลบออกจนกว่าจะไม่เกิน 12)
+    let score = sum;
+    while (score > 12) {
+      score -= 12;
+    }
+
+    cycleArray.push(score);
+  }
+
+  return cycleArray;
+}
+
+// ==========================================
+// 2. ดึงข้อมูลเลขดวงชะตา 12 ตัวประจำบุคคลจากฟังก์ชันคำนวณใหม่ (Dynamic 100%)
+// ==========================================
+const cycle = getLifeGraphBaseCycleFromUser();
 let graphPoints = [];
 
 // ==========================================
-// 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+// 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
 // ==========================================
 let startAgeCycle = focusAge - ((focusAge - 1) % 12);
 if (focusAge % 12 === 0) {
@@ -5573,7 +5672,7 @@ if (focusAge % 12 === 0) {
 }
 
 // ==========================================
-// 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+// 4. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
 // ==========================================
 for (let col = 0; col < 12; col++) {
   const currentAge = startAgeCycle + col;
@@ -5596,7 +5695,7 @@ for (let col = 0; col < 12; col++) {
 }
 
 // ==========================================
-// 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
+// 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
 // ==========================================
 setTimeout(() => {
   const rect = canvas.getBoundingClientRect();
@@ -5649,8 +5748,8 @@ setTimeout(() => {
     ctx.textAlign = 'center';
     ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
     ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
- });
-  }, 100);
+  });
+}, 100);
 }
 
 // =================================================================
