@@ -5552,45 +5552,45 @@ function initMyHoraLifeChart(focusAge) {
   const canvas = document.getElementById('lifeChartCanvas');
   if (!canvas) return;
 
+  // ==========================================
   // 1. ดึงฐานข้อมูลลูปคะแนนดั้งเดิมประจำชะตาชีวิต (Array ขนาด 12 ช่องคงที่)
+  // ==========================================
   const cycle = getLifeGraphBaseCycle(); 
   
   let graphPoints = []; 
 
-  // 3. [แก้ไขสูตรแมปปัดเศษ Dynamic] วนลูปแกนนอนคอลัมน์คงที่ [วาสนา (0) ถึง วินาศ (11)]
+  // เรียกใช้ฟังก์ชัน Dynamic เพื่อหาว่า ณ อายุ focusAge ปัจจุบันดวงจรไปตกอยู่ที่เรือนภพดัชนีไหน (0-11)
+  const focusHouseIndex = calculateCurrentHouseIndex(focusAge);
+
+  // ==========================================
+  // 3. วนลูปแกนนอน 12 คอลัมน์ ล็อกชื่อเรือนชะตาคงที่จากซ้ายไปขวา [วาสนา (0) ... วินาศ (11)]
+  // ==========================================
   for (let col = 0; col < 12; col++) {
-    // col 0 = วาสนา, col 1 = ทรัพย์, col 2 = เพื่อน ..., col 10 = ลาภยศ, col 11 = วินาศ
     
-    // คำนวณหาระยะความห่างของอายุจร (Offset) ที่สัมพันธ์กับคอลัมน์เรือนชะตาบนหน้าจอ
-    // โดยอิงตำแหน่งจากเป้าหมายที่กำลัง Focus (ไม่มีการระบุตัวเลข 47 หรือ 48 ลงในโค้ด)
-    let offset = (col - 10) % 12;
-    if (offset < 0) offset += 12;
+    // คำนวณหาระยะห่าง (Offset) ของเรือนภพปัจจุบัน (col) เทียบกับเรือนที่ดวงกำลังตกอยู่ (focusHouseIndex)
+    let houseOffset = col - focusHouseIndex;
     
-    // ปรับแต่งรอบอายุชะตาให้หมุนวนตามวัฏจักร 12 ปีที่ใกล้เคียงกับช่วง focusAge มากที่สุด
-    let calculatedAge = focusAge + offset;
+    // คำนวณหาอายุจรที่จะมาสถิตอยู่ในช่องเรือนภพนี้ตามเกณฑ์รอบชะตา 12 ปี
+    let calculatedAge = focusAge + houseOffset;
+    
+    // ปรับรอบอายุให้อยู่ในช่วงวัฏจักร 12 ปีที่ใกล้เคียงกับเกณฑ์อายุ Focus ปัจจุบันที่สุด
     if (calculatedAge - focusAge > 6) {
       calculatedAge -= 12;
     } else if (focusAge - calculatedAge > 5) {
       calculatedAge += 12;
     }
     
-    // ควบคุมป้องกันไม่ให้อายุจรติดลบหรือต่ำกว่า 1 ปี
+    // ควบคุมป้องกันไม่ให้อายุจรต่ำกว่า 1 ปี
     if (calculatedAge < 1) {
       calculatedAge += 12;
     }
 
-    // คำนวณหาเรือนดวงชะตากำเนิดที่ถูกต้องในการดึงคะแนน (ดัชนี 0-11 ของ Array cycle)
-    // ลอจิก Dynamic นี้จะทำให้ดึงคะแนนมาแสดงบนแถวตั้งได้ถูกต้องตรงตามตารางรูปที่ 2 ทุกจุด
-    let targetHouseIndex = (calculatedAge - 1) % 12;
-    const score = cycle[targetHouseIndex]; 
-
-    // ป้องกันกรณีระบบคืนค่าคะแนนเป็น 0 ให้เริ่มต้นที่ขั้นต่ำ 1 คะแนน ป้องกันจุดกราฟทะลุขอบล่าง
+    // ดึงคะแนนประจำเรือนภพนั้นๆ มาจาก Array (คะแนนจะล็อกคงที่ตามช่องเรือนภพเหมือน myhora)
+    const score = cycle[col]; 
     const safeScore = score > 0 ? score : 1;
-
-    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่ index 0 บนสุด, คะแนน 1 อยู่ index 11 ล่างสุด)
     const row = 12 - safeScore; 
 
-    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงของผู้ใช้งาน (ดึงค่าอัตโนมัติจาก AppState)
+    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงของผู้ใช้งาน
     let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + calculatedAge - 1; 
 
@@ -5598,14 +5598,15 @@ function initMyHoraLifeChart(focusAge) {
       age: calculatedAge,
       buddhistYear: currentBuddhistYear,
       score: safeScore,
-      gridX: col,  // ล็อกแกนนอนเรียงตามหัวตาราง [วาสนา...ลาภยศ...วินาศ]
-      gridY: row,  // พิกัดแนวตั้งขยับตามระดับความสูงของคะแนนดวง
-      isFocus: (calculatedAge === focusAge)
+      gridX: col,  
+      gridY: row,  
+      isFocus: (col === focusHouseIndex) // จุดสีแดงจะวิ่งไปจับช่องที่ดวงตกในปีนั้น ช่องอื่นเป็นสีเหลือง
     });
   }
 
-
-  // 4. สั่งผ้าใบ (Canvas) รีเซ็ตพิกัดและเริ่มวาดเส้นชะตาแนวนอน
+  // ==========================================
+  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิตคงที่
+  // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -5614,11 +5615,10 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // แบ่งสัดส่วนตารางพื้นหลังเป็น 12 ช่อง เท่ากันเป๊ะ ๆ ทุกด้าน
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงจากซ้ายไปขวา (แนวนอน)
+    // ลากเส้นกราฟสีเขียวเชื่อมโยงจากซ้ายไปขวา
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
@@ -5632,31 +5632,46 @@ function initMyHoraLifeChart(focusAge) {
     });
     ctx.stroke();
 
-    // วาดจุดพิกัดวงกลมกำกับบนเส้นดวงชะตา
+    // วาดจุดพิกัดวงกลมกำกับบนเส้นดวงชะตา พร้อมตัวเลขอายุจรและ พ.ศ. จรวิ่งเวียนตามจุด
     graphPoints.forEach((pt) => {
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
       ctx.beginPath();
       if (pt.isFocus) {
-        // วงกลมจุดดวงจรปัจจุบัน (สีแดงสดขอบทองตามดีไซน์ VIP)
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff4757';
+        ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันสีแดง
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
-        // จุดดวงจรปีอื่น ๆ ในล็อก (สีเหลืองทองดั้งเดิม)
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffd700';
+        ctx.fillStyle = '#ffd700'; // จุดอายุอื่นสีเหลือง
         ctx.fill();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = '#040816';
         ctx.stroke();
       }
+
+      // เขียนข้อความแสดง อายุ และ พ.ศ. จรใต้จุดกลมแต่ละจุดแบบ Dynamic (สไตล์ myhora)
+      ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
+      ctx.font = '10px Sarabun, sans-serif';
+      ctx.textAlign = 'center';
+      // วาด พ.ศ. จร และ อายุย่าง ด้านล่างพิกัดจุดดวงชะตา
+      ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
+      ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
     });
-  }, 100); 
+  }, 100);
+}
+
+// =================================================================
+// วางฟังก์ชันช่วยคำนวณเรือนชะตาจรหลักแบบ Dynamic 100% ไว้ต่อท้ายสุดตรงนี้ครับ
+// =================================================================
+function calculateCurrentHouseIndex(age) {
+  let houseIndex = (age - 1) % 12;
+  let adjustedIndex = (houseIndex + 11) % 12; 
+  return adjustedIndex;
 }
 
     function updateAgeFromSlider(age) { 
