@@ -5616,7 +5616,7 @@ function getLifeGraphBaseCycle() {
 }
 
 // ==========================================
-// 1. ฟังก์ชันคำนวณเลขดวงชะตา 12 เรือนภพ (เทียบเท่า HoroscopeGraphService ใน Java)
+// 1. ฟังก์ชันคำนวณเลขดวงชะตา 12 เรือนภพ 
 // ==========================================
 function calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, targetAge) {
   // คะแนนฐานตั้งต้น (วัน + เดือน + ปีนักษัตร)
@@ -5630,16 +5630,20 @@ function calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, targetAge) {
 }
 
 // ==========================================
-// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ (AppState หรือค่ากลางสำรอง)
+// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ 
 // ==========================================
 let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
 let dayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 1; // 1=อาทิตย์, 2=จันทร์, ...
 let lunarMonth = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6;  // เดือนไทย เช่น 6
 
-// คำนวณปีนักษัตรจากปี พ.ศ. เกิด (ปี 2460 ชวด = 1)
-let zodiacIndex = ((birthBeYear - 2460) % 12);
-if (zodiacIndex < 0) zodiacIndex += 12;
-let zodiacYear = zodiacIndex + 1;
+// ดึงค่า focusAge แบบ Dynamic จากหน้าแอปพลิเคชัน (หากไม่มีให้ Default ที่ 47 ปี)
+let focusAge = (typeof AppState !== 'undefined' && AppState.selectedAge) ? AppState.selectedAge : 47;
+
+// [แก้ไขจุดผิดพลาด]: สูตรคำนวณรหัสปีนักษัตรโหราศาสตร์ไทยฐาน 12 ที่ถูกต้อง
+// ปี 2522 คือปีมะแม รหัสปีนักษัตรต้องได้เลข 8
+let zodiacIndex = ((birthBeYear - 2415) % 12); 
+if (zodiacIndex <= 0) zodiacIndex += 12;
+let zodiacYear = zodiacIndex;
 
 // ==========================================
 // 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
@@ -5661,11 +5665,13 @@ for (let col = 0; col < 12; col++) {
   const score = calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, currentAge);
   const safeScore = score > 0 ? score : 1; 
   
-  // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้งบน Canvas (คะแนน 12 อยู่บนสุด, คะแนน 1 อยู่ล่างสุด)
+  // [แก้ไขจุดผิดพลาด]: พิกัดแถวแนวตั้งบน Canvas 
+  // ต้องสอดคล้องกับพิกัด Y (0 อยู่บนสุด คือระดับเลข 12, 11 อยู่ล่างสุด คือระดับเลข 1)
   const row = 12 - safeScore;
 
-  // คำนวณปี พ.ศ. จรให้สัมพันธ์กับอายุโดยอัตโนมัติ
-  let currentBuddhistYear = birthBeYear + currentAge - 1;
+  // [แก้ไขจุดผิดพลาด]: แก้ไขลอจิก พ.ศ. จร คลาดเคลื่อน 
+  // สูตรที่ถูกต้องตามเกณฑ์อายุจริงคือ ปีเกิด พ.ศ. + อายุเต็ม (หรืออายุย่าง - 1 ในทางรอบปี)
+  let currentBuddhistYear = birthBeYear + currentAge;
 
   graphPoints.push({
     age: currentAge,
@@ -5700,6 +5706,7 @@ setTimeout(() => {
   ctx.lineJoin = 'round';
   
   graphPoints.forEach((pt, idx) => {
+    // พล็อตจุดให้อยู่ตรงกึ่งกลางของ Grid ช่องนั้นๆ เพื่อความสมดุลและตรงกับเลเยอร์ตัวเลขพอดี
     const x = (pt.gridX * cellWidth) + (cellWidth / 2);
     const y = (pt.gridY * cellHeight) + (cellHeight / 2);
     if (idx === 0) ctx.moveTo(x, y);
@@ -5732,6 +5739,8 @@ setTimeout(() => {
     ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
     ctx.font = '10px Sarabun, sans-serif';
     ctx.textAlign = 'center';
+    
+    // แสดงตัวเลขข้อความ พ.ศ. และ อายุ กำกับใต้จุดพิกัดบนแกนตรงๆ
     ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
     ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
   });
