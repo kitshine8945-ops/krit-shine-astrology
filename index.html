@@ -5625,7 +5625,6 @@ function getLifeGraphBaseCycleFromUser() {
   let birthBeYear = typeof AppState !== 'undefined' && AppState.birthBE ? AppState.birthBE : 2522; // ปี พ.ศ. เกิด
 
   // สูตรแปลงปี พ.ศ. เป็นปีนักษัตร 12 ปี (สากลทางโหราศาสตร์ไทย: ปี 2460 ชวด = 1)
-  // พ.ศ. 2460 หารด้วย 12 เหลือเศษ 1 คือปีชวด
   let zodiacIndex = ((birthBeYear - 2460) % 12);
   if (zodiacIndex < 0) zodiacIndex += 12;
   let birthZodiac = zodiacIndex + 1; // ได้ค่า 1 ถึง 12 (1=ชวด, ..., 8=มะแม, ..., 12=ปีกุน)
@@ -5661,7 +5660,6 @@ function getLifeGraphBaseCycleFromUser() {
 // 2. ดึงข้อมูลเลขดวงชะตา 12 ตัวประจำบุคคลจากฟังก์ชันคำนวณใหม่ (Dynamic 100%)
 // ==========================================
 const cycle = getLifeGraphBaseCycleFromUser();
-let graphPoints = [];
 
 // ==========================================
 // 3 & 4. คำนวณจุดวัฏจักรอายุจร และจับคู่ตำแหน่งพิกัดกราฟให้ตรงกับ Array 12 ช่อง
@@ -5697,6 +5695,7 @@ for (let col = 0; col < 12; col++) {
     isFocus: (currentAge === focusAge) // จุดสีแดงจะติดเฉพาะอายุที่กำลังโฟกัส
   });
 }
+
 // ==========================================
 // 5. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
 // ==========================================
