@@ -5688,19 +5688,19 @@ const STEMS = [
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
       currentTarotDeck = shuffled.slice(0, count);
-      wrapper.innerHTML = currentTarotDeck.map((card, idx) => `
-        <div style="height:150px; width:100px; perspective:1000px; cursor:pointer;" onclick="flipTarotCardItem(${idx})">
-          <div id="tarot-card-item-${idx}" style="position:relative; width:100%; height:100%; transition:transform 0.6s; transform-style:preserve-3d; border-radius:8px;">
-            <div style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px; text-align:center; background:radial-gradient(circle, #251644 0%, #0d0e1e 100%); border:1.5px dashed var(--gold-main); color:var(--gold-bright);">
-              <i class="fa-solid fa-star-of-david" style="font-size:1.2rem; margin-bottom:4px;"></i>
-              <div style="font-size:0.7rem; font-weight:700;">ใบที่ ${idx+1}</div>
-              <div style="font-size:0.6rem; color:var(--gold-main);">${isFree ? THREE_POSITIONS[idx] : CELTIC_POSITIONS[idx]}</div>
-            </div>
-            <div id="tarot-back-item-${idx}" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px; text-align:center; background:linear-gradient(145deg, #182440, #0c1220); border:1.5px solid var(--gold-main); transform:rotateY(180deg); color:#fff;"></div>
+ wrapper.innerHTML = currentTarotDeck.map((card, idx) => `
+      <div style="height:150px; width:100px; perspective:1000px; cursor:pointer;" onclick="flipTarotCardItem(${idx})">
+        <div id="tarot-card-item-${idx}" style="position:relative; width:100%; height:100%; transition:transform 0.6s; transform-style:preserve-3d;">
+          <div style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(135deg, #1e1b4b, #312e81); border:1.5px solid #f5c469; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+            <i class="fa-solid fa-star-of-david" style="font-size:2rem; color:#f5c469; margin-bottom:8px;"></i>
+            <span style="font-size:0.8rem; color:#ffe49e; font-weight:600;">ไพ่ใบที่ ${idx + 1}</span>
+          </div>
+          <div style="position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#1e293b; border:1.5px solid #22c55e; transform:rotateY(180deg); padding:8px; text-align:center;">
+            <span style="font-size:0.75rem; color:#86efac; font-weight:600;">${card.th}</span>
           </div>
         </div>
-      `).join('');
-    }
+      </div>
+    `).join('');
 
     function flipTarotCardItem(idx) {
       const cardInner = document.getElementById(`tarot-card-item-${idx}`);
