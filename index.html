@@ -5553,42 +5553,68 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำชะตาชีวิต ( Array ขนาด 12 ช่อง )
+  // 1. [แก้ไขลอจิกดั้งเดิม] คำนวณตารางฐานดวงชะตา 12 ช่องแบบเวียนตำแหน่งจันทรคติคงที่
   // ==========================================
-  // ดึงค่าผลรวมแบบ Dynamic จากฐานข้อมูลหลักของระบบ (เช่น)
-  const cycle = getLifeGraphBaseCycle(); 
-  
-  let graphPoints = []; 
+  // ดึงฐานข้อมูลวันเกิดทางจันทรคติไทยแบบ Dynamic จากหน้าบ้าน (ไม่มีการ Hardcode ค่าตายตัว)
+  const inputDay = AppState.dayBase;     // ดวงชะตานี้คำนวณเวลาเกิดตัดสถิติได้ วันอาทิตย์ = 1
+  const inputMonth = AppState.monthBase; // เดือนเกิดไทย = 6
+  const inputYear = AppState.yearBase;   // ปีนักษัตรเกิด มะแม = 8
+
+  let cycle = new Array(12);
+
+  // คำนวณบวกเลขแนวตั้ง 3 ฐานแบบก้าวหน้าทีละคอลัมน์คงที่ [วาสนา...วินาศ]
+  for (let i = 0; i < 12; i++) {
+    // ฐานวัน: นับเรียงลำดับก้าวหน้าทีละช่อง 1 ถึง 7 จากนั้นนับวนกลับมารอบใหม่ (ดึงค่าตามสูตรคงที่ของ MyHora)
+    let d = ((inputDay + i - 1) % 7) + 1;
+    
+    // ฐานเดือน: ตั้งเลขเริ่มต้นตามเดือนเกิดไทย แล้วนับวนเพิ่มทีละ 1 ช่อง (ถ้าเกิน 12 ให้ตัดเศษเวียนรอบเป็น 1)
+    let m = (inputMonth + i) % 12 === 0 ? 12 : (inputMonth + i) % 12;
+    
+    // ฐานปี: ตั้งเลขเริ่มต้นตามปีนักษัตรเกิด แล้วนับวนเพิ่มทีละ 1 ช่อง (ถ้าเกิน 12 ให้ตัดเศษเวียนรอบเป็น 1)
+    let y = (inputYear + i) % 12 === 0 ? 12 : (inputYear + i) % 12;
+
+    // หาผลรวมแนวตั้งของคอลัมน์ในแต่ละช่องเรือนชะตา
+    let total = d + m + y;
+    
+    // คำนวณ "เลขดวง" (แถวที่ 5) โดยการหักลบเศษด้วย 12 จนเหลือค่าที่ไม่เกิน 12
+    let score = total % 12;
+    if (score === 0) {
+      score = 12;
+    }
+    
+    cycle[i] = score; // บันทึกเลขดวงลงตารางล็อกคงที่ประจำชะตาชีวิตบุคคลนั้น
+  }
 
   // ==========================================
-  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Cycle Loop)
   // ==========================================
-  // คำนวณหาจุดสตาร์ทของรอบชะตาปัจจุบันโดยอัตโนมัติทุกวันเกิด 
-  // เช่น เมื่อ focusAge = 47 จะได้ startAgeCycle = 37 ทันที
+  // ลอจิกคณิตศาสตร์คำนวณปัดเศษช่วงแถวอายุกราฟเส้นอัตโนมัติสำหรับทุกดวงชะตา
+  // เช่น เมื่อ focusAge = 47 จะประมวลผลคำนวณได้ startAgeCycle = 37 ทันที
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
     startAgeCycle = focusAge - 11;
   }
 
+  let graphPoints = []; 
+
   // ==========================================
-  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและคะแนนให้ลงล็อกพิกัด
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อแมปจุดพิกัดเชื่อมโยงเลขดวงชะตา
   // ==========================================
   for (let col = 0; col < 12; col++) {
-    // เลขอายุเดินหน้าเรียงจากซ้ายไปขวาอย่างถูกต้อง (37, 38, 39 ... จนถึง 48)
+    // อายุจรจะเดินหน้าเรียงสัดส่วนเป็นเส้นตรงจากซ้ายไปขวา (เริ่มตั้งแต่ 37, 38, 39 ... จนถึงอายุ 48 ปี)
     const currentAge = startAgeCycle + col; 
 
-    // คำนวณหาอินเด็กซ์ในการดึงคะแนนจาก Array cycle (0 ถึง 11)
+    // ดึงค่าอินเด็กซ์ของแถวตารางเลขดวงประจำอายุ (ดัชนี 0 ถึง 11)
     let targetHouseIndex = (currentAge - 1) % 12;
     
-    // ดึงค่าคะแนนจริงประจำดวงชะตา (1 ถึง 12)
+    // ดึงค่าคะแนนความสูงเลขดวงประจำเรือนภพจากรอบคำนวณข้อที่ 1
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
     
-    // [แก้ไขจุดสำคัญ] ปรับลอจิกการคำนวณแกนตั้ง (แกน Y) ใหม่ให้สัมพันธ์กับความสูงของผ้าใบ Canvas
-    // คะแนนสูงสุด (12) จะอยู่ด้านบนสุด และคะแนนต่ำสุด (1) จะอยู่ด้านล่างสุด ไม่กลับหัวกลับหาง
+    // แปลงค่าความสูงของระดับคะแนนเพื่อวาดพิกัดจุด Canvas
     const row = 12 - safeScore; 
 
-    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงในระบบ (AppState.birthBE)
+    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานข้อมูลปีเกิดจริงในระบบ (AppState.birthBE)
     let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
 
@@ -5596,9 +5622,9 @@ function initMyHoraLifeChart(focusAge) {
       age: currentAge,
       buddhistYear: currentBuddhistYear,
       score: safeScore,
-      gridX: col,  // พิกัดคอลัมน์แนวนอนเรียงจาก 0 - 11
-      gridY: row,  // พิกัดความสูงแกนตั้งที่แก้ไขตำแหน่งให้วิ่งขึ้นลงถูกต้องแล้ว
-      isFocus: (currentAge === focusAge) // จุดสีแดงจะติดเฉพาะอายุจรปัจจุบันที่เลือก
+      gridX: col,  
+      gridY: row,  
+      isFocus: (currentAge === focusAge) // จุดสีแดงจะสว่างติดเฉพาะเลขอายุจรปัจจุบันที่เลือกในเมนู
     });
   }
 
@@ -5613,18 +5639,16 @@ function initMyHoraLifeChart(focusAge) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // คำนวณขนาดบล็อกตารางพื้นหลังแบบสมส่วน 12 ช่อง
     const cellWidth = canvas.width / 12;
     const cellHeight = canvas.height / 12;
 
-    // ลากเส้นกราฟวิถีชีวิต (ลากขึ้นลงเป็นฟันปลาตามพิกัดคะแนนจริง)
+    // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงขึ้นลงเป็นฟันปลาตามพิกัดคะแนนจริง
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = '#2ecc71'; 
     ctx.lineJoin = 'round';
 
     graphPoints.forEach((pt, idx) => {
-      // คำนวณจุดกึ่งกลางของแต่ละบล็อกเพื่อให้เส้นพิกัดเกาะอยู่ตรงกลางช่องพอดี
       const x = (pt.gridX * cellWidth) + (cellWidth / 2);
       const y = (pt.gridY * cellHeight) + (cellHeight / 2);
       if (idx === 0) ctx.moveTo(x, y);
@@ -5640,21 +5664,21 @@ function initMyHoraLifeChart(focusAge) {
       ctx.beginPath();
       if (pt.isFocus) {
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff4757'; // จุดอายุจรปัจจุบัน = สีแดงสด
+        ctx.fillStyle = '#ff4757'; // จุดอายุจรปัจจุบันที่เลือก = สีแดงสด
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้าง = สีเหลือง
+        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างช่วงวัฏจักร = สีเหลืองทอง
         ctx.fill();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = '#040816';
         ctx.stroke();
       }
 
-      // พิมพ์ข้อความแสดง ปี พ.ศ. และ อายุจร ไว้ใต้จุดพิกัดในแต่ละช่อง
+      // พิมพ์ข้อความแสดงปี พ.ศ. จร และอายุจร กำกับไว้ใต้จุดพิกัดของแต่ละช่องช่อง
       ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
       ctx.font = '10px Sarabun, sans-serif';
       ctx.textAlign = 'center';
