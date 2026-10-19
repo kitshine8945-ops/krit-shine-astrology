@@ -5407,9 +5407,9 @@ const POEMS_DATABASE = {
 // ตัวแปรกันชนไม่ให้เกิดลูปวนซ้ำ
     let isChangingAge = false;
 
-    // ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
+// ฟังก์ชันหลักเมื่อเปลี่ยนอายุ กราฟและคำทำนายจะเปลี่ยนตามแบบนิ่งสนิท
     function applyAgeChange(age) {
-      if (isChangingAge) return;
+      if (typeof isChangingAge !== 'undefined' && isChangingAge) return;
       isChangingAge = true;
 
       age = parseInt(age, 10);
@@ -5417,10 +5417,15 @@ const POEMS_DATABASE = {
       if (age < 1) age = 1;
       if (age > 80) age = 80;
 
-      lockedUserAge = age;
-      AppState.currentGraphAge = age;
+      if (typeof lockedUserAge !== 'undefined') lockedUserAge = age;
+      if (typeof AppState !== 'undefined') AppState.currentGraphAge = age;
       
-      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
+      // ดึงปีเกิด พ.ศ. จาก AppState หรือช่องกรอก โดยไม่ฟิกซ์ค่า 2522
+      const birthYear = (typeof AppState !== 'undefined' && AppState.birthBE) 
+          ? AppState.birthBE 
+          : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2522);
+      
+      // สูตรที่ถูกต้อง: ปี พ.ศ. = ปีเกิด พ.ศ. + เลขอายุย่าง
       let calBE = birthYear + age;
 
       const slider = document.getElementById('ageRangeSlider');
@@ -5432,6 +5437,23 @@ const POEMS_DATABASE = {
       const cycle = getLifeGraphBaseCycle();
       let score = cycle[(age - 1) % 12];
 
+      // >>> เพิ่มการอัปเดตข้อความแสดงผล พ.ศ. บนหน้าจอ <<<
+      const sliderYearDisplay = document.getElementById('slider-year-display');
+      if (sliderYearDisplay) {
+          sliderYearDisplay.textContent = `(พ.ศ. ${calBE})`;
+      }
+      const sliderAgeDisplay = document.getElementById('slider-age-display');
+      if (sliderAgeDisplay) {
+          sliderAgeDisplay.textContent = `อายุ ${age} ปี`;
+      }
+
+      // >>> เรียกฟังก์ชันเรนเดอร์กราฟและส่งค่าปี พ.ศ. (calBE) เข้าไปคำนวณพิกัดจริง <<<
+      if (typeof initMyHoraLifeChart === 'function') {
+          initMyHoraLifeChart(age);
+      }
+
+      isChangingAge = false; // ปลดล็อกสถานะการเปลี่ยนอายุ
+    }
     // 1. ดึงกลอนประจำปีและแปลความหมายจากตำแหน่งกราฟและบทกลอนมาเป็นคำทำนายสรุป
       const poem = POEMS_DATABASE[score] || POEMS_DATABASE[3];
       const realmName = score >= 9 ? 'สวรรค์ภูมิ (จุดสูงสุดแห่งความสำเร็จ วาสนาบารมีรุ่งโรจน์)' : (score >= 5 ? 'มนุษย์ภูมิ (ความมั่นคง ดำเนินชีวิตด้วยความปรกติสุข)' : 'นรกภูมิ (จุดทดสอบความอดทน ต้องใช้สติและระมัดระวังเป็นพิเศษ)');
