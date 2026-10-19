@@ -5530,52 +5530,48 @@ const ageTransitMapping = {
         </div>
       `;
 
-// 1. ดึงตัวแปรอายุ (เลี่ยงชื่อซ้ำ)
-let uniqueActiveAge = typeof age !== 'undefined' ? age : 47; 
+// 1. ดึงตัวแปรอายุจากสไลเดอร์หน้าเว็บจริงโดยตรง (แก้ปัญหาจุดส้มค้างไม่ขยับ)
+let stdActiveAge = typeof AppState !== 'undefined' && AppState.selectedAge ? AppState.selectedAge : (parseInt(document.getElementById('selectYearAgeDirect')?.value) || 47);
 
-// 2. ดึงค่าคะแนนแกนกราฟประจำดวงชะตา
-let uniqueCycleScores = getLifeGraphBaseCycle(); 
+// 2. ดึงค่าคะแนนแกนกราฟ 12 ช่องของคนนั้น ๆ มาใช้งาน
+let stdCycleScores = getLifeGraphBaseCycle(); 
 
-// 3. สูตรคำนวณหาช่องตกจร (index ภพจร)
-let uniqueHouseIdx = 0;
-let uniqueAgeModulo = uniqueActiveAge % 12;
+// 3. คำนวณหาช่องตกจร (Index ภพจร) ตามสูตรมาตรฐานทั่วไป [อายุ % 12]
+let stdHouseIdx = 0;
+let stdAgeModulo = stdActiveAge % 12;
 
-if (uniqueAgeModulo === 1) uniqueHouseIdx = 0;       // วาสนา
-else if (uniqueAgeModulo === 2) uniqueHouseIdx = 5;  // ศัตรู
-else if (uniqueAgeModulo === 3) uniqueHouseIdx = 2;  // เพื่อน
-else if (uniqueAgeModulo === 4) uniqueHouseIdx = 9;  // การงาน
-else if (uniqueAgeModulo === 5) uniqueHouseIdx = 4;  // บริวาร
-else if (uniqueAgeModulo === 6) uniqueHouseIdx = 6;  // คู่ครอง
-else if (uniqueAgeModulo === 7) uniqueHouseIdx = 3;  // ญาติ
-else if (uniqueAgeModulo === 8) uniqueHouseIdx = 7;  // โรคภัย
-else if (uniqueAgeModulo === 9) uniqueHouseIdx = 8;  // ความสุข
-else if (uniqueAgeModulo === 10) uniqueHouseIdx = 9; // การงาน (ซ้ำรอบเสริม)
-else if (uniqueAgeModulo === 11) uniqueHouseIdx = 10; // ลาภยศ 
-else if (uniqueAgeModulo === 0) uniqueHouseIdx = 11;  // วินาศ
+// สูตรลัดเศษ: เศษ 1=วาสนา(0), เศษ 2=ทรัพย์(1)... เศษ 0=วินาศ(11)
+if (stdAgeModulo === 0) {
+    stdHouseIdx = 11; // เศษ 0 ตกวินาศ
+} else {
+    stdHouseIdx = stdAgeModulo - 1; // เศษอื่น ๆ ลบ 1 เพื่อแปลงเป็น Index 0 - 10
+}
 
-// 4. ดึงชื่อภพและค่าคะแนนแกน Y ออกมาใช้งาน
-const uniqueHouseNamesList = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
-let uniqueHouseNameStr = uniqueHouseNamesList[uniqueHouseIdx];
-let uniqueScoreNum = uniqueCycleScores[uniqueHouseIdx];
+// 4. ดึงชื่อภพและค่าคะแนนแกน Y ประจำดวงของคนนั้นออกทำงานอัตโนมัติ
+const stdHouseNamesList = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
+let stdHouseNameStr = stdHouseNamesList[stdHouseIdx];
+let stdScoreNum = stdCycleScores[stdHouseIdx];
 
-// กำหนดภูมิชะตาตามระดับคะแนน
-let uniqueZoneStr = "มนุษย์ภูมิ";
-if (uniqueScoreNum >= 9) uniqueZoneStr = "สวรรค์ภูมิ";
-else if (uniqueScoreNum <= 4) uniqueZoneStr = "นรกภูมิ";
+// กำหนดภูมิชะตาตามเกณฑ์คะแนนมาตรฐาน (1-4 นรก | 5-8 มนุษย์ | 9-12 สวรรค์)
+let stdZoneStr = "มนุษย์ภูมิ";
+if (stdScoreNum >= 9) stdZoneStr = "สวรรค์ภูมิ";
+else if (stdScoreNum <= 4) stdZoneStr = "นรกภูมิ";
 
-// 5. ปรับพิกัดจุดสีส้มบนตัวกราฟ
+// 5. สั่งตัวกราฟให้เคลียร์ตำแหน่งเก่า แล้วปักหมุดจุดสีส้มในคอลัมน์จรจริง
 if (typeof lifeChartInstance !== 'undefined' && lifeChartInstance !== null) {
-    if (lifeChartInstance.data && lifeChartInstance.data.datasets && lifeChartInstance.data.datasets[1]) {
-        lifeChartInstance.data.datasets[1].data = [{ x: uniqueHouseIdx, y: uniqueScoreNum }];
+    if (lifeChartInstance.data && lifeChartInstance.data.datasets) {
+        // ล้างข้อมูลเก่าของจุดจรในแกนกราฟทั้งหมด แล้วระบุคะแนนลงช่องจรใหม่โดยเฉพาะ
+        lifeChartInstance.data.datasets.data = Array(12).fill(null);
+        lifeChartInstance.data.datasets.data[stdHouseIdx] = stdScoreNum;
         lifeChartInstance.update();
     }
 }
 
-// 6. พ่นโค้ดเรนเดอร์คำทำนายด้านล่าง
+// 6. พ่นโค้ดเรนเดอร์กล่องคำทำนายด้านล่างด้วยเครื่องหมาย Backtick (`) ที่ถูกต้อง
 document.getElementById('vip-graph-aspects-content').innerHTML = `
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${uniqueActiveAge} ปี (เลข ${uniqueScoreNum})</strong></div>
-    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${uniqueScoreNum}/12 คะแนน (${uniqueZoneStr})</strong></div>
-    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${uniqueHouseNameStr}</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• คำทำนายประจำปี อายุ ${stdActiveAge} ปี (เลข ${stdScoreNum})</strong></div>
+    <div style="margin-bottom: 12px;"><strong style="color: var(--gold-bright); font-size: 0.9rem;">• พลัง ${stdScoreNum}/12 คะแนน (${stdZoneStr})</strong></div>
+    <div><strong style="color: var(--gold-bright); font-size: 0.9rem;">• ภพจรตกช่อง: ${stdHouseNameStr}</strong></div>
 `;
 
       const houseNames = ["วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"];
