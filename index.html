@@ -5615,139 +5615,116 @@ function getLifeGraphBaseCycle() {
   return cycleArray;
 }
 
-// ==========================================
-// 1. ฟังก์ชันคำนวณเลขดวงชะตา 12 เรือนภพ 
-// ==========================================
-function calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, targetAge) {
-  let baseScore = dayOfWeek + lunarMonth + zodiacYear;
-  let result = (baseScore + (targetAge - 1)) % 12;
-  return (result === 0) ? 12 : result;
-}
+  // ==========================================
+  // 1. ดึงข้อมูลเลขดวงชะตา 12 ตัวคงที่ประจำบุคคลจากระบบหลัก ( Dynamic 100% )
+  // ==========================================
+  // ระบบหลักของคุณจะคำนวณเศษปฏิทินจันทรคติ (วัน+เดือน+ปี) แล้วส่งออกมาเป็น Array ขนาด 12 ช่อง
+  // ตัวอย่างสำหรับชะตานี้คือ [3, 6, 9, 12, 3, 6, 9, 4, 6, 8, 10, 12] ซึ่งเปลี่ยนไปตามวันเกิดแต่ละคนอัตโนมัติ
+  const cycle = getLifeGraphBaseCycle(); 
+  
+  let graphPoints = []; 
 
-// ==========================================
-// 2. ดึงค่าตัวแปรตั้งต้นแบบ Dynamic จากระบบ
-// ==========================================
-let birthBeYear = (typeof AppState !== 'undefined' && AppState.birthBE) ? AppState.birthBE : 2522;
-
-// [แก้ไขให้แม่นยำตามวันเกิดจริง]: 30 เมษายน 2522 คือ วันจันทร์=2, เดือนไทย=6, ปีมะแม=8
-let dayOfWeek = (typeof AppState !== 'undefined' && AppState.birthDayOfWeek) ? AppState.birthDayOfWeek : 2; 
-let lunarMonth = (typeof AppState !== 'undefined' && AppState.birthMonthThai) ? AppState.birthMonthThai : 6;  
-
-if (typeof focusAge === 'undefined') {
-  var focusAge = (typeof AppState !== 'undefined' && AppState.selectedAge) ? AppState.selectedAge : 47;
-} else {
-  if (typeof AppState !== 'undefined' && AppState.selectedAge) {
-    focusAge = AppState.selectedAge;
+  // ==========================================
+  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Loop)
+  // ==========================================
+  // ลอจิกคณิตศาสตร์จะคำนวณหาจุดสตาร์ทของรอบอายุจรปัจจุบันโดยอัตโนมัติทุกวันเกิด 
+  // เช่น เมื่อ focusAge = 47 จะได้ startAgeCycle = 37 ทันที (หรือถ้า focusAge = 25 จะได้ startAgeCycle = 13)
+  let startAgeCycle = focusAge - ((focusAge - 1) % 12);
+  if (focusAge % 12 === 0) {
+    startAgeCycle = focusAge - 11;
   }
-}
 
-// ลอจิกคำนวณรหัสปีนักษัตรไทยฐาน 12 (มะแม = 8)
-let zodiacIndex = ((birthBeYear - 2415) % 12); 
-if (zodiacIndex <= 0) zodiacIndex += 12;
-let zodiacYear = zodiacIndex;
+  // ==========================================
+  // 3. วนลูปแกนนอน 12 คอลัมน์ เพื่อจับคู่ตำแหน่งและผลคะแนนดวงชะตา
+  // ==========================================
+  for (let col = 0; col < 12; col++) {
+    // เลขอายุในแต่ละคอลัมน์จะเดินหน้าเรียงจากซ้ายไปขวาอย่างราบรื่น ไม่เรียงลำดับมั่ว
+    // เช่น เริ่มตั้งแต่ 37, 38, 39 ... ไปจนถึงอายุ 48 ปี 
+    const currentAge = startAgeCycle + col; 
 
-// ==========================================
-// 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร
-// ==========================================
-let startAgeCycle = focusAge - ((focusAge - 1) % 12);
-if (focusAge % 12 === 0) {
-  startAgeCycle = focusAge - 11;
-}
-
-let graphPoints = [];
-
-// ==========================================
-// 4. วนลูปแกนนอน 12 คอลัมน์ (คำนวณพิกัดให้ตรงล็อกบน-ล่างจริง)
-// ==========================================
-for (let col = 0; col < 12; col++) {
-  const currentAge = startAgeCycle + col;
-  
-  // คำนวณเลขดวงชะตา (1 - 12)
-  const score = calculateHouseValue(dayOfWeek, lunarMonth, zodiacYear, currentAge);
-  const safeScore = score > 0 ? score : 1; 
-  
-  // [แก้ไขจุดผิดพลาดหลัก - สลับพิกัดแกน Y]: 
-  // แคนวาสหน้าเว็บของคุณระบุ "1 วินาศ" ไว้ด้านล่างสุด และ "12 วาสนา" ไว้บนสุด
-  // ดังนั้นสูตรที่ตรงล็อกคือ ยิ่งคะแนนเยอะ จุดยิ่งต้องเลื่อนขึ้นด้านบน (ค่า row ต้องน้อยลง)
-  // ใช้สูตร: 12 - safeScore เพื่อให้คะแนน 12 อยู่ที่แถว 0 (บนสุด) และคะแนน 1 อยู่ที่แถว 11 (ล่างสุด)
-  const row = 12 - safeScore;
-
-  // [แก้ไขสูตร พ.ศ. จร คลาดเคลื่อน]: 
-  // ปรับลอจิกการคำนวณปีให้สอดรับกับอายุย่างจริงบนเส้นกราฟ
-  let currentBuddhistYear = birthBeYear + currentAge - 1;
-
-  graphPoints.push({
-    age: currentAge,
-    buddhistYear: currentBuddhistYear,
-    score: safeScore,
-    gridX: col,       
-    gridY: row,       
-    isFocus: (currentAge === focusAge) 
-  });
-}
-
-// ==========================================
-// 5. สั่ง Canvas วาดเส้นกราฟ
-// ==========================================
-setTimeout(() => {
-  const canvas = document.getElementById('lifeChartCanvas');
-  if (!canvas) return;
-
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  const cellWidth = canvas.width / 12;
-  const cellHeight = canvas.height / 12;
-
-  // ลากเส้นกราฟวิถีชีวิตเชื่อมโยงจากซ้ายไปขวา
-  ctx.beginPath();
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = '#2ecc71';
-  ctx.lineJoin = 'round';
-  
-  graphPoints.forEach((pt, idx) => {
-    // พล็อตให้อยู่กึ่งกลางช่อง Grid เพื่อให้ตรงกับข้อความ 1-12 ด้านขวามือพอดี
-    const x = (pt.gridX * cellWidth) + (cellWidth / 2);
-    const y = (pt.gridY * cellHeight) + (cellHeight / 2);
-    if (idx === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จร
-  graphPoints.forEach((pt) => {
-    const x = (pt.gridX * cellWidth) + (cellWidth / 2);
-    const y = (pt.gridY * cellHeight) + (cellHeight / 2);
-
-    ctx.beginPath();
-    if (pt.isFocus) {
-      ctx.arc(x, y, 9, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ff4757'; 
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#f5c469';
-      ctx.stroke();
-    } else {
-      ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffd700'; 
-      ctx.fill();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = '#040816';
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
-    ctx.font = '10px Sarabun, sans-serif';
-    ctx.textAlign = 'center';
+    // หาอินเด็กซ์ของเรือนภพประจำตัวเลขดวง (ดัชนี 0 ถึง 11)
+    let targetHouseIndex = (currentAge - 1) % 12;
     
-    ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
-    ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
-  });
-}, 100);
+    // ดึงคะแนนตรงตามช่องผลคำนวณที่ได้จาก Array (คะแนนจะล็อกคงที่ตามดวงชะตาบุคคลนั้น)
+    const score = cycle[targetHouseIndex]; 
+    const safeScore = score > 0 ? score : 1;
+    
+    // แปลงค่าคะแนน (1-12) ให้เป็นพิกัดแถวแนวตั้ง (คะแนน 12 อยู่ index 0 บนสุด, คะแนน 1 อยู่ index 11 ล่างสุด)
+    const row = 12 - safeScore; 
 
+    // คำนวณปี พ.ศ. จรแบบ Dynamic จากฐานปีเกิดจริงในระบบของสมาชิกคนนั้นๆ (AppState.birthBE)
+    let birthBeYear = AppState.birthBE; 
+    let currentBuddhistYear = birthBeYear + currentAge - 1; 
+
+    graphPoints.push({
+      age: currentAge,
+      buddhistYear: currentBuddhistYear,
+      score: safeScore,
+      gridX: col,  // พิกัดคอลัมน์แนวนอน 0 - 11
+      gridY: row,  // พิกัดความสูงแนวตั้งขยับตามระดับคะแนนเลขดวง
+      isFocus: (currentAge === focusAge) // จุดโฟกัสสีแดงจะติดไฟเฉพาะตำแหน่งเลขอายุจรปัจจุบัน
+    });
+  }
+
+  // ==========================================
+  // 4. สั่งผ้าใบ (Canvas) เริ่มวาดเส้นและจุดพิกัดกราฟชีวิต
+  // ==========================================
+  setTimeout(() => {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cellWidth = canvas.width / 12;
+    const cellHeight = canvas.height / 12;
+
+    // ลากเส้นกราฟวิถีชีวิตชะตาเชื่อมโยงจากซ้ายไปขวา
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#2ecc71'; 
+    ctx.lineJoin = 'round';
+
+    graphPoints.forEach((pt, idx) => {
+      const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+      const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // วาดจุดพิกัดวงกลมกำกับบนเส้น พร้อมพิมพ์ตัวเลขอายุจรและ พ.ศ. จรวิ่งเวียนใต้จุด
+    graphPoints.forEach((pt) => {
+      const x = (pt.gridX * cellWidth) + (cellWidth / 2);
+      const y = (pt.gridY * cellHeight) + (cellHeight / 2);
+
+      ctx.beginPath();
+      if (pt.isFocus) {
+        ctx.arc(x, y, 9, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ff4757'; // จุดดวงจรปัจจุบันแสดงผลเป็น "สีแดงสด"
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#f5c469';
+        ctx.stroke();
+      } else {
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างแสดงผลเป็น "สีเหลือง"
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#040816';
+        ctx.stroke();
+      }
+
+      // แสดงพิมพ์ข้อความ พ.ศ. จร และ เลขอายุ ใต้จุดกลมแต่ละจุดอย่างสวยงาม
+      ctx.fillStyle = pt.isFocus ? '#ff4757' : '#ffffff';
+      ctx.font = '10px Sarabun, sans-serif';
+      ctx.textAlign = 'center';
+      
+      ctx.fillText(`${pt.buddhistYear}`, x, y + 18);
+      ctx.fillText(`อายุ ${pt.age} ปี`, x, y + 30);
+    });
+  }, 100);
 }
 
 // =================================================================
