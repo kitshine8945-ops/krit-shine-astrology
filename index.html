@@ -2558,12 +2558,13 @@ function analyzeVipSpecificQuestion() {
       <div style="grid-row: 9 / span 4; color:#ff7675; display: flex; flex-direction: column; justify-content: center; align-items: center;">นรกภูมิ<br><small>(1 - 4)</small></div>
     </div>
 
-    <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเบื้องหลังเป็นสี่เหลี่ยมจัตุรัสอัตราส่วน 1:1 -->
-    <div style="position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; background: rgba(255,255,255,0.015); border-radius: 4px; overflow: hidden;">
-      <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></canvas>
+    <!-- ส่วนแสดงกราฟตรงกลางที่บังคับช่องตารางเบื้องหลังเป็นสี่เหลี่ยมจัตุรัสอัตราส่วน 1:1 เป๊ะ ๆ -->
+    <div style="position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 100%; background: rgba(5, 8, 18, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+      <!-- จัดระดับ z-index ให้อยู่ข้างใต้ตัวหนังสือ เพื่อแก้ปัญหากล่องใสบังพิกัดหน้าจอ -->
+      <canvas id="lifeChartCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
     </div>
     
-    <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ดิ่งตรงตามแนวกึ่งกลางแถวพิกัตของตารางเป๊ะ ๆ) -->
+    <!-- หัวข้อเรือนภพด้านขวา (จัดเรียง 12 ถึง 1 ดิ่งตรงตามแนวกึ่งกลางแถวพิกัดของตารางเป๊ะ ๆ) -->
     <div style="display: grid; grid-template-rows: repeat(12, 1fr); font-size: 0.75rem; color: #cbd5e1; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 10px; height: 100%; align-items: center; box-sizing: border-box;">
       <div style="display: flex; align-items: center;">12 วาสนา</div>
       <div style="display: flex; align-items: center;">11 ทรัพย์</div>
@@ -2585,7 +2586,7 @@ function analyzeVipSpecificQuestion() {
   <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-bottom:10px;">
     <div style="display:flex; align-items:center; gap:10px;">
       <h4 id="yearly-card-title" style="color: #ffd700; font-size: 1.15rem;">คำทำนายประจำปี</h4>
-      <!-- ไอดีสำหรับแสดงผลตัวเลขอายุย่างแบบไดนามิกเฉพาะของกราฟชีวิต -->
+      <!-- ป้ายไอดีสำหรับรองรับตัวเลขอายุย่างจรของสมาชิกทุกคนแบบไดนามิก -->
       <span id="yearly-prediction-age-display" style="color: var(--gold-main); font-size: 1.15rem; font-weight: 700;"></span>
     </div>
     <div id="yearly-score-badge" style="font-size:1.2rem; font-weight:700; color:#ff7675;">พลัง 3/12 คะแนน</div>
@@ -2603,6 +2604,7 @@ function analyzeVipSpecificQuestion() {
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;" id="vip-graph-12houses-content"></div>
   </div>
 </div>
+
 
 <!-- MODAL: ปาจื่อ (BaZi 4 เสาหลักจีน) -->
 <div class="modal-overlay" id="modal-bazi">
@@ -13062,7 +13064,7 @@ function calculateLifeChartAstrologyAge(birthYearBE, transitYearBE) {
     let fullAge = currentYearBE - birthYearBE;
     if (fullAge < 0) fullAge = 0;
 
-    // ระบบอายุย่างทางโหราศาสตร์ไทยสำหรับทุกคน (+1 เสมอ)
+    // ระบบคำนวณอายุย่างของโหราศาสตร์ไทยสากลสำหรับทุกคน (+1 เสมอ)
     let astrologyAge = fullAge + 1; 
     return astrologyAge;
 }
@@ -13074,15 +13076,15 @@ function initMyHoraLifeChart(focusAge) {
     const canvas = document.getElementById('lifeChartCanvas');
     if (!canvas) return;
 
-    // 1. ดึงฐานลูปคะแนน 12 ภพชะตาประจำดวงชะตาของแต่ละคนขึ้นมาทำงาน (ไม่รบกวนลัคนาพยากรณ์)
+    // 1. ดึงฐานลูปคะแนน 12 ภพชะตาประจำดวงชะตาของแต่ละคนขึ้นมาทำงาน (ไม่กระทบลัคนาพยากรณ์)
     const cycle = getLifeGraphBaseCycle(); 
 
-    // 2. ดึงปีเกิด พ.ศ. ไดนามิกของสมาชิกจากข้อมูลในระบบ
+    // 2. ดึงปีเกิด พ.ศ. ไดนามิกของสมาชิกจากข้อมูลในระบบ AppState
     const birthYearBE = (typeof AppState !== 'undefined' && AppState.birthBE) 
         ? AppState.birthBE 
         : (parseInt(document.getElementById('birthYearBE')?.value, 10) || 2500);
 
-    // 3. จัดการเงื่อนไขประมวลผลคำนวณเริ่มต้นหน้าระบบ
+    // 3. จัดการเงื่อนไขประมวลผลคำนวณเริ่มต้นหน้าระบบครั้งแรก
     if (!focusAge) {
         const currentYearBE = (typeof AppState !== 'undefined' && AppState.transitBE) 
             ? AppState.transitBE 
@@ -13091,17 +13093,17 @@ function initMyHoraLifeChart(focusAge) {
         focusAge = calculateLifeChartAstrologyAge(birthYearBE, currentYearBE);
     }
 
-    // อัปเดตป้ายตัวเลขบอกอายุย่างจรของสมาชิกปัจจุบันบนหน้าจอ
+    // สั่งให้พิมพ์ระบุอายุย่างจรลงล็อกช่องหัวข้อด้านล่างตารางอย่างถูกต้อง
     const ageDisplay = document.getElementById('yearly-prediction-age-display');
     if (ageDisplay) ageDisplay.innerText = ` (อายุย่าง ${focusAge} ปี)`;
 
-    // 4. ตัดเศษ 12 เพื่อหาตำแหน่งภพจรปัจจุบัน (ไม่มีการ Hardcode ล็อกข้อมูลใคร)
+    // 4. ตัดเศษ 12 เพื่อหาตำแหน่งภพจรปัจจุบัน (ไม่มีการ Hardcode ข้อมูลใคร)
     let transitRemainder = focusAge % 12;
     if (transitRemainder === 0) transitRemainder = 12; 
 
     let graphPoints = []; 
 
-    // 5. วนลูปคำนวณพิกัดดวงชะตาทอดยาวในแนวนอนตามตำแหน่ง 12 เรือนภพจากซ้ายไปขวา
+    // 5. วนลูปคำนวณพิกัดดวงชะตาทоดยาวในแนวนอนตามตำแหน่ง 12 เรือนภพจากซ้ายไปขวา
     for (let col = 0; col < 12; col++) {
         const houseNumber = col + 1; 
         const score = cycle[col]; 
@@ -13117,7 +13119,7 @@ function initMyHoraLifeChart(focusAge) {
         });
     }
 
-    // 6. ลากเส้นกราฟวิถีชีวิตลงผืนผ้าใบ Canvas ครอบทับช่องสี่เหลี่ยมจัตุรัสแบบไดนามิก
+    // 6. ลากเส้นตาราง Grid และกราฟวิถีชีวิตลง Canvas แบบ Pixel-Perfect
     setTimeout(() => {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width;
@@ -13126,11 +13128,28 @@ function initMyHoraLifeChart(focusAge) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // คำนวณแบ่งช่องใน Canvas ออกเป็น 12 x 12 บล็อกย่อยเท่ากันเป๊ะ ๆ
         const cellWidth = canvas.width / 12;
         const cellHeight = canvas.height / 12;
 
-        // วาดเส้นกราฟเชื่อมโยงจากซ้ายไปขวา (แนวนอนชะตาชีวิต)
+        // --- วาดเส้นตารางพิกัดพื้นหลัง (Grid Lines) จานๆ สวยงามสไตล์มืด คลีน 100% ---
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        
+        for (let g = 0; g <= 12; g++) {
+            // เส้นตารางแนวตั้ง
+            ctx.beginPath();
+            ctx.moveTo(g * cellWidth, 0);
+            ctx.lineTo(g * cellWidth, canvas.height);
+            ctx.stroke();
+
+            // เส้นตารางแนวนอน
+            ctx.beginPath();
+            ctx.moveTo(0, g * cellHeight);
+            ctx.lineTo(canvas.width, g * cellHeight);
+            ctx.stroke();
+        }
+
+        // --- วาดเส้นกราฟวิถีชีวิตแนวนอนยาวจากซ้ายไปขวา (ภพที่ 1 ถึง 12) ---
         ctx.beginPath();
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#2ecc71'; 
@@ -13144,14 +13163,14 @@ function initMyHoraLifeChart(focusAge) {
         });
         ctx.stroke();
 
-        // วาดจุดปักหมุดวงกลมพลังชะตา
+        // --- วาดจุดปักหมุดวงกลมพลังชะตาลงในล็อกช่องตาราง ---
         graphPoints.forEach((pt) => {
             const x = (pt.gridX * cellWidth) + (cellWidth / 2);
             const y = (pt.gridY * cellHeight) + (cellHeight / 2);
 
             ctx.beginPath();
             if (pt.isFocus) {
-                // จุดดวงจรปัจจุบันปักลงล็อกตรงช่องเรือนภพที่คำนวณได้จริง (สีแดงสดขอบทองสว่าง VIP)
+                // จุดดวงจรปัจจุบันปักลงล็อกตรงช่องเรือนภพที่เศษอายุตกจริง (สีแดงสดขอบทองสว่างระบบ VIP)
                 ctx.arc(x, y, 9, 0, 2 * Math.PI);
                 ctx.fillStyle = '#ff4757';
                 ctx.fill();
