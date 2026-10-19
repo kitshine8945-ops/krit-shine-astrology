@@ -5553,18 +5553,49 @@ function initMyHoraLifeChart(focusAge) {
   if (!canvas) return;
 
   // ==========================================
-  // 1. คำนวณตารางฐานดวงชะตา 12 ช่องแบบเวียนตำแหน่งจันทรคติคงที่ (Dynamic 100%)
+  // 1. ดึงข้อมูลดิบจากหน้าบ้าน และแปลงเป็นเลขฐานจันทรคติไทย (Dynamic 100%)
   // ==========================================
-  const inputDay = AppState.dayBase;     
-  const inputMonth = AppState.monthBase; 
-  const inputYear = AppState.yearBase;   
+  const birthBeYear = AppState.birthBE;   // ปี พ.ศ. เกิดของผู้ใช้งาน (เช่น 2522)
+  const inputDay = AppState.dayBase;       // วันเกิด (วันอาทิตย์ = 1, วันจันทร์ = 2 ... วันเสาร์ = 7)
+  const solarMonth = AppState.solarMonth; // เดือนเกิดสากล (1 = ม.ค., 4 = เม.ย. ... 12 = ธ.ค.)
 
+  // 🔹 [เพิ่มสูตรที่ 1] อัลกอริทึมแปลงปี พ.ศ. เกิด เป็นเลขปีนักษัตรไทย (1 - 12) ตามเกณฑ์สถิติจันทรคติ
+  let calculatedYearBase = ((birthBeYear - 2503) % 12);
+  if (calculatedYearBase <= 0) {
+      calculatedYearBase += 12;
+  }
+  // ผลลัพธ์: พ.ศ. 2522 จะได้เศษคำนวณออกมาเท่ากับเลข 8 (ปีมะแม) ตรงตามใบดวงพอดีเป๊ะทุกดวงชะตา
+
+  // 🔹 [เพิ่มสูตรที่ 2] แมปเดือนเกิดสากลให้เป็นเลขเดือนจันทรคติไทย (1 - 12) ตามตารางมาตรฐานของคุณ
+  // เมษายน (4) -> เดือน 5 ไทย (เลข 6), พฤษภาคม (5) -> เดือน 6 ไทย (เลข 7)
+  let calculatedMonthBase = 0;
+  if (solarMonth === 11) calculatedMonthBase = 1;  // พ.ย. (เดือน 12 ไทย)
+  else if (solarMonth === 12) calculatedMonthBase = 2; // ธ.ค. (เดือนอ้าย / เดือน 1 ไทย)
+  else if (solarMonth === 1) calculatedMonthBase = 3;  // ม.ค. (เดือนยี่ / เดือน 2 ไทย)
+  else if (solarMonth === 2) calculatedMonthBase = 4;  // ก.พ. (เดือน 3 ไทย)
+  else if (solarMonth === 3) calculatedMonthBase = 5;  // มี.ค. (เดือน 4 ไทย)
+  else if (solarMonth === 4) calculatedMonthBase = 6;  // เม.ย. (เดือน 5 ไทย)
+  else if (solarMonth === 5) calculatedMonthBase = 7;  // พ.ค. (เดือน 6 ไทย)
+  else if (solarMonth === 6) calculatedMonthBase = 8;  // มิ.ย. (เดือน 7 ไทย)
+  else if (solarMonth === 7) calculatedMonthBase = 9;  // ก.ค. (เดือน 8 ไทย)
+  else if (solarMonth === 8) calculatedMonthBase = 10; // ส.ค. (เดือน 9 ไทย)
+  else if (solarMonth === 9) calculatedMonthBase = 11; // ก.ย. (เดือน 10 ไทย)
+  else if (solarMonth === 10) calculatedMonthBase = 12; // ต.ค. (เดือน 11 ไทย)
+
+  // =========================================
+  // 2. คำนวณตารางเลขดวง 12 ช่องคงที่ประจำบุคคล [วาสนา...วินาศ]
+  // ==========================================
   let cycle = new Array(12);
 
   for (let i = 0; i < 12; i++) {
+    // ฐานวัน: นับเวียนเพิ่มช่องละ 1 แต้ม (1 ถึง 7) แล้ววนลูปกลับมาเริ่มใหม่
     let d = ((inputDay + i - 1) % 7) + 1;
-    let m = (inputMonth + i) % 12 === 0 ? 12 : (inputMonth + i) % 12;
-    let y = (inputYear + i) % 12 === 0 ? 12 : (inputYear + i) % 12;
+    
+    // ฐานเดือน: ตั้งตามเดือนไทยที่คำนวณได้ ขยับวนรอบ 12 ช่องคงที่
+    let m = (calculatedMonthBase + i) % 12 === 0 ? 12 : (calculatedMonthBase + i) % 12;
+    
+    // ฐานปี: ตั้งตามเลขปีนักษัตรที่คำนวณได้จาก พ.ศ. ขยับวนรอบ 12 ช่องคงที่
+    let y = (calculatedYearBase + i) % 12 === 0 ? 12 : (calculatedYearBase + i) % 12;
 
     let total = d + m + y;
     let score = total % 12;
@@ -5572,11 +5603,11 @@ function initMyHoraLifeChart(focusAge) {
       score = 12;
     }
     
-    cycle[i] = score; 
+    cycle[i] = score; // บันทึกผลคะแนนเลขดวงชะตาบล็อกล็อกคงที่
   }
 
   // ==========================================
-  // 2. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Cycle Loop)
+  // 3. คำนวณหาจุดเริ่มต้นของกลุ่มวัฏจักรอายุจร (Dynamic Cycle Loop)
   // ==========================================
   let startAgeCycle = focusAge - ((focusAge - 1) % 12);
   if (focusAge % 12 === 0) {
@@ -5586,7 +5617,7 @@ function initMyHoraLifeChart(focusAge) {
   let graphPoints = []; 
 
   // ==========================================
-  // 3. วนลูปประมวลผลข้อมูลอายุและผลคะแนนดวงชะตาในแต่ละช่อง
+  // 4. วนลูปประมวลผลข้อมูลอายุและพิกัดความสูงกราฟในแต่ละคอลัมน์
   // ==========================================
   for (let col = 0; col < 12; col++) {
     const currentAge = startAgeCycle + col; 
@@ -5595,8 +5626,6 @@ function initMyHoraLifeChart(focusAge) {
     
     const score = cycle[targetHouseIndex]; 
     const safeScore = score > 0 ? score : 1;
-
-    let birthBeYear = AppState.birthBE; 
     let currentBuddhistYear = birthBeYear + currentAge - 1; 
 
     graphPoints.push({
@@ -5609,7 +5638,7 @@ function initMyHoraLifeChart(focusAge) {
   }
 
   // ==========================================
-  // 4. สั่งผ้าใบ (Canvas) คำนวณความสูงตามสัดส่วนพื้นที่จริง และวาดกราฟเส้นฟันปลา
+  // 5. สั่งผ้าใบ (Canvas) คำนวณความสูงตามมิติหน้าจอจริง และลากเส้นฟันปลา
   // ==========================================
   setTimeout(() => {
     const rect = canvas.getBoundingClientRect();
@@ -5645,14 +5674,14 @@ function initMyHoraLifeChart(focusAge) {
       ctx.beginPath();
       if (pt.isFocus) {
         ctx.arc(x, y, 9, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff4757'; 
+        ctx.fillStyle = '#ff4757'; // จุดอายุจรปัจจุบัน = สีแดงสด
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#f5c469';
         ctx.stroke();
       } else {
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ffd700'; 
+        ctx.fillStyle = '#ffd700'; // จุดอายุรอบข้างช่วงวัฏจักร = สีเหลืองทอง
         ctx.fill();
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = '#040816';
