@@ -841,10 +841,12 @@
     let scores = [];
 
     for(let i = 0; i < 12; i++) {
-        let d = ((startDay + i - 1) % 7) + 1;
+        // แถว "วัน": ใส่ข้อมูลแค่ 7 ช่องแรก (i < 7) ช่องที่ 8-12 (i >= 7) ให้ปล่อยว่าง ('')
+        let d = (i < 7) ? (((startDay + i - 1) % 7) + 1) : '';
+        
         let m = (((bMonth - 1 + i) % 12) + 1);
         let y = (((bYearBE + i - 1) % 12) || 12);
-        let tot = d + m + y;
+        let tot = (d !== '') ? (d + m + y) : (m + y); // ถ้าวันว่าง ให้เอาเดือน+ปี
         let sc = ((tot * 3 + seed + i) % 12) + 1;
 
         days.push(d);
