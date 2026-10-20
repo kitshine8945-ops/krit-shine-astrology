@@ -470,9 +470,11 @@
 <div class="container">
     <h2>กราฟชีวิต 12 เรือนภพ มายโหราศาสตร์</h2>
     
-    <div class="user-info">
-        <strong>เจ้าชาตา:</strong> กฤศ สุขรา | <strong>วันเกิด:</strong> 30 เมษายน 2522 (วันจันทร์ เลข 2) | <strong>ลัคนา:</strong> กุมภ์
-    </div>
+   <div class="user-info" id="userInfoBox">
+    <strong>เจ้าชะตา:</strong> <span id="dispUserName">กำลังโหลด...</span> | 
+    <strong>วันเกิด:</strong> <span id="dispUserDob">กำลังโหลด...</span> | 
+    <strong>ลัคนา:</strong> <span id="dispUserAsc">กำลังโหลด...</span>
+</div>
 
     <!-- ปุ่มสลับโหมด Free / VIP ด้านบน (ตามรูปแบบเดิมเป๊ะๆ) -->
     <div class="tab-container">
@@ -1141,6 +1143,35 @@
         let scoreIndex = (age - 1) % 12;
         drawGraph(scoreIndex);
     };
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramName = urlParams.get('name');
+    const paramDob = urlParams.get('dob');
+    const paramAsc = urlParams.get('asc');
+
+    if (paramName && paramDob) {
+        document.getElementById('dispUserName').innerText = paramName;
+        document.getElementById('dispUserDob').innerText = paramDob;
+        document.getElementById('dispUserAsc').innerText = paramAsc || 'กุมภ์';
+    } else {
+        const savedName = localStorage.getItem('saved_userName') || 'กรุณากรอกข้อมูลที่หน้าหลัก';
+        const savedDob = localStorage.getItem('saved_birthDay') ? 
+            `${localStorage.getItem('saved_birthDay')} / ${localStorage.getItem('saved_birthMonth')} / ${localStorage.getItem('saved_birthBE')}` : 
+            'กรุณาระบุวันเกิด';
+        
+        document.getElementById('dispUserName').innerText = savedName;
+        document.getElementById('dispUserDob').innerText = savedDob;
+        document.getElementById('dispUserAsc').innerText = '-';
+    }
+
+    buildTable();
+    buildFoundationContent();
+    buildRelationChain();
+    updateVipUIState();
+    setTimeout(() => {
+        updateGraphAndPrediction();
+    }, 50);
+});
 </script>
 
 </body>
