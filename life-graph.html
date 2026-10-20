@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กราฟชีวิต 12 เรือนภพ & รายงาน VIP ชั้นสูง | Krit Shine Astrology</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-gold: #e3b341;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-red: #f85149;
+        }
+
+        body {
+            font-family: 'Prompt', 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top Navigation สไตล์ระบบ VIP หลัก */
+        .top-nav {
+            width: 100%;
+            max-width: 1250px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(16, 22, 34, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            color: var(--text-gold);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .nav-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--text-gold);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .vip-status-indicator {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vip-active {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a0f00;
+        }
+
+        .vip-inactive {
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1250px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            color: var(--text-gold);
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-top: 0;
+        }
+
+        .user-info {
+            background: rgba(227, 179, 65, 0.1);
+            border: 1px solid var(--text-gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* สไตล์ปุ่มสลับโหมด Free / VIP ด้านบน */
+        .tab-container {
+            display: flex;
+            background: #0f1319;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: #d99b26;
+            color: #0d1117;
+            box-shadow: 0 4px 12px rgba(217, 155, 38, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #21262d;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls select {
+            background: var(--bg-color);
+            color: var(--text-gold);
+            border: 1px solid var(--text-gold);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .table-wrapper, .graph-wrapper {
+            background: #0f1319;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table.life-table, .graph-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        table.life-table th, table.life-table td, .graph-grid-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px 4px;
+            height: 34px;
+            overflow: hidden;
+        }
+
+        .col-label {
+            width: 110px;
+            font-weight: bold;
+            color: var(--text-gold);
+            background: #161b22;
+            text-align: center;
+        }
+
+        .col-empty {
+            width: 50px;
+            background: #161b22;
+        }
+
+        .col-rotate {
+            width: 110px;
+            background: #161b22;
+            color: var(--text-gold);
+            font-weight: bold;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .zone-cell {
+            background: #161b22;
+            color: var(--text-gold);
+            font-weight: bold;
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            width: 110px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 10px 0;
+        }
+
+        .num-cell {
+            background: #161b22;
+            color: var(--text-gold);
+            font-weight: bold;
+            width: 50px;
+        }
+
+        .house-right-cell {
+            background: #161b22;
+            color: var(--text-main);
+            text-align: left;
+            padding-left: 12px;
+            width: 110px;
+            font-size: 12px;
+        }
+
+        .graph-cell {
+            position: relative;
+            background: #0f1319;
+            padding: 0 !important;
+            height: 34px;
+        }
+
+        .dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--accent-red);
+            border: 2px solid #fff;
+            z-index: 2;
+        }
+
+        .dot.active {
+            width: 14px;
+            height: 14px;
+            background-color: var(--text-gold);
+            box-shadow: 0 0 8px var(--text-gold);
+        }
+
+        #svgGraph {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .prediction-box, .foundation-box, .relation-box {
+            background: #21262d;
+            border-left: 4px solid var(--text-gold);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+
+        .poem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 30px;
+            font-style: italic;
+            color: #d2a8ff;
+            line-height: 1.8;
+            background: #111418;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .foundation-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .foundation-item:last-child {
+            border-bottom: none;
+        }
+        .foundation-title {
+            color: var(--text-gold);
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .foundation-subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .foundation-desc {
+            color: #f0f6fc;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .relation-chain {
+            background: #111418;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+            line-height: 1.8;
+            color: #f0f6fc;
+        }
+
+        .relation-subitem {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px dotted var(--border-color);
+        }
+        .relation-subitem:last-child {
+            border-bottom: none;
+        }
+
+        /* ควบคุมการแสดงผลเนื้อหาตามโหมด Free / VIP */
+        .vip-only {
+            display: none;
+        }
+
+        /* Banner สำหรับกดปลดล็อกเมื่อยังไม่ได้เป็น VIP ในโหมด VIP */
+        .vip-lock-prompt {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 24, 40, 0.95) 100%);
+            border: 1.5px dashed var(--text-gold);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-unlock-vip {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a0f00;
+            font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .btn-unlock-vip:hover {
+            transform: scale(1.03);
+        }
+
+        /* Modal ชำระเงิน QR Code */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 7, 15, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 14, 28, 0.98) 100%);
+            border: 1.5px solid rgba(234, 179, 8, 0.65);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px 20px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            color: #e2e8f0;
+            text-align: center;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 1.4rem;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .vip-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .vip-plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: 10px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .vip-plan-card.selected {
+            background: rgba(234, 179, 8, 0.25);
+            border: 2px solid #facc15;
+            box-shadow: 0 0 12px rgba(250, 204, 21, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .poem-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar แสดงสถานะ VIP -->
+    <header class="top-nav">
+        <a href="index.html" class="back-btn">
+            <i class="fa-solid fa-chevron-left"></i> หน้าหลัก
+        </a>
+        <div class="nav-title">KRIT SHINE ASTROLOGY</div>
+        <div id="navVipBadge" class="vip-status-indicator vip-inactive" onclick="openMemberModal()">
+            <i class="fa-solid fa-crown"></i> <span>สมัคร VIP</span>
+        </div>
+    </header>
+
+<div class="container">
+    <h2>กราฟชีวิต 12 เรือนภพ มายโหราศาสตร์</h2>
+    
+    <div class="user-info">
+        <strong>เจ้าชาตา:</strong> กฤศ สุขรา | <strong>วันเกิด:</strong> 30 เมษายน 2522 (วันจันทร์ เลข 2) | <strong>ลัคนา:</strong> กุมภ์
+    </div>
+
+    <!-- ปุ่มสลับโหมด Free / VIP ด้านบน (ตามรูปแบบเดิมเป๊ะๆ) -->
+    <div class="tab-container">
+        <button class="tab-btn active" id="btnFree" onclick="switchMode('free')">กราฟและบทกลอนประจำปี (ดูฟรี)</button>
+        <button class="tab-btn" id="btnVip" onclick="switchMode('vip')">👑 ทำนายเต็มรูปแบบตามตำรา (VIP)</button>
+    </div>
+
+    <div class="controls">
+        <label for="ageSelect"><strong>เลือกอายุที่ต้องการพยากรณ์:</strong></label>
+        <select id="ageSelect" onchange="updateGraphAndPrediction()">
+            <!-- สร้างตัวเลือกอายุ 1 ถึง 84 ปี -->
+        </select>
+    </div>
+
+    <!-- ตารางด้านบน -->
+    <div class="table-wrapper">
+        <table class="life-table" id="matrixTable">
+            <!-- สร้างด้วย JavaScript -->
+        </table>
+    </div>
+
+    <!-- ส่วนกราฟชีวิตด้านล่าง -->
+    <div class="graph-wrapper" style="position: relative;">
+        <svg id="svgGraph"></svg>
+        <table class="graph-grid-table" id="graphTable">
+            <tbody>
+                <tr>
+                    <td rowspan="4" class="zone-cell">สวรรค์ภูมิ (9-12)</td>
+                    <td class="num-cell">12</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="12" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">วาสนา</td>
+                </tr>
+                <tr><td class="num-cell">11</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="11" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">ทรัพย์</td>
+                </tr>
+                <tr><td class="num-cell">10</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="10" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">เพื่อน</td>
+                </tr>
+                <tr><td class="num-cell">9</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="9" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">ญาติ</td>
+                </tr>
+
+                <tr>
+                    <td rowspan="4" class="zone-cell">โลกมนุษย์ (5-8)</td>
+                    <td class="num-cell">8</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="8" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">บริวาร</td>
+                </tr>
+                <tr><td class="num-cell">7</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="7" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">ศัตรู</td>
+                </tr>
+                <tr><td class="num-cell">6</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="6" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">คู่ครอง</td>
+                </tr>
+                <tr><td class="num-cell">5</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="5" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">โรคภัย</td>
+                </tr>
+
+                <tr>
+                    <td rowspan="4" class="zone-cell">นรกภูมิ (1-4)</td>
+                    <td class="num-cell">4</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="4" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">ความสุข</td>
+                </tr>
+                <tr><td class="num-cell">3</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="3" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">การงาน</td>
+                </tr>
+                <tr><td class="num-cell">2</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="2" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">ลาภยศ</td>
+                </tr>
+                <tr><td class="num-cell">1</td>
+                    <script>for(let i=0; i<12; i++) document.write('<td class="graph-cell" data-row="1" data-col="'+i+'"></td>');</script>
+                    <td class="house-right-cell">วินาศ</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ส่วนคำทำนายประจำปี (เปิดให้ดูฟรี) -->
+    <div class="prediction-box">
+        <h3 id="predTitle" style="color: var(--text-gold); margin-top: 0;">คำทำนายประจำปี</h3>
+        <p id="predDesc">กำลังโหลดคำทำนาย...</p>
+        <h4>บทกลอนพยากรณ์โบราณประจำปี:</h4>
+        <div id="poemContent" class="poem-grid"></div>
+    </div>
+
+    <!-- ส่วนเนื้อหา VIP เชิงลึก (จะแสดงเมื่อกดแท็บ VIP ด้านบน) -->
+    <div id="vipContainerSection" class="vip-only">
+        <!-- Banner ให้กดสมัคร VIP ถ้ายัังไม่ได้เป็นสมาชิก -->
+        <div class="vip-lock-prompt" id="vipLockPromptBanner" style="display: none;">
+            <i class="fa-solid fa-crown" style="font-size: 2.5rem; color: #ffd700;"></i>
+            <div>
+                <h4 style="color: #ffd700; font-size: 1.1rem; margin-bottom: 6px;">ปลดล็อกคำทำนายความสัมพันธ์จุดพยากรณ์และพื้นดวง 12 เรือนภพฉบับเต็ม (VIP)</h4>
+                <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5;">
+                    เจาะลึกสายโซ่ความสัมพันธ์ (Chain of Relations) และคำทำนายรายเรือนภพแบบจัดเต็มตามตำราโบราณ
+                </p>
+            </div>
+            <button class="btn-unlock-vip" onclick="openMemberModal()">
+                <i class="fa-solid fa-key"></i> สมัครสมาชิก VIP เพื่อปลดล็อกเนื้อหา
+            </button>
+        </div>
+
+        <!-- เนื้อหาคำทำนาย VIP ตัวจริง (แสดงเมื่อเป็นสมาชิกแล้ว) -->
+        <div id="vipActualContent" style="display: none; flex-direction: column; gap: 20px;">
+            <!-- ส่วนความสัมพันธ์จุดพยากรณ์ในกราฟ (แยก 3 คู่แบบไม่ซ้ำซ้อน) -->
+            <div class="relation-box" style="margin-top: 20px;">
+                <h3 style="color: var(--text-gold); margin-top: 0;">บทสรุปคำทำนายความสัมพันธ์จุดพยากรณ์ (แยกตามสายโซ่ 3 คู่)</h3>
+                <div id="relationContent" class="relation-chain"></div>
+            </div>
+
+            <!-- ส่วนคำทำนายพื้นดวง 12 เรือนภพ -->
+            <div class="foundation-box" style="margin-top: 20px;">
+                <h3 style="color: var(--text-gold); margin-top: 0;">1. ทำนายพื้นดวง (คำทำนายพื้นดวงรายเรือนภพ)</h3>
+                <div id="foundationContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal ชำระเงิน VIP (QR Code PromptPay + แนบสลิป จากระบบ palm.html) -->
+<div class="modal-overlay" id="modal-member">
+    <div class="modal-content">
+        <div class="modal-close-btn" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></div>
+        <i class="fa-solid fa-crown" style="font-size: 2.5rem; color: #ffd700; margin-bottom: 6px;"></i>
+        <h3 style="color: #fff; margin-bottom: 4px; font-size: 1.25rem;">สมัครสมาชิก VIP - Krit Shine Astrology</h3>
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">ปลดล็อกการวิเคราะห์กราฟชีวิตเชิงลึก และฟีเจอร์พรีเมียมทุกศาสตร์บนระบบ</p>
+        
+        <div class="vip-plan-grid">
+            <div class="vip-plan-card" onclick="selectVipPackage(19, 'รายวัน', this)">
+                <div style="font-size:0.8rem; color:#fff;">รายวัน</div>
+                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">19.-</div>
+                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 24 ชม.</div>
+            </div>
+            <div class="vip-plan-card" onclick="selectVipPackage(29, 'รายสัปดาห์', this)">
+                <div style="font-size:0.8rem; color:#fff;">รายสัปดาห์</div>
+                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">29.-</div>
+                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 7 วัน</div>
+            </div>
+            <div class="vip-plan-card" onclick="selectVipPackage(39, 'รายเดือน', this)">
+                <div style="font-size:0.8rem; color:#fff;">รายเดือน</div>
+                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">39.-</div>
+                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 30 วัน</div>
+            </div>
+            <div class="vip-plan-card selected" onclick="selectVipPackage(299, 'รายปี', this)">
+                <div style="font-size:0.8rem; color:#fff;">รายปี</div>
+                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">299.-</div>
+                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 365 วัน</div>
+            </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 0.85rem; color: #fff; margin-bottom: 6px;">
+                แพ็กเกจที่เลือก: <strong id="selected-package-name" style="color:#ffd700;">รายปี</strong> (ยอดชำระ <strong id="selected-package-price" style="color:#ffd700;">299</strong> บาท)
+            </div>
+            <div style="background: #fff; padding: 8px; display: inline-block; border-radius: 8px;">
+                <img id="qr-image" src="qr-299.jpg" alt="PromptPay" style="display:block; margin: 0 auto; max-width: 160px; width: 100%; border-radius: 6px;">
+            </div>
+        </div>
+
+        <div style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(234, 179, 8, 0.4); border-radius: 10px;">
+            <div style="font-size: 0.82rem; margin-bottom: 6px; color: #fff; font-weight: 600;">
+                <i class="fa-solid fa-file-invoice-dollar" style="color: #ffd700;"></i> แนบสลิปเพื่อยืนยันสิทธิ์ VIP
+            </div>
+            <input type="file" id="slip-file-input" accept="image/*" onchange="handleSlipSelected(this)" style="display: none;">
+            <label for="slip-file-input" id="slip-upload-label" style="display: inline-block; padding: 7px 14px; background: #333; color: #ffd700; border: 1px solid #ffd700; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> เลือกรูปภาพสลิป
+            </label>
+            <div id="slip-status-text" style="margin-top: 6px; font-size: 0.75rem; color: #aaa;">
+                กรุณาแนบสลิปที่โอนตรงตามยอดแพ็กเกจ
+            </div>
+        </div>
+
+        <button type="button" id="btn-confirm-vip" onclick="confirmVipUnlock()" disabled style="width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 700; background: #444; color: #888; cursor: not-allowed; transition: all 0.3s ease;">
+            รอการแนบสลิป...
+        </button>
+    </div>
+</div>
+
+<script>
+    const houses = [
+        "วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", 
+        "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"
+    ];
+
+    const scores = [3, 6, 9, 12, 3, 6, 2, 3, 5, 7, 9, 11];
+
+    const foundationData = [
+        {
+            title: "วาสนา เลข 3",
+            subtitle: "บุญกรรมที่ติดตัวเจ้าชะตาแต่กำเนิด (ตนุ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ต่ำ ตกนรกภูมิ มีวาสนาโดยรวมไม่ค่อยดีนัก เพราะมีสิ่งมาคอยขัดขวาง มีกรรมเก่า ทำการใดต้องยุ่งยากมีอุปสรรค บางอย่างจะไม่ชัดเจน เสมือนต้องทำเองไม่มีผู้คอยสนับสนุนหรือผู้ช่วย สิ่งที่ได้มาได้มาโดยตั้งใจและทำให้ท่านสั่งสมบุญกุศลไว้มาก ๆ อานิสงส์แห่งกุศลกรรมจะช่วยนำพาให้มีวาสนาสูงส่งในภายหน้า"
+        },
+        {
+            title: "ทรัพย์ เลข 6",
+            subtitle: "การเงิน รายได้ ความร่ำรวย ทรัพย์สินเงินทอง ความรู้ (กฎุมพะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดี ตกมนุษย์ภูมิ ชีวิตโดยรวมมีทรัพย์พอปานกลางหรือมีทรัพย์มาก(อยู่กับพื้นดวงของท่าน) ถ้าทรัพย์ขาดมือ ไม่นานก็จะได้โอกาสทำงานหรือทรัพย์ใหม่ไม่ยุยาก ทั้งนี้ท่านต้องระวังเรื่องการใช้จ่ายทรัพย์สินเงินทอง การเก็บออม การจัดการทรัพย์สินเงินทองให้มากแม้ตอนนี้หาได้แต่อย่าแม้ประมาทเด็ดขาด ถ้าคิดว่าเอาไม่อยู่ก็ให้คนที่ไว้ใจได้ดูแลให้ ต่อไปจะได้ไม่ลำบาก"
+        },
+        {
+            title: "เพื่อน เลข 9",
+            subtitle: "มิตร เพื่อนฝูง หุ้นส่วน เจ้านาย เดินทาง สมาคม สังคม (สหัชชะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดีมาก ตกสวรรค์ภูมิ ท่านมีเพื่อนมาก คบกับทุกคนทุกวัย เพื่อนคอยสนับสนุนช่วยเหลือค้าพาสิ่ง หรือพึ่งพาช่วยเหลือได้ ท่านเป็นคนใจกว้าง อัธยาศัยดี ทำให้มีมิตรสหายมากมาย ทำการใดมักมีเพื่อนฝูงสังคมรายล้อมช่วยเหลือ ไม่ต้องดินรนผู้เดียวเพื่อนแนะนำทางที่ดี ไม่ค่อยผิดหวังกับการคบคน และการทุ่มเทให้"
+        },
+        {
+            title: "ญาติ เลข 12",
+            subtitle: "ญาติพี่น้อง พ่อแม่ บ้าน ที่อยู่อาศัย มรดก (พันธุ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดีมากที่สุด ตกสวรรค์ภูมิ ท่านเป็นคนมีญาติพี่น้องมากมาย ตระกูลของท่านเป็นวงส์ตระกูลใหญ่ พี่น้องสาโลหิตอยู่ในที่ต่างๆ และท่านก็สามารถพึ่งพาญาติเหล่านั้นได้เมื่อลำบาก ญาติพี่น้องช่วยเหลือกันพึ่งพาได้"
+        },
+        {
+            title: "บริวาร เลข 3",
+            subtitle: "บุตร ลูกหลาน ลูกน้อง คนที่อยู่ในบังคับบัญชา ริเริ่มสิ่งใหม่ (ปุตตะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ต่ำ ตกนรกภูมิ เรื่องบริวารหรือลูกน้องคนที่ทำงานใต้บังคับบัญชาของท่านไม่ค่อยมีมากนัก อาจเป็นเพราะอุปนิสัยใจคอของท่านเอง ทักษะการบริหารคนของท่าน จึงไม่ค่อยมีบริวารหรือลูกน้อง หรือถ้ามีก็น้อย , บริวารลูกน้อง ผู้ใต้ปกครองไม่เชื่อฟัง ท่านควรปัญหาของท่านแล้วปรับปรุงแก้ไข , และเรื่องบริวาร หรือทานบารมี หมั่นทำบุญแผ่เมตตาให้เค้าบ้างจะดี"
+        },
+        {
+            title: "ศัตรู เลข 6",
+            subtitle: "อุปสรรค ความเหนื่อยยาก ความเดือดร้อน การขัดขวาง (อริ)",
+            desc: "เป็นเลขที่อยู่ในไม่ดี ตกมนุษย์ภูมิ ท่านมีศัตรูค่อนข้างจะมากซึ่งไม่เป็นผลดีสำหรับท่าน เพราะมีศัตรูคอยอาฆาตถึง 6 คนเลยทีเดียว ซึ่งถือว่าอยู่ในเกณฑ์ปานกลางถึงค่อนข้างมาก หมั่นทำบุญ กรวดน้ำ แผ่เมตตาให้ศัตรูท่านบ้าง เรื่องหนักจะได้เป็นเบาหรือไม่มี"
+        },
+        {
+            title: "คู่ครอง เลข 2",
+            subtitle: "สามี ภรรยา คู่ครอง ความรัก การแต่งงาน (ปัตนิ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดีมากและดีที่สุด ตกสวรรค์ภูมิ ท่านได้คู่ครองที่ดี มีความรู้ ทรัพย์สิน เงินทอง คอยส่งเสริม อุดหนุนค้ำจุน , ท่านพอใจในคู่ครอง มีความสุข"
+        },
+        {
+            title: "โรคภัย เลข 3",
+            subtitle: "โรคประจำตัว ความเดือดร้อน ทุกข์ลาภ (มรณะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ต่ำ เรื่องเกี่ยวกับโรคภัยไข้เจ็บของท่านไม่ค่อยมีมากเท่าใดนัก ไม่อันตรายร้ายแรงอะไร สุขภาพท่านค่อนข้างดีมาก แต่อุปกรณ์แม่ตอนนี้อาจดีอยู่ แนะนำว่ามองหาหลักประกันสุขภาพเสริมไว้บ้าง หรือหมั่นตรวจเช็คสุขภาพบ้าง อย่ารอให้ชราจะไม่ทันการ"
+        },
+        {
+            title: "ความสุข เลข 5",
+            subtitle: "ความสำเร็จ ความก้าวหน้า เกียรติยศ ชื่อเสียง บารมี (ศุภะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดี ความสุขสบายของท่านมีพอปานกลาง มีเรื่องที่ต้องคิดกังวลบ้าง และหมั่นสั่งสมบุญกุศลไว้มากๆ มีโอกาสต่อบุญใหม่ไว้บ้างอย่าหวังพึ่งบุญเก่าแล้วท่านจะสุขมากขึ้น หรือทุกข์น้อยลง"
+        },
+        {
+            title: "การงาน เลข 7",
+            subtitle: "งาน ภาระหน้าที่ อาชีพ ตำแหน่ง ผลประโยชน์ (กัมมะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ปานกลางค่อนได้ทำงานดี ได้โอกาสทำงานดีๆ ได้เลื่อนตำแหน่ง อาชีพการงานก้าวหน้า ทำให้ฐานะมั่นคง มักได้รับโอกาสดีๆเรื่องการงาน ถ้าท่านเรียนยูให้ท่านตั้งใจเรียน ผลของการเรียนท่านจะเก็บเกี่ยวใช้สอยได้ตลอดชีวิต ถ้าท่านทำงานแล้วท่านต้องทำการบ้านให้หนัก เค้าไม่มีโอกาสมาให้ ท่านต้องสร้างโอกาสเอง ถ้ามีโอกาสท่านต้องเต็มกับโอกาสนั้น ๆ แล้วจะดีเอง"
+        },
+        {
+            title: "ลาภยศ เลข 9",
+            subtitle: "โชคลาภ โอกาส สิ่งที่ได้มาง่าย ความเจริญรุ่งเรือง (ลาภะ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ดีมาก เป็นคนมีโชคดีอยู่อย่อยๆ มักได้ในสิ่งที่คาดฝัน หรือได้เกินคาด ทำการใดไม่ค่อยมีอุปสรรคหนักหนา ด้วยเพราะผลแห่งกุศลกรรมเก่า และอย่าหวังพึ่งบุญเก่า เพียงอย่างเดียวสั่งสมบุญกุศลใหม่ไว้บ้าง จะได้โชคลาภไม่ขาด"
+        },
+        {
+            title: "วินาศ เลข 11",
+            subtitle: "ความเดือดร้อน สิ้นเปลือง ล้มเหลว ผิดหวัง การต่อสู้ (วินาศ)",
+            desc: "เป็นเลขที่อยู่ในเกณฑ์ไม่ดี ชีวิตท่านมักจะเจออุปสรรคและปัญหาบ่อยๆ (ล้มลุกคลุกคลาน) ดังนั้นทำการใดสำหรับท่านที่ตกเลขนี้ ต้องระวังเป็นพิเศษ รอบคอบคิดใคร่ครวญให้ดี อย่าประมาท พยายามป้องกันความผิดพลาดให้ดี หลีกเลี่ยงความเสี่ยงที่นำสู่ความเสียหายทุกด้าน ไม่ว่าจะเกิดจากตัวท่านหรือคนอื่นๆ อุปสรรคและปัญหาที่ควบคุมได้จะน้อยลง ส่วนที่ควบคุมไม่ได้ แนะนำให้ทำบุญ กรวดน้ำ แผ่เมตตาให้ตัวเองบ้าง ผู้เกี่ยวข้องบ้าง เมื่อมีะปารtaยู่จะได้เห็นทาง เรื่องหนักจะได้เป็นเบาหรือไม่มี"
+        }
+    ];
+
+    const poemsData = {
+        1: [
+            ["ดั่งจมดิ่งในโลกันตร์อันมืดมิด", "ชะตาชีวิตอับแสงแรงผกผัน"],
+            ["ทั้งการงานการเงินพังลงพลัน", "อุปสรรคสารพันเข้าบีบฑู"],
+            ["มิตรสหายรักใคร่ก็หายหน้า", "ไม่มีใครนำพามาคอยชู"],
+            ["ทำสิ่งใดผิดพลาดทุกลู่ทาง", "เจอกิเลสขัดขวางทางเดินไป"],
+            ["ถามถึงความเจ็บไข้ช่างหนักหนา", "ต้องหยิบยาเยียวยาทั้งกายใจ"],
+            ["ถามถึงข้อขัดแย้งแสนหวั่นไหว", "มีแต่เรื่องร้อนใจไม่เว้นวัน"],
+            ["เมื่อชีวิตตกต่ำอย่าฝืนสู้", "จงนิ่งอยู่สงบจิตใจมั่น"],
+            ["หมั่นทำบุญสุนทานผ่อนปรนกัน", "รอเวลาพลิกผันให้ดีเอย"]
+        ],
+        2: [
+            ["ดั่งต้องลมพายุโหมกระหน่ำซัด", "ปัญหาพัดถาโถมเข้าใส่แผล"],
+            ["มองไปไหนไร้คนคอยดูแล", "มีแต่คนรังแกให้ตรมตรอม"],
+            ["เงินทองรั่วไหลออกดั่งสายน้ำ", "ทรัพย์สินที่เคยทำต้องซูบผอม"],
+            ["ศัตรูร้ายจ้องล้างไม่ยอมออม", "คอยล้อมหน้าล้อมหลังหวังทำลาย"],
+            ["ถามถึงความเจ็บไข้กระเสาะกระแสะ", "โรคเก่าแวะเวียนมาไม่เลือนหาย"],
+            ["ถามถึงข้อขัดแย้งแสนวุ่นวาย", "เคลียร์เท่าไหร่ไม่คลายพังทลายลง"],
+            ["เมื่อชีวิตย่ำแย่แค่นี้ก่อน", "อย่าเพิ่งรอนรนจิตจนลุ่มหลง"],
+            ["ใช้ชีวิตประหยัดและซื่อตรง", "ประคององค์รอดพ้นผ่านปีไป"]
+        ],
+        3: [
+            ["ต้องตรากตรำลำบากกายและใจสิ้น", "ทุกข์ถวิลเหน็ดเหนื่อยเป็นหนักหนา"],
+            ["อาบเหงื่อต่างน้ำพึ่งแรงกายา", "ผลตอบแทนกลับมาแค่น้อยนิด"],
+            ["การงานติดขัดไม่ราบรื่น", "โดนคนอื่นแย่งชิงสิ่งศักดิ์สิทธิ์"],
+            ["ความรักคอยระแวงแฝงยาพิษ", "จิตใจคิดพะวงหลงทางไป"],
+            ["ถามถึงความเจ็บไข้พอทนได้", "แต่เหนื่อยล้าเกินไปไม่สดใส"],
+            ["ถามถึงข้อขัดแย้งยืดเยื้อไป", "ต้องอาศัยผู้ใหญ่ช่วยเจรจา"],
+            ["เมื่อชีวิตต้องสู้ชูแรงใจ", "อย่าหวั่นไหวท้อถอยเลยแก้วตา"],
+            ["พึ่งตนเองเป็นหลักดีกว่ามา", "หวังน้ำบ่อหน้าให้ช้ำทรวง"]
+        ],
+        4: [
+            ["ชีวิตยังเรื่อยเรื่อยเหนื่อยพอสู้", "ไม่รุ่งเรืองเฟื่องฟูแต่ไม่ล้ม"],
+            ["พอกินพอใช้ไม่อกตรม", "ค่อยสะสมทีละน้อยค่อยเดินไป"],
+            ["บริวารญาติมิตรพอพึ่งได้", "ไม่ถึงกับใจร้ายทอดทิ้งให้"],
+            ["แต่โชคลาภก้อนโตยังห่างไกล", "ต้องทำใจอดออมถนอมทุน"],
+            ["ถามถึงความเจ็บไข้หายห่วงได้", "ร่างกายยังทนไหวมีเกื้อหนุน"],
+            ["ถามถึงข้อขัดแย้งพอเจือจุน", "ค่อยๆ คุยล้อมหมุนด้วยเหตุผล"],
+            ["เมื่อชีวิตทรงตัวอยู่เท่านี้", "อย่าเพิ่งโลภอยากมีจนสับสน"],
+            ["ทำงานตามหน้าที่ของตน", "พ้นความจนด้วยความเพียรดี"]
+        ],
+        5: [
+            ["ชีวิตดั่งสายน้ำไหลเอื่อยเอื่อย", "ไหลเรื่อยเรื่อยตามทางอันสงบ"],
+            ["ไม่มีภัยพิบัติให้มาพบ", "ทุกสิ่งครบตามมีและตามเกิด"],
+            ["ทรัพย์สินเงินทองพอมีจ่าย", "ไม่เดือดร้อนวุ่นวายให้เตลิด"],
+            ["การงานยังคงที่ไม่มีเปิด", "โอกาสเลิศเลอมาถึงมือ"],
+            ["ถามถึงความเจ็บไข้ไร้กังวล", "แข็งแรงปนสดชื่นคนร่ำลือ"],
+            ["ถามถึงข้อขัดแย้งไม่เออออ", "ยอมความกันเถิดหนอระงับภัย"],
+            ["เมื่อชีวิตปานกลางทางสายนี้", "เป็นช่วงเวลาดีมีเงื่อนไข"],
+            ["ได้พักผ่อนกายาให้สบายใจ", "สะสมแรงเอาไว้สู้ต่อไป"]
+        ],
+        6: [
+            ["ดวงชะตาเริ่มฟื้นคืนชีวิต", "เปรียบดังทิศบูรพาฟ้าเริ่มใส"],
+            ["อุปสรรคที่เคยขวางทางไป", "ค่อยๆ คลายจางหายไปกับตา"],
+            ["การงานเริ่มเดินหน้าพาสนุก", "มีความสุขเพิ่มพูนพึ่งคุณค่า"],
+            ["ผู้ใหญ่คอยเมตตาหลั่งไหลมา", "ให้โอกาสแก้วตาได้ลงทุน"],
+            ["ถามถึงความเจ็บไข้ไม่น่าห่วง", "ร่างกายล่วงพ้นโรคคอยเกื้อหนุน"],
+            ["ถามถึงข้อขัดแย้งที่ละมุน", "เริ่มตกลงปันส่วนได้ลงตัว"],
+            ["เมื่อชีวิตเริ่มรุ่งพุ่งไปหน้า", "จงเร่งหาเร่งทำอย่ามัวกลัว"],
+            ["คว้าโอกาสทองไว้ให้ถ้วนทั่ว", "นำพาครอบครัวให้ร่มเย็น"]
+        ],
+        7: [
+            ["ดั่งลอยลำอยู่ท่ามกลางกระแสน้ำ", "ที่ช่วยค้ำพยุงให้ไปถึง"],
+            ["ฝั่งฝันอันงดงามตราตรึง", "ทุกคนทึ่งในความสามารถตน"],
+            ["เงินทองไหลคล่องมือดีนัก", "มีคนรักมอบใจไม่ขัดสน"],
+            ["ญาติมิตรอุ้มชูทุกแห่งหน", "ประสบผลสำเร็จดั่งใจปอง"],
+            ["ถามถึงความเจ็บไข้ไม่มีแน่", "หน้าตาแช่มชื่นดีไม่มีสอง"],
+            ["ถามถึงข้อขัดแย้งชื่นสมปอง", "คุยกันสองสามคำก็เข้าใจ"],
+            ["เมื่อชีวิตดีงามตามครรลอง", "จงประคองความดีนี้เอาไว้"],
+            ["อย่าประมาทหลงตนจนเกินไป", "รักษาใจให้เที่ยงแท้แน่นอน"]
+        ],
+        8: [
+            ["แสงทองส่องเรืองรองสว่างไสว", "ชีวิตใหม่รุ่งโรจน์โชติช่วงชัช"],
+            ["ลาภยศเงินทองวิ่งเข้ามามัด", "สมบัติพัสถานเพิ่มพูนมี"],
+            ["ศัตรูร้ายพ่ายแพ้แก่บารมี", "ไม่มีใครกล้าย่ำยีศักดิ์ศรี"],
+            ["การงานขยับขยายได้เกียรติทวี", "เป็นปีที่สมหวังดั่งใจจินต์"],
+            ["ถามถึงความเจ็บไข้ไกลห่างพ้น", "สุขภาพเลิศล้นไร้มลทิน"],
+            ["ถามถึงข้อขัดแย้งสิ้นมลทิน", "ชนะคดีทั่วถิ่นกินสบาย"],
+            ["เมื่อชีวิตรุ่งเรืองเฟื่องฟูสุด", "จงอย่าหยุดสร้างบุญคอยขยาย"],
+            ["เผื่อแผ่ความมั่งมีสู่รอบกาย", "สุขทั้งกายและใจชั่วนิรันดร์"]
+        ],
+        9: [
+            ["ดั่งแก้วสารพัดนึกนึกสิ่งใด", "ได้สิ่งนั้นมาครองสมปรารถนา"],
+            ["มหาโชคโภคทรัพย์หลั่งไหลมา", "วาสนาหนุนนำให้ร่ำรวย"],
+            ["ชื่อเสียงเลื่องลือไกลไปทั่วทิศ", "มีแต่มิตรรักใคร่คอยช่วยอวย"],
+            ["ความรักหวานชื่นระรื่นรวย", "ไร้สิ่งมรวยกวนใจให้รำคาญ"],
+            ["ถามถึงความเจ็บไข้ไม่เคยพบ", "ร่างกายครบสมบูรณ์สุขศานต์"],
+            ["ถามถึงข้อขัดแย้งหมดทุกข์นาน", "ทุกสิ่งผ่านฉลุยคุยง่ายดาย"],
+            ["เมื่อชีวิตเลิศล้ำนำสุขขี", "จงทวีความเมตตาไม่เลือนหาย"],
+            ["ทำนุบารมีไว้ไม่กลับกลาย", "เป็นเจ้านายผู้ยิ่งใหญ่ในแผ่นดิน"]
+        ],
+        10: [
+            ["วาสนาสูงส่งเด่นสง่า", "เปรียบดั่งดารารายบนท้องฟ้า"],
+            ["มีผู้คนกราบไหว้และบูชา", "บารมีกล้าแกร่งเกินใครมี"],
+            ["ทำมาค้าขึ้นได้กำไรล้น", "ทรัพย์สินตนมั่นคงทุกแห่งที่"],
+            ["บริวารซื่อสัตย์สามัคคี", "คอยภักดีรับใช้ไม่เปลี่ยนใจ"],
+            ["ถามถึงความเจ็บไข้ไม่มีเกิด", "สุขภาพเลิศหน้าตาผ่องใส"],
+            ["ถามถึงข้อขัดแย้งเคลียร์ได้ไว", "ไม่มีใครกล้าขัดศรัทธาตน"],
+            ["เมื่อชีวิตสูงส่งเหนือคนอื่น", "จงหยัดยืนด้วยธรรมทุุกแห่งหน"],
+            ["ช่วยเหลือกูลเกื้อคนยากจน", "ผลบุญดลค้ำชูอยู่ยืนยง"]
+        ],
+        11: [
+            ["ความอุดมสมบูรณ์พูนสุขล้ำ", "ทุกสิ่งทำสำเร็จเสร็จสมหมาย"],
+            ["เงินทองกองเต็มบ้านสบายกาย", "สุขภาพกายใจชื่นชีวัน"],
+            ["ครอบครัวร่มเย็นเป็นสุขยิ่ง", "ไร้สิ่งกวนใจให้ไหวหวั่น"],
+            ["โชคลาภลอยมาหาทุกคืนวัน", "ดั่งสวรรค์ประทานพรลงมา"],
+            ["ถามถึงความเจ็บไข้ไกลห่างหาย", "หน้าตายิ้มแย้มสดใสหนา"],
+            ["ถามถึงข้อขัดแย้งหมดราคา", "ทุกปัญหาคลี่คลายกลายเป็นดี"],
+            ["เมื่อชีวิตเปี่ยมสุขทุกสิ่งสรรพ", "จงคำนับขอบคุณสิ่งศักดิ์ศรี"],
+            ["เสวยสุขที่หามาได้ทวี", "ใช้ชีวิตปรีดิ์เปรมเกษมศานต์"]
+        ],
+        12: [
+            ["ดั่งอยู่ในแดนสวรรค์บนชั้นฟ้า", "พร้อมคู่เคียงเสน่หาช่างสุขสันต์"],
+            ["มีญาติมิตรอบอุ่นเกื้อหนุนกัน", "บริวารก็ครบครันคอยดูแล"],
+            ["สิ่งบันเทิงเริงรมย์สมบูรณ์พร้อม", "ไม่มีวันตรมตรอมเป็นแน่แท้"],
+            ["สิ่งใดที่คิดหวังไม่ผันแปร", "ศัตรูร้ายพ่ายแพ้ไปแสนไกล"],
+            ["ถามถึงความเจ็บไข้ไม่หนักหนา", "ยังชื่นหน้ายิ้มได้ใจสดใส"],
+            ["ถามถึงข้อขัดแย้งไม่เป็นไร", "ทุกอย่างจะแก้ไขให้ยิ่งดี"],
+            ["เมื่อชีวิตสูงสุดอย่าฉุดรั้ง", "ดันทุรังให้เหนื่อยไปก็ใช่ที่"],
+            ["จงพักผ่อนเสพย์สุขที่มั่งมี", "ถนอมเวลานี้ให้ดีนาน"]
+        ]
+    };
+
+    const days = [2, 3, 4, 5, 6, 7, 1];
+    const months = [5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4];
+    const years = [8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7];
+    const totals = [15, 18, 21, 24, 27, 18, 14, 15, 5, 7, 9, 11];
+
+    let isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        buildTable();
+        buildFoundationContent();
+        buildRelationChain();
+        updateVipUIState();
+        setTimeout(() => {
+            updateGraphAndPrediction();
+        }, 50);
+    });
+
+    // ระบบจัดการสถานะ VIP และเช็คเมื่อคลิกปุ่ม VIP ด้านบน
+    function updateVipUIState() {
+        isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
+        const navBadge = document.getElementById('navVipBadge');
+        
+        if (isVipUser) {
+            if (navBadge) {
+                navBadge.className = 'vip-status-indicator vip-active';
+                navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมาชิก VIP</span>';
+                navBadge.onclick = null;
+            }
+        } else {
+            if (navBadge) {
+                navBadge.className = 'vip-status-indicator vip-inactive';
+                navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมัคร VIP</span>';
+                navBadge.onclick = openMemberModal;
+            }
+        }
+    }
+
+    function switchMode(mode) {
+        let btnFree = document.getElementById('btnFree');
+        let btnVip = document.getElementById('btnVip');
+        let vipContainer = document.getElementById('vipContainerSection');
+        let lockPrompt = document.getElementById('vipLockPromptBanner');
+        let actualContent = document.getElementById('vipActualContent');
+
+        if (mode === 'free') {
+            btnFree.classList.add('active');
+            btnVip.classList.remove('active');
+            vipContainer.style.display = 'none';
+        } else {
+            // ถ้ากดปุ่ม VIP ด้านบน แต่ยังไม่ได้เป็นสมาชิก ให้เด้ง Modal QR Code ทันที!
+            isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
+            if (!isVipUser) {
+                openMemberModal();
+                return; // ไม่เปลี่ยนแท็บ ค้างไว้ที่หน้าฟรีจนกว่าจะสมัครสำเร็จ
+            }
+
+            btnVip.classList.add('active');
+            btnFree.classList.remove('active');
+            vipContainer.style.display = 'block';
+
+            lockPrompt.style.display = 'none';
+            actualContent.style.display = 'flex';
+        }
+        setTimeout(() => {
+            updateGraphAndPrediction();
+        }, 50);
+    }
+
+    const ageSelect = document.getElementById('ageSelect');
+    for (let i = 1; i <= 84; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.text = `อายุ ${i} ปี (พ.ศ. ${2522 + i - 1})`;
+        if (i === 47) opt.selected = true;
+        ageSelect.appendChild(opt);
+    }
+
+    function buildTable() {
+        let table = document.getElementById('matrixTable');
+        let colGroup = '<colgroup><col class="col-label"><col class="col-empty">';
+        for(let i=0; i<12; i++) colGroup += '<col class="col-data">';
+        colGroup += '<col class="col-rotate"></colgroup>';
+
+        const rowLabels = ["วัน", "เดือน", "ปี", "ผลรวม", "เลขดวง"];
+        const rowDataArrays = [days, months, years, totals, scores];
+
+        let html = colGroup + '<tbody>';
+        for (let r = 0; r < rowLabels.length; r++) {
+            html += `<tr><td class="col-label">${rowLabels[r]}</td><td class="col-empty"></td>`;
+            for (let c = 0; c < 12; c++) {
+                let val = (rowDataArrays[r] && rowDataArrays[r][c] !== undefined) ? rowDataArrays[r][c] : '';
+                html += `<td>${val}</td>`;
+            }
+            if(r === 0) html += `<td rowspan="6" class="col-rotate">ความ<br>หมุน<br>เวียน</td>`;
+            html += `</tr>`;
+        }
+
+        html += `<tr class="house-row"><td class="col-label" style="background:#161b22;"></td><td class="col-empty"></td>`;
+        houses.forEach(h => html += `<td style="font-weight:bold; color:var(--text-gold);">${h}</td>`);
+        html += `</tr></tbody>`;
+        table.innerHTML = html;
+    }
+
+    function buildFoundationContent() {
+        let container = document.getElementById('foundationContent');
+        container.innerHTML = '';
+        foundationData.forEach((item) => {
+            let div = document.createElement('div');
+            div.className = 'foundation-item';
+            div.innerHTML = `
+                <div class="foundation-title">${item.title}</div>
+                <div class="foundation-subtitle">${item.subtitle}</div>
+                <div class="foundation-desc">${item.desc}</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function buildRelationChain() {
+        let container = document.getElementById('relationContent');
+        let scoreMap = {};
+        scores.forEach((sc, idx) => {
+            if (!scoreMap[sc]) scoreMap[sc] = [];
+            scoreMap[sc].push({ house: houses[idx], desc: foundationData[idx].desc });
+        });
+
+        let html = "<strong>การเชื่อมโยงความสัมพันธ์จุดพยากรณ์ในกราฟ (แยกตามคู่สายโซ่):</strong><br><br>";
+        let hasChain = false;
+
+        for (let sc in scoreMap) {
+            let list = scoreMap[sc];
+            if (list.length > 1) {
+                hasChain = true;
+                if (list.length >= 3) {
+                    let pairs = [
+                        { p1: list[0], p2: list[1], name: "คู่ที่ 1" },
+                        { p1: list[1], p2: list[2], name: "คู่ที่ 2" },
+                        { p1: list[2], p2: list[0], name: "คู่ที่ 3" }
+                    ];
+
+                    pairs.forEach((pair) => {
+                        html += `<div class="relation-subitem">`;
+                        html += `<strong>[ เลข ${sc} ] ${pair.name}: ระหว่าง ${pair.p1.house} กับ ${pair.p2.house}</strong><br>`;
+                        html += `<em>รายละเอียดคำทำนาย:</em> ${pair.p1.desc} <br><strong>และการเชื่อมโยงส่งผลถึง:</strong> ${pair.p2.desc}`;
+                        html += `</div>`;
+                    });
+                } else if (list.length == 2) {
+                    html += `<div class="relation-subitem">`;
+                    html += `<strong>[ เลข ${sc} ] ความสัมพันธ์ระหว่าง ${list[0].house} กับ ${list[1].house}</strong><br>`;
+                    html += `<em>รายละเอียดคำทำนาย:</em> ${list[0].desc} <br><strong>และการเชื่อมโยงส่งผลถึง:</strong> ${list[1].desc}`;
+                    html += `</div>`;
+                }
+            }
+        }
+
+        if (!hasChain) {
+            html += "ในรอบดวงชะตานี้ กระแสพลังงานกระจายตัวในแต่ละเรือนอย่างอิสระ";
+        }
+
+        container.innerHTML = html;
+    }
+
+    function drawGraph(currentIndex) {
+        document.querySelectorAll('.graph-cell').forEach(cell => {
+            let dot = cell.querySelector('.dot');
+            if (dot) dot.remove();
+        });
+        const svg = document.getElementById('svgGraph');
+        svg.innerHTML = '';
+
+        const wrapper = document.querySelector('.graph-wrapper');
+        const wrapperRect = wrapper.getBoundingClientRect();
+        svg.setAttribute('width', wrapper.clientWidth);
+        svg.setAttribute('height', wrapper.clientHeight);
+
+        let points = [];
+        scores.forEach((score, colIdx) => {
+            let targetCell = document.querySelector(`.graph-cell[data-row="${score}"][data-col="${colIdx}"]`);
+            if (targetCell) {
+                let dot = document.createElement('div');
+                dot.className = 'dot' + (colIdx === (currentIndex % 12) ? ' active' : '');
+                targetCell.appendChild(dot);
+
+                let cellRect = targetCell.getBoundingClientRect();
+                let x = (cellRect.left + cellRect.right) / 2 - wrapperRect.left;
+                let y = (cellRect.top + cellRect.bottom) / 2 - wrapperRect.top;
+                points.push({ x, y });
+            }
+        });
+
+        if (points.length > 1) {
+            let pathData = `M ${points[0].x} ${points[0].y}`;
+            for (let i = 1; i < points.length; i++) {
+                pathData += ` L ${points[i].x} ${points[i].y}`;
+            }
+            let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('stroke', '#58a6ff');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('fill', 'none');
+            svg.appendChild(path);
+        }
+    }
+
+    function updateGraphAndPrediction() {
+        let age = parseInt(ageSelect.value);
+        let scoreIndex = (age - 1) % 12;
+        let currentScore = scores[scoreIndex];
+        let currentHouse = houses[scoreIndex];
+
+        drawGraph(scoreIndex);
+
+        document.getElementById('predTitle').innerText = `คำทำนายประจำปี อายุ ${age} ปี (ตกเลข ${currentScore} : ภพ${currentHouse})`;
+        document.getElementById('predDesc').innerText = `ในปีนี้ดวงชะตาของคุณโคจรมาตกอยู่ในภพ "${currentHouse}" ได้คะแนนพลังชีวิต ${currentScore}/12 คะแนน ซึ่งบ่งบอกถึงเกณฑ์ชะตาชีวิตในรอบปีนี้ว่าควรดำเนินชีวิตด้วยความไม่ประมาท พร้อมเสริมดวงด้วยการทำบุญสร้างกุศล`;
+        
+        let poemContainer = document.getElementById('poemContent');
+        poemContainer.innerHTML = '';
+        let selectedPoem = poemsData[currentScore] || [];
+        selectedPoem.forEach(line => {
+            let leftDiv = document.createElement('div');
+            leftDiv.innerText = line[0];
+            let rightDiv = document.createElement('div');
+            rightDiv.innerText = line[1];
+            poemContainer.appendChild(leftDiv);
+            poemContainer.appendChild(rightDiv);
+        });
+    }
+
+    // ================= ระบบจัดการ Modal และชำระเงิน VIP จากระบบ palm.html ================= //
+    let chosenVipPrice = 299;
+    let chosenVipName = 'รายปี';
+
+    function openMemberModal() {
+        document.getElementById('modal-member').style.display = 'flex';
+    }
+
+    function closeMemberModal() {
+        document.getElementById('modal-member').style.display = 'none';
+    }
+
+    function selectVipPackage(price, name, el) {
+        chosenVipPrice = price;
+        chosenVipName = name;
+
+        document.querySelectorAll('.vip-plan-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+
+        document.getElementById('selected-package-name').innerText = name;
+        document.getElementById('selected-package-price').innerText = price;
+        document.getElementById('qr-image').src = `qr-${price}.jpg`;
+    }
+
+    function handleSlipSelected(input) {
+        if (input.files && input.files[0]) {
+            const label = document.getElementById('slip-upload-label');
+            const status = document.getElementById('slip-status-text');
+            const confirmBtn = document.getElementById('btn-confirm-vip');
+
+            label.innerHTML = `<i class="fa-solid fa-check"></i> แนบสลิปเรียบร้อย (${input.files[0].name.substring(0, 15)}...)`;
+            label.style.background = '#15803d';
+            label.style.color = '#fff';
+            label.style.borderColor = '#22c55e';
+
+            status.innerHTML = `<span style="color:#22c55e;"><i class="fa-solid fa-circle-check"></i> พร้อมยืนยันการเปิดสิทธิ์ VIP แพ็กเกจ ${chosenVipName} (${chosenVipPrice} บาท)</span>`;
+
+            confirmBtn.disabled = false;
+            confirmBtn.style.background = 'linear-gradient(135deg, #ffd700 0%, #ff8c00 100%)';
+            confirmBtn.style.color = '#1a0f00';
+            confirmBtn.style.cursor = 'pointer';
+            confirmBtn.innerText = 'ยืนยันปลดล็อกสมาชิก VIP ทันที';
+        }
+    }
+
+    function confirmVipUnlock() {
+        localStorage.setItem('ks_vip_active', 'true');
+        alert(`🎉 ยินดีด้วยครับ! ระบบได้ทำการเปิดสิทธิ์สมาชิก VIP (${chosenVipName}) ให้คุณเรียบร้อยแล้ว`);
+        closeMemberModal();
+        updateVipUIState();
+        
+        // เมื่อสมัครสำเร็จแล้ว ให้กดเปิดโหมด VIP ให้แสดงเนื้อหาเต็มทันที
+        switchMode('vip');
+    }
+
+    window.onresize = function() {
+        let age = parseInt(ageSelect.value);
+        let scoreIndex = (age - 1) % 12;
+        drawGraph(scoreIndex);
+    };
+</script>
+
+</body>
+</html>
