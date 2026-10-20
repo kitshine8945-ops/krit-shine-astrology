@@ -1086,11 +1086,13 @@ header.navbar {
         <div class="cat-sub">12 ราศี รายเดือน/ปี</div>
       </div>
 
-      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('lifegraph');}">
+     <!-- 
+<div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('lifegraph');}">
         <div class="cat-icon-circle"><i class="fa-solid fa-chart-line"></i></div>
         <div class="cat-name">กราฟชีวิต</div>
         <div class="cat-sub">พยากรณ์ชะตา 1-80 ปี</div>
       </div>
+-->
 
  <!-- ปุ่มปาจื่อ (แก้ไขแล้ว) -->
 <div class="cat-item" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('bazi'); if(typeof calcBaziEngine==='function')calcBaziEngine();}">
