@@ -476,7 +476,7 @@
     <strong>ลัคนา:</strong> <span id="dispUserAsc">-</span>
 </div>
 
-    <!-- ปุ่มสลับโหมด Free / VIP ด้านบน (ตามรูปแบบเดิมเป๊ะๆ) -->
+    <!-- ปุ่มสลับโหมด Free / VIP ด้านบน -->
     <div class="tab-container">
         <button class="tab-btn active" id="btnFree" onclick="switchMode('free')">กราฟและบทกลอนประจำปี (ดูฟรี)</button>
         <button class="tab-btn" id="btnVip" onclick="switchMode('vip')">👑 ทำนายเต็มรูปแบบตามตำรา (VIP)</button>
@@ -569,9 +569,8 @@
         <div id="poemContent" class="poem-grid"></div>
     </div>
 
-    <!-- ส่วนเนื้อหา VIP เชิงลึก (จะแสดงเมื่อกดแท็บ VIP ด้านบน) -->
+    <!-- ส่วนเนื้อหา VIP เชิงลึก -->
     <div id="vipContainerSection" class="vip-only">
-        <!-- Banner ให้กดสมัคร VIP ถ้ายัังไม่ได้เป็นสมาชิก -->
         <div class="vip-lock-prompt" id="vipLockPromptBanner" style="display: none;">
             <i class="fa-solid fa-crown" style="font-size: 2.5rem; color: #ffd700;"></i>
             <div>
@@ -585,15 +584,12 @@
             </button>
         </div>
 
-        <!-- เนื้อหาคำทำนาย VIP ตัวจริง (แสดงเมื่อเป็นสมาชิกแล้ว) -->
         <div id="vipActualContent" style="display: none; flex-direction: column; gap: 20px;">
-            <!-- ส่วนความสัมพันธ์จุดพยากรณ์ในกราฟ (แยก 3 คู่แบบไม่ซ้ำซ้อน) -->
             <div class="relation-box" style="margin-top: 20px;">
                 <h3 style="color: var(--text-gold); margin-top: 0;">บทสรุปคำทำนายความสัมพันธ์จุดพยากรณ์ (แยกตามสายโซ่ 3 คู่)</h3>
                 <div id="relationContent" class="relation-chain"></div>
             </div>
 
-            <!-- ส่วนคำทำนายพื้นดวง 12 เรือนภพ -->
             <div class="foundation-box" style="margin-top: 20px;">
                 <h3 style="color: var(--text-gold); margin-top: 0;">1. ทำนายพื้นดวง (คำทำนายพื้นดวงรายเรือนภพ)</h3>
                 <div id="foundationContent"></div>
@@ -602,7 +598,7 @@
     </div>
 </div>
 
-<!-- Modal ชำระเงิน VIP (QR Code PromptPay + แนบสลิป จากระบบ palm.html) -->
+<!-- Modal ชำระเงิน VIP -->
 <div class="modal-overlay" id="modal-member">
     <div class="modal-content">
         <div class="modal-close-btn" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></div>
@@ -662,7 +658,19 @@
 </div>
 
 <script>
-   const houses = [
+  // 1. ดึงข้อมูลวันเกิดจาก localStorage แบบไม่มีค่าสำรอง
+    const bDay = parseInt(localStorage.getItem('saved_birthDay'), 10);
+    const bMonth = parseInt(localStorage.getItem('saved_birthMonth'), 10);
+    const bYearBE = parseInt(localStorage.getItem('saved_birthBE'), 10);
+    const userName = localStorage.getItem('saved_userName');
+
+    // ถ้าไม่มีข้อมูลในระบบ ให้แจ้งเตือนหรือกำหนดค่าเริ่มต้นเป็นศูนย์
+    if (!bDay || !bMonth || !bYearBE) {
+        alert('กรุณากรอกข้อมูลวันเดือนปีเกิดที่หน้าหลักก่อนครับ');
+        window.location.href = 'index.html';
+    }
+
+    const houses = [
         "วาสนา", "ทรัพย์", "เพื่อน", "ญาติ", "บริวาร", "ศัตรู", 
         "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"
     ];
@@ -682,7 +690,6 @@
         "ความเดือดร้อน สิ้นเปลือง ล้มเหลว ผิดหวัง การต่อสู้ (วินาศ)"
     ];
 
-    // คลังคำทำนายตามเลขดวง 1 ถึง 12
     const scoreDescriptions = {
         1: "เป็นเลขที่อยู่ในเกณฑ์เริ่มต้น มีพลังขับเคลื่อนด้วยตนเอง ต้องบุกเบิกและสร้างสรรค์ด้วยความมุ่งมั่น ค่อยๆ สะสมประสบการณ์แล้วความสำเร็จจะตามมา",
         2: "เป็นเลขที่อยู่ในเกณฑ์ดีเด่นเรื่องมิตรภาพ คู่ครอง และความร่วมมือ มีเสน่ห์เมตตามหานิยม ผู้ใหญ่หรือคนรอบข้างให้การสนับสนุนช่วยเหลือเป็นอย่างดี",
@@ -697,24 +704,6 @@
         11: "เป็นเลขที่อยู่ในเกณฑ์ต้องใช้ความระมัดระวังเป็นพิเศษ ชีวิตมักเจออุปสรรคหรือปัญหาให้ต้องแก้ไข ควรหมั่นทำบุญสร้างกุศลเพื่อผ่อนหนักให้เป็นเบา",
         12: "เป็นเลขที่อยู่ในเกณฑ์ดีมากที่สุด มีความร่มเย็นเป็นสุข ญาติมิตรบริวารพึ่งพาได้ และมีความอุดมสมบูรณ์ในชีวิต"
     };
-
-    // คำนวณ Scores แบบ Dynamic ตามวันเกิดจริงที่ดึงมาจาก localStorage
-    let seed = bDay + bMonth + bYearBE;
-    let scores = [];
-    for (let i = 0; i < 12; i++) {
-        let sc = ((seed + i * 3) % 12) + 1;
-        scores.push(sc);
-    }
-
-    // สร้างข้อมูล foundationData อัตโนมัติให้ตรงกับเลขดวงจริงในแต่ละเรือน
-    const foundationData = houses.map((hName, idx) => {
-        let sc = scores[idx];
-        return {
-            title: `${hName} เลข ${sc}`,
-            subtitle: houseSubtitles[idx],
-            desc: scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี ควรดำเนินชีวิตด้วยความไม่ประมาท"
-        };
-    });
 
     const poemsData = {
         1: [
@@ -749,7 +738,7 @@
         ],
         4: [
             ["ชีวิตยังเรื่อยเรื่อยเหนื่อยพอสู้", "ไม่รุ่งเรืองเฟื่องฟูแต่ไม่ล้ม"],
-            ["พอกินพอใช้ไม่อกตรม", "ค่อยสะสมทีละน้อยค่อยเดินไป"],
+            ["พอกินพอใช้ไมอกตรม", "ค่อยสะสมทีละน้อยค่อยเดินไป"],
             ["บริวารญาติมิตรพอพึ่งได้", "ไม่ถึงกับใจร้ายทอดทิ้งให้"],
             ["แต่โชคลาภก้อนโตยังห่างไกล", "ต้องทำใจอดออมถนอมทุน"],
             ["ถามถึงความเจ็บไข้หายห่วงได้", "ร่างกายยังทนไหวมีเกื้อหนุน"],
@@ -839,14 +828,72 @@
         ]
     };
 
-    const days = [2, 3, 4, 5, 6, 7, 1];
-    const months = [5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4];
-    const years = [8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7];
-    const totals = [15, 18, 21, 24, 27, 18, 14, 15, 5, 7, 9, 11];
+    // คำนวณ Scores และข้อมูลตารางแบบ Dynamic ตามวันเกิดจริง
+    let seed = bDay + bMonth + bYearBE;
+    let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
+    let dayOfWeek = birthDate.getDay();
+    let startDay = dayOfWeek === 0 ? 1 : dayOfWeek + 1;
+    
+    let days = [];
+    let months = [];
+    let years = [];
+    let totals = [];
+    let scores = [];
+
+    for(let i = 0; i < 12; i++) {
+        let d = ((startDay + i - 1) % 7) + 1;
+        let m = (((bMonth - 1 + i) % 12) + 1);
+        let y = (((bYearBE + i - 1) % 12) || 12);
+        let tot = d + m + y;
+        let sc = ((tot * 3 + seed + i) % 12) + 1;
+
+        days.push(d);
+        months.push(m);
+        years.push(y);
+        totals.push(tot);
+        scores.push(sc);
+    }
+
+    const foundationData = houses.map((hName, idx) => {
+        let sc = scores[idx];
+        return {
+            title: `${hName} เลข ${sc}`,
+            subtitle: houseSubtitles[idx],
+            desc: scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี ควรดำเนินชีวิตด้วยความไม่ประมาท"
+        };
+    });
 
     let isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
 
     window.addEventListener('DOMContentLoaded', () => {
+        const thMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        
+        const dispName = document.getElementById('dispUserName');
+        const dispDob = document.getElementById('dispUserDob');
+        const dispAsc = document.getElementById('dispUserAsc');
+
+        if (dispName) dispName.innerText = userName;
+        if (dispDob) dispDob.innerText = `${bDay} ${thMonths[bMonth - 1]} พ.ศ. ${bYearBE}`;
+        if (dispAsc) dispAsc.innerText = 'กุมภ์';
+
+        // คำนวณอายุเริ่มต้นอิงจากปีปัจจุบัน (พ.ศ. 2569) ลบด้วยปีเกิด
+        const currentYearBE = 2569;
+        let defaultAge = currentYearBE - bYearBE;
+        if (defaultAge < 1) defaultAge = 1;
+        if (defaultAge > 84) defaultAge = 84;
+
+        const selectElem = document.getElementById('ageSelect');
+        if (selectElem) {
+            selectElem.innerHTML = '';
+            for (let i = 1; i <= 84; i++) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.text = `อายุ ${i} ปี (พ.ศ. ${bYearBE + i - 1})`;
+                if (i === defaultAge) opt.selected = true;
+                selectElem.appendChild(opt);
+            }
+        }
+
         buildTable();
         buildFoundationContent();
         buildRelationChain();
@@ -856,7 +903,6 @@
         }, 50);
     });
 
-    // ระบบจัดการสถานะ VIP และเช็คเมื่อคลิกปุ่ม VIP ด้านบน
     function updateVipUIState() {
         isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
         const navBadge = document.getElementById('navVipBadge');
@@ -888,11 +934,10 @@
             btnVip.classList.remove('active');
             vipContainer.style.display = 'none';
         } else {
-            // ถ้ากดปุ่ม VIP ด้านบน แต่ยังไม่ได้เป็นสมาชิก ให้เด้ง Modal QR Code ทันที!
             isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
             if (!isVipUser) {
                 openMemberModal();
-                return; // ไม่เปลี่ยนแท็บ ค้างไว้ที่หน้าฟรีจนกว่าจะสมัครสำเร็จ
+                return;
             }
 
             btnVip.classList.add('active');
@@ -905,15 +950,6 @@
         setTimeout(() => {
             updateGraphAndPrediction();
         }, 50);
-    }
-
-    const ageSelect = document.getElementById('ageSelect');
-    for (let i = 1; i <= 84; i++) {
-        let opt = document.createElement('option');
-        opt.value = i;
-        opt.text = `อายุ ${i} ปี (พ.ศ. ${2522 + i - 1})`;
-        if (i === 47) opt.selected = true;
-        ageSelect.appendChild(opt);
     }
 
     function buildTable() {
@@ -944,6 +980,7 @@
 
     function buildFoundationContent() {
         let container = document.getElementById('foundationContent');
+        if (!container) return;
         container.innerHTML = '';
         foundationData.forEach((item) => {
             let div = document.createElement('div');
@@ -959,6 +996,7 @@
 
     function buildRelationChain() {
         let container = document.getElementById('relationContent');
+        if (!container) return;
         let scoreMap = {};
         scores.forEach((sc, idx) => {
             if (!scoreMap[sc]) scoreMap[sc] = [];
@@ -1007,6 +1045,7 @@
             if (dot) dot.remove();
         });
         const svg = document.getElementById('svgGraph');
+        if (!svg) return;
         svg.innerHTML = '';
 
         const wrapper = document.querySelector('.graph-wrapper');
@@ -1044,7 +1083,9 @@
     }
 
     function updateGraphAndPrediction() {
-        let age = parseInt(ageSelect.value);
+        const ageSelectElem = document.getElementById('ageSelect');
+        if (!ageSelectElem) return;
+        let age = parseInt(ageSelectElem.value);
         let scoreIndex = (age - 1) % 12;
         let currentScore = scores[scoreIndex];
         let currentHouse = houses[scoreIndex];
@@ -1067,7 +1108,6 @@
         });
     }
 
-    // ================= ระบบจัดการ Modal และชำระเงิน VIP จากระบบ palm.html ================= //
     let chosenVipPrice = 299;
     let chosenVipName = 'รายปี';
 
@@ -1117,65 +1157,17 @@
         alert(`🎉 ยินดีด้วยครับ! ระบบได้ทำการเปิดสิทธิ์สมาชิก VIP (${chosenVipName}) ให้คุณเรียบร้อยแล้ว`);
         closeMemberModal();
         updateVipUIState();
-        
-        // เมื่อสมัครสำเร็จแล้ว ให้กดเปิดโหมด VIP ให้แสดงเนื้อหาเต็มทันที
         switchMode('vip');
     }
 
     window.onresize = function() {
-        let age = parseInt(ageSelect.value);
-        let scoreIndex = (age - 1) % 12;
-        drawGraph(scoreIndex);
-    };
-// 1. ดึงข้อมูลวันเกิดที่บันทึกไว้จากหน้าหลัก (ถ้าไม่มี ใช้ค่าเริ่มต้น 13/9/2526)
-    const bDay = parseInt(localStorage.getItem('saved_birthDay'), 10) || 13;
-    const bMonth = parseInt(localStorage.getItem('saved_birthMonth'), 10) || 9;
-    const bYearBE = parseInt(localStorage.getItem('saved_birthBE'), 10) || 2526;
-
-    // 2. คำนวณอายุเริ่มต้นอัตโนมัติอิงจากปีปัจจุบัน (พ.ศ. 2569) ลบด้วยปีเกิด
-    const currentYearBE = 2569;
-    let defaultAge = currentYearBE - bYearBE;
-    if (defaultAge < 1) defaultAge = 1;
-    if (defaultAge > 84) defaultAge = 84;
-
-    // สร้างตัวเลือกอายุ 1 ถึง 84 ปี อิงตามปีเกิดจริง
-    const ageSelect = document.getElementById('ageSelect');
-    if (ageSelect) {
-        ageSelect.innerHTML = '';
-        for (let i = 1; i <= 84; i++) {
-            let opt = document.createElement('option');
-            opt.value = i;
-            opt.text = `อายุ ${i} ปี (พ.ศ. ${bYearBE + i - 1})`;
-            if (i === defaultAge) opt.selected = true;
-            ageSelect.appendChild(opt);
+        const ageSelectElem = document.getElementById('ageSelect');
+        if (ageSelectElem) {
+            let age = parseInt(ageSelectElem.value);
+            let scoreIndex = (age - 1) % 12;
+            drawGraph(scoreIndex);
         }
-    }
-
-    // 3. สร้างข้อมูลตารางและคะแนน (Scores) แบบ Dynamic ตามวันเดือนปีเกิดจริง
-    let seed = bDay + bMonth + bYearBE;
-    let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
-    let dayOfWeek = birthDate.getDay();
-    let startDay = dayOfWeek === 0 ? 1 : dayOfWeek + 1;
-    
-    let days = [];
-    let months = [];
-    let years = [];
-    let totals = [];
-    let scores = [];
-
-    for(let i = 0; i < 12; i++) {
-        let d = ((startDay + i - 1) % 7) + 1;
-        let m = (((bMonth - 1 + i) % 12) + 1);
-        let y = (((bYearBE + i - 1) % 12) || 12);
-        let tot = d + m + y;
-        let sc = ((tot * 3 + seed + i) % 12) + 1;
-
-        days.push(d);
-        months.push(m);
-        years.push(y);
-        totals.push(tot);
-        scores.push(sc);
-    }
+    };
 </script>
 </body>
 </html>
