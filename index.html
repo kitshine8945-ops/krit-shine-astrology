@@ -1094,8 +1094,8 @@ header.navbar {
       </div>
 -->
 
-      <!-- เมนูกราฟชีวิต 12 เรือนภพ (เชื่อมโยงไปหน้า life-graph.html) -->
-      <div class="cat-item" onclick="window.location.href='life-graph.html'">
+ <!-- เมนูกราฟชีวิต 12 เรือนภพ (เช็กวันเกิดก่อน ถ้ายังไม่กรอกให้เด้งเตือน) -->
+      <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{window.location.href='life-graph.html';}">
         <div class="cat-icon-circle" style="background: rgba(245,158,11,0.25); border: 1.5px solid #ffd700;">
           <i class="fa-solid fa-chart-line" style="color: #ffd700;"></i>
         </div>
