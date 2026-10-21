@@ -1143,10 +1143,12 @@
     let chosenVipPrice = 299;
     let chosenVipName = 'รายปี';
 function openMemberModal() {
-        const currentUserName = localStorage.getItem('saved_userName') || localStorage.getItem('userName');
+        // ตรวจสอบว่ามีข้อมูลวันเกิดหรือชื่อเจ้าชะตาบันทึกไว้ในเครื่องหรือยัง
+        const userNameCheck = localStorage.getItem('saved_userName') || localStorage.getItem('userName');
+        const birthDayCheck = localStorage.getItem('saved_birthDay');
         
-        if (!currentUserName || currentUserName === '-' || currentUserName.trim() === '') {
-            alert('กรุณาเข้าสู่ระบบ หรือกรอกข้อมูลวันเดือนปีเกิดที่หน้าหลักก่อนดำเนินการครับ');
+        if (!userNameCheck || userNameCheck === '-' || !birthDayCheck) {
+            alert('กรุณากรอกข้อมูลวันเดือนปีเกิดและชื่อเจ้าชะตาก่อนสมัครสมาชิก VIP เพื่อให้ระบบบันทึกยอดชำระให้ท่านได้อย่างถูกต้องครับ');
             window.location.href = 'index.html';
             return;
         }
