@@ -834,27 +834,25 @@
         ]
     };
 
-// ================= คำนวณตารางตามฟังก์ชัน Python ของคุณ =================
-    
-    // 1. แปลงวันในสัปดาห์เป็นตัวเลข (อาทิตย์=1 ถึง เสาร์=7)
-    // จาก date.getDay(): 0=อาทิตย์, 1=จันทร์, ..., 6=เสาร์
+// ================= คำนวณตารางตามสูตรเดิมเป๊ะๆ =================
+    // 1. วันในสัปดาห์ (1=อาทิตย์, 2=จันทร์, ..., 7=เสาร์)
     let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
-    let dayOfWeek = birthDate.getDay(); 
-    let startDayOfWeek = dayOfWeek + 1; // แปลงเป็น 1-7 ตรงตาม map
+    let dayOfWeek = birthDate.getDay(); // 0=อาทิตย์, 1=จันทร์, ..., 6=เสาร์
+    let startDayOfWeek = dayOfWeek + 1; // แปลงเป็น 1-7
 
-    // 2. รหัสเดือนเกิด (ธันวาคม=1, มกราคม=2, ..., พฤศจิกายน=12)
+    // 2. เดือนเกิด (ตามกฎ: ธค=1, มค=2, กพ=3, ..., พย=12)
     function getMonthCode(m) {
-        // m: 1(มค) ถึง 12(ธค)
         if (m === 12) return 1;
         return m + 1;
     }
     let startMonthCode = getMonthCode(bMonth);
 
-    // 3. คำนวณปีนักษัตรอัตโนมัติจาก พ.ศ. (อิงเกณฑ์ พ.ศ. 2567 = ปีมะโรง เลข 5)
-    const zodiacCodes = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // กุน, ชวด, ฉลู, ..., จอ
-    let diff = (bYearBE - 2567) % 12;
-    if (diff < 0) diff += 12; // ป้องกันกรณีติดลบ
-    let startYearCode = zodiacCodes[diff];
+    // 3. ปีนักษัตร: กำหนดให้ปี 2522 (ปีมะแม) เริ่มต้นที่เลข 8 และวนลูป 1-12
+    // คำนวณส่วนต่างจากปี 2522
+    let yearOffset = (bYearBE - 2522) % 12;
+    let startYearCode = 8 + yearOffset;
+    if (startYearCode > 12) startYearCode -= 12;
+    if (startYearCode < 1) startYearCode += 12;
 
     let seed = bDay + bMonth + bYearBE;
     let days = [];
@@ -870,7 +868,7 @@
         // แถว "เดือน": วน 1 ถึง 12
         let m = ((startMonthCode - 1 + i) % 12) + 1;
 
-        // แถว "ปี": วน 1 ถึง 12 อิงตามปีนักษัตร
+        // แถว "ปี": วน 1 ถึง 12 โดยเริ่มต้นที่ปีมะแม = 8
         let y = ((startYearCode - 1 + i) % 12) + 1;
 
         // ผลรวม (ถ้าช่องวันว่าง ให้เอาเดือน + ปี)
