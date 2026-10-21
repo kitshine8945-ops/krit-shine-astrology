@@ -520,7 +520,7 @@
         "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "วินาศ"
     ];
 
-const houseSubtitles = [
+    const houseSubtitles = [
         "บุญกรรมที่ติดตัวเจ้าชะตาแต่กำเนิด (ตนุ)",
         "การเงิน รายได้ ความร่ำรวย ทรัพย์สินเงินทอง ความรู้ (กฎุมพะ)",
         "มิตร เพื่อนฝูง หุ้นส่วน เจ้านาย เดินทาง สมาคม สังคม (สหัชชะ)",
@@ -558,7 +558,7 @@ const houseSubtitles = [
     }
 
     // สร้างคำทำนายจำแนกตามเรือนภพและคะแนน (ดึงเนื้อหาคำทำนายแบบยาวเดิมมาผสมกับเกณฑ์ภพภูมิ)
-    function getHouseScoreDesc(houseName, sc) {
+    function getHouseScoreDesc(sc) {
         let prefix = getZonePrefix(sc);
         let baseText = scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี ควรดำเนินชีวิตด้วยความไม่ประมาท";
         return prefix + baseText;
@@ -734,13 +734,12 @@ const houseSubtitles = [
         scores.push(sc);
     }
 
-    // กำหนดข้อมูลพื้นดวงรายเรือนภพโดยดึงฟังก์ชันคำทำนายเฉพาะเรือนภพนั้นๆ[cite: 14]
     const foundationData = houses.map((hName, idx) => {
         let sc = scores[idx];
         return {
             title: `${hName} เลข ${sc}`,
             subtitle: houseSubtitles[idx],
-            desc: getHouseScoreDesc(hName, sc)
+            desc: getHouseScoreDesc(sc)
         };
     });
 
@@ -857,7 +856,7 @@ const houseSubtitles = [
         });
     }
 
-    // แก้ไขการจับคู่คำทำนายสายโซ่ให้ดึงเนื้อหาจากทั้ง 2 ภพมาผสมกันอย่างถูกต้อง[cite: 11, 12]
+    // แก้ไขการจับคู่คำทำนายสายโซ่ให้ดึงเนื้อหาคำทำนายเต็มของแต่ละภพมาแสดงผลร่วมกันอย่างถูกต้อง
     function buildRelationChain() {
         let container = document.getElementById('relationContent');
         if (!container) return;
@@ -866,7 +865,7 @@ const houseSubtitles = [
             if (!scoreMap[sc]) scoreMap[sc] = [];
             scoreMap[sc].push({ 
                 house: houses[idx], 
-                desc: getHouseScoreDesc(houses[idx], sc) 
+                desc: getHouseScoreDesc(sc) 
             });
         });
 
@@ -887,13 +886,13 @@ const houseSubtitles = [
                     pairs.forEach((pair) => {
                         html += `<div class="relation-subitem">`;
                         html += `<strong>[ เลข ${sc} ] ${pair.name}: ระหว่าง ${pair.p1.house} กับ ${pair.p2.house}</strong><br>`;
-                        html += `<em>รายละเอียดคำทำนาย:</em> ${pair.p1.desc} <br><strong>และการเชื่อมโยงส่งผลถึง:</strong> ${pair.p2.desc}`;
+                        html += `<em>รายละเอียดคำทำนาย (${pair.p1.house}):</em> ${pair.p1.desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${pair.p2.house}):</strong> ${pair.p2.desc}`;
                         html += `</div>`;
                     });
                 } else if (list.length == 2) {
                     html += `<div class="relation-subitem">`;
                     html += `<strong>[ เลข ${sc} ] ความสัมพันธ์ระหว่าง ${list[0].house} กับ ${list[1].house}</strong><br>`;
-                    html += `<em>รายละเอียดคำทำนาย:</em> ${list[0].desc} <br><strong>และการเชื่อมโยงส่งผลถึง:</strong> ${list[1].desc}`;
+                    html += `<em>รายละเอียดคำทำนาย (${list[0].house}):</em> ${list[0].desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${list[1].house}):</strong> ${list[1].desc}`;
                     html += `</div>`;
                 }
             }
