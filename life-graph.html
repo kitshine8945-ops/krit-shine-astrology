@@ -573,65 +573,6 @@
     </div>
 </div>
 
-<!-- Modal ชำระเงิน VIP -->
-<div class="modal-overlay" id="modal-member">
-    <div class="modal-content">
-        <div class="modal-close-btn" onclick="closeMemberModal()"><i class="fa-solid fa-xmark"></i></div>
-        <i class="fa-solid fa-crown" style="font-size: 2.5rem; color: #ffd700; margin-bottom: 6px;"></i>
-        <h3 style="color: #fff; margin-bottom: 4px; font-size: 1.25rem;">สมัครสมาชิก VIP - Krit Shine Astrology</h3>
-        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">ปลดล็อกการวิเคราะห์กราฟชีวิตเชิงลึก และฟีเจอร์พรีเมียมทุกศาสตร์บนระบบ</p>
-        
-        <div class="vip-plan-grid">
-            <div class="vip-plan-card" onclick="selectVipPackage(19, 'รายวัน', this)">
-                <div style="font-size:0.8rem; color:#fff;">รายวัน</div>
-                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">19.-</div>
-                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 24 ชม.</div>
-            </div>
-            <div class="vip-plan-card" onclick="selectVipPackage(29, 'รายสัปดาห์', this)">
-                <div style="font-size:0.8rem; color:#fff;">รายสัปดาห์</div>
-                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">29.-</div>
-                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 7 วัน</div>
-            </div>
-            <div class="vip-plan-card" onclick="selectVipPackage(39, 'รายเดือน', this)">
-                <div style="font-size:0.8rem; color:#fff;">รายเดือน</div>
-                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">39.-</div>
-                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 30 วัน</div>
-            </div>
-            <div class="vip-plan-card selected" onclick="selectVipPackage(299, 'รายปี', this)">
-                <div style="font-size:0.8rem; color:#fff;">รายปี</div>
-                <div style="font-size:1.25rem; color:#ffd700; font-weight:700;">299.-</div>
-                <div style="font-size:0.65rem; color:#94a3b8;">ใช้งานได้ 365 วัน</div>
-            </div>
-        </div>
-
-        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 0.85rem; color: #fff; margin-bottom: 6px;">
-                แพ็กเกจที่เลือก: <strong id="selected-package-name" style="color:#ffd700;">รายปี</strong> (ยอดชำระ <strong id="selected-package-price" style="color:#ffd700;">299</strong> บาท)
-            </div>
-            <div style="background: #fff; padding: 8px; display: inline-block; border-radius: 8px;">
-                <img id="qr-image" src="qr-299.jpg" alt="PromptPay" style="display:block; margin: 0 auto; max-width: 160px; width: 100%; border-radius: 6px;">
-            </div>
-        </div>
-
-        <div style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(234, 179, 8, 0.4); border-radius: 10px;">
-            <div style="font-size: 0.82rem; margin-bottom: 6px; color: #fff; font-weight: 600;">
-                <i class="fa-solid fa-file-invoice-dollar" style="color: #ffd700;"></i> แนบสลิปเพื่อยืนยันสิทธิ์ VIP
-            </div>
-            <input type="file" id="slip-file-input" accept="image/*" onchange="handleSlipSelected(this)" style="display: none;">
-            <label for="slip-file-input" id="slip-upload-label" style="display: inline-block; padding: 7px 14px; background: #333; color: #ffd700; border: 1px solid #ffd700; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
-                <i class="fa-solid fa-cloud-arrow-up"></i> เลือกรูปภาพสลิป
-            </label>
-            <div id="slip-status-text" style="margin-top: 6px; font-size: 0.75rem; color: #aaa;">
-                กรุณาแนบสลิปที่โอนตรงตามยอดแพ็กเกจ
-            </div>
-        </div>
-
-        <button type="button" id="btn-confirm-vip" onclick="confirmVipUnlock()" disabled style="width: 100%; padding: 11px; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 700; background: #444; color: #888; cursor: not-allowed; transition: all 0.3s ease;">
-            รอการแนบสลิป...
-        </button>
-    </div>
-</div>
-
 <script>
     // 1. ดึงข้อมูลวันเกิดจาก localStorage
     const bDay = parseInt(localStorage.getItem('saved_birthDay'), 10);
