@@ -834,32 +834,38 @@
         ]
     };
 
-// ================= คำนวณตารางตามสูตรเดิมเป๊ะๆ =================
-    // 1. วันในสัปดาห์ (1=อาทิตย์, 2=จันทร์, ..., 7=เสาร์)
+// ================= คำนวณตารางตามกฎการตัดเลขของคุณ =================
     let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
-    let dayOfWeek = birthDate.getDay(); // 0=อาทิตย์, 1=จันทร์, ..., 6=เสาร์
-    let startDayOfWeek = dayOfWeek + 1; // แปลงเป็น 1-7
+    let dayOfWeek = birthDate.getDay(); 
+    let startDayOfWeek = dayOfWeek + 1; // 1-7
 
-    // 2. เดือนเกิด (ตามกฎ: ธค=1, มค=2, กพ=3, ..., พย=12)
     function getMonthCode(m) {
         if (m === 12) return 1;
         return m + 1;
     }
     let startMonthCode = getMonthCode(bMonth);
 
-    // 3. ปีนักษัตร: กำหนดให้ปี 2522 (ปีมะแม) เริ่มต้นที่เลข 8 และวนลูป 1-12
-    // คำนวณส่วนต่างจากปี 2522
     let yearOffset = (bYearBE - 2522) % 12;
     let startYearCode = 8 + yearOffset;
     if (startYearCode > 12) startYearCode -= 12;
     if (startYearCode < 1) startYearCode += 12;
 
-    let seed = bDay + bMonth + bYearBE;
     let days = [];
     let months = [];
     let years = [];
     let totals = [];
     let scores = [];
+
+    // ฟังก์ชันกฎเหล็กตัดเลขตามที่คุณกำหนด
+    function trimToScore(totalSum) {
+        while (totalSum > 12) {
+            totalSum -= 12;
+        }
+        if (totalSum === 0) {
+            totalSum = 12;
+        }
+        return totalSum;
+    }
 
     for (let i = 0; i < 12; i++) {
         // แถว "วัน": แสดงแค่ 7 ช่องแรก (i < 7) ช่องที่ 8-12 เว้นว่าง
@@ -874,8 +880,8 @@
         // ผลรวม (ถ้าช่องวันว่าง ให้เอาเดือน + ปี)
         let tot = (d !== '') ? (d + m + y) : (m + y);
         
-        // เลขดวง (1 ถึง 12)
-        let sc = ((tot * 3 + seed + i) % 12) + 1;
+        // เลขดวง: ใช้กฎการลบออก 12 จนหมด และห้ามได้ 0 (ได้ 12 แทน)
+        let sc = trimToScore(tot);
 
         days.push(d);
         months.push(m);
