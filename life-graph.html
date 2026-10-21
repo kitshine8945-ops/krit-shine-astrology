@@ -1142,8 +1142,15 @@
 
     let chosenVipPrice = 299;
     let chosenVipName = 'รายปี';
-
-    function openMemberModal() {
+function openMemberModal() {
+        const currentUserName = localStorage.getItem('saved_userName') || localStorage.getItem('userName');
+        
+        if (!currentUserName || currentUserName === '-' || currentUserName.trim() === '') {
+            alert('กรุณาเข้าสู่ระบบ หรือกรอกข้อมูลวันเดือนปีเกิดที่หน้าหลักก่อนดำเนินการครับ');
+            window.location.href = 'index.html';
+            return;
+        }
+        
         document.getElementById('modal-member').style.display = 'flex';
     }
 
