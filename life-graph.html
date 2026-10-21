@@ -851,7 +851,7 @@
         });
     }
 
-    // รูปแบบที่ 2: ส่วนเชื่อมโยงความสัมพันธ์สายโซ่ (แยกการทำงาน จับคู่คำทำนายยาวตามคะแนนที่เท่ากัน)
+// ส่วนเชื่อมโยงความสัมพันธ์สายโซ่: ดึงเฉพาะชื่อเรือนภพ 2 เรือนภพมาแสดงผลร่วมกันโดยไม่ดึงคำทำนายของเลขมาใส่
     function buildRelationChain() {
         let container = document.getElementById('relationContent');
         if (!container) return;
@@ -859,10 +859,9 @@
         scores.forEach((sc, idx) => {
             if (!scoreMap[sc]) scoreMap[sc] = [];
             let hName = houses[idx];
-            let zoneText = getZonePrefix(sc);
             scoreMap[sc].push({ 
                 house: hName, 
-                desc: zoneText + (scoreDescriptions[sc] || "")
+                sub: houseSubtitles[idx]
             });
         });
 
@@ -882,14 +881,14 @@
 
                     pairs.forEach((pair) => {
                         html += `<div class="relation-subitem">`;
-                        html += `<strong>[ เลข ${sc} ] ${pair.name}: ระหว่าง ${pair.p1.house} กับ ${pair.p2.house}</strong><br>`;
-                        html += `<em>รายละเอียดคำทำนาย (${pair.p1.house}):</em> ${pair.p1.desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${pair.p2.house}):</strong> ${pair.p2.desc}`;
+                        html += `<strong>[ เลข ${sc} ] ${pair.name}: ระหว่างเรือนภพ "${pair.p1.house}" กับ เรือนภพ "${pair.p2.house}"</strong><br>`;
+                        html += `<em>ความหมายเรือนภพที่ 1 (${pair.p1.house}):</em> ${pair.p1.sub} <br><br><strong>และการเชื่อมโยงส่งผลถึงเรือนภพที่ 2 (${pair.p2.house}):</strong> ${pair.p2.sub}`;
                         html += `</div>`;
                     });
                 } else if (list.length == 2) {
                     html += `<div class="relation-subitem">`;
-                    html += `<strong>[ เลข ${sc} ] ความสัมพันธ์ระหว่าง ${list[0].house} กับ ${list[1].house}</strong><br>`;
-                    html += `<em>รายละเอียดคำทำนาย (${list[0].house}):</em> ${list[0].desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${list[1].house}):</strong> ${list[1].desc}`;
+                    html += `<strong>[ เลข ${sc} ] ความสัมพันธ์ระหว่างเรือนภพ "${list[0].house}" กับ เรือนภพ "${list[1].house}"</strong><br>`;
+                    html += `<em>ความหมายเรือนภพที่ 1 (${list[0].house}):</em> ${list[0].sub} <br><br><strong>และการเชื่อมโยงส่งผลถึงเรือนภพที่ 2 (${list[1].house}):</strong> ${list[1].sub}`;
                     html += `</div>`;
                 }
             }
