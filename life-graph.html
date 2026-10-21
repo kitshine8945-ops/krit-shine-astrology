@@ -658,13 +658,19 @@
 </div>
 
 <script>
-  // 1. ดึงข้อมูลวันเกิดจาก localStorage แบบไม่มีค่าสำรอง
+    // 1. ดึงข้อมูลวันเกิดและลัคนาจาก localStorage
     const bDay = parseInt(localStorage.getItem('saved_birthDay'), 10);
     const bMonth = parseInt(localStorage.getItem('saved_birthMonth'), 10);
     const bYearBE = parseInt(localStorage.getItem('saved_birthBE'), 10);
     const userName = localStorage.getItem('saved_userName');
+    
+    const userAsc = localStorage.getItem('saved_asc') || 
+                    localStorage.getItem('saved_ascendant') || 
+                    localStorage.getItem('asc') || 
+                    localStorage.getItem('laksana') || 
+                    localStorage.getItem('userAsc') || 
+                    localStorage.getItem('ascName') || '-';
 
-    // ถ้าไม่มีข้อมูลในระบบ ให้แจ้งเตือนหรือกำหนดค่าเริ่มต้นเป็นศูนย์
     if (!bDay || !bMonth || !bYearBE) {
         alert('กรุณากรอกข้อมูลวันเดือนปีเกิดที่หน้าหลักก่อนครับ');
         window.location.href = 'index.html';
@@ -828,25 +834,46 @@
         ]
     };
 
-    // คำนวณ Scores และข้อมูลตารางแบบ Dynamic ตามวันเกิดจริง
-    let seed = bDay + bMonth + bYearBE;
+    // ================= คำนวณตารางตามสูตรเดิมเป๊ะๆ =================
+    // 1. วันในสัปดาห์ (1=อาทิตย์, 2=จันทร์, ..., 7=เสาร์)
     let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
-    let dayOfWeek = birthDate.getDay();
-    let startDay = dayOfWeek === 0 ? 1 : dayOfWeek + 1;
-    
+    let dayOfWeek = birthDate.getDay(); // 0=อาทิตย์, 1=จันทร์, ..., 6=เสาร์
+    let startDayOfWeek = dayOfWeek + 1; // แปลงเป็น 1-7
+
+    // 2. เดือนเกิด (ตามกฎ: ธค=1, มค=2, กพ=3, ..., พย=12)
+    function getMonthCode(m) {
+        // m: 1(มค) ถึง 12(ธค)
+        if (m === 12) return 1;
+        return m + 1;
+    }
+    let startMonthCode = getMonthCode(bMonth);
+
+    // 3. ปีนักษัตร (1=ชวด, 2=ฉลู, ..., 12=กุน)
+    // คำนวณปีนักษัตรจากปี พ.ศ. (ปี 2467 เป็นปีชวดตัวอย่าง)
+    let zodiacIndex = ((bYearBE - 2467) % 12 + 12) % 12;
+    let startYearCode = zodiacIndex === 0 ? 12 : zodiacIndex;
+
+    let seed = bDay + bMonth + bYearBE;
     let days = [];
     let months = [];
     let years = [];
     let totals = [];
     let scores = [];
 
-    for(let i = 0; i < 12; i++) {
-        // แถว "วัน": ใส่ข้อมูลแค่ 7 ช่องแรก (i < 7) ช่องที่ 8-12 (i >= 7) ให้ปล่อยว่าง ('')
-        let d = (i < 7) ? (((startDay + i - 1) % 7) + 1) : '';
+    for (let i = 0; i < 12; i++) {
+        // แถว "วัน": แสดงแค่ 7 ช่องแรก (i < 7) ช่องที่ 8-12 เว้นว่าง
+        let d = (i < 7) ? (((startDayOfWeek + i - 1) % 7) + 1) : '';
         
-        let m = (((bMonth - 1 + i) % 12) + 1);
-        let y = (((bYearBE + i - 1) % 12) || 12);
-        let tot = (d !== '') ? (d + m + y) : (m + y); // ถ้าวันว่าง ให้เอาเดือน+ปี
+        // แถว "เดือน": วน 1 ถึง 12
+        let m = ((startMonthCode - 1 + i) % 12) + 1;
+
+        // แถว "ปี": วน 1 ถึง 12
+        let y = ((startYearCode - 1 + i) % 12) + 1;
+
+        // ผลรวม (ถ้าช่องวันว่าง ให้เอาเดือน + ปี)
+        let tot = (d !== '') ? (d + m + y) : (m + y);
+        
+        // เลขดวง (1 ถึง 12)
         let sc = ((tot * 3 + seed + i) % 12) + 1;
 
         days.push(d);
@@ -874,19 +901,10 @@
         const dispDob = document.getElementById('dispUserDob');
         const dispAsc = document.getElementById('dispUserAsc');
 
-       if (dispName) dispName.innerText = userName;
+        if (dispName) dispName.innerText = userName || '-';
         if (dispDob) dispDob.innerText = `${bDay} ${thMonths[bMonth - 1]} พ.ศ. ${bYearBE}`;
+        if (dispAsc) dispAsc.innerText = userAsc;
         
-        // ดึงค่าลัคนาจาก localStorage ตามคีย์จริง หรือแสดงเป็น '-' ถ้ายังไม่มีการบันทึก
-        const ascText = localStorage.getItem('saved_asc') || 
-                        localStorage.getItem('saved_ascendant') || 
-                        localStorage.getItem('asc') || 
-                        localStorage.getItem('laksana') || 
-                        localStorage.getItem('userAsc') || '-';
-
-        if (dispAsc) dispAsc.innerText = ascText;
-        
-        // คำนวณอายุเริ่มต้นอิงจากปีปัจจุบัน (พ.ศ. 2569) ลบด้วยปีเกิด
         const currentYearBE = 2569;
         let defaultAge = currentYearBE - bYearBE;
         if (defaultAge < 1) defaultAge = 1;
