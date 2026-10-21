@@ -874,9 +874,16 @@
         const dispDob = document.getElementById('dispUserDob');
         const dispAsc = document.getElementById('dispUserAsc');
 
-    if (dispName) dispName.innerText = userName;
+        if (dispName) dispName.innerText = userName;
         if (dispDob) dispDob.innerText = `${bDay} ${thMonths[bMonth - 1]} พ.ศ. ${bYearBE}`;
-        const ascText = localStorage.getItem('saved_asc') || localStorage.getItem('saved_ascendant') || localStorage.getItem('asc') || localStorage.getItem('laksana') || '-';
+        
+        // ดึงค่าลัคนาจากทุกคีย์ที่เป็นไปได้ใน localStorage
+        const ascText = localStorage.getItem('saved_asc') || 
+                        localStorage.getItem('saved_ascendant') || 
+                        localStorage.getItem('asc') || 
+                        localStorage.getItem('laksana') || 
+                        localStorage.getItem('userAsc') || '-';
+                        
         if (dispAsc) dispAsc.innerText = ascText;
         
         // คำนวณอายุเริ่มต้นอิงจากปีปัจจุบัน (พ.ศ. 2569) ลบด้วยปีเกิด
