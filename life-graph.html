@@ -533,7 +533,7 @@
         "ความเดือดร้อน สิ้นเปลือง ล้มเหลว ผิดหวัง การต่อสู้ (วินาศ)"
     ];
 
-// 1. คำทำนายแบบยาวดั้งเดิมครบถ้วนตามระดับคะแนน (สำหรับใช้แสดงผลพื้นดวงและสายโซ่)
+    // 1. คำทำนายแบบยาวดั้งเดิมครบถ้วนตามระดับคะแนน
     const scoreDescriptions = {
         1: "เป็นคนมุ่งมั่นไม่ยอมแพ้ใคร ก้าวหน้าเติบใหญ่ด้วยใจทระนง<br>บางคราวดื้อดึงไม่ฟังคำคน ชอบความขุดค้นไม่คิดลุ่มหลง<br>วาสนาตนนี้ต้องพึ่งตัวเอง ไม่กลัวนักเลงขัดเกลาเจาะจง<br>หากทำสิ่งใดตั้งใจแน่วแน่ ไม่ยอมผันแปรทางที่ประสงค์<br>สุขทุกข์อยู่ที่ความเพียรของตน นำพาผ่านพ้นดั่งใจจำนง",
         2: "หาเงินเก่งกาจฉลาดปัญญา หมุนเวียนซ้ายขวาได้มาเนืองนอง<br>แต่เก็บเงินยากมักมีเรื่องจ่าย คนคอยรอบกายจ้องหวังจับต้อง<br>ต้องระวังใจอ่อนผ่อนปรนให้เขา จะพาตัวเรากระเป๋าหม่นหมอง<br>ช่วงไหนกราฟพุ่งเงินถุงเงินถัง สร้างความมั่นคงได้ดังใจปอง<br>จงวางแผนไว้เผื่อใช้ยามครา ทรัพย์สินเงินตราจะอยู่ประคอง",
@@ -556,73 +556,6 @@
         return "<strong>เป็นเลขที่อยู่ในเกณฑ์ดีมาก ตกสวรรค์ภูมิ</strong> ";
     }
 
-    // 2. ส่วนทำนายพื้นดวง (รายเรือนภพเดี่ยว): ใช้คำทำนายยาวดั้งเดิมตามคะแนนเต็มๆ โดยตรง
-    function getHouseScoreDesc(sc) {
-        let zoneText = getZonePrefix(sc);
-        let longDesc = scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี";
-        return zoneText + longDesc;
-    }
-
-    // สร้างข้อมูลพื้นดวงรายเรือนภพ
-    const foundationData = houses.map((hName, idx) => {
-        let sc = scores[idx];
-        return {
-            title: `${hName} เลข ${sc}`,
-            subtitle: houseSubtitles[idx],
-            desc: getHouseScoreDesc(sc)
-        };
-    });
-
-    // 3. ส่วนเชื่อมโยงความสัมพันธ์สายโซ่: แยกการทำงานเพื่อจับคู่ผสมผสานระหว่างเรือนที่ได้คะแนนเท่ากัน
-    function buildRelationChain() {
-        let container = document.getElementById('relationContent');
-        if (!container) return;
-        let scoreMap = {};
-        scores.forEach((sc, idx) => {
-            if (!scoreMap[sc]) scoreMap[sc] = [];
-            let hName = houses[idx];
-            let zoneText = getZonePrefix(sc);
-            scoreMap[sc].push({ 
-                house: hName, 
-                desc: zoneText + (scoreDescriptions[sc] || "")
-            });
-        });
-
-        let html = "<strong>การเชื่อมโยงความสัมพันธ์จุดพยากรณ์ในกราฟ (แยกตามคู่สายโซ่):</strong><br><br>";
-        let hasChain = false;
-
-        for (let sc in scoreMap) {
-            let list = scoreMap[sc];
-            if (list.length > 1) {
-                hasChain = true;
-                if (list.length >= 3) {
-                    let pairs = [
-                        { p1: list[0], p2: list[1], name: "คู่ที่ 1" },
-                        { p1: list[1], p2: list[2], name: "คู่ที่ 2" },
-                        { p1: list[2], p2: list[0], name: "คู่ที่ 3" }
-                    ];
-
-                    pairs.forEach((pair) => {
-                        html += `<div class="relation-subitem">`;
-                        html += `<strong>[ เลข ${sc} ] ${pair.name}: ระหว่าง ${pair.p1.house} กับ ${pair.p2.house}</strong><br>`;
-                        html += `<em>รายละเอียดคำทำนาย (${pair.p1.house}):</em> ${pair.p1.desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${pair.p2.house}):</strong> ${pair.p2.desc}`;
-                        html += `</div>`;
-                    });
-                } else if (list.length == 2) {
-                    html += `<div class="relation-subitem">`;
-                    html += `<strong>[ เลข ${sc} ] ความสัมพันธ์ระหว่าง ${list[0].house} กับ ${list[1].house}</strong><br>`;
-                    html += `<em>รายละเอียดคำทำนาย (${list[0].house}):</em> ${list[0].desc} <br><br><strong>และการเชื่อมโยงส่งผลถึง (${list[1].house}):</strong> ${list[1].desc}`;
-                    html += `</div>`;
-                }
-            }
-        }
-
-        if (!hasChain) {
-            html += "ในรอบดวงชะตานี้ กระแสพลังงานกระจายตัวในแต่ละเรือนอย่างอิสระ";
-        }
-
-        container.innerHTML = html;
-    }
     const poemsData = {
         1: [
             ["ดั่งจมดิ่งในโลกันตร์อันมืดมิด", "ชะตาชีวิตอับแสงแรงผกผัน"],
@@ -793,12 +726,15 @@
         scores.push(sc);
     }
 
+    // รูปแบบที่ 1: ทำนายพื้นดวง (รายเรือนภพเดี่ยว) - ใช้คำทำนายแบบยาวดั้งเดิมตามตัวเลขคะแนนเต็มๆ
     const foundationData = houses.map((hName, idx) => {
         let sc = scores[idx];
+        let zoneText = getZonePrefix(sc);
+        let longDesc = scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี";
         return {
             title: `${hName} เลข ${sc}`,
             subtitle: houseSubtitles[idx],
-            desc: getHouseScoreDesc(hName, sc)
+            desc: zoneText + longDesc
         };
     });
 
@@ -915,7 +851,7 @@
         });
     }
 
-    // ฟังก์ชันสร้างสายโซ่ความสัมพันธ์ที่ดึงคำทำนายเต็มของแต่ละเรือนภพมาผสมกันอย่างถูกต้อง
+    // รูปแบบที่ 2: ส่วนเชื่อมโยงความสัมพันธ์สายโซ่ (แยกการทำงาน จับคู่คำทำนายยาวตามคะแนนที่เท่ากัน)
     function buildRelationChain() {
         let container = document.getElementById('relationContent');
         if (!container) return;
@@ -923,9 +859,10 @@
         scores.forEach((sc, idx) => {
             if (!scoreMap[sc]) scoreMap[sc] = [];
             let hName = houses[idx];
+            let zoneText = getZonePrefix(sc);
             scoreMap[sc].push({ 
                 house: hName, 
-                desc: getHouseScoreDesc(hName, sc) 
+                desc: zoneText + (scoreDescriptions[sc] || "")
             });
         });
 
