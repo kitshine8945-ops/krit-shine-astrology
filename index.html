@@ -999,9 +999,9 @@ header.navbar {
 
     <!-- คอลัมน์ที่ 2: ปุ่มสมัคร VIP (บน) + ปุ่มดาวน์โหลดแอป (ล่าง) -->
    <div style="display: flex; flex-direction: column; gap: 3px; flex-shrink: 0;">
-  <button type="button" onclick="if(!currentUser){alert('กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนดำเนินการครับ'); openAuthModal();}else if((typeof AppState!=='undefined'&&AppState.isVipUser)||localStorage.getItem('ks_vip_active')==='true'){alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทั้งหมด');}else{openFeatureModal('member');}" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #1a0f00; font-weight: 700; padding: 3px 8px; border-radius: 20px; font-size: 0.62rem; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">
+<button type="button" onclick="openMemberModal()" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #1a0f00; font-weight: 700; padding: 3px 8px; border-radius: 20px; font-size: 0.62rem; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap;">
     <i class="fa-solid fa-crown"></i> สมัคร VIP
-  </button>
+</button>
       <a href="https://drive.google.com/uc?export=download&id=13XqP03Sm7Y3gzI4qOzwWGTUw6OIq4fR9" download style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.62rem; white-space: nowrap;">
         <i class="fa-solid fa-download"></i> ดาวน์โหลดแอป
       </a>
