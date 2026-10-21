@@ -33,7 +33,7 @@
             align-items: center;
         }
 
-        /* Top Navigation สไตล์ระบบ VIP หลัก */
+        /* Top Navigation (นำปุ่ม VIP มุมบนออก เหลือโลโก้และปุ่มกลับหน้าหลัก) */
         .top-nav {
             width: 100%;
             max-width: 1250px;
@@ -66,28 +66,6 @@
             font-size: 0.95rem;
             letter-spacing: 1px;
             text-align: center;
-        }
-
-        .vip-status-indicator {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .vip-active {
-            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-            color: #1a0f00;
-        }
-
-        .vip-inactive {
-            background: rgba(255, 255, 255, 0.08);
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            cursor: pointer;
         }
 
         .container {
@@ -456,19 +434,19 @@
 </head>
 <body>
 
-    <!-- Top Navigation Bar แสดงสถานะ VIP -->
-   <header class="top-nav">
+    <!-- Top Navigation Bar (เอาสถานะ VIP มุมบนออกแล้ว) -->
+    <header class="top-nav">
         <a href="index.html" class="back-btn">
             <i class="fa-solid fa-chevron-left"></i> หน้าหลัก
         </a>
         <div class="nav-title">KRIT SHINE ASTROLOGY</div>
-        <div style="width: 70px;"></div>
+        <div style="width: 70px;"></div> <!-- เว้นระยะสมดุลซ้ายขวา -->
     </header>
 
 <div class="container">
     <h2>กราฟชีวิต 12 เรือนภพ มายโหราศาสตร์</h2>
     
- <div class="user-info">
+   <div class="user-info">
     <strong>เจ้าชะตา:</strong> <span id="dispUserName">-</span> | 
     <strong>วันเกิด:</strong> <span id="dispUserDob">-</span>
 </div>
@@ -655,18 +633,11 @@
 </div>
 
 <script>
-    // 1. ดึงข้อมูลวันเกิดและลัคนาจาก localStorage
+    // 1. ดึงข้อมูลวันเกิดจาก localStorage
     const bDay = parseInt(localStorage.getItem('saved_birthDay'), 10);
     const bMonth = parseInt(localStorage.getItem('saved_birthMonth'), 10);
     const bYearBE = parseInt(localStorage.getItem('saved_birthBE'), 10);
     const userName = localStorage.getItem('saved_userName');
-    
-    const userAsc = localStorage.getItem('saved_asc') || 
-                    localStorage.getItem('saved_ascendant') || 
-                    localStorage.getItem('asc') || 
-                    localStorage.getItem('laksana') || 
-                    localStorage.getItem('userAsc') || 
-                    localStorage.getItem('ascName') || '-';
 
     if (!bDay || !bMonth || !bYearBE) {
         alert('กรุณากรอกข้อมูลวันเดือนปีเกิดที่หน้าหลักก่อนครับ');
@@ -831,10 +802,10 @@
         ]
     };
 
-// ================= คำนวณตารางตามกฎการตัดเลขของคุณ =================
+    // ================= คำนวณตารางตามสูตรที่คุณต้องการ =================
     let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
     let dayOfWeek = birthDate.getDay(); 
-    let startDayOfWeek = dayOfWeek + 1; // 1-7
+    let startDayOfWeek = dayOfWeek + 1;
 
     function getMonthCode(m) {
         if (m === 12) return 1;
@@ -853,7 +824,7 @@
     let totals = [];
     let scores = [];
 
-    // ฟังก์ชันกฎเหล็กตัดเลขตามที่คุณกำหนด
+    // ฟังก์ชันกฎเหล็กตัดเลขดวง
     function trimToScore(totalSum) {
         while (totalSum > 12) {
             totalSum -= 12;
@@ -865,19 +836,11 @@
     }
 
     for (let i = 0; i < 12; i++) {
-        // แถว "วัน": แสดงแค่ 7 ช่องแรก (i < 7) ช่องที่ 8-12 เว้นว่าง
         let d = (i < 7) ? (((startDayOfWeek + i - 1) % 7) + 1) : '';
-        
-        // แถว "เดือน": วน 1 ถึง 12
         let m = ((startMonthCode - 1 + i) % 12) + 1;
-
-        // แถว "ปี": วน 1 ถึง 12 โดยเริ่มต้นที่ปีมะแม = 8
         let y = ((startYearCode - 1 + i) % 12) + 1;
 
-        // ผลรวม (ถ้าช่องวันว่าง ให้เอาเดือน + ปี)
         let tot = (d !== '') ? (d + m + y) : (m + y);
-        
-        // เลขดวง: ใช้กฎการลบออก 12 จนหมด และห้ามได้ 0 (ได้ 12 แทน)
         let sc = trimToScore(tot);
 
         days.push(d);
@@ -903,11 +866,9 @@
         
         const dispName = document.getElementById('dispUserName');
         const dispDob = document.getElementById('dispUserDob');
-        const dispAsc = document.getElementById('dispUserAsc');
 
         if (dispName) dispName.innerText = userName || '-';
         if (dispDob) dispDob.innerText = `${bDay} ${thMonths[bMonth - 1]} พ.ศ. ${bYearBE}`;
-        if (dispAsc) dispAsc.innerText = userAsc;
         
         const currentYearBE = 2569;
         let defaultAge = currentYearBE - bYearBE;
@@ -937,21 +898,6 @@
 
     function updateVipUIState() {
         isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
-        const navBadge = document.getElementById('navVipBadge');
-        
-        if (isVipUser) {
-            if (navBadge) {
-                navBadge.className = 'vip-status-indicator vip-active';
-                navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมาชิก VIP</span>';
-                navBadge.onclick = null;
-            }
-        } else {
-            if (navBadge) {
-                navBadge.className = 'vip-status-indicator vip-inactive';
-                navBadge.innerHTML = '<i class="fa-solid fa-crown"></i> <span>สมัคร VIP</span>';
-                navBadge.onclick = openMemberModal;
-            }
-        }
     }
 
     function switchMode(mode) {
@@ -1142,17 +1088,8 @@
 
     let chosenVipPrice = 299;
     let chosenVipName = 'รายปี';
-function openMemberModal() {
-        // ตรวจสอบว่ามีข้อมูลวันเกิดหรือชื่อเจ้าชะตาบันทึกไว้ในเครื่องหรือยัง
-        const userNameCheck = localStorage.getItem('saved_userName') || localStorage.getItem('userName');
-        const birthDayCheck = localStorage.getItem('saved_birthDay');
-        
-        if (!userNameCheck || userNameCheck === '-' || !birthDayCheck) {
-            alert('กรุณากรอกข้อมูลวันเดือนปีเกิดและชื่อเจ้าชะตาก่อนสมัครสมาชิก VIP เพื่อให้ระบบบันทึกยอดชำระให้ท่านได้อย่างถูกต้องครับ');
-            window.location.href = 'index.html';
-            return;
-        }
-        
+
+    function openMemberModal() {
         document.getElementById('modal-member').style.display = 'flex';
     }
 
