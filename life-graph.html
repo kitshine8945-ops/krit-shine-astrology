@@ -533,7 +533,7 @@
         "ความเดือดร้อน สิ้นเปลือง ล้มเหลว ผิดหวัง การต่อสู้ (วินาศ)"
     ];
 
-    // 1. ชุดคำทำนายแบบยาวดั้งเดิมสำหรับ "ทำนายพื้นดวง"
+    // ชุดคำทำนายแบบยาวดั้งเดิมสำหรับทำนายพื้นดวงรายเรือน
     const scoreDescriptions = {
         1: "เป็นคนมุ่งมั่นไม่ยอมแพ้ใคร ก้าวหน้าเติบใหญ่ด้วยใจทระนง<br>บางคราวดื้อดึงไม่ฟังคำคน ชอบความขุดค้นไม่คิดลุ่มหลง<br>วาสนาตนนี้ต้องพึ่งตัวเอง ไม่กลัวนักเลงขัดเกลาเจาะจง<br>หากทำสิ่งใดตั้งใจแน่วแน่ ไม่ยอมผันแปรทางที่ประสงค์<br>สุขทุกข์อยู่ที่ความเพียรของตน นำพาผ่านพ้นดั่งใจจำนง",
         2: "หาเงินเก่งกาจฉลาดปัญญา หมุนเวียนซ้ายขวาได้มาเนืองนอง<br>แต่เก็บเงินยากมักมีเรื่องจ่าย คนคอยรอบกายจ้องหวังจับต้อง<br>ต้องระวังใจอ่อนผ่อนปรนให้เขา จะพาตัวเรากระเป๋าหม่นหมอง<br>ช่วงไหนกราฟพุ่งเงินถุงเงินถัง สร้างความมั่นคงได้ดังใจปอง<br>จงวางแผนไว้เผื่อใช้ยามครา ทรัพย์สินเงินตราจะอยู่ประคอง",
@@ -549,14 +549,59 @@
         12: "อย่าหลงเชื่อใครจนหมดหัวใจ จะพาเสียหายทรัพย์สินหมดสิ้น<br>ทำสิ่งใดระวังการโดนโกง เรื่องไม่โปร่งใสจงอย่าถวิล<br>ดวงนี้ทำคุณคนไม่ขึ้นแท้ ระวังหลังแก้เรื่องคนติฉิน<br>แก้เคล็ดด้วยการทำงานเบื้องหลัง หรือไปต่างถิ่นฐานแดนดิน<br>ใช้ชีวิตรอบคอบไม่ประมาท จะแคล้วคลาดภัยพาลพ้นมลทิน"
     };
 
-    // ฟังก์ชันระบุเกณฑ์ภพภูมิสำหรับพื้นดวง
     function getZonePrefix(sc) {
         if (sc <= 4) return "<strong>เป็นเลขที่อยู่ในเกณฑ์ต่ำ ตกนรกภูมิ</strong> ";
         if (sc <= 8) return "<strong>เป็นเลขที่อยู่ในเกณฑ์ดี ตกมนุษย์ภูมิ</strong> ";
         return "<strong>เป็นเลขที่อยู่ในเกณฑ์ดีมาก ตกสวรรค์ภูมิ</strong> ";
     }
 
-    // สร้างข้อมูลพื้นดวงรายเรือนภพ (ใช้คำทำนายแบบยาวดั้งเดิม)
+    // คำนวณตารางและสร้าง foundationData เพียงที่เดียว
+    let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
+    let dayOfWeek = birthDate.getDay(); 
+    let startDayOfWeek = dayOfWeek + 1;
+
+    function getMonthCode(m) {
+        if (m === 12) return 1;
+        return m + 1;
+    }
+    let startMonthCode = getMonthCode(bMonth);
+
+    let yearOffset = (bYearBE - 2522) % 12;
+    let startYearCode = 8 + yearOffset;
+    if (startYearCode > 12) startYearCode -= 12;
+    if (startYearCode < 1) startYearCode += 12;
+
+    let days = [];
+    let months = [];
+    let years = [];
+    let totals = [];
+    let scores = [];
+
+    function trimToScore(totalSum) {
+        while (totalSum > 12) {
+            totalSum -= 12;
+        }
+        if (totalSum === 0) {
+            totalSum = 12;
+        }
+        return totalSum;
+    }
+
+    for (let i = 0; i < 12; i++) {
+        let d = (i < 7) ? (((startDayOfWeek + i - 1) % 7) + 1) : '';
+        let m = ((startMonthCode - 1 + i) % 12) + 1;
+        let y = ((startYearCode - 1 + i) % 12) + 1;
+
+        let tot = (d !== '') ? (d + m + y) : (m + y);
+        let sc = trimToScore(tot);
+
+        days.push(d);
+        months.push(m);
+        years.push(y);
+        totals.push(tot);
+        scores.push(sc);
+    }
+
     const foundationData = houses.map((hName, idx) => {
         let sc = scores[idx];
         let zoneText = getZonePrefix(sc);
@@ -691,65 +736,6 @@
         ]
     };
 
-    // ================= คำนวณตารางตามสูตรเดิมของคุณ =================
-    let birthDate = new Date(bYearBE - 543, bMonth - 1, bDay);
-    let dayOfWeek = birthDate.getDay(); 
-    let startDayOfWeek = dayOfWeek + 1;
-
-    function getMonthCode(m) {
-        if (m === 12) return 1;
-        return m + 1;
-    }
-    let startMonthCode = getMonthCode(bMonth);
-
-    let yearOffset = (bYearBE - 2522) % 12;
-    let startYearCode = 8 + yearOffset;
-    if (startYearCode > 12) startYearCode -= 12;
-    if (startYearCode < 1) startYearCode += 12;
-
-    let days = [];
-    let months = [];
-    let years = [];
-    let totals = [];
-    let scores = [];
-
-    function trimToScore(totalSum) {
-        while (totalSum > 12) {
-            totalSum -= 12;
-        }
-        if (totalSum === 0) {
-            totalSum = 12;
-        }
-        return totalSum;
-    }
-
-    for (let i = 0; i < 12; i++) {
-        let d = (i < 7) ? (((startDayOfWeek + i - 1) % 7) + 1) : '';
-        let m = ((startMonthCode - 1 + i) % 12) + 1;
-        let y = ((startYearCode - 1 + i) % 12) + 1;
-
-        let tot = (d !== '') ? (d + m + y) : (m + y);
-        let sc = trimToScore(tot);
-
-        days.push(d);
-        months.push(m);
-        years.push(y);
-        totals.push(tot);
-        scores.push(sc);
-    }
-
-    // ทำนายพื้นดวง (รายเรือนภพเดี่ยว) - ใช้คำทำนายแบบยาวดั้งเดิม
-    const foundationData = houses.map((hName, idx) => {
-        let sc = scores[idx];
-        let zoneText = getZonePrefix(sc);
-        let longDesc = scoreDescriptions[sc] || "เป็นตำแหน่งที่ส่งผลต่อวิถีชีวิตตามวาสนาและจังหวะจรในรอบปี";
-        return {
-            title: `${hName} เลข ${sc}`,
-            subtitle: houseSubtitles[idx],
-            desc: zoneText + longDesc
-        };
-    });
-
     let isVipUser = (localStorage.getItem('ks_vip_active') === 'true');
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -863,7 +849,7 @@
         });
     }
 
-    // ชุดข้อมูลสำหรับเชื่อมโยงความสัมพันธ์สายโซ่โดยเฉพาะ (แยกจากพื้นดวง)
+    // ชุดข้อมูลสำหรับเชื่อมโยงความสัมพันธ์สายโซ่โดยเฉพาะ
     const houseRelationDetails = {
         "วาสนา": {
             meaning: "หมายถึง พื้นดวงชะตาโดยรวม รูปร่างลักษณะ นิสัยใจคอ สุขภาพ และวิถีชีวิตส่วนตัวว่าจะต้องฝ่าฟันด้วยตัวเองมากน้อยเพียงใด",
@@ -950,7 +936,6 @@
         return `<em>ความหมายหลัก:</em> ${info.meaning}<br>${levelText}`;
     }
 
-    // ส่วนเชื่อมโยงความสัมพันธ์สายโซ่
     function buildRelationChain() {
         let container = document.getElementById('relationContent');
         if (!container) return;
