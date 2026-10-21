@@ -13139,7 +13139,30 @@ renderBaziDirect();
     renderSajuDirect();
   }
 } 
-
+function openMemberModal() {
+    var isLogged = (typeof currentUser !== 'undefined' && currentUser !== null) || 
+                     (localStorage.getItem('ks_vip_active') === 'true');
+    
+    if (!isLogged) {
+        alert('กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนดำเนินการครับ');
+        if (typeof openAuthModal === 'function') {
+            openAuthModal();
+        }
+        return;
+    }
+    
+    var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+    if (isVip) {
+        alert('ท่านเป็นสมาชิก VIP เรียบร้อยแล้วครับ สามารถใช้งานฟีเจอร์พรีเมียมได้ทั้งหมด');
+        return;
+    }
+    
+    var modal = document.getElementById('modal-member');
+    if (modal) {
+        document.body.appendChild(modal);
+        modal.style.cssText = "display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.85) !important; z-index: 2147483647 !important; align-items: center !important; justify-content: center !important; backdrop-filter: blur(5px) !important;";
+    }
+}
 window.handleOpenModal = handleOpenModal;
 </script>
 </body>
