@@ -366,11 +366,19 @@
             transform: scale(1.03);
         }
 
-        @media (max-width: 768px) {
-            .poem-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      .poem-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* บังคับแบ่งเป็น 2 คอลัมน์ซ้ายขวาตลอดทั้งในคอมและมือถือ */
+        gap: 10px 30px;
+        font-style: italic;
+        color: #d2a8ff; /* คืนค่าสีม่วงสวยงาม */
+        line-height: 1.8;
+        background: #111418;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        margin-top: 10px;
+    }
     </style>
 </head>
 <body>
