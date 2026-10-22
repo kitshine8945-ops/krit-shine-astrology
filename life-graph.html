@@ -32,7 +32,25 @@
             flex-direction: column;
             align-items: center;
         }
+/* แบนเนอร์แนะนำให้หมุนโทรศัพท์ */
+    .rotate-device-banner {
+        display: none;
+        background: rgba(227, 179, 65, 0.15);
+        border: 1px solid var(--text-gold);
+        color: var(--text-gold);
+        padding: 12px 15px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
 
+    @media screen and (max-width: 900px) and (orientation: portrait) {
+        .rotate-device-banner {
+            display: block;
+        }
+    }
         .top-nav {
             width: 100%;
             max-width: 1250px;
@@ -398,6 +416,11 @@
         </select>
     </div>
 
+    <!-- แบนเนอร์แนะนำให้หมุนโทรศัพท์ -->
+<div class="rotate-device-banner">
+    <i class="fa-solid fa-mobile-screen-button fa-rotate-90" style="font-size: 1.2rem; margin-bottom: 5px;"></i><br>
+    <strong>คำแนะนำการใช้งาน:</strong> เพื่อการแสดงผลกราฟและตาราง 12 เรือนภพที่สมบูรณ์ กรุณาพลิกโทรศัพท์เป็น<strong>แนวนอน</strong>
+</div>
     <div class="table-wrapper">
         <table class="life-table" id="matrixTable">
         </table>
