@@ -7,6 +7,8 @@
 <meta name="google-site-verification" content="5GQq7ALoSE5mVCpAR9prIolvbbeRtnIXiigc9bjJpjk" />
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ไลบรารีอ่าน QR Code ถอดรหัสสลิปบนเครื่องผู้ใช้ (ป้องกัน SlipOK นับยอดซ้ำ) -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ไอคอน Favicon สำหรับ Google Search, เบราว์เซอร์ และมือถือ -->
@@ -5891,20 +5893,89 @@ const STEMS = [
       document.getElementById('qr-image').src = qrFile;
     }
 
-    // --- 6. ฟังก์ชันส่งสลิปไปตรวจกับระบบอัตโนมัติ ---
+// --- ฟังก์ชันแกะ QR Code บนเครื่องผู้ใช้ก่อนส่ง (ไม่เสียเครดิต SlipOK) ---
+    function extractQrCodeClient(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            try {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              canvas.width = img.width;
+              canvas.height = img.height;
+              ctx.drawImage(img, 0, 0, img.width, img.height);
+              const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              if (typeof jsQR !== 'undefined') {
+                const qr = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: "dontInvert" });
+                if (qr && qr.data) return resolve(qr.data);
+              }
+            } catch (err) {
+              console.warn('QR scan error:', err);
+            }
+            resolve(null);
+          };
+          img.onerror = () => resolve(null);
+          img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ตัวแปรป้องกันการส่งซ้ำขณะกำลังตรวจสอบ (แก้ปัญหากรณีเน็ตช้าแล้วกดย้ำ)
+    let isSlipProcessing = false;
+
+    // --- 6. ฟังก์ชันส่งสลิปไปตรวจกับระบบอัตโนมัติ (ป้องกัน SlipOK นับยอดซ้ำ) ---
     async function verifyPaymentSlip(input) {
       const file = input.files[0];
       if (!file) return;
+
+      if (isSlipProcessing) return;
+      isSlipProcessing = true;
 
       const statusText = document.getElementById('slip-verify-status');
       const uploadLabel = document.getElementById('slip-upload-label');
       const confirmBtn = document.getElementById('btn-confirm-vip');
       const expectedAmount = AppState.currentChosenPrice || 19;
 
-      statusText.innerHTML = '<span style="color: #f59e0b;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบยอดเงินกับธนาคาร...</span>';
       uploadLabel.innerText = file.name.substring(0, 15) + '...';
+      statusText.innerHTML = '<span style="color: #ffd700;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบรหัสสลิปเบื้องต้น...</span>';
 
       try {
+        // ขั้นตอนที่ 1: แกะรหัสสลิปบนเครื่องก่อน
+        const rawQrData = await extractQrCodeClient(file);
+
+        if (rawQrData) {
+          // ขั้นตอนที่ 2: เช็ก Supabase ทันทีว่าเคยบันทึกรหัสนี้ไว้หรือยัง
+          const { data: duplicateSlip } = await _supabase
+            .from('used_slips')
+            .select('trans_ref')
+            .eq('trans_ref', rawQrData)
+            .maybeSingle();
+
+          if (duplicateSlip) {
+            // ดักจับสลิปเก่าสำเร็จ: จบการทำงานทันที ไม่ยิงไปที่ SlipOK เด็ดขาด
+            statusText.innerHTML = '<span style="color: #ef4444; font-weight: bold;"><i class="fa-solid fa-triangle-exclamation"></i> สลิปนี้เคยถูกใช้งานไปแล้ว ไม่สามารถใช้ซ้ำได้!</span>';
+            if (confirmBtn) {
+              confirmBtn.disabled = true;
+              confirmBtn.innerText = 'สลิปนี้ถูกใช้งานแล้ว';
+              confirmBtn.style.background = '#444';
+              confirmBtn.style.color = '#888';
+              confirmBtn.style.cursor = 'not-allowed';
+              confirmBtn.style.boxShadow = 'none';
+            }
+            alert('สลิปนี้เคยถูกใช้งานในระบบไปแล้ว ไม่สามารถนำมาใช้ซ้ำได้ครับ!');
+            input.value = '';
+            isSlipProcessing = false;
+            return;
+          }
+        }
+
+        // ขั้นตอนที่ 3: สลิปยังไม่เคยใช้ จึงส่งรูปไปให้ SlipOK ตรวจสอบยอดเงินจริง
+        statusText.innerHTML = '<span style="color: #f59e0b;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบยอดเงินกับธนาคาร...</span>';
+
         const base64Image = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
@@ -5926,9 +5997,9 @@ const STEMS = [
           if (slipAmount >= expectedAmount) {
             const transRef = result.data.transRef || result.data.data?.transRef;
 
+            // ตรวจสอบกับ used_slips อีกชั้นหนึ่งด้วย transRef จากผล SlipOK
             let isUsed = false;
             if (transRef) {
-              statusText.innerHTML = '<span style="color:#f39c12;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบประวัติสลิป...</span>';
               const { data: existingSlip } = await _supabase
                 .from('used_slips')
                 .select('trans_ref')
@@ -5956,7 +6027,9 @@ const STEMS = [
 
             statusText.innerHTML = '<span style="color: #10b981; font-weight: bold;"><i class="fa-solid fa-circle-check"></i> ตรวจพบยอดเงิน ' + slipAmount + ' บาท ถูกต้อง!</span>';
 
-            window.currentTransRef = transRef;
+            // เก็บค่ารหัสสลิป (บันทึกทั้ง transRef ของธนาคาร และ rawQrData เพื่อดักจับทุกรูปแบบ)
+            window.currentTransRef = transRef || rawQrData;
+            window.currentSlipRawQr = rawQrData;
             window.currentSlipAmount = slipAmount;
 
             const targetConfirmBtn = document.getElementById('btn-confirm-vip');
@@ -5978,6 +6051,8 @@ const STEMS = [
       } catch (error) {
         console.error('Error verifying slip:', error);
         statusText.innerHTML = '<span style="color: #ef4444;">เกิดข้อผิดพลาดในการเชื่อมต่อระบบตรวจสอบ</span>';
+      } finally {
+        isSlipProcessing = false;
       }
     }
 
@@ -6012,14 +6087,27 @@ const STEMS = [
             currentProfile.vip_expire_date = expireISO;
           }
 
+          // บันทึกทั้งรหัสอ้างอิงธนาคาร และรหัส Raw QR ลง used_slips กันซ้ำ
+          const slipsToInsert = [];
           if (window.currentTransRef) {
+            slipsToInsert.push({
+              trans_ref: window.currentTransRef,
+              user_id: currentUser ? currentUser.id : null,
+              amount: window.currentSlipAmount || null
+            });
+          }
+          if (window.currentSlipRawQr && window.currentSlipRawQr !== window.currentTransRef) {
+            slipsToInsert.push({
+              trans_ref: window.currentSlipRawQr,
+              user_id: currentUser ? currentUser.id : null,
+              amount: window.currentSlipAmount || null
+            });
+          }
+
+          if (slipsToInsert.length > 0) {
             await _supabase
               .from('used_slips')
-              .insert({
-                trans_ref: window.currentTransRef,
-                user_id: currentUser ? currentUser.id : null,
-                amount: window.currentSlipAmount || null
-              });
+              .upsert(slipsToInsert, { onConflict: 'trans_ref' });
           }
         }
 
