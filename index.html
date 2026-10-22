@@ -1872,7 +1872,9 @@ function analyzeVipSpecificQuestion() {
       <a onclick="scrollToSection('category-bar')" style="font-size:0.85rem; color:var(--gold-main); cursor:pointer;">ดูทั้งหมด <i class="fa-solid fa-chevron-right"></i></a>
     </div>
 
-    <div class="popular-grid">
+<div class="popular-grid" style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 20px !important;">
+      
+      <!-- 1. คำนวณหวยมงคล (แถว 1 ช่อง 1) -->
       <div class="popular-card" onclick="openLottoModal()">
         <img class="popular-card-img" src="1.jpg" alt="คำนวณหวยมงคล">
         <div class="popular-card-body">
@@ -1882,6 +1884,7 @@ function analyzeVipSpecificQuestion() {
         </div>
       </div>
 
+      <!-- 2. ดูดวงตามลัคนา (แถว 1 ช่อง 2) -->
       <div class="popular-card" onclick="scrollToFormVip()">
         <img class="popular-card-img" src="2.jpg" alt="ดูดวงตามลัคนา">
         <div class="popular-card-body">
@@ -1891,6 +1894,7 @@ function analyzeVipSpecificQuestion() {
         </div>
       </div>
 
+      <!-- 3. ไพ่ทาโรต์ (แถว 1 ช่อง 3) -->
       <div class="popular-card" onclick="openFeatureModal('tarot')">
         <img class="popular-card-img" src="3.jpg" alt="ไพ่ทาโรต์">
         <div class="popular-card-body">
@@ -1900,6 +1904,7 @@ function analyzeVipSpecificQuestion() {
         </div>
       </div>
 
+      <!-- 4. ปาจื่อ BaZi (แถว 1 ช่อง 4) -->
       <div class="popular-card" onclick="openFeatureModal('bazi'); calcBaziEngine();">
         <img class="popular-card-img" src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?q=80&w=800&auto=format&fit=crop" alt="ปาจื่อ BaZi">
         <div class="popular-card-body">
@@ -1908,9 +1913,8 @@ function analyzeVipSpecificQuestion() {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
-    </div>
 
-    <!-- 5. การ์ดกราฟชีวิต (มีระบบเช็กวันเกิดก่อนเข้า) -->
+      <!-- 5. กราฟชีวิต (แถว 2 ช่อง 1 -> ตรงใต้หวยมงคลเป๊ะๆ) -->
       <div class="popular-card" onclick="var bD=document.getElementById('birthDay')?document.getElementById('birthDay').value:''; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{window.location.href='life-graph.html';}">
         <img class="popular-card-img" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="กราฟชีวิต">
         <div class="popular-card-body">
@@ -1920,7 +1924,7 @@ function analyzeVipSpecificQuestion() {
         </div>
       </div>
 
-      <!-- 6. การ์ดฮวงจุ้ยดวงชะตา (กดเข้าได้ทันที) -->
+      <!-- 6. ฮวงจุ้ยดวงชะตา (แถว 2 ช่อง 2 -> ตรงใต้ลัคนาเป๊ะๆ) -->
       <div class="popular-card" onclick="window.location.href='fengshui-compass.html';">
         <img class="popular-card-img" src="https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=800&q=80" alt="ฮวงจุ้ยดวงชะตา">
         <div class="popular-card-body">
@@ -1929,6 +1933,8 @@ function analyzeVipSpecificQuestion() {
           <span class="btn-popular-view">ดูเพิ่มเติม</span>
         </div>
       </div>
+
+    </div>
   </section>
 
   <!-- 6. แบนเนอร์พุทธปัญญาด้านล่าง - Cosmic Gold Edition (Bright & Clear: 5.jpg) -->
