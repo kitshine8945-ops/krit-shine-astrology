@@ -3693,107 +3693,154 @@ function getAccurateTransitSign(planetKey, targetDate) {
       const vipContent = document.getElementById('vip-result-content');
       const badgeType = document.getElementById('res-badge-type');
 
+     // ========================================================
+      // คำนวณคำทำนายพื้นดวงกำเนิดเฉพาะบุคคล (แบบไดนามิกตามวันเกิดจริง 100%)
       // ========================================================
-      // คำนวณคำทำนายพื้นดวงกำเนิดเฉพาะบุคคล (Myhora True Natal Placement Engine)
-      // ========================================================
-      var bDVal = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 30;
-      var bMVal = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 4;
-      var bYVal = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2522;
+      var bDVal = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 1;
+      var bMVal = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 1;
+      var bYVal = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2540;
       var bHVal = parseInt(document.getElementById('birthHour24')?.value, 10) || AppState.birthHour || 0;
       var bMinVal = parseInt(document.getElementById('birthMinute24')?.value, 10) || AppState.birthMinute || 0;
       var nTimeMin = bHVal * 60 + bMinVal;
 
-      // 1. คำนวณราศีที่ดาวกำเนิดสถิตจริง (0=เมษ, 1=พฤษภ, 2=เมถุน, 3=กรกฎ, 4=สิงห์, 5=กันย์, 6=ตุลย์, 7=พิจิก, 8=ธนู, 9=มังกร, 10=กุมภ์, 11=มีน)
-      var nSunSign  = sunSignIndex; // อาทิตย์ (30 เม.ย. = เมษ มหาอุจจ์)
-      var nMoonSign = Math.floor(((bDVal * 13.176 + bMVal * 28.5 + (nTimeMin * 0.009)) % 360) / 30); // จันทร์ (พฤษภ มหาอุจจ์)
-      var nMarsSign = (bYVal === 2522 && bMVal === 4) ? 11 : Math.floor(((bYVal * 1.91 + bMVal * 18.2 + bDVal * 0.524) % 360) / 30); // อังคาร (มีน)
-      var nMercSign = (bYVal === 2522 && bMVal === 4) ? 11 : Math.floor(((sunSignIndex * 30 + (bDVal * 1.38) + (bMVal * 3.2)) % 360) / 30); // พุธ (มีน ประ/นิจ)
-      var nJupSign  = (bYVal === 2522 && bMVal === 4) ? 3 : Math.floor((((bYVal - 2400) * 30.35 + bMVal * 2.5 + bDVal * 0.08) % 360) / 30); // พฤหัส (กรกฎ มหาอุจจ์)
-      var nVenSign  = (bYVal === 2522 && bMVal === 4) ? 11 : Math.floor(((sunSignIndex * 30 + (bDVal * 1.15) + 12.8) % 360) / 30); // ศุกร์ (มีน มหาอุจจ์)
-      var nSatSign  = (bYVal === 2522 && bMVal === 4) ? 4 : Math.floor((((bYVal - 2400) * 12.22 + bMVal * 1.05 + bDVal * 0.033) % 360) / 30); // เสาร์ (สิงห์)
-      var nRahSign  = (bYVal === 2522 && bMVal === 4) ? 4 : Math.floor((360 - (((bYVal - 2400) * 19.34 + bMVal * 1.6 + bDVal * 0.05) % 360)) / 30); // ราหู (สิงห์ ประ)
+      // 1. คำนวณราศีที่ดาวกำเนิดสถิตจริงแบบไดนามิกตาม วัน/เดือน/ปีเกิด จริง
+      var nSunSign  = sunSignIndex;
+      var nMoonSign = Math.floor(((bDVal * 13.176 + bMVal * 28.5 + (nTimeMin * 0.009)) % 360) / 30);
+      var nMarsSign = Math.floor(((bYVal * 1.91 + bMVal * 18.2 + bDVal * 0.524) % 360) / 30);
+      var nMercSign = Math.floor(((sunSignIndex * 30 + (bDVal * 1.38) + (bMVal * 3.2)) % 360) / 30);
+      var nJupSign  = Math.floor((((bYVal - 2400) * 30.35 + bMVal * 2.5 + bDVal * 0.08) % 360) / 30);
+      var nVenSign  = Math.floor(((sunSignIndex * 30 + (bDVal * 1.15) + 12.8) % 360) / 30);
+      var nSatSign  = Math.floor((((bYVal - 2400) * 12.22 + bMVal * 1.05 + bDVal * 0.033) % 360) / 30);
+      var nRahSign  = Math.floor((360 - (((bYVal - 2400) * 19.34 + bMVal * 1.6 + bDVal * 0.05) % 360)) % 360 / 30);
 
-      // 2. คำนวณภพเรือนชะตาที่ดาวไปสถิต (House = (Sign - Asc + 12) % 12) : 0=ตนุ, 1=กดุมภะ, 2=สหัชชะ, 3=พันธุ, 4=ปุตตะ, 5=อริ, 6=ปัตนิ, 7=มรณะ, 8=ศุภะ, 9=กัมมะ, 10=ลาภะ, 11=วินาศ
+      // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
-      
-      // หาดาวตนุลัคน์ประจำลัคนา
-      var lordPlanets = [3, 6, 4, 2, 1, 4, 6, 3, 5, 7, 8, 5]; // ดาวเจ้าเรือน 0-11
+      var lordPlanets = [3, 6, 4, 2, 1, 4, 6, 3, 5, 7, 8, 5];
+
+      function getSignOfPlanetNum(pNum) {
+        if (pNum === 1) return nSunSign;
+        if (pNum === 2) return nMoonSign;
+        if (pNum === 3) return nMarsSign;
+        if (pNum === 4) return nMercSign;
+        if (pNum === 5) return nJupSign;
+        if (pNum === 6) return nVenSign;
+        if (pNum === 7) return nSatSign;
+        return nRahSign;
+      }
+
+      // ดาวตนุลัคน์ประจำลัคนาจริง
       var tanuLordPlanetNum = lordPlanets[ascIndex];
-      var tanuLordSign = (tanuLordPlanetNum === 8) ? nRahSign : (tanuLordPlanetNum === 7 ? nSatSign : (tanuLordPlanetNum === 5 ? nJupSign : (tanuLordPlanetNum === 6 ? nVenSign : (tanuLordPlanetNum === 4 ? nMercSign : (tanuLordPlanetNum === 3 ? nMarsSign : (tanuLordPlanetNum === 2 ? nMoonSign : nSunSign))))));
+      var tanuLordSign = getSignOfPlanetNum(tanuLordPlanetNum);
       var tanuLordHouseIdx = (tanuLordSign - ascIndex + 12) % 12;
 
-      // ตรวจสอบดาวการเงิน (กดุมภะ) และดาวการงาน (กัมมะ) สถิตภพใด
-      var moneyLordSign = (ascIndex === 10) ? nJupSign : nVenSign; // ลัคนากุมภ์ ดาว ๕ ครองกดุมภะ
+      // ดาวกดุมภะ (การเงิน)
+      var moneySignIdx = (ascIndex + 1) % 12;
+      var moneyLordPlanetNum = lordPlanets[moneySignIdx];
+      var moneyLordSign = getSignOfPlanetNum(moneyLordPlanetNum);
       var moneyHouseIdx = (moneyLordSign - ascIndex + 12) % 12;
-      var workLordSign  = (ascIndex === 10) ? nMarsSign : nSunSign; // ลัคนากุมภ์ ดาว ๓ ครองกัมมะ
-      var workHouseIdx  = (workLordSign - ascIndex + 12) % 12;
 
-      // 3. ตรวจสอบมาตรฐานดาวเด่น (อุจจ์ / เกษตร) และดาวเสีย (นิจ / ประ) เฉพาะดวงจริง
+      // ดาวกัมมะ (การงาน)
+      var workSignIdx = (ascIndex + 9) % 12;
+      var workLordPlanetNum = lordPlanets[workSignIdx];
+      var workLordSign = getSignOfPlanetNum(workLordPlanetNum);
+      var workHouseIdx = (workLordSign - ascIndex + 12) % 12;
+
+      // ดาวปัตนิ (คู่ครอง)
+      var partnerSignIdx = (ascIndex + 6) % 12;
+      var partnerLordPlanetNum = lordPlanets[partnerSignIdx];
+      var partnerLordSign = getSignOfPlanetNum(partnerLordPlanetNum);
+      var partnerHouseIdx = (partnerLordSign - ascIndex + 12) % 12;
+
+      // 3. ตรวจสอบดาวเด่น-ดาวเสียตามตำแหน่งจริง
       var goodDignities = [];
       var badDignities = [];
+
       if (nSunSign === 0) goodDignities.push("ดาวอาทิตย์ (๑) มหาอุจจ์ในราศีเมษ (มีภาวะผู้นำ ทะเยอทะยานสูง โดดเด่นในสายงาน)");
       if (nMoonSign === 1) goodDignities.push("ดาวจันทร์ (๒) มหาอุจจ์ในราศีพฤษภ (วาสนาดี รูปร่างหน้าตาและเสน่ห์เมตตาโดดเด่น ผู้ใหญ่อุปถัมภ์)");
       if (nJupSign === 3) goodDignities.push("ดาวพฤหัสบดี (๕) มหาอุจจ์ในราศีกรกฎ (สติปัญญาสูงส่ง บารมีธรรม สิ่งศักดิ์สิทธิ์คุ้มครอง)");
       if (nVenSign === 11) goodDignities.push("ดาวศุกร์ (๖) มหาอุจจ์ในราศีมีน (มีรสนิยมสูง เสน่ห์ดึงดูดใจ และมีโชคลาภทางการเงิน)");
-      
-      if (nMercSign === 11) badDignities.push("ดาวพุธ (๔) เป็นนิจ/ประในราศีมีน (ระวังความผิดพลาดด้านเอกสารสัญญา ขี้ลืม และคำพูดตรงเกินไป)");
-      if (nRahSign === 4) badDignities.push("ดาวราหู (๘) เป็นประในราศีสิงห์ (ระวังเพื่อนฝูงหรือสังคมนำความเดือดร้อนเข้ามาให้)");
+      if (nMarsSign === 9) goodDignities.push("ดาวอังคาร (๓) มหาอุจจ์ในราศีมังกร (กล้าหาญ เด็ดเดี่ยว ทรหดและเอาชนะทุกอุปสรรค)");
+      if (nSatSign === 6) goodDignities.push("ดาวเสาร์ (๗) มหาอุจจ์ในราศีตุลย์ (หนักแน่น วางแผนระยะยาว มีหลักทรัพย์มั่นคง)");
 
-      // 4. สังเคราะห์คำทำนาย 5 หัวข้อตามตำแหน่งดาวจริง (Dynamic True Interpretation)
+      if (nMercSign === 11) badDignities.push("ดาวพุธ (๔) เป็นนิจ/ประในราศีมีน (ระวังความผิดพลาดด้านเอกสารสัญญาและการสื่อสาร)");
+      if (nSunSign === 6) badDignities.push("ดาวอาทิตย์ (๑) เป็นนิจในราศีตุลย์ (ควรระวังเรื่องความมั่นใจและสุขภาพสายตา)");
+      if (nMoonSign === 7) badDignities.push("ดาวจันทร์ (๒) เป็นนิจในราศีพิจิก (อารมณ์อ่อนไหวง่าย มักคิดมากหรือวิตกกังวล)");
+      if (nJupSign === 9) badDignities.push("ดาวพฤหัสบดี (๕) เป็นนิจในราศีมังกร (อย่าไว้ใจใครง่ายในเรื่องสัญญาหรือข้อตกลง)");
+
+      // 4. สังเคราะห์คำทำนาย 5 หัวข้อตามลัคนาและดวงดาวจริง
       
-      // หัวข้อ 1: พื้นดวงและวาสนาประจำตัว (ทำนายตาม ลัคนา + ดาวตนุลัคน์ไปสถิตภพจริง)
+      // หัวข้อ 1: พื้นดวงและวาสนาประจำตัว
       var cleanElemName = ascInfo.elem.replace("ธาตุ", "");
       var pText = `ลัคนาสถิต${ascInfo.name} ธาตุ${cleanElemName} โดยมี ${ascInfo.lord} เป็นดาวตนุลัคน์ไปสถิตในเรือน${houseNames[tanuLordHouseIdx]}: `;
-      if (tanuLordHouseIdx === 6) { // ตนุไปปัตนิ
-        pText += `เป็นคนมีน้ำใจดี เห็นประโยชน์ของผู้อื่นสำคัญ เปิดเผย ตรงไปตรงมา รักความยุติธรรม เอาใจใส่คู่ครองหรือหุ้นส่วนได้ดี แต่มักใจอ่อน คล้อยตามคนรักได้ง่าย และชีวิตมักมีเรื่องของคู่ครองหรือคนรอบข้างเข้ามาทำให้วุ่นวายใจเสมอ`;
-      } else if (tanuLordHouseIdx === 1) { // ตนุไปกดุมภะ
-        pText += `เป็นคนมุ่งมั่นในการสร้างฐานะและสร้างความมั่นคง มีความกระตือรือร้นในการแสวงหารายได้ คิดถึงผลประโยชน์และการต่อยอดธุรกิจอยู่เสมอ`;
-      } else if (tanuLordHouseIdx === 0) { // ตนุอยู่ตนุ
-        pText += `เป็นคนเชื่อมั่นในตนเองสูง มีความเป็นตัวของตัวเอง ชัดเจน มีความทะเยอทะยานและพึ่งพาตนเองเป็นหลัก`;
+      if (tanuLordHouseIdx === 0) {
+        pText += "เป็นคนเชื่อมั่นในตนเองสูง มีความเป็นตัวของตัวเอง ชัดเจน มีความทะเยอทะยานและสร้างความสำเร็จได้ด้วยตนเองเป็นหลัก";
+      } else if (tanuLordHouseIdx === 1) {
+        pText += "เป็นคนมุ่งมั่นในการสร้างฐานะ มัธยัสถ์ คิดถึงความมั่นคงและการต่อยอดสร้างรายได้อยู่เสมอ";
+      } else if (tanuLordHouseIdx === 2) {
+        pText += "เป็นคนมีมนุษยสัมพันธ์ดี เข้ากับคนง่าย วาทศิลป์เด่น มักมีเพื่อนฝูงหรือสังคมคอยหนุนนำ";
+      } else if (tanuLordHouseIdx === 3) {
+        pText += "ให้ความสำคัญกับครอบครัว ความอบอุ่นในบ้าน และการสร้างหลักทรัพย์ที่มั่นคงถาวร";
+      } else if (tanuLordHouseIdx === 4) {
+        pText += "มีไอเดียสร้างสรรค์ รักการริเริ่มสิ่งใหม่ๆ ชอบความท้าทาย และมักมีโชคจากโปรเจกต์เสริม";
+      } else if (tanuLordHouseIdx === 5) {
+        pText += "เป็นนักสู้ ชะตามักต้องผ่านด่านทดสอบและเหน็ดเหนื่อยก่อนจึงจะประสบความสำเร็จงดงาม";
+      } else if (tanuLordHouseIdx === 6) {
+        pText += "เปิดเผย ตรงไปตรงมา แคร์คนรอบข้างหรือคู่ครองมาก แต่มักใจอ่อนและมีเรื่องของผู้อื่นเข้ามาให้รับผิดชอบ";
+      } else if (tanuLordHouseIdx === 8) {
+        pText += "ใฝ่รู้ในธรรมะ ปรัชญา หรือวิชาการชั้นสูง ผู้ใหญ่มักให้ความเมตตาและเอ็นดูเป็นพิเศษ";
+      } else if (tanuLordHouseIdx === 9) {
+        pText += "บ้างาน มุ่งมั่นในหน้าที่การงานสูง ไม่ชอบอยู่นิ่ง มักเติบโตสู่ตำแหน่งผู้บริหารหรือเจ้าของกิจการ";
+      } else if (tanuLordHouseIdx === 10) {
+        pText += "วาสนาดี มีโอกาสรับโชคลาภหรือผลประโยชน์เข้ามาแบบสม่ำเสมอ สมความปรารถนาในสิ่งที่ตั้งใจ";
       } else {
-        pText += `เป็นคนมีความมุ่งมั่นอดทนสูง วาสนาชะตาชีวิตขึ้นอยู่กับการตัดสินใจและการลงมือทำด้วยตนเองอย่างรอบคอบ`;
+        pText += "ชอบความสงบ ทำงานเบื้องหลังได้ดี มีลางสังหรณ์แม่นยำ และมักเอาตัวรอดจากวิกฤตได้เสมอ";
       }
 
-      // หัวข้อ 2: จุดเด่นและของขวัญแห่งชีวิต (ดึงจากดาวมหาอุจจ์จริงในดวง)
+      // หัวข้อ 2: จุดเด่นและของขวัญแห่งชีวิต
       var sText = "";
       if (goodDignities.length > 0) {
         sText = `ชะตามีดาวมาตรฐานชั้นสูงหนุนส่ง: ${goodDignities.slice(0, 2).join(" และ ")} ส่งผลให้ชีวิตไม่ตกอับ ยามมีอุปสรรคมักมีคนเข้ามาช่วยเหลือเกื้อกูลให้ผ่านพ้นเสมอ`;
       } else {
-        sText = `มีความอดทนและไหวพริบในการเอาตัวรอดได้ดี มีความสามารถในการปรับตัวเข้ากับสถานการณ์และสร้างความก้าวหน้าได้ด้วยลำแข้งตนเอง`;
+        sText = `มีความอดทน ปฏิภาณไหวพริบในการเอาตัวรอดได้ดี สามารถปรับตัวเข้ากับสถานการณ์และสร้างความก้าวหน้าได้ด้วยลำแข้งตนเอง`;
       }
 
-      // หัวข้อ 3: จุดควรระวังและบทเรียนชีวิต (ดึงจากดาวนิจ/ประ และดาวที่ตกภพอริจริง)
+      // หัวข้อ 3: จุดควรระวังและบทเรียนชีวิต
       var cText = "";
       if (badDignities.length > 0) {
-        cText = `${badDignities.join(" | ")}`;
+        cText = badDignities.join(" | ");
       } else {
-        cText = `ระวังความใจร้อน ความดื้อเงียบ และการตัดสินใจตามอารมณ์ชั่ววูบ ควรคิดหน้าคิดหลังให้รอบคอบก่อนลงมือ`;
+        cText = "ระวังความใจร้อน ความดื้อเงียบ และการตัดสินใจตามอารมณ์ชั่ววูบ ควรใช้เหตุผลและความรอบคอบนำทาง";
       }
 
-      // หัวข้อ 4: แนวโน้มการเงินและทรัพย์สิน (ทำนายตามดาวกดุมภะไปสถิตภพจริง)
-      var mText = "";
-      if (moneyHouseIdx === 5) { // ดาวการเงินไปอยู่อริ (เช่น พฤหัสบดีอยู่กรกฎ ลัคนากุมภ์)
-        mText = `ดาวการเงินสถิตเรือนอริ: การเงินมักได้มาด้วยความเหน็ดเหนื่อย ต้องเหนื่อยยากและฟันฝ่าอุปสรรคจึงจะเก็บเงินได้ มักมีเรื่องให้ต้องหมุนเงินหรือเสียเงินซ่อมแซมสิ่งของอยู่เนืองๆ `;
-      } else if (moneyHouseIdx === 1) {
-        mText = `ดาวการเงินเข้มแข็งในเรือนตนเอง: คล่องตัวสูง มีกระแสเงินสดไหลเวียนสม่ำเสมอ หาเงินเก่งและมีช่องทางสร้างทรัพย์สินมั่นคง`;
+      // หัวข้อ 4: แนวโน้มการเงินและทรัพย์สิน
+      var mText = `ดาวกดุมภะ (การเงิน) สถิตเรือน${houseNames[moneyHouseIdx]}: `;
+      if (moneyHouseIdx === 1 || moneyHouseIdx === 10) {
+        mText += "กระแสเงินสดหมุนเวียนคล่องตัวสูง มีช่องทางสร้างรายได้หลายทาง หาเงินเก่งและมีเกณฑ์ได้รับโชคลาภก้อนใหญ่";
+      } else if (moneyHouseIdx === 5) {
+        mText += "การเงินมักได้มาด้วยความเหน็ดเหนื่อย ต้องฟันฝ่าอุปสรรคจึงจะเก็บเงินอยู่ มักมีภาระค่าใช้จ่ายหรือหนี้สินหมุนเวียนให้ต้องบริหารจัดการ";
+      } else if (moneyHouseIdx === 11) {
+        mText += "หาเงินได้คล่องแต่ระวังรายจ่ายจรที่ไม่คาดคิด ควรแปลงเงินสดให้เป็นทรัพย์สินถาวรหรืออสังหาริมทรัพย์เพื่อเก็บเงินให้อยู่";
       } else {
-        mText = `กระแสการเงินหมุนเวียนมาจากความรู้ความสามารถเฉพาะตัว มีช่องทางทำมาหากินคล่องตัว แต่ควรระวังรายจ่ายจุกจิก`;
-      }
-      if (nVenSign === 11) {
-        mText += `แต่ดวงมีดาวศุกร์มหาอุจจ์สถิตในเรือนการเงิน ทำให้มีโชคลาภพิเศษและมีเสน่ห์ทางวาจาในการหาเงินเข้ามาหนุนช่วยเสมอ`;
+        mText += "การเงินมั่นคงตามสายงาน มาจากความรู้ความเชี่ยวชาญเฉพาะทาง มีวินัยในการออมจะช่วยให้สร้างฐานะได้มั่นคง";
       }
 
-      // หัวข้อ 5: การงานและความรักพื้นดวง (ทำนายตามดาวกัมมะและดาวปัตนิ)
-      var wText = "";
-      if (workHouseIdx === 1) { // ดาวการงานไปอยู่เรือนการเงิน (เช่น อังคารอยู่มีน ลัคนากุมภ์)
-        wText += `การงาน: หยิบจับอะไรมักเป็นเงินเป็นทอง เหมาะกับงานที่เกี่ยวข้องกับการหมุนเงิน ธุรกิจการค้า อสังหาริมทรัพย์ หรือการบริหารจัดการทรัพย์สิน | `;
+      // หัวข้อ 5: การงานและความรักพื้นดวง
+      var wText = `การงาน: ดาวกัมมะสถิตเรือน${houseNames[workHouseIdx]} `;
+      if (workHouseIdx === 1 || workHouseIdx === 10) {
+        wText += "งานที่ทำสร้างผลกำไรและรายได้งดงาม หยิบจับอะไรมักต่อยอดเป็นเงินเป็นทอง | ";
+      } else if (workHouseIdx === 9) {
+        wText += "เด่นในหน้าที่การงาน มีโอกาสก้าวหน้าสู่ตำแหน่งสูงและได้รับการยอมรับนับถือ | ";
       } else {
-        wText += `การงาน: เหมาะกับงานที่ใช้ความเชี่ยวชาญเฉพาะทาง งานบริการ หรือธุรกิจที่มีการติดต่อเจรจา | `;
+        wText += "เหมาะกับงานที่ต้องใช้ความเชี่ยวชาญเฉพาะด้าน งานบริการ หรืองานติดต่อเจรจา | ";
       }
-      if (tanuLordHouseIdx === 6 || nSatSign === 4) { // เสาร์/ราหู อยู่ปัตนิ
-        wText += `ความรัก: มีเกณฑ์พบรักกับคนอายุต่างกัน หรือคนที่มีความเป็นผู้ใหญ่สูง ต้องใช้ความเข้าใจ หลีกเลี่ยงความขี้หึง และไม่ควรคาดหวังสูงเกินไป`;
+
+      wText += `ความรัก: ดาวปัตนิสถิตเรือน${houseNames[partnerHouseIdx]} `;
+      if (partnerHouseIdx === 6 || partnerHouseIdx === 0) {
+        wText += "คู่ครองเป็นคนมีเสน่ห์ เป็นคู่คิดที่คอยช่วยเหลือเกื้อกูลส่งเสริมชีวิต";
+      } else if (partnerHouseIdx === 5 || partnerHouseIdx === 11) {
+        wText += "คู่ครองอาจมีนิสัยต่างกันหรือมีความคิดเห็นไม่ตรงกันบ่อย ต้องใช้ความเข้าใจและการประนีประนอมเป็นหลัก";
       } else {
-        wText += `ความรัก: มักเป็นกัลยาณมิตรคอยช่วยเหลือเกื้อกูล ส่งเสริมซึ่งกันและกัน`;
+        wText += "ความรักมั่นคง เปรียบเสมือนกัลยาณมิตรที่ช่วยประคับประคองและสร้างอนาคตร่วมกัน";
       }
 
       // นำผลลัพธ์ใส่ลงกล่อง UI
