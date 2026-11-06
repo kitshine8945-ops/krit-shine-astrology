@@ -3736,9 +3736,9 @@ function getAccurateTransitSign(planetKey, targetDate) {
       var marsMeanLong = (355.433 + 0.524033 * dEpoch - lahiriAyanamsa + 720) % 360;
       var nMarsSign = Math.floor(marsMeanLong / 30);
 
-      // พุธ (๔)
+     // พุธ (๔)
       var mercOffset = ((bDVal * 7.5 + bMVal * 12.3) % 40) - 20;
-      var mercLong = (sunSignIndex * 30 + (curD - baseEntry) + mercOffset + 360) % 360;
+      var mercLong = (sunSignIndex * 30 + bDVal + mercOffset + 360) % 360;
       var nMercSign = Math.floor(mercLong / 30);
 
       // พฤหัสบดี (๕)
@@ -3747,7 +3747,7 @@ function getAccurateTransitSign(planetKey, targetDate) {
 
       // ศุกร์ (๖)
       var venOffset = ((bDVal * 5.2 + bMVal * 9.1 + (bYVal % 8) * 15) % 80) - 40;
-      var venLong = (sunSignIndex * 30 + (curD - baseEntry) + venOffset + 360) % 360;
+      var venLong = (sunSignIndex * 30 + bDVal + venOffset + 360) % 360;
       var nVenSign = Math.floor(venLong / 30);
 
       // เสาร์ (๗)
