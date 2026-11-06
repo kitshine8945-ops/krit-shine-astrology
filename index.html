@@ -3703,73 +3703,74 @@ function getAccurateTransitSign(planetKey, targetDate) {
       var bMinVal = parseInt(document.getElementById('birthMinute24')?.value, 10) || AppState.birthMinute || 0;
       var nTimeMin = bHVal * 60 + bMinVal;
 
-    // 1. คำนวณราศีที่ดาวกำเนิดสถิตจริง (Dynamic Suriyayart Ephemeris Engine)
-      var birthYearCE = (bYVal > 2400) ? (bYVal - 543) : bYVal;
+// 1. คำนวณราศีที่ดาวกำเนิดสถิตจริง (Suriyayart True Longitude Engine)
+    var birthYearCE = (bYVal > 2400) ? (bYVal - 543) : bYVal;
 
-      function calculateJulianDay(year, month, day, hour, minute) {
-        var y = year;
-        var m = month;
-        if (m <= 2) {
-          y -= 1;
-          m += 12;
-        }
-        var A = Math.floor(y / 100);
-        var B = 2 - A + Math.floor(A / 4);
-        var dayFraction = day + (hour / 24.0) + (minute / 1440.0);
-        return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + dayFraction + B - 1524.5;
+    // คำนวณวันสัมพัทธ์ดาราศาสตร์ (Julian Day Number)
+    function calculateJulianDay(year, month, day, hour, minute) {
+      var y = year;
+      var m = month;
+      if (m <= 2) {
+        y -= 1;
+        m += 12;
       }
+      var A = Math.floor(y / 100);
+      var B = 2 - A + Math.floor(A / 4);
+      var dayFraction = day + (hour / 24.0) + (minute / 1440.0);
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + dayFraction + B - 1524.5;
+    }
 
-      var jdBirth = calculateJulianDay(birthYearCE, bMVal, bDVal, bHVal, bMinVal);
-      var dEpoch = jdBirth - 2451545.0; // วันสัมพัทธ์กับ J2000.0
+    var jdBirth = calculateJulianDay(birthYearCE, bMVal, bDVal, bHVal, bMinVal);
+    var dEpoch = jdBirth - 2451545.0; // วันสัมพัทธ์เทียบกับ J2000.0
 
-      // อาทิตย์ (๑)
-      var nSunSign = sunSignIndex;
+    // ค่าอายะนางศะลาหิรี (Sidereal Lahiri Ayanamsa สำหรับตัดเข้าระบบนิรายนะสุริยยาตร์)
+    var lahiriAyanamsa = 23.85 + (dEpoch / 36525.0) * 1.396;
 
-      // จันทร์ (๒)
-      var moonMeanLong = (218.316 + 13.176396 * dEpoch) % 360;
-      if (moonMeanLong < 0) moonMeanLong += 360;
-      var lahiriAyanamsa = 23.85 + (dEpoch / 36525.0) * 1.396;
-      var moonSiderealLong = (moonMeanLong - lahiriAyanamsa + 360) % 360;
-      var nMoonSign = Math.floor(moonSiderealLong / 30);
+    // ๑. อาทิตย์ (สถิตตามวันที่ยกย้ายราศีมาตรฐานสุริยยาตร์)
+    var nSunSign = sunSignIndex;
 
-      // อังคาร (๓)
-     var marsMeanLong = ((355.433 + 0.524033 * dEpoch - lahiriAyanamsa) % 360 + 360) % 360;
-     var nMarsSign = Math.floor(marsMeanLong / 30);
+    // ๒. จันทร์ (คาบโคจร ~27.32 วัน มีสมการศูนย์ปรับค่าสมผุสจริง)
+    var moonMeanLong = (218.316 + 13.176396 * dEpoch) % 360;
+    var moonAnomaly = (134.963 + 13.064993 * dEpoch) * (Math.PI / 180.0);
+    var moonEqCenter = 6.289 * Math.sin(moonAnomaly); // สมการศูนย์ดวงจันทร์
+    var moonTrueLong = ((moonMeanLong + moonEqCenter - lahiriAyanamsa) % 360 + 360) % 360;
+    var nMoonSign = Math.floor(moonTrueLong / 30);
 
-     // พุธ (๔)
-      var mercOffset = ((bDVal * 7.5 + bMVal * 12.3) % 40) - 20;
-      var mercLong = (sunSignIndex * 30 + bDVal + mercOffset + 360) % 360;
-      var nMercSign = Math.floor(mercLong / 30);
+    // ๓. อังคาร (คาบโคจร 686.98 วัน พร้อมสมการความเยื้องศูนย์กลางวงโคจร)
+    var marsMeanLong = (355.433 + 0.524033 * dEpoch) % 360;
+    var marsAnomaly = (19.373 + 0.5240207 * dEpoch) * (Math.PI / 180.0);
+    var marsEqCenter = 10.691 * Math.sin(marsAnomaly); // สมการศูนย์ดาวอังคาร
+    var marsTrueLong = ((marsMeanLong + marsEqCenter - lahiriAyanamsa) % 360 + 360) % 360;
+    var nMarsSign = Math.floor(marsTrueLong / 30);
 
-      // พฤหัสบดี (๕)
-      var jupMeanLong = (34.351 + 0.083085 * dEpoch - lahiriAyanamsa + 720) % 360;
-      var nJupSign = Math.floor(jupMeanLong / 30);
+    // ๔. พุธ (เกาะดวงอาทิตย์ มุมเบี่ยงเบนไม่เกิน 28 องศา)
+    var mercOffset = ((bDVal * 7.5 + bMVal * 12.3) % 40) - 20;
+    var mercLong = ((sunSignIndex * 30 + bDVal + mercOffset) % 360 + 360) % 360;
+    var nMercSign = Math.floor(mercLong / 30);
 
-      // ศุกร์ (๖)
-      var venOffset = ((bDVal * 5.2 + bMVal * 9.1 + (bYVal % 8) * 15) % 80) - 40;
-      var venLong = (sunSignIndex * 30 + bDVal + venOffset + 360) % 360;
-      var nVenSign = Math.floor(venLong / 30);
+    // ๕. พฤหัสบดี (คาบโคจร 4332.59 วัน ~11.86 ปี พร้อมสมการศูนย์ปรับความเร็ว)
+    var jupMeanLong = (34.351 + 0.083085 * dEpoch) % 360;
+    var jupAnomaly = (20.381 + 0.0830853 * dEpoch) * (Math.PI / 180.0);
+    var jupEqCenter = 5.555 * Math.sin(jupAnomaly); // ปรับค่าพักร์/เสริด
+    var jupTrueLong = ((jupMeanLong + jupEqCenter - lahiriAyanamsa) % 360 + 360) % 360;
+    var nJupSign = Math.floor(jupTrueLong / 30);
 
-      // เสาร์ (๗)
-      var satMeanLong = (50.077 + 0.033444 * dEpoch - lahiriAyanamsa + 720) % 360;
-      var nSatSign = Math.floor(satMeanLong / 30);
+    // ๖. ศุกร์ (เกาะดวงอาทิตย์ มุมเบี่ยงเบนไม่เกิน 47 องศา)
+    var venOffset = ((bDVal * 5.2 + bMVal * 9.1 + (bYVal % 8) * 15) % 80) - 40;
+    var venLong = ((sunSignIndex * 30 + bDVal + venOffset) % 360 + 360) % 360;
+    var nVenSign = Math.floor(venLong / 30);
 
-      // ราหู (๘)
-      var rahuMeanLong = (125.044 - 0.0529539 * dEpoch - lahiriAyanamsa + 3600) % 360;
-      if (rahuMeanLong < 0) rahuMeanLong += 360;
-      var nRahSign = Math.floor(rahuMeanLong / 30);
+    // ๗. เสาร์ (คาบโคจร 10759.22 วัน ~29.46 ปี พร้อมสมการศูนย์ปรับความเร็ว)
+    var satMeanLong = (50.077 + 0.033444 * dEpoch) % 360;
+    var satAnomaly = (317.020 + 0.0334442 * dEpoch) * (Math.PI / 180.0);
+    var satEqCenter = 6.358 * Math.sin(satAnomaly);
+    var satTrueLong = ((satMeanLong + satEqCenter - lahiriAyanamsa) % 360 + 360) % 360;
+    var nSatSign = Math.floor(satTrueLong / 30);
 
-      // ปรับค่าตำแหน่งดาวเฉพาะดวง 30 เม.ย. 2522 ให้ตรงกับปูมโหรเป๊ะ 100%
-      if (bDVal === 30 && bMVal === 4 && bYVal === 2522) {
-        nSunSign  = 0;  // ๑ เมษ
-        nMoonSign = 1;  // ๒ พฤษภ
-        nMarsSign = 11; // ๓ มีน
-        nMercSign = 1;  // ๔ พฤษภ
-        nJupSign  = 2;  // ๕ เมถุน
-        nVenSign  = 11; // ๖ มีน
-        nSatSign  = 4;  // ๗ สิงห์
-        nRahSign  = 4;  // ๘ สิงห์
-      }
+    // ๘. ราหู (โคจรถอยหลังตามปฏิทินดาราศาสตร์ 6793.5 วัน ~18.61 ปี)
+    var rahuMeanLong = (125.044 - 0.0529539 * dEpoch) % 360;
+    var rahuTrueLong = ((rahuMeanLong - lahiriAyanamsa + 720) % 360 + 360) % 360;
+    var nRahSign = Math.floor(rahuTrueLong / 30);
 
       // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
