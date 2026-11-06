@@ -3806,11 +3806,14 @@ function getAccurateTransitSign(planetKey, targetDate) {
     if (bYVal === 2522 && bMVal === 4) { nMercSign = 1; nVenSign = 11; }
     else if (bYVal === 2518 && bMVal === 11) { nMercSign = 7; nVenSign = 6; }
 
-      // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
+// 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
-      var lordPlanets = [3, 6, 4, 2, 1, 4, 6, 3, 5, 7, 8, 5];
+      
+      // ตารางดาวเกษตรเจ้าเรือนประจำ 12 ราศี (0=เมษ ถึง 11=มีน) ตามระบบมาตรฐานโหรไทย
+      // [เมษ=3, พฤษภ=6, มิถุน=4, กรกฎ=2, สิงห์=1, กันย์=4, ตุลย์=6, พิจิก=3, ธนู=5, มังกร=7, กุมภ์=8, มีน=5]
+      var signRulers = [3, 6, 4, 2, 1, 4, 6, 3, 5, 7, 8, 5];
 
-function getSignOfPlanetNum(pNum) {
+      function getSignOfPlanetNum(pNum) {
         var s = 0;
         if (pNum === 1) s = nSunSign;
         else if (pNum === 2) s = nMoonSign;
@@ -3825,32 +3828,40 @@ function getSignOfPlanetNum(pNum) {
         return ((Math.floor(s) % 12) + 12) % 12;
       }
 
-      // ดาวตนุลัคน์ประจำลัคนาจริง
-      var tanuLordPlanetNum = lordPlanets[ascIndex] || 1;
-      var tanuLordSign = getSignOfPlanetNum(tanuLordPlanetNum);
-      var tanuLordHouseIdx = ((tanuLordSign - ascIndex + 12) % 12);
-      if (isNaN(tanuLordHouseIdx) || tanuLordHouseIdx < 0 || tanuLordHouseIdx > 11) tanuLordHouseIdx = 0;
+      // ฟังก์ชันหาว่า "เจ้าเรือนภพนั้นๆ" ไปลอยสถิตอยู่ใน "ภพใด" เทียบจากลัคนา
+      function getHouseLordPlacement(houseIdx) {
+        var zodiacOfHouse = (ascIndex + houseIdx) % 12;      // ราศีประจำภพนั้น
+        var lordPlanet = signRulers[zodiacOfHouse];           // ดาวเจ้าเรือนของราศีนั้น
+        var currentPlanetSign = getSignOfPlanetNum(lordPlanet); // ดาวเจ้าเรือนตอนนี้ลอยอยู่ราศีไหน
+        var targetHouseIdx = (currentPlanetSign - ascIndex + 12) % 12; // ลอยอยู่ในภพใดของเจ้าชะตา
+        return {
+          lordPlanet: lordPlanet,
+          planetSign: currentPlanetSign,
+          houseIdx: targetHouseIdx
+        };
+      }
 
-      // ดาวกดุมภะ (การเงิน)
-      var moneySignIdx = (ascIndex + 1) % 12;
-      var moneyLordPlanetNum = lordPlanets[moneySignIdx] || 1;
-      var moneyLordSign = getSignOfPlanetNum(moneyLordPlanetNum);
-      var moneyHouseIdx = ((moneyLordSign - ascIndex + 12) % 12);
-      if (isNaN(moneyHouseIdx) || moneyHouseIdx < 0 || moneyHouseIdx > 11) moneyHouseIdx = 0;
+      // คำนวณภพสำคัญทั้ง 4 ภพ (ตนุ, กดุมภะ, กัมมะ, ปัตนิ)
+      var tanuData    = getHouseLordPlacement(0); // ตนุลัคน์
+      var moneyData   = getHouseLordPlacement(1); // กดุมภะ (การเงิน)
+      var partnerData = getHouseLordPlacement(6); // ปัตนิ (คู่ครอง)
+      var workData    = getHouseLordPlacement(9); // กัมมะ (การงาน)
 
-      // ดาวกัมมะ (การงาน)
-      var workSignIdx = (ascIndex + 9) % 12;
-      var workLordPlanetNum = lordPlanets[workSignIdx] || 1;
-      var workLordSign = getSignOfPlanetNum(workLordPlanetNum);
-      var workHouseIdx = ((workLordSign - ascIndex + 12) % 12);
-      if (isNaN(workHouseIdx) || workHouseIdx < 0 || workHouseIdx > 11) workHouseIdx = 0;
+      var tanuLordPlanetNum = tanuData.lordPlanet;
+      var tanuLordSign      = tanuData.planetSign;
+      var tanuLordHouseIdx  = tanuData.houseIdx;
 
-      // ดาวปัตนิ (คู่ครอง)
-      var partnerSignIdx = (ascIndex + 6) % 12;
-      var partnerLordPlanetNum = lordPlanets[partnerSignIdx] || 1;
-      var partnerLordSign = getSignOfPlanetNum(partnerLordPlanetNum);
-      var partnerHouseIdx = ((partnerLordSign - ascIndex + 12) % 12);
-      if (isNaN(partnerHouseIdx) || partnerHouseIdx < 0 || partnerHouseIdx > 11) partnerHouseIdx = 0;
+      var moneyLordPlanetNum = moneyData.lordPlanet;
+      var moneyLordSign      = moneyData.planetSign;
+      var moneyHouseIdx      = moneyData.houseIdx;
+
+      var workLordPlanetNum = workData.lordPlanet;
+      var workLordSign      = workData.planetSign;
+      var workHouseIdx      = workData.houseIdx;
+
+      var partnerLordPlanetNum = partnerData.lordPlanet;
+      var partnerLordSign      = partnerData.planetSign;
+      var partnerHouseIdx      = partnerData.houseIdx;
 
     // 3. ตรวจสอบตำแหน่งดาวเด่นและดาวเคราะห์สำคัญตามดวงจริง (ไดนามิกทุกวันเกิด)
       var dignitiesGood = [];
