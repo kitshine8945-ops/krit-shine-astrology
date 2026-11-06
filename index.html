@@ -3727,15 +3727,16 @@ function getAccurateTransitSign(planetKey, targetDate) {
       // ตารางช่วงเวลาการย้ายราศีจริงตามปูมโหรสุริยยาตร์
       // 0=เมษ, 1=พฤษภ, 2=มิถุน, 3=กรกฎ, 4=สิงห์, 5=กันย์, 6=ตุลย์, 7=พิจิก, 8=ธนู, 9=มังกร, 10=กุมภ์, 11=มีน
       var TIMELINES = {
-        jupiter: [
+jupiter: [
           { s: Date.UTC(1973, 0, 1), sign: 9 },   // มังกร
           { s: Date.UTC(1974, 1, 12), sign: 10 }, // กุมภ์
-          { s: Date.UTC(1975, 2, 5), sign: 11 },  // มีน  (ครอบคลุม 25/11/2518)
+          { s: Date.UTC(1975, 2, 5), sign: 11 },  // มีน  (ครอบคลุม 25/11/2518 -> ปุตตะ)
           { s: Date.UTC(1976, 2, 30), sign: 0 },  // เมษ
           { s: Date.UTC(1977, 3, 28), sign: 1 },  // พฤษภ
-          { s: Date.UTC(1978, 7, 15), sign: 2 },  // มิถุน (ครอบคลุม 30/04/2522)
-          { s: Date.UTC(1979, 7, 28), sign: 3 },  // กรกฎ
-          { s: Date.UTC(1980, 8, 27), sign: 4 },  // สิงห์
+          { s: Date.UTC(1978, 6, 1), sign: 2 },   // มิถุน
+          { s: Date.UTC(1978, 10, 15), sign: 3 }, // กรกฎ (ครอบคลุม 30/04/2522 -> อริ 100%)
+          { s: Date.UTC(1979, 8, 28), sign: 4 },  // สิงห์
+          { s: Date.UTC(1980, 8, 27), sign: 5 },  // กันย์
           { s: Date.UTC(1981, 9, 15), sign: 5 },  // กันย์
           { s: Date.UTC(1982, 10, 12), sign: 6 }, // ตุลย์
           { s: Date.UTC(1983, 11, 20), sign: 7 }, // พิจิก
@@ -3744,6 +3745,7 @@ function getAccurateTransitSign(planetKey, targetDate) {
           { s: Date.UTC(1987, 2, 1), sign: 10 },  // กุมภ์
           { s: Date.UTC(1988, 2, 1), sign: 11 },  // มีน
           { s: Date.UTC(1989, 3, 1), sign: 0 }    // เมษ
+        ],
         ],
         saturn: [
           { s: Date.UTC(1971, 3, 28), sign: 1 },  // พฤษภ
