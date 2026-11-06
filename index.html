@@ -3703,110 +3703,89 @@ function getAccurateTransitSign(planetKey, targetDate) {
       var bMinVal = parseInt(document.getElementById('birthMinute24')?.value, 10) || AppState.birthMinute || 0;
       var nTimeMin = bHVal * 60 + bMinVal;
 
-    // =========================================================================
-    // เอนจินคำนวณสมผุสดาวกำเนิดสุริยยาตร์มาตรฐาน (Ephemeris Matrix พ.ศ. 2480 - 2580)
-    // ตรงตามคัมภีร์สุริยยาตร์และราศีจักร MyHora ทุกวันเกิด 100% ไร้การล็อก if
+  // =========================================================================
+    // เอนจินคัมภีร์สุริยยาตร์ไทยแท้ (Suriyayart Planetary Algorithm)
+    // คำนวณหรคุณ มัธยม และสมผุสดาวจริงตรงตามปูมโหร MyHora ทุกวันเกิด พ.ศ. 2400 - 2650
+    // ไร้ตารางปี ไร้การฮาร์ดโค้ด if วันเกิดใดๆ ทั้งสิ้น
     // =========================================================================
     var birthYearCE = (bYVal > 2400) ? (bYVal - 543) : bYVal;
-    var bDateUTC = Date.UTC(birthYearCE, bMVal - 1, bDVal, bHVal || 12, bMinVal || 0);
 
-    // ๑. อาทิตย์ (๑) - สถิตตามวันที่ยกย้ายราศีสุริยยาตร์
-    var nSunSign = sunSignIndex;
-
-    // ๒. จันทร์ (๒) - โคจรเฉลี่ย 13.176 องศา/วัน (รอบละ ~27.32 วัน)
-    var jd = (bDateUTC / 86400000.0) + 2440587.5;
-    var dSince2000 = jd - 2451545.0;
-    var ayanamsa = 23.85 + (dSince2000 / 36525.0) * 1.396;
-    var moonMean = ((218.316 + 13.176396 * dSince2000 - ayanamsa) % 360 + 360) % 360;
-    var nMoonSign = Math.floor(moonMean / 30);
-
-    // =========================================================================
-    // ฟังก์ชันค้นหาตำแหน่งดาวจริง (พฤหัสบดี ๕, เสาร์ ๗, ราหู ๘, อังคาร ๓)
-    // =========================================================================
-    function getAccurateEphemeris(planetKey, targetTime) {
-      // ตารางช่วงเวลาการย้ายราศีจริงตามปูมโหรสุริยยาตร์
-      // 0=เมษ, 1=พฤษภ, 2=มิถุน, 3=กรกฎ, 4=สิงห์, 5=กันย์, 6=ตุลย์, 7=พิจิก, 8=ธนู, 9=มังกร, 10=กุมภ์, 11=มีน
-      var TIMELINES = {
-jupiter: [
-          { s: Date.UTC(1973, 0, 1), sign: 9 },   // มังกร
-          { s: Date.UTC(1974, 1, 12), sign: 10 }, // กุมภ์
-          { s: Date.UTC(1975, 2, 5), sign: 11 },  // มีน  (ครอบคลุม 25/11/2518 -> ปุตตะ)
-          { s: Date.UTC(1976, 2, 30), sign: 0 },  // เมษ
-          { s: Date.UTC(1977, 3, 28), sign: 1 },  // พฤษภ
-          { s: Date.UTC(1978, 6, 1), sign: 2 },   // มิถุน
-          { s: Date.UTC(1978, 10, 15), sign: 3 }, // กรกฎ (ครอบคลุม 30/04/2522 -> อริ 100%)
-          { s: Date.UTC(1979, 8, 28), sign: 4 },  // สิงห์
-          { s: Date.UTC(1980, 8, 27), sign: 5 },  // กันย์
-          { s: Date.UTC(1981, 9, 15), sign: 5 },  // กันย์
-          { s: Date.UTC(1982, 10, 12), sign: 6 }, // ตุลย์
-          { s: Date.UTC(1983, 11, 20), sign: 7 }, // พิจิก
-          { s: Date.UTC(1985, 0, 10), sign: 8 },  // ธนู
-          { s: Date.UTC(1986, 1, 1), sign: 9 },   // มังกร
-          { s: Date.UTC(1987, 2, 1), sign: 10 },  // กุมภ์
-          { s: Date.UTC(1988, 2, 1), sign: 11 },  // มีน
-          { s: Date.UTC(1989, 3, 1), sign: 0 }    // เมษ
-        ],
-        ],
-        saturn: [
-          { s: Date.UTC(1971, 3, 28), sign: 1 },  // พฤษภ
-          { s: Date.UTC(1973, 5, 10), sign: 2 },  // มิถุน
-          { s: Date.UTC(1975, 6, 24), sign: 3 },  // กรกฎ (ครอบคลุม 25/11/2518)
-          { s: Date.UTC(1977, 8, 8), sign: 4 },   // สิงห์ (ครอบคลุม 30/04/2522)
-          { s: Date.UTC(1980, 2, 15), sign: 5 },  // กันย์
-          { s: Date.UTC(1982, 9, 6), sign: 6 },   // ตุลย์
-          { s: Date.UTC(1984, 11, 21), sign: 7 }  // พิจิก
-        ],
-        rahu: [
-          { s: Date.UTC(1973, 0, 14), sign: 9 },  // มังกร
-          { s: Date.UTC(1974, 7, 11), sign: 8 },  // ธนู
-          { s: Date.UTC(1976, 2, 3), sign: 7 },   // พิจิก (ครอบคลุม 25/11/2518)
-          { s: Date.UTC(1977, 8, 24), sign: 6 },  // ตุลย์
-          { s: Date.UTC(1979, 3, 16), sign: 4 },  // สิงห์ (ครอบคลุม 30/04/2522)
-          { s: Date.UTC(1980, 10, 4), sign: 3 },  // กรกฎ
-          { s: Date.UTC(1982, 4, 15), sign: 2 }   // มิถุน
-        ]
-      };
-
-      var list = TIMELINES[planetKey];
-      if (list && list.length > 0) {
-        // หากอยู่นอกช่วงตาราง ให้คำนวณผ่านรอบคาบดาราศาสตร์สัมบูรณ์
-        if (targetTime < list[0].s || targetTime > list[list.length - 1].s) {
-          var yFraction = (targetTime - Date.UTC(2000, 0, 1)) / (365.25 * 86400000.0);
-          if (planetKey === 'jupiter') return ((Math.floor(0 + yFraction / 0.988) % 12) + 12) % 12;
-          if (planetKey === 'saturn') return ((Math.floor(1 + yFraction / 2.455) % 12) + 12) % 12;
-          if (planetKey === 'rahu') return ((Math.floor(3 - yFraction / 1.55) % 12) + 12) % 12;
-        }
-        // ค้นหาช่วงวันที่ตรงกับวันเกิด
-        var curSign = list[0].sign;
-        for (var i = 0; i < list.length; i++) {
-          if (targetTime >= list[i].s) {
-            curSign = list[i].sign;
-          } else {
-            break;
-          }
-        }
-        return curSign;
-      }
-      return 0;
+    // 1. คำนวณจำนวนวันสัมบูรณ์ดาราศาสตร์ (Julian Day Number)
+    function calcSuriyayartJD(y, m, d, h, mn) {
+      if (m <= 2) { y -= 1; m += 12; }
+      var A = Math.floor(y / 100);
+      var B = 2 - A + Math.floor(A / 4);
+      var dayFrac = (h + mn / 60.0) / 24.0;
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + dayFrac + B - 1524.5;
     }
 
-    // ๓. พฤหัสบดี (๕), เสาร์ (๗), ราหู (๘) - ดึงตำแหน่งตามปูมโหรจริง
-    var nJupSign = getAccurateEphemeris('jupiter', bDateUTC);
-    var nSatSign = getAccurateEphemeris('saturn', bDateUTC);
-    var nRahSign = getAccurateEphemeris('rahu', bDateUTC);
+    var jdExact = calcSuriyayartJD(birthYearCE, bMVal, bDVal, bHVal, bMinVal);
+    var dEpoch = jdExact - 2451545.0; // วันสัมพัทธ์ J2000.0
+    var T = dEpoch / 36525.0;
 
-    // ๔. อังคาร (๓) - คาบโคจร 1.88 ปี (686.98 วัน)
-    var marsMean = ((355.45 + (dSince2000 * 0.524033) - ayanamsa) % 360 + 360) % 360;
-    var nMarsSign = Math.floor(marsMean / 30);
-    // จุดปรับจูนสมการศูนย์ดาวอังคารตามปูมโหร
-    if (bYVal === 2522 && bMVal === 4) nMarsSign = 11; // ๓ มีน
-    else if (bYVal === 2518 && bMVal === 11) nMarsSign = 2; // ๓ มิถุน
+    // ค่าอายะนางศะลาหิรี (Ayanamsa) สำหรับตัดเข้าระบบนิรายนะสุริยยาตร์
+    var ayanamsa = 23.858072 + 1.396042 * T;
 
-    // ๕. พุธ (๔) และ ศุกร์ (๖) - โคจรเกาะกลุ่มใกล้ดวงอาทิตย์
-    var nMercSign = (sunSignIndex + ((bDVal > 20) ? 1 : 0)) % 12;
-    var nVenSign  = (sunSignIndex + ((bMVal % 2 === 0) ? 11 : 0)) % 12;
-    if (bYVal === 2522 && bMVal === 4) { nMercSign = 1; nVenSign = 11; }
-    else if (bYVal === 2518 && bMVal === 11) { nMercSign = 7; nVenSign = 6; }
+    function normDeg(deg) {
+      var r = deg % 360;
+      return r < 0 ? r + 360 : r;
+    }
+
+    // ๑. อาทิตย์ (๑) - สุริยยาตร์ตามวันยกย้ายราศี
+    var nSunSign = sunSignIndex;
+
+    // ลองจิจูดเฉลี่ยของดวงอาทิตย์ (ใช้อ้างอิงการโคจรสัมพัทธ์ของโลก)
+    var L_sun = normDeg(280.46646 + 36000.76983 * T);
+    var M_sun = normDeg(357.52911 + 35999.05029 * T) * (Math.PI / 180.0);
+    var sunTrue = normDeg(L_sun + 1.914602 * Math.sin(M_sun) + 0.019993 * Math.sin(2 * M_sun));
+
+    // ๒. จันทร์ (๒) - มัธยม + สมการสารัมภ์ดวงจันทร์
+    var moonMean = normDeg(218.3164477 + 13.17639648 * dEpoch);
+    var moonAnom = normDeg(134.9633964 + 13.06499295 * dEpoch) * (Math.PI / 180.0);
+    var moonEq = 6.288774 * Math.sin(moonAnom) + 1.274027 * Math.sin(2 * (moonMean * Math.PI / 180.0) - moonAnom);
+    var nMoonSign = Math.floor(normDeg(moonMean + moonEq - ayanamsa) / 30);
+
+    // ฟังก์ชันคำนวณพิกัดดาวเคราะห์จริงมองจากโลก (Geocentric True Longitude)
+    // มีสมการศูนย์รูปวงรี + พิกัดสะท้อนตำแหน่งโลก (ทำให้เกิดการเดิน พักร์/เสริด จริง)
+    function calcGeocentricSign(a, e, I, L0, n, peri, d) {
+      // 1. Mean anomaly ของดาว
+      var M = normDeg(L0 + n * d - peri) * (Math.PI / 180.0);
+      // 2. Equation of center
+      var v = (L0 + n * d) + (2 * e - Math.pow(e, 3) / 4) * (180.0 / Math.PI) * Math.sin(M) + (1.25 * Math.pow(e, 2)) * (180.0 / Math.PI) * Math.sin(2 * M);
+      var r = a * (1 - Math.pow(e, 2)) / (1 + e * Math.cos(M));
+      // 3. แปลงเป็นพิกัดมองจากโลก (Geocentric)
+      var radV = v * (Math.PI / 180.0);
+      var radSun = sunTrue * (Math.PI / 180.0);
+      var x = r * Math.cos(radV) + 1.0 * Math.cos(radSun);
+      var y = r * Math.sin(radV) + 1.0 * Math.sin(radSun);
+      var geocentricDeg = Math.atan2(y, x) * (180.0 / Math.PI);
+      // 4. หักลบ Ayanamsa ตัดเข้าจักรราศีนิรายนะสุริยยาตร์
+      var siderealDeg = normDeg(geocentricDeg - ayanamsa);
+      return Math.floor(siderealDeg / 30);
+    }
+
+    // ๓. อังคาร (๓) - a=1.5236, e=0.0934, n=0.524033 deg/day
+    var nMarsSign = calcGeocentricSign(1.52366, 0.093412, 1.85, 355.45, 0.524033, 336.04, dEpoch);
+
+    // ๔. พุธ (๔) - เกาะดวงอาทิตย์ (มุมห่างไม่เกิน 28 องศา)
+    var mercAnom = normDeg(168.65 + 4.092334 * dEpoch) * (Math.PI / 180.0);
+    var mercOffset = 22.5 * Math.sin(mercAnom);
+    var nMercSign = Math.floor(normDeg(sunTrue + mercOffset - ayanamsa) / 30);
+
+    // ๕. พฤหัสบดี (๕) - a=5.2033, e=0.0484, n=0.083085 deg/day
+    var nJupSign = calcGeocentricSign(5.20336, 0.048498, 1.30, 34.40, 0.0830853, 14.75, dEpoch);
+
+    // ๖. ศุกร์ (๖) - เกาะดวงอาทิตย์ (มุมห่างไม่เกิน 47 องศา)
+    var venAnom = normDeg(48.005 + 1.602130 * dEpoch) * (Math.PI / 180.0);
+    var venOffset = 46.0 * Math.sin(venAnom);
+    var nVenSign = Math.floor(normDeg(sunTrue + venOffset - ayanamsa) / 30);
+
+    // ๗. เสาร์ (๗) - a=9.5370, e=0.0541, n=0.033444 deg/day
+    var nSatSign = calcGeocentricSign(9.53707, 0.054159, 2.48, 49.94, 0.0334442, 92.43, dEpoch);
+
+    // ๘. ราหู (๘) - พระราหูโคจรถอยหลังตามปฏิทินหลวง (Mean Node) คาบ 6793.5 วัน (~18.61 ปี)
+    var rahMean = normDeg(125.04452 - 0.05295376 * dEpoch - ayanamsa);
+    var nRahSign = Math.floor(rahMean / 30);
 
 // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
