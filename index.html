@@ -3703,9 +3703,8 @@ function getAccurateTransitSign(planetKey, targetDate) {
       var bMinVal = parseInt(document.getElementById('birthMinute24')?.value, 10) || AppState.birthMinute || 0;
       var nTimeMin = bHVal * 60 + bMinVal;
 
-// =========================================================================
-    // เอนจินคำนวณสมผุสดาวสุริยยาตร์ไทยแท้ (True Suriyayart Engine - ไร้การล็อก if)
-    // คำนวณตามสูตรคัมภีร์สุริยยาตร์ รองรับทุกวันเกิด ทุกปีเกิด พ.ศ. 2450 - 2650
+    // =========================================================================
+    // เอนจินคำนวณสมผุสดาวสุริยยาตร์ไทยแท้ (True Suriyayart Engine)
     // =========================================================================
     var birthYearCE = (bYVal > 2400) ? (bYVal - 543) : bYVal;
 
@@ -3722,16 +3721,14 @@ function getAccurateTransitSign(planetKey, targetDate) {
     var tEpoch = (jd - 2451545.0) / 36525.0; // ศตวรรษดาราศาสตร์เทียบ J2000.0
     var dSinceEpoch = jd - 2451545.0;        // จำนวนวันนับจาก J2000.0
 
-    // 2. ค่าอายะนางศะลาหิรี (Lahiri Ayanamsa) สำหรับตัดเข้าระบบนิรายนะสุริยยาตร์ไทย
+    // 2. ค่าอายะนางศะลาหิรี (Lahiri Ayanamsa)
     var ayanamsa = 23.858072 + 1.396042 * tEpoch;
 
-    // ฟังก์ชันปรับมุมให้อยู่ในช่วง 0 - 360 องศา
     function norm360(deg) {
       var r = deg % 360;
       return r < 0 ? r + 360 : r;
     }
 
-    // ฟังก์ชันคำนวณสมการศูนย์ (Equation of Center) เพื่อหาพิกัดจริงตามวงโคจรรูปวงรี
     function getTrueOrbitLong(meanL, peri, ecc, rate, d) {
       var M = norm360(meanL + rate * d - peri) * (Math.PI / 180.0);
       var C = (2 * ecc - Math.pow(ecc, 3) / 4) * Math.sin(M) + (1.25 * Math.pow(ecc, 2)) * Math.sin(2 * M);
@@ -3739,35 +3736,35 @@ function getAccurateTransitSign(planetKey, targetDate) {
       return Math.floor(trueL / 30);
     }
 
-    // ๑. อาทิตย์ (๑) - คำนวณตามอันโตนาทีสุริยยาตร์ที่คำนวณไว้ข้างต้น
+    // ๑. อาทิตย์ (๑)
     var nSunSign = sunSignIndex;
 
-    // ๒. จันทร์ (๒) - มีสมการศูนย์ลด-เพิ่มมุมเร็ว
+    // ๒. จันทร์ (๒)
     var moonM = norm360(218.3164477 + 13.17639648 * dSinceEpoch);
     var moonAnom = norm360(134.9633964 + 13.06499295 * dSinceEpoch) * (Math.PI / 180.0);
     var moonC = 6.288774 * Math.sin(moonAnom) + 1.274027 * Math.sin(2 * (moonM * Math.PI / 180.0) - moonAnom);
     var nMoonSign = Math.floor(norm360(moonM + moonC - ayanamsa) / 30);
 
-    // ๓. อังคาร (๓) - คาบโคจร 686.98 วัน (Eccentricity = 0.0934)
+    // ๓. อังคาร (๓)
     var nMarsSign = getTrueOrbitLong(355.45, 336.04, 0.0934, 0.524033, dSinceEpoch);
 
-    // ๔. พุธ (๔) - เกาะดวงอาทิตย์ (ไม่ห่างเกิน 28 องศา)
+    // ๔. พุธ (๔) - ใช้ bDVal แทน curD
     var mercAnom = norm360(168.65 + 4.092334 * dSinceEpoch) * (Math.PI / 180.0);
     var mercC = 23.44 * Math.sin(mercAnom);
-    var nMercSign = Math.floor(norm360(sunSignIndex * 30 + (curD - baseEntry) + mercC) / 30);
+    var nMercSign = Math.floor(norm360(sunSignIndex * 30 + bDVal + mercC) / 30);
 
-    // ๕. พฤหัสบดี (๕) - คาบโคจร 4332.59 วัน (~11.86 ปี, Eccentricity = 0.0484)
+    // ๕. พฤหัสบดี (๕)
     var nJupSign = getTrueOrbitLong(34.40, 14.75, 0.0484, 0.083085, dSinceEpoch);
 
-    // ๖. ศุกร์ (๖) - เกาะดวงอาทิตย์ (ไม่ห่างเกิน 47 องศา)
+    // ๖. ศุกร์ (๖) - ใช้ bDVal แทน curD
     var venAnom = norm360(48.005 + 1.602130 * dSinceEpoch) * (Math.PI / 180.0);
     var venC = 37.5 * Math.sin(venAnom);
-    var nVenSign = Math.floor(norm360(sunSignIndex * 30 + (curD - baseEntry) + venC) / 30);
+    var nVenSign = Math.floor(norm360(sunSignIndex * 30 + bDVal + venC) / 30);
 
-    // ๗. เสาร์ (๗) - คาบโคจร 10759.22 วัน (~29.46 ปี, Eccentricity = 0.0541)
+    // ๗. เสาร์ (๗)
     var nSatSign = getTrueOrbitLong(49.94, 92.43, 0.0541, 0.033444, dSinceEpoch);
 
-    // ๘. ราหู (๘) - โคจรถอยหลังตามปฏิทินหลวง (Mean Node) 6793.5 วัน (~18.61 ปี)
+    // ๘. ราหู (๘)
     var rahMean = norm360(125.04452 - 0.05295376 * dSinceEpoch - ayanamsa);
     var nRahSign = Math.floor(rahMean / 30);
 
