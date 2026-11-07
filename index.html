@@ -4180,18 +4180,25 @@ function getAccurateTransitSign(planetKey, targetDate) {
         // 4. คำนวณหมุนเวียน 12 ภพจร ให้ขยับตามลัคนาจร
         const container = document.getElementById('houses-grid-cards');
         container.innerHTML = HOUSES_TEMPLATE.map((house, i) => {
-          const signIdx = (transitAscIndex + i) % 12;
-          const sign = ZODIAC_DATA[signIdx];
-          return `
-            <div class="house-card">
-              <div style="font-size:0.85rem; font-weight:700; color:var(--gold-bright);">${house.name} : สถิต${sign.name}</div>
-              <div style="font-size:0.75rem; color:var(--gold-main);">เกษตรครองเรือน: ${sign.lord} (${sign.elem})</div>
-              <div style="font-size:0.75rem; color:#cfd8dc; margin-top:2px;">${house.meaning} ในช่วงวันจรนี้ส่งผลให้${sign.desc}</div>
-            </div>
-          `;
-        }).join('');
+          const signI// 4. คำนวณหมุนเวียน 12 ภพ ให้ตรงตามลัคนาของเจ้าชะตา
+  const container = document.getElementById('houses-grid-cards');
+  const baseAsc = (typeof ascIndex !== 'undefined' && ascIndex !== null) 
+    ? ascIndex 
+    : (AppState.currentCalculatedAscIndex || 0);
 
-        document.getElementById('vipRemedyFullText').innerHTML = transitInfo.remedy;
+  container.innerHTML = HOUSES_TEMPLATE.map((house, i) => {
+    const signIdx = (baseAsc + i) % 12;
+    const sign = ZODIAC_DATA[signIdx];
+    return `
+      <div class="house-card">
+        <div style="font-size:0.85rem; font-weight:700; color:var(--gold-bright);">${house.name} : สถิต${sign.name}</div>
+        <div style="font-size:0.75rem; color:var(--gold-main);">เกษตรครองเรือน: ${sign.lord} (${sign.elem})</div>
+        <div style="font-size:0.75rem; color:#cfd8dc; margin-top:2px;">${house.meaning} ในช่วงวันจรนี้ส่งผลให้${sign.desc}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('vipRemedyFullText').innerHTML = transitInfo.remedy;
         
 // ========================================================
       // 5. คำนวณดาวจรสะท้อนพื้นดวงเฉพาะบุคคล (แบบ Myhora: Natal vs Transit)
