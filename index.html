@@ -3988,75 +3988,21 @@ function getAccurateTransitSign(planetKey, targetDate) {
       return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + dayFrac + B - 1524.5;
     }
 
-    var jdExact = calcSuriyayartJD(birthYearCE, bMVal, bDVal, bHVal, bMinVal);
-    var dEpoch = jdExact - 2451545.0; // วันสัมพัทธ์ J2000.0
-    var T = dEpoch / 36525.0;
+      // ดึงตำแหน่งดาวกำเนิดมาตรฐานสากลนิรายนะ ลาหิรี (Swiss Ephemeris / MyHora)
+    var swissResult = getSwissPlanets(bYVal, bMVal, bDVal, bHVal, bMinVal);
 
-    // ค่าอายะนางศะลาหิรี (Ayanamsa) สำหรับตัดเข้าระบบนิรายนะสุริยยาตร์
-    var ayanamsa = 23.858072 + 1.396042 * T;
+    var nSunSign  = (swissResult && swissResult[1] !== undefined) ? swissResult[1] : sunSignIndex;
+    var nMoonSign = (swissResult && swissResult[2] !== undefined) ? swissResult[2] : 0;
+    var nMarsSign = (swissResult && swissResult[3] !== undefined) ? swissResult[3] : 0;
+    var nMercSign = (swissResult && swissResult[4] !== undefined) ? swissResult[4] : 0;
+    var nJupSign  = (swissResult && swissResult[5] !== undefined) ? swissResult[5] : 0;
+    var nVenSign  = (swissResult && swissResult[6] !== undefined) ? swissResult[6] : 0;
+    var nSatSign  = (swissResult && swissResult[7] !== undefined) ? swissResult[7] : 0;
+    var nRahSign  = (swissResult && swissResult[8] !== undefined) ? swissResult[8] : 0;
+    var nKetuSign = (swissResult && swissResult[9] !== undefined) ? swissResult[9] : 0;
+    var nUraSign  = (swissResult && swissResult[0] !== undefined) ? swissResult[0] : 0;
 
-    function normDeg(deg) {
-      var r = deg % 360;
-      return r < 0 ? r + 360 : r;
-    }
-
-    // ๑. อาทิตย์ (๑) - สุริยยาตร์ตามวันยกย้ายราศี
-    var nSunSign = sunSignIndex;
-
-    // ลองจิจูดเฉลี่ยของดวงอาทิตย์ (ใช้อ้างอิงการโคจรสัมพัทธ์ของโลก)
-    var L_sun = normDeg(280.46646 + 36000.76983 * T);
-    var M_sun = normDeg(357.52911 + 35999.05029 * T) * (Math.PI / 180.0);
-    var sunTrue = normDeg(L_sun + 1.914602 * Math.sin(M_sun) + 0.019993 * Math.sin(2 * M_sun));
-
-    // ๒. จันทร์ (๒) - มัธยม + สมการสารัมภ์ดวงจันทร์
-    var moonMean = normDeg(218.3164477 + 13.17639648 * dEpoch);
-    var moonAnom = normDeg(134.9633964 + 13.06499295 * dEpoch) * (Math.PI / 180.0);
-    var moonEq = 6.288774 * Math.sin(moonAnom) + 1.274027 * Math.sin(2 * (moonMean * Math.PI / 180.0) - moonAnom);
-    var nMoonSign = Math.floor(normDeg(moonMean + moonEq - ayanamsa) / 30);
-
-    // ฟังก์ชันคำนวณพิกัดดาวเคราะห์จริงมองจากโลก (Geocentric True Longitude)
-    // มีสมการศูนย์รูปวงรี + พิกัดสะท้อนตำแหน่งโลก (ทำให้เกิดการเดิน พักร์/เสริด จริง)
-    function calcGeocentricSign(a, e, I, L0, n, peri, d) {
-      // 1. Mean anomaly ของดาว
-      var M = normDeg(L0 + n * d - peri) * (Math.PI / 180.0);
-      // 2. Equation of center
-      var v = (L0 + n * d) + (2 * e - Math.pow(e, 3) / 4) * (180.0 / Math.PI) * Math.sin(M) + (1.25 * Math.pow(e, 2)) * (180.0 / Math.PI) * Math.sin(2 * M);
-      var r = a * (1 - Math.pow(e, 2)) / (1 + e * Math.cos(M));
-      // 3. แปลงเป็นพิกัดมองจากโลก (Geocentric)
-      var radV = v * (Math.PI / 180.0);
-      var radSun = sunTrue * (Math.PI / 180.0);
-      var x = r * Math.cos(radV) + 1.0 * Math.cos(radSun);
-      var y = r * Math.sin(radV) + 1.0 * Math.sin(radSun);
-      var geocentricDeg = Math.atan2(y, x) * (180.0 / Math.PI);
-      // 4. หักลบ Ayanamsa ตัดเข้าจักรราศีนิรายนะสุริยยาตร์
-      var siderealDeg = normDeg(geocentricDeg - ayanamsa);
-      return Math.floor(siderealDeg / 30);
-    }
-
-    // ๓. อังคาร (๓) - a=1.5236, e=0.0934, n=0.524033 deg/day
-    var nMarsSign = calcGeocentricSign(1.52366, 0.093412, 1.85, 355.45, 0.524033, 336.04, dEpoch);
-
-    // ๔. พุธ (๔) - เกาะดวงอาทิตย์ (มุมห่างไม่เกิน 28 องศา)
-    var mercAnom = normDeg(168.65 + 4.092334 * dEpoch) * (Math.PI / 180.0);
-    var mercOffset = 22.5 * Math.sin(mercAnom);
-    var nMercSign = Math.floor(normDeg(sunTrue + mercOffset - ayanamsa) / 30);
-
-    // ๕. พฤหัสบดี (๕) - a=5.2033, e=0.0484, n=0.083085 deg/day
-    var nJupSign = calcGeocentricSign(5.20336, 0.048498, 1.30, 34.40, 0.0830853, 14.75, dEpoch);
-
-    // ๖. ศุกร์ (๖) - เกาะดวงอาทิตย์ (มุมห่างไม่เกิน 47 องศา)
-    var venAnom = normDeg(48.005 + 1.602130 * dEpoch) * (Math.PI / 180.0);
-    var venOffset = 46.0 * Math.sin(venAnom);
-    var nVenSign = Math.floor(normDeg(sunTrue + venOffset - ayanamsa) / 30);
-
-    // ๗. เสาร์ (๗) - a=9.5370, e=0.0541, n=0.033444 deg/day
-    var nSatSign = calcGeocentricSign(9.53707, 0.054159, 2.48, 49.94, 0.0334442, 92.43, dEpoch);
-
-    // ๘. ราหู (๘) - พระราหูโคจรถอยหลังตามปฏิทินหลวง (Mean Node) คาบ 6793.5 วัน (~18.61 ปี)
-    var rahMean = normDeg(125.04452 - 0.05295376 * dEpoch - ayanamsa);
-    var nRahSign = Math.floor(rahMean / 30);
-
-// 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
+    // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
       
       // ตารางดาวเกษตรเจ้าเรือนประจำ 12 ราศี (0=เมษ ถึง 11=มีน) ตามระบบมาตรฐานโหรไทย
@@ -4065,14 +4011,17 @@ function getAccurateTransitSign(planetKey, targetDate) {
 
       function getSignOfPlanetNum(pNum) {
         var s = 0;
-        if (pNum === 1) s = nSunSign;
-        else if (pNum === 2) s = nMoonSign;
-        else if (pNum === 3) s = nMarsSign;
-        else if (pNum === 4) s = nMercSign;
-        else if (pNum === 5) s = nJupSign;
-        else if (pNum === 6) s = nVenSign;
-        else if (pNum === 7) s = nSatSign;
-        else s = nRahSign;
+        var p = parseInt(pNum, 10);
+        if (p === 1) s = nSunSign;
+        else if (p === 2) s = nMoonSign;
+        else if (p === 3) s = nMarsSign;
+        else if (p === 4) s = nMercSign;
+        else if (p === 5) s = nJupSign;
+        else if (p === 6) s = nVenSign;
+        else if (p === 7) s = nSatSign;
+        else if (p === 8) s = nRahSign;
+        else if (p === 9) s = nKetuSign;
+        else if (p === 0) s = nUraSign;
 
         if (isNaN(s) || s === null || s === undefined) s = 0;
         return ((Math.floor(s) % 12) + 12) % 12;
