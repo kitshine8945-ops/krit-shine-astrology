@@ -3138,7 +3138,30 @@ const password = document.getElementById('authPassword').value;
       alert('ออกจากระบบเรียบร้อยแล้ว');
       window.location.reload();
     }
+    // ฟังก์ชันคำนวณเวลาพระอาทิตย์ขึ้นจริงในประเทศไทยตามปูมดาราศาสตร์ (Global Scope)
+function getExactThaiSunriseMinute(day, month, yearBE) {
+  var yCE = (yearBE > 2400) ? yearBE - 543 : yearBE;
+  var startOfYear = new Date(yCE, 0, 1);
+  var curDate = new Date(yCE, month - 1, day);
+  var dayOfYear = Math.floor((curDate - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
 
+  var gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
+  var decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
+             - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma);
+
+  var latRad = 13.78 * Math.PI / 180.0;
+  var zenithRad = 90.833 * Math.PI / 180.0;
+
+  var cosHA = (Math.cos(zenithRad) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
+  var hourAngle = Math.acos(Math.max(-1, Math.min(1, cosHA))) * (180.0 / Math.PI);
+
+  var eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
+                 - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
+  var timeOffset = eqtime - 17.84;
+  var sunriseMinutes = 720 - (4 * hourAngle) - timeOffset;
+
+  return Math.round(sunriseMinutes);
+}
     const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
     const AppState = {
@@ -3357,40 +3380,12 @@ const password = document.getElementById('authPassword').value;
       AppState.birthHour = parseInt(document.getElementById('birthHour24').value, 10) || 0;
       AppState.birthMinute = parseInt(document.getElementById('birthMinute24').value, 10) || 0;
 
-// --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย (เทียบเคียงระบบ Myhora) ---
+      // --- คำนวณลัคนาสุริยยาตร์มาตรฐานโหรไทย (เทียบเคียงระบบ Myhora) ---
       let rawD = parseInt(AppState.birthDay, 10);
       let rawM = parseInt(AppState.birthMonth, 10);
       let rawY = parseInt(AppState.birthBE, 10);
       let rawH = parseInt(AppState.birthHour, 10) || 0;
       let rawMin = parseInt(AppState.birthMinute, 10) || 0;
-
-// 1. คำนวณเวลาพระอาทิตย์ขึ้นจริงในประเทศไทยตามปูมดาราศาสตร์ (อุทัยกาลจริง)
-      function getExactThaiSunriseMinute(day, month, yearBE) {
-        const yCE = (yearBE > 2400) ? yearBE - 543 : yearBE;
-        const startOfYear = new Date(yCE, 0, 1);
-        const curDate = new Date(yCE, month - 1, day);
-        const dayOfYear = Math.floor((curDate - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
-
-        // มุมเดคลิเนชันของดวงอาทิตย์ (Solar Declination)
-        const gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
-        const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
-                   - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma);
-
-        // ละติจูดมาตรฐานไทย (13.78° N) และมุมขอบฟ้าอุทัยกาล (-0.833°)
-        const latRad = 13.78 * Math.PI / 180.0;
-        const zenithRad = 90.833 * Math.PI / 180.0;
-
-        const cosHA = (Math.cos(zenithRad) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
-        const hourAngle = Math.acos(Math.max(-1, Math.min(1, cosHA))) * (180.0 / Math.PI);
-
-        // ปรับสมการเวลาสุริยคติ (Equation of Time) และชดเชยเส้นแวงไทย (100.54°E กับ 105°E ช้ากว่า 17.8 นาที)
-        const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
-                       - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
-        const timeOffset = eqtime - 17.84;
-        const sunriseMinutes = 720 - (4 * hourAngle) - timeOffset;
-
-        return Math.round(sunriseMinutes);
-      }
 
       let sunriseMin = getExactThaiSunriseMinute(rawD, rawM, rawY);
       let birthMinsOfDay = rawH * 60 + rawMin;
