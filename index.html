@@ -1464,8 +1464,8 @@ header.navbar {
           </div>
           <div class="res-metric" style="padding: 16px 12px;">
             <div class="res-metric-title" style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 4px;">พระอาทิตย์อุทัย</div>
-            <div style="color:#fff; font-weight:700; font-size: 1.15rem;">06:00 น.</div>
-            <div style="font-size:0.78rem; color:#aaa; margin-top: 2px;">อันโตนาทีสามัญ</div>
+            <div id="dispSunriseTime" style="color:#fff; font-weight:700; font-size: 1.15rem;">05:49 น.</div>
+            <div style="font-size:0.78rem; color:#aaa; margin-top: 2px;">อุทัยกาลจริงตามปูม</div>
           </div>
         </div>
 
@@ -3364,12 +3364,35 @@ const password = document.getElementById('authPassword').value;
       let rawH = parseInt(AppState.birthHour, 10) || 0;
       let rawMin = parseInt(AppState.birthMinute, 10) || 0;
 
-      // 1. ตารางเวลาพระอาทิตย์ขึ้นโดยเฉลี่ยตามละติจูดประเทศไทย (นาทีจากเที่ยงคืน)
-      // ม.ค.(06:40), ก.พ.(06:40), มี.ค.(06:30), เม.ย.(06:08), พ.ค.(05:50), มิ.ย.(05:48)
-      // ก.ค.(05:55), ส.ค.(06:05), ก.ย.(06:08), ต.ค.(06:10), พ.ย.(06:20), ธ.ค.(06:30)
-      const SUNRISE_TABLE = [400, 400, 390, 368, 350, 348, 355, 365, 368, 370, 380, 390];
-      let sunriseMin = SUNRISE_TABLE[rawM - 1];
+// 1. คำนวณเวลาพระอาทิตย์ขึ้นจริงในประเทศไทยตามปูมดาราศาสตร์ (อุทัยกาลจริง)
+      function getExactThaiSunriseMinute(day, month, yearBE) {
+        const yCE = (yearBE > 2400) ? yearBE - 543 : yearBE;
+        const startOfYear = new Date(yCE, 0, 1);
+        const curDate = new Date(yCE, month - 1, day);
+        const dayOfYear = Math.floor((curDate - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
 
+        // มุมเดคลิเนชันของดวงอาทิตย์ (Solar Declination)
+        const gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
+        const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
+                   - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma);
+
+        // ละติจูดมาตรฐานไทย (13.78° N) และมุมขอบฟ้าอุทัยกาล (-0.833°)
+        const latRad = 13.78 * Math.PI / 180.0;
+        const zenithRad = 90.833 * Math.PI / 180.0;
+
+        const cosHA = (Math.cos(zenithRad) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
+        const hourAngle = Math.acos(Math.max(-1, Math.min(1, cosHA))) * (180.0 / Math.PI);
+
+        // ปรับสมการเวลาสุริยคติ (Equation of Time) และชดเชยเส้นแวงไทย (100.54°E กับ 105°E ช้ากว่า 17.8 นาที)
+        const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
+                       - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
+        const timeOffset = eqtime - 17.84;
+        const sunriseMinutes = 720 - (4 * hourAngle) - timeOffset;
+
+        return Math.round(sunriseMinutes);
+      }
+
+      let sunriseMin = getExactThaiSunriseMinute(rawD, rawM, rawY);
       let birthMinsOfDay = rawH * 60 + rawMin;
 
       // 2. กฎการตัดวันโหรไทย: ถ้าเกิดก่อนเวลาอาทิตย์ขึ้น ให้ทดวันกลับไป 1 วัน
@@ -3873,6 +3896,15 @@ function getAccurateTransitSign(planetKey, targetDate) {
       document.getElementById('dispSunSign').textContent = sunInfo.name;
       document.getElementById('dispSunDegree').textContent = `ธาตุกำเนิด: ${sunInfo.elem}`;
 
+      var bD_tmp = parseInt(document.getElementById('birthDay')?.value, 10) || AppState.birthDay || 1;
+      var bM_tmp = parseInt(document.getElementById('birthMonth')?.value, 10) || AppState.birthMonth || 1;
+      var bY_tmp = parseInt(document.getElementById('birthYearBE')?.value, 10) || AppState.birthBE || 2540;
+      var sunriseMinVal = getExactThaiSunriseMinute(bD_tmp, bM_tmp, bY_tmp);
+      var sH = Math.floor(sunriseMinVal / 60);
+      var sM = sunriseMinVal % 60;
+      var sunriseEl = document.getElementById('dispSunriseTime');
+      if (sunriseEl) sunriseEl.textContent = `${String(sH).padStart(2, '0')}:${String(sM).padStart(2, '0')} น.`;
+     
       const freeContent = document.getElementById('free-result-content');
       const vipContent = document.getElementById('vip-result-content');
       const badgeType = document.getElementById('res-badge-type');
