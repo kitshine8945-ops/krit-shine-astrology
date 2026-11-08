@@ -3988,20 +3988,102 @@ function getAccurateTransitSign(planetKey, targetDate) {
       return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + dayFrac + B - 1524.5;
     }
 
-      // ดึงตำแหน่งดาวกำเนิดมาตรฐานสากลนิรายนะ ลาหิรี (Swiss Ephemeris / MyHora)
-    var swissResult = getSwissPlanets(bYVal, bMVal, bDVal, bHVal, bMinVal);
+    // เอนจินคำนวณตำแหน่งดาวสุริยยาตร์ไทยแท้ (ไม่ต้องพึ่งพา CDN ภายนอก)
+    function calcExactPlanets(yBE, m, d, h, mn) {
+      var yCE = (yBE > 2400) ? (yBE - 543) : yBE;
+      
+      // กฎตัดวันโหรไทย: หากเกิดก่อนพระอาทิตย์ขึ้น ให้นับวันย้อนหลัง 1 วัน
+      var sRiseMin = getExactThaiSunriseMinute(d, m, yBE);
+      var effD = d, effM = m, effY = yCE;
+      if ((h * 60 + mn) < sRiseMin) {
+        var prevDate = new Date(yCE, m - 1, d - 1);
+        effD = prevDate.getDate();
+        effM = prevDate.getMonth() + 1;
+        effY = prevDate.getFullYear();
+      }
 
-    var nSunSign  = (swissResult && swissResult[1] !== undefined) ? swissResult[1] : sunSignIndex;
-    var nMoonSign = (swissResult && swissResult[2] !== undefined) ? swissResult[2] : 0;
-    var nMarsSign = (swissResult && swissResult[3] !== undefined) ? swissResult[3] : 0;
-    var nMercSign = (swissResult && swissResult[4] !== undefined) ? swissResult[4] : 0;
-    var nJupSign  = (swissResult && swissResult[5] !== undefined) ? swissResult[5] : 0;
-    var nVenSign  = (swissResult && swissResult[6] !== undefined) ? swissResult[6] : 0;
-    var nSatSign  = (swissResult && swissResult[7] !== undefined) ? swissResult[7] : 0;
-    var nRahSign  = (swissResult && swissResult[8] !== undefined) ? swissResult[8] : 0;
-    var nKetuSign = (swissResult && swissResult[9] !== undefined) ? swissResult[9] : 0;
-    var nUraSign  = (swissResult && swissResult[0] !== undefined) ? swissResult[0] : 0;
+      function getJD(y, mon, day, hr, min) {
+        if (mon <= 2) { y -= 1; mon += 12; }
+        var A = Math.floor(y / 100);
+        var B = 2 - A + Math.floor(A / 4);
+        var dayFrac = (hr + min / 60.0) / 24.0;
+        return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (mon + 1)) + day + dayFrac + B - 1524.5;
+      }
 
+      var jd = getJD(effY, effM, effD, h, mn);
+      var dEpoch = jd - 2451545.0;
+      var T = dEpoch / 36525.0;
+      var ayanamsa = 23.853056 + 1.396042 * T;
+
+      function norm(deg) { var r = deg % 360; return r < 0 ? r + 360 : r; }
+
+      // อาทิตย์ (๑)
+      var L0 = norm(280.46646 + 36000.76983 * T);
+      var M_sun = norm(357.52911 + 35999.05029 * T) * (Math.PI / 180.0);
+      var sunTrue = norm(L0 + (1.914602 - 0.004817 * T) * Math.sin(M_sun) + (0.019993 - 0.000101 * T) * Math.sin(2 * M_sun));
+
+      // จันทร์ (๒)
+      var L_m = norm(218.3164477 + 481267.88123421 * T);
+      var D = norm(297.8501921 + 445267.1114034 * T) * (Math.PI / 180.0);
+      var M_m = norm(134.9633964 + 477198.8675055 * T) * (Math.PI / 180.0);
+      var F = norm(93.2720950 + 483202.0175233 * T) * (Math.PI / 180.0);
+      var dL_m = 6.288774 * Math.sin(M_m) + 1.274027 * Math.sin(2 * D - M_m) + 0.658314 * Math.sin(2 * D)
+               + 0.213618 * Math.sin(2 * M_m) - 0.185116 * Math.sin(M_sun) - 0.114332 * Math.sin(2 * F);
+      var moonTrue = norm(L_m + dL_m);
+
+      // คำนวณดาวเคราะห์ Geocentric ผ่านวงโคจรจริง
+      function getLon(a0, e0, I0, L0_deg, w0, N0, da, de, dI, dL, dw, dN) {
+        var a = a0 + da * T; var e = e0 + de * T; var I = (I0 + dI * T) * (Math.PI / 180.0);
+        var L = norm(L0_deg + dL * T); var w = norm(w0 + dw * T); var N = norm(N0 + dN * T);
+        var peri = norm(w - N); var M = norm(L - w) * (Math.PI / 180.0);
+        var E = M + e * Math.sin(M);
+        for (var k = 0; k < 5; k++) { E += (M - (E - e * Math.sin(E))) / (1 - e * Math.cos(E)); }
+        var xv = a * (Math.cos(E) - e); var yv = a * Math.sqrt(1 - e * e) * Math.sin(E);
+        var v = Math.atan2(yv, xv); var r = Math.sqrt(xv * xv + yv * yv);
+        var xh = r * (Math.cos(N * Math.PI / 180.0) * Math.cos(v + peri * Math.PI / 180.0) - Math.sin(N * Math.PI / 180.0) * Math.sin(v + peri * Math.PI / 180.0) * Math.cos(I));
+        var yh = r * (Math.sin(N * Math.PI / 180.0) * Math.cos(v + peri * Math.PI / 180.0) + Math.cos(N * Math.PI / 180.0) * Math.sin(v + peri * Math.PI / 180.0) * Math.cos(I));
+        var xe = -1.00014 * Math.cos(sunTrue * Math.PI / 180.0);
+        var ye = -1.00014 * Math.sin(sunTrue * Math.PI / 180.0);
+        return norm(Math.atan2(yh - ye, xh - xe) * 180.0 / Math.PI);
+      }
+
+      var marsLon = getLon(1.523679, 0.093405, 1.8497, -4.5534, 336.06, 49.56, 0, 0.000092, -0.0006, 19140.2993, 0.444, -0.294);
+      var mercLon = getLon(0.387099, 0.205635, 7.0050, 252.2503, 77.457, 48.331, 0, 0.000025, -0.0060, 149472.6741, 0.160, -0.125);
+      var jupLon  = getLon(5.202603, 0.048498, 1.3033, 34.3514, 14.728, 100.46, 0, 0.000028, 0.000163, -0.0020, 3034.9057, 0.213, 0.205);
+      var venLon  = getLon(0.723332, 0.006773, 3.3946, 181.9791, 131.60, 76.68, 0, -0.000049, -0.0008, 58517.8154, 0.050, -0.278);
+      var satLon  = getLon(9.554909, 0.055546, 2.4889, 49.9443, 92.60, 113.67, -0.000003, -0.000346, 0.0026, 1222.1138, -0.419, -0.289);
+      var uraLon  = getLon(19.218446, 0.046381, 0.7732, 313.2381, 170.95, 74.01, -0.000037, -0.000027, 0.0008, 428.4670, 0.409, 0.042);
+
+      var nodeLon = norm(125.04452 - 1934.136261 * T);
+      var ketuLon = norm(0.0 - 0.5298013 * dEpoch);
+
+      return {
+        1: Math.floor(norm(sunTrue - ayanamsa) / 30),
+        2: Math.floor(norm(moonTrue - ayanamsa) / 30),
+        3: Math.floor(norm(marsLon - ayanamsa) / 30),
+        4: Math.floor(norm(mercLon - ayanamsa) / 30),
+        5: Math.floor(norm(jupLon - ayanamsa) / 30),
+        6: Math.floor(norm(venLon - ayanamsa) / 30),
+        7: Math.floor(norm(satLon - ayanamsa) / 30),
+        8: Math.floor(norm(nodeLon - ayanamsa) / 30),
+        9: Math.floor(ketuLon / 30),
+        0: Math.floor(norm(uraLon - ayanamsa) / 30)
+      };
+    }
+
+    var exactPlanets = calcExactPlanets(bYVal, bMVal, bDVal, bHVal, bMinVal);
+
+    var nSunSign  = exactPlanets[1];
+    var nMoonSign = exactPlanets[2];
+    var nMarsSign = exactPlanets[3];
+    var nMercSign = exactPlanets[4];
+    var nJupSign  = exactPlanets[5];
+    var nVenSign  = exactPlanets[6];
+    var nSatSign  = exactPlanets[7];
+    var nRahSign  = exactPlanets[8];
+    var nKetuSign = exactPlanets[9];
+    var nUraSign  = exactPlanets[0];
+      
     // 2. คำนวณภพเรือนชะตาตามลัคนาจริง (House index: 0=ตนุ, 1=กดุมภะ, ..., 11=วินาศ)
       var houseNames = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
       
