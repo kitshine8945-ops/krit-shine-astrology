@@ -9,6 +9,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- ไลบรารีอ่าน QR Code ถอดรหัสสลิปบนเครื่องผู้ใช้ (ป้องกัน SlipOK นับยอดซ้ำ) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <!-- Swiss Ephemeris Library สำหรับคำนวณดาวมาตรฐาน Sidereal Lahiri -->
+  <script src="https://cdn.jsdelivr.net/npm/swisseph-v2@1.0.1/dist/swisseph.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ไอคอน Favicon สำหรับ Google Search, เบราว์เซอร์ และมือถือ -->
@@ -3162,6 +3164,62 @@ function getExactThaiSunriseMinute(day, month, yearBE) {
 
   return Math.round(sunriseMinutes);
 }
+
+// ฟังก์ชันคำนวณตำแหน่งดาวเคราะห์มาตรฐานนิรายนะ ลาหิรี (Swiss Ephemeris / MyHora Standard)
+function getSwissPlanets(yearBE, month, day, hour, minute) {
+  var yCE = (yearBE > 2400) ? yearBE - 543 : yearBE;
+  var decimalHourUTC = (hour + minute / 60.0) - 7.0;
+
+  var sweLib = window.swe || (typeof swe !== 'undefined' ? swe : null);
+  if (!sweLib) {
+    console.warn("Swiss Ephemeris library is loading or unavailable, fallback active.");
+    return null;
+  }
+
+  if (typeof sweLib.set_sid_mode === 'function') {
+    sweLib.set_sid_mode(sweLib.SIDM_LAHIRI || 1, 0, 0);
+  }
+
+  var jdUtc = sweLib.julday(yCE, month, day, decimalHourUTC, sweLib.SE_GREG_CAL || 1);
+
+  var pMap = {
+    1: 0, // SE_SUN (อาทิตย์)
+    2: 1, // SE_MOON (จันทร์)
+    4: 2, // SE_MERCURY (พุธ)
+    6: 3, // SE_VENUS (ศุกร์)
+    3: 4, // SE_MARS (อังคาร)
+    5: 5, // SE_JUPITER (พฤหัส)
+    7: 6, // SE_SATURN (เสาร์)
+    8: 10, // SE_MEAN_NODE (พระราหู)
+    0: 7  // SE_URANUS (มฤตยู)
+  };
+
+  var flags = (sweLib.SEFLG_SIDEREAL || 64 * 1024) | (sweLib.SEFLG_SPEED || 256);
+  var res = {};
+
+  for (var pNum in pMap) {
+    var pId = pMap[pNum];
+    try {
+      var calc = sweLib.calc_ut(jdUtc, pId, flags);
+      var lon = (calc && typeof calc.longitude !== 'undefined') ? calc.longitude : calc[0];
+      
+      if (parseInt(pNum, 10) === 8) {
+        lon = (lon + 180.0) % 360.0;
+      }
+      
+      res[pNum] = Math.floor(lon / 30.0);
+    } catch (err) {
+      console.warn("SWE Calc error for planet " + pNum, err);
+    }
+  }
+
+  var dEpoch = jdUtc - 2451545.0;
+  var ketuLon = (360.0 - (0.5298013 * dEpoch) % 360.0) % 360.0;
+  res[9] = Math.floor(ketuLon / 30.0);
+
+  return res;
+}
+
     const MONTH_NAMES = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
     const AppState = {
