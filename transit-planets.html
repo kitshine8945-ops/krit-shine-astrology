@@ -186,18 +186,84 @@
 <script src="transit-data.js"></script>
 
 <script>
-  // ==========================================
-  // นำฟังก์ชันสลับโหมดและเรนเดอร์โหมดฟรีมาวางไว้ตรงนี้
-  // ==========================================
-  function switchTransitTier(tier) {
-    ...
+ // ฟังก์ชันสลับโหมดระหว่าง ฟรี และ VIP
+function switchTransitTier(tier) {
+  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+  if (tier === 'vip' && !isVip) {
+    alert("⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น");
+    if (typeof openFeatureModal === 'function') openFeatureModal('member');
+    else window.location.href = 'index.html';
+    return;
   }
+  const btnFree = document.getElementById('btn-transit-free');
+  const btnVip = document.getElementById('btn-transit-vip');
+  if (btnFree) btnFree.classList.toggle('active', tier === 'free');
+  if (btnVip) btnVip.classList.toggle('active', tier === 'vip');
   
-  let currentFreeSubView = 'atHome';
-  ...
-  function renderFreeView() {
-    ...
+  const freeBox = document.getElementById('transit-free-box');
+  const vipBox = document.getElementById('transit-vip-box');
+  if (freeBox) freeBox.style.display = (tier === 'free') ? 'block' : 'none';
+  if (vipBox) vipBox.style.display = (tier === 'vip') ? 'block' : 'none';
+
+  if (tier === 'free') {
+    renderFreeView();
+  } else if (typeof calcState !== 'undefined' && calcState) {
+    drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
+    renderTransitAtHome();
   }
+}
+
+let currentFreeSubView = 'atHome';
+function switchFreeSubView(subView, el) {
+  document.querySelectorAll('#transit-free-box .astro-tab-link').forEach(btn => btn.classList.remove('active'));
+  if (el) el.classList.add('active');
+  currentFreeSubView = subView;
+  renderFreeView();
+}
+
+function renderFreeView() {
+  const container = document.getElementById('freeResultDisplayBox');
+  if (!container || typeof calcState === 'undefined' || !calcState) return;
+  container.innerHTML = '';
+  
+  if (currentFreeSubView === 'atHome') {
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach(p => {
+      let pSign = calcState.planetsTransit[p];
+      container.innerHTML += `<div class="result-row"><span class="star-code">${p} -</span><span class="house-label">${THAI_HOUSES[(pSign - calcState.ascSign + 12) % 12]}</span><span class="star-dignity">${ZODIAC_NAMES[pSign]}</span></div>`;
+    });
+  } else if (currentFreeSubView === 'homeTransit') {
+    for (let h = 0; h < 12; h++) {
+      let lord = SIGN_RULERS[(calcState.ascSign + h) % 12];
+      let tSign = calcState.planetsTransit[lord];
+      container.innerHTML += `<div class="result-row"><span class="star-code" style="width:75px;">${lord} ${THAI_HOUSES[h]}</span><span class="house-label">- ${THAI_HOUSES[(tSign - calcState.ascSign + 12) % 12]}</span><span class="star-dignity">${ZODIAC_NAMES[tSign]}</span></div>`;
+    }
+  } else if (currentFreeSubView === 'moving') {
+    // โหมดฟรี: แสดงตารางวันดาวย้ายจริงเหมือนรูปตัวอย่าง
+    const allPlanets = [
+      { code: '๑', key: 'sun', name: 'ดาวอาทิตย์ (๑) ย้ายราศี' },
+      { code: '๒', key: 'moon', name: 'ดาวจันทร์ (๒) ย้ายราศี' },
+      { code: '๓', key: 'mars', name: 'ดาวอังคาร (๓) ย้ายราศี' },
+      { code: '๔', key: 'mercury', name: 'ดาวพุธ (๔) ย้ายราศี' },
+      { code: '๕', key: 'jupiter', name: 'ดาวพฤหัสบดี (๕) ย้ายราศี' },
+      { code: '๖', key: 'venus', name: 'ดาวศุกร์ (๖) ย้ายราศี' },
+      { code: '๗', key: 'saturn', name: 'ดาวเสาร์ (๗) ย้ายราศี' },
+      { code: '๘', key: 'rahu', name: 'พระราหู (๘) ย้ายราศี' },
+      { code: '๙', key: 'ketu', name: 'พระเกตุ (๙) ย้ายราศี' },
+      { code: '๐', key: 'uranus', name: 'ดาวมฤตยู (๐) ย้ายราศี' }
+    ];
+
+    allPlanets.forEach(item => {
+      let nextMoveStr = typeof getAccurateTransitEndDate === 'function' ? getAccurateTransitEndDate(item.key, calcState.targetTransitDate) : 'ดูรายละเอียด';
+      container.innerHTML += `
+        <div class="result-row">
+          <span class="star-code">${item.code}</span>
+          <span class="house-label">${item.name}</span>
+          <span class="star-dignity">${nextMoveStr}</span>
+        </div>
+      `;
+    });
+  }
+}
 
 // =========================================================================
 // 1. ฐานข้อมูล 77 จังหวัด และทุกอำเภอในประเทศไทย พร้อมพิกัดจริง
