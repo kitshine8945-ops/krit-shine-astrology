@@ -69,7 +69,14 @@
 
 <div class="modal-container">
   <a href="index.html" class="close-btn" title="กลับหน้าหลัก">✕</a>
-
+<div class="tier-switcher" style="display: flex; background: rgba(8, 14, 28, 0.85); padding: 6px; border-radius: 14px; border: 1px solid rgba(234, 179, 8, 0.4); margin-bottom: 20px; gap: 8px;">
+    <button type="button" class="tier-btn active" id="btn-transit-free" onclick="switchTransitTier('free')" style="flex: 1; background: #f59e0b; color: #0b0f19; border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;">
+      <i class="fa-regular fa-circle-check"></i> ดาวย้ายพื้นฐาน (ดูฟรี)
+    </button>
+    <button type="button" class="tier-btn" id="btn-transit-vip" onclick="switchTransitTier('vip')" style="flex: 1; background: transparent; color: #94a3b8; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+      <i class="fa-solid fa-crown"></i> วงล้อดวงดาว & คำพยากรณ์เชิงลึก (VIP)
+    </button>
+  </div>
   <div class="test-panel" id="testInputPanel">
     <div class="test-title">🪐 กำหนดดวงชะตากำเนิด & วันที่ตรวจดาวจร (มาตรฐานสุริยยาตร์ไทยแท้ / เว็บหลัก)</div>
     <div class="test-grid">
@@ -142,20 +149,34 @@
       <div>📅 วันกำเนิด: <b id="dspBirth">-</b> | ลัคนาสถิต: <b id="dspAsc" style="color:var(--gold-light);">-</b> | พระอาทิตย์อุทัย: <b id="dspSunrise" style="color:#38bdf8;">-</b></div>
       <div>📍 สถานที่: <b id="dspLoc">-</b> | ⚡ วันเวลาจรที่ตรวจสอบ: <b id="dspTransit" style="color:var(--accent);">-</b></div>
     </div>
-
-    <div class="star-legend-bar">
-      <div class="legend-item"><span class="legend-color" style="background:#1e3a8a;"></span> <span style="color:#93c5fd;">ดาวพื้นดวงกำเนิด (วงใน)</span></div>
-      <div class="legend-item"><span class="legend-color" style="background:#ea580c;"></span> <span style="color:#fb923c;">ดาวจรปัจจุบัน (วงนอก)</span></div>
+<!-- 1. กล่องโหมดฟรี (แสดงตารางย่อตามรูปตัวอย่าง) -->
+    <div id="transit-free-box" style="display: block;">
+      <div class="astro-nav-tabs">
+        <span class="astro-tab-link active" onclick="switchFreeSubView('atHome', this)">จรอยู่บ้าน</span>
+        <span class="astro-tab-link" onclick="switchFreeSubView('homeTransit', this)">เจ้าบ้านจร</span>
+        <span class="astro-tab-link" onclick="switchFreeSubView('moving', this)">ดาวย้าย</span>
+      </div>
+      <div class="result-box" id="freeResultDisplayBox"></div>
     </div>
 
-    <div class="chart-wheel-card">
-      <svg id="astroWheelSvg" class="transit-wheel-svg" viewBox="0 0 540 540"></svg>
-    </div>
+    <!-- 2. กล่องโหมด VIP (แสดงกงล้อ SVG และคำพยากรณ์เชิงลึกเดิม) -->
+    <div id="transit-vip-box" style="display: none;">
+      <div class="star-legend-bar">
+        <div class="legend-item"><span class="legend-color" style="background:#1e3a8a;"></span> <span style="color:#93c5fd;">ดาวพื้นดวงกำเนิด (วงใน)</span></div>
+        <div class="legend-item"><span class="legend-color" style="background:#ea580c;"></span> <span style="color:#fb923c;">ดาวจรปัจจุบัน (วงนอก)</span></div>
+      </div>
 
-    <div class="astro-nav-tabs">
-      <span class="astro-tab-link active" onclick="switchView('transitAtHome', this)">จรอยู่บ้าน</span>
-      <span class="astro-tab-link" onclick="switchView('homeAtTransit', this)">เจ้าบ้านจร</span>
-      <span class="astro-tab-link" onclick="switchView('transitMoving', this)">ดาวย้าย</span>
+      <div class="chart-wheel-card">
+        <svg id="astroWheelSvg" class="transit-wheel-svg" viewBox="0 0 540 540"></svg>
+      </div>
+
+      <div class="astro-nav-tabs">
+        <span class="astro-tab-link active" onclick="switchView('transitAtHome', this)">จรอยู่บ้าน (เชิงลึก)</span>
+        <span class="astro-tab-link" onclick="switchView('homeAtTransit', this)">เจ้าบ้านจร (เชิงลึก)</span>
+        <span class="astro-tab-link" onclick="switchView('transitMoving', this)">ดาวย้าย (เชิงลึก)</span>
+      </div>
+
+      <div class="result-box" id="resultDisplayBox"></div>
     </div>
 
     <div class="result-box" id="resultDisplayBox"></div>
@@ -165,6 +186,19 @@
 <script src="transit-data.js"></script>
 
 <script>
+  // ==========================================
+  // นำฟังก์ชันสลับโหมดและเรนเดอร์โหมดฟรีมาวางไว้ตรงนี้
+  // ==========================================
+  function switchTransitTier(tier) {
+    ...
+  }
+  
+  let currentFreeSubView = 'atHome';
+  ...
+  function renderFreeView() {
+    ...
+  }
+
 // =========================================================================
 // 1. ฐานข้อมูล 77 จังหวัด และทุกอำเภอในประเทศไทย พร้อมพิกัดจริง
 // =========================================================================
