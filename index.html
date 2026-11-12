@@ -3701,8 +3701,8 @@ const PLANET_TRANSIT_LOOKUP = {
   jupiter: [
     { start: "2025-05-15T00:00:00+07:00", sign: 2 },
     { start: "2026-05-31T21:45:00+07:00", sign: 3 },
-    { start: "2026-10-20T07:50:00+07:00", sign: 4 }, // เสริด สิงห์
-    { start: "2027-02-09T10:07:00+07:00", sign: 3 }, // พักร์ กรกฎ
+    { start: "2026-10-20T07:50:00+07:00", sign: 4 },
+    { start: "2027-02-09T10:07:00+07:00", sign: 3 },
     { start: "2027-06-16T14:22:00+07:00", sign: 4 },
     { start: "2028-07-22T08:35:00+07:00", sign: 5 },
     { start: "2029-08-20T19:12:00+07:00", sign: 6 },
@@ -3755,7 +3755,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2053-09-15T18:00:00+07:00", sign: 0 }
   ],
 
-  // ๓. พระราหู (๘) ครบ 30 ปี (ย้าย 22 พ.ย. 69 เวลา 05:05 น.)
+  // ๓. พระราหู (๘) ครบ 30 ปี
   rahu: [
     { start: "2023-10-17T06:22:00+07:00", sign: 11 },
     { start: "2025-05-05T09:44:00+07:00", sign: 10 },
@@ -3779,7 +3779,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2036-08-24T12:00:00+07:00", sign: 3 }
   ],
 
-  // ๕. ดาวศุกร์ (๖) ขยายช่วงเวลาการย้ายราศีและช่วงพักร์ต่อเนื่องระยะยาว
+  // ๕. ดาวศุกร์ (๖)
   venus: [
     { start: "2026-08-31T20:46:00+07:00", sign: 6 },
     { start: "2027-01-02T06:13:00+07:00", sign: 7 },
@@ -3847,11 +3847,11 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2033-01-02T00:00:00+07:00", sign: 7 }
   ],
 
-  // ๖. ดาวอังคาร (๓) ขยายช่วงเวลาการย้ายราศีต่อเนื่องระยะยาว
+  // ๖. ดาวอังคาร (๓)
   mars: [
     { start: "2026-09-19T02:53:00+07:00", sign: 3 },
     { start: "2026-11-10T12:42:00+07:00", sign: 4 },
-    { start: "2027-04-15T00:00:00+07:00", sign: 5 },
+    { start: "2027-03-19T01:13:00+07:00", sign: 3 },
     { start: "2027-06-08T00:00:00+07:00", sign: 6 },
     { start: "2027-07-26T00:00:00+07:00", sign: 7 },
     { start: "2027-09-10T00:00:00+07:00", sign: 8 },
@@ -3887,6 +3887,58 @@ const PLANET_TRANSIT_LOOKUP = {
   ]
 };
 
+// ฟังก์ชันหาช่วงเวลาสิ้นสุดของดาวจรแบบอัตโนมัติ
+function getDynamicTransitEndDate(planetKey, targetDate) {
+  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+  const targetTime = targetDate.getTime();
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+  if (timeline && timeline.length > 0) {
+    for (let i = 0; i < timeline.length; i++) {
+      const tStart = new Date(timeline[i].start).getTime();
+      if (tStart > targetTime) {
+        const dObj = new Date(timeline[i].start);
+        return `${dObj.getDate()} ${thMonths[dObj.getMonth()]} ${dObj.getFullYear() + 543}`;
+      }
+    }
+  }
+  const approxDays = (planetKey === 'venus') ? 30 : 45;
+  const expDate = new Date(targetTime + (approxDays * 24 * 60 * 60 * 1000));
+  return `${expDate.getDate()} ${thMonths[expDate.getMonth()]} ${expDate.getFullYear() + 543}`;
+}
+
+// ฟังก์ชันดึงราศีจากตารางปฏิทินดาวย้าย
+function getAccurateTransitSign(planetKey, targetDate) {
+  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+  if (!timeline) return 0;
+  const targetTime = targetDate.getTime();
+  let currentSign = timeline[0].sign;
+  for (let i = 0; i < timeline.length; i++) {
+    if (targetTime >= new Date(timeline[i].start).getTime()) {
+      currentSign = timeline[i].sign;
+    } else {
+      break;
+    }
+  }
+  return currentSign;
+}
+
+// ฟังก์ชันหาเวลาดาวย้ายครั้งถัดไป
+function getNextTransitDate(planetKey, targetDate) {
+  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+  if (!timeline) return "-";
+  const targetTime = targetDate.getTime();
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  for (let i = 0; i < timeline.length; i++) {
+    const tStart = new Date(timeline[i].start).getTime();
+    if (tStart > targetTime) {
+      const dObj = new Date(timeline[i].start);
+      return `${thMonths[dObj.getMonth()]} ${dObj.getFullYear() + 543}`;
+    }
+  }
+  return "พ.ศ. 2575+";
+}
+
 // =========================================================================
 // เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (๑ ถึง ๐) ดึงจากตารางดาวย้ายจริง
 // =========================================================================
@@ -3895,7 +3947,6 @@ function calculateAllTransitPlanets(targetDate) {
   const m = targetDate.getMonth() + 1;
   const d = targetDate.getDate();
 
-  // ดึงตำแหน่งดาวจากตาราง 30 ปีจริงครบทุกดวง (รวมดาวอังคารและดาวศุกร์)
   const jup  = getAccurateTransitSign('jupiter', targetDate);
   const sat  = getAccurateTransitSign('saturn', targetDate);
   const rah  = getAccurateTransitSign('rahu', targetDate);
@@ -3946,10 +3997,10 @@ function calculateAllTransitPlanets(targetDate) {
   return {
     1: sunSign,
     2: moonSign,
-    3: mars, // ดึงค่าจากตารางดาวย้ายจริงของดาวอังคาร
+    3: mars, // วิ่งตรงตามตารางดาวย้ายจริง (ย้าย 19 มี.ค. 2570)
     4: mercSign,
     5: jup,
-    6: ven,  // ดึงค่าจากตารางดาวย้ายจริงของดาวศุกร์
+    6: ven,  // วิ่งตรงตามตารางดาวย้ายจริง
     7: sat,
     8: rah,
     9: ketuSign,
