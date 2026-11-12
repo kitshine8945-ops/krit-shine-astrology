@@ -197,11 +197,20 @@ function switchTransitTier(tier) {
     return;
   }
 
-  // 🌟 จัดการสลับแถบสีส้ม (Active state) ของปุ่มด้านบน
   const btnFree = document.getElementById('btn-transit-free');
   const btnVip = document.getElementById('btn-transit-vip');
-  if (btnFree) btnFree.classList.toggle('active', tier === 'free');
-  if (btnVip) btnVip.classList.toggle('active', tier === 'vip');
+
+  // สลับสถานะและใส่สีส้มแบบบังคับตรงนี้เลย
+  if (btnFree) {
+    btnFree.classList.toggle('active', tier === 'free');
+    btnFree.style.background = (tier === 'free') ? '#f59e0b' : 'transparent'; // สีส้มเมื่อเลือกฟรี
+    btnFree.style.color = (tier === 'free') ? '#000' : '#fff';
+  }
+  if (btnVip) {
+    btnVip.classList.toggle('active', tier === 'vip');
+    btnVip.style.background = (tier === 'vip') ? '#f59e0b' : 'transparent'; // สีส้มเมื่อเลือก VIP
+    btnVip.style.color = (tier === 'vip') ? '#000' : '#fff';
+  }
   
   const freeBox = document.getElementById('transit-free-box');
   const vipBox = document.getElementById('transit-vip-box');
@@ -216,7 +225,6 @@ function switchTransitTier(tier) {
     renderTransitAtHome();
   }
 
-  // วาดกงล้อดวงดาวแสดงผลตลอดเวลา
   if (typeof calcState !== 'undefined' && calcState) {
     drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
   }
