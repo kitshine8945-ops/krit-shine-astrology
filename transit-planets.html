@@ -839,6 +839,9 @@ function getStarDignityDetail(p, sign) {
   return (table[p] && table[p][sign]) ? table[p][sign] : { label: "", desc: "ดาวโคจรในตำแหน่งมาตรฐานปกติ ส่งผลตามจังหวะของดวงดาวและขึ้นอยู่กับการลงมือทำของเจ้าชะตา" };
 }
 
+// =========================================================================
+// 1. ฟังก์ชันพยากรณ์ดาวจรเข้าเรือนชะตาแบบเจาะลึก (ตัดประโยคโหลออกทั้งหมด)
+// =========================================================================
 function renderTransitAtHome() {
   const container = document.getElementById('resultDisplayBox');
   container.innerHTML = '';
@@ -890,11 +893,8 @@ function renderTransitAtHome() {
     badge.textContent = statusTag;
     card.appendChild(badge);
 
-    // 🌟 ตรงนี้คือข้อความใหม่ที่ดึงข้อมูลดาวและภพมาผสมกันแบบเฉพาะตัว ไม่ซ้ำซาก
-    let overviewText = `ในช่วงเวลานี้ ${pInfo.name} โคจรเข้าสถิตในเรือน${hInfo.name} (${ZODIAC_NAMES[pSign]}${digObj.label ? ' ' + digObj.label : ''}) ส่งผลกระทบโดยตรงต่อ${hInfo.area} (${hInfo.focus}) โดยมีกำลังหลักด้าน${pInfo.core} ${digObj.desc} `;
-    overviewText += isBadHouse
-      ? `เนื่องจากโคจรเข้าสู่ภพทุสถานภพ จึงเป็นจังหวะที่ต้องระมัดระวังรอบคอบ เตรียมรับมือกับปัญหาอุปสรรคหรือภาระที่เข้ามาทดสอบความอดทน`
-      : `นับเป็นจังหวะเวลาที่เกื้อหนุนและเปิดประตูแห่งโอกาสสำคัญให้เจ้าชะตาสามารถขับเคลื่อนเรื่อง${hInfo.area} ไปสู่ความสำเร็จได้อย่างราบรื่น`;
+    // ภาพรวมดึงเนื้อหาดาวและภพมาผสมกันตรงๆ ไม่มีประโยคโหล
+    let overviewText = `ในช่วงเวลานี้ ${pInfo.name} โคจรเข้าสถิตในเรือน${hInfo.name} (${ZODIAC_NAMES[pSign]}${digObj.label ? ' ' + digObj.label : ''}) ส่งผลกระทบโดยตรงต่อ${hInfo.area} (${hInfo.focus}) โดยมีกำลังหลักด้าน${pInfo.core} ${digObj.desc}`;
 
     const sections = [
       { label: '📌 ภาพรวมคำพยากรณ์: ', text: overviewText, color: '#f1f5f9' },
@@ -918,6 +918,9 @@ function renderTransitAtHome() {
   });
 }
 
+// =========================================================================
+// 2. ฟังก์ชันพยากรณ์เจ้าเรือนภพจรแบบเจาะลึก (ตัดประโยคโหลออกทั้งหมด)
+// =========================================================================
 function renderHomeAtTransit() {
   const container = document.getElementById('resultDisplayBox');
   container.innerHTML = '';
@@ -965,14 +968,14 @@ function renderHomeAtTransit() {
     header.appendChild(spanZodiac);
     card.appendChild(header);
 
-    // 🌟 ตรงนี้คือข้อความเชื่อมโยงเรือนชะตาใหม่ ไม่ซ้ำซากจำเจแน่นอน
+    // การเชื่อมโยงดวงชะตาแบบเฉพาะตัว ไม่มีประโยคสำเร็จรูปรบกวน
     let deepAnalysis = `เจ้าเรือนภพ${THAI_HOUSES[h]} (${srcHouse.area}) ของคุณคือ ${lordInfo.name} ซึ่งในรอบเวลานี้ได้โคจรไปสถิต ณ ${dstHouse.name} (${ZODIAC_NAMES[lordTransitSign]}${digObj.label ? ' ' + digObj.label : ''}) `;
     if (isSelfHouse) {
       deepAnalysis += `ได้ตำแหน่งพิเศษ "เกษตรเจ้าเรือน" ทำให้เรื่องราวของ${srcHouse.area} มีความมั่นคง เข้มแข็ง และเป็นปึกแผ่นสูงสุด เจ้าชะตาสามารถควบคุมจัดการและกำหนดทิศทางเรื่องนี้ได้ด้วยตนเองอย่างเต็มที่ `;
     } else if (isTargetBad) {
       deepAnalysis += `เป็นการโคจรเข้าสู่เรือนทุสถานภพ บ่งบอกว่าเรื่องราวของ${srcHouse.area} กำลังเผชิญกับการปรับเปลี่ยน โครงสร้างสะดุด หรือมีภาระที่ต้องเข้าไปเกี่ยวข้องกับปัญหาในเรื่อง${dstHouse.area} `;
     } else {
-      deepAnalysis += `เป็นการเชื่อมโยงกระแสพลังงานที่ส่งเสริมกันอย่างลงตัว ส่งผลให้เรื่องราวของ${srcHouse.area} จะไหลเวียนไปเกื้อหนุนและสร้างความสำเร็จเชื่อมโยงไปสู่เรื่องของ${dstHouse.area} `;
+      deepAnalysis += `ส่งผลให้เรื่องราวของ${srcHouse.area} เชื่อมโยงเข้าหากิจกรรมในเรื่อง${dstHouse.area} โดยตรง `;
     }
     deepAnalysis += `${digObj.desc}`;
 
@@ -996,7 +999,6 @@ function renderHomeAtTransit() {
     container.appendChild(card);
   }
 }
-
 
 function renderTransitMoving() {
   const container = document.getElementById('resultDisplayBox');
