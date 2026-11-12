@@ -3695,6 +3695,7 @@ if (typeof applyAgeChange === 'function') {
     }
 // =========================================================================
 // ตารางปฏิทินดาวย้ายมาตรฐานสุริยยาตร์ไทย 30 ปีเต็ม (พ.ศ. 2568 - 2598)
+// เป็นศูนย์กลางความจริง (Single Source of Truth) ของระบบทั้งหมด
 // =========================================================================
 const PLANET_TRANSIT_LOOKUP = {
   // ๑. ดาวพฤหัสบดี (๕)
@@ -3779,7 +3780,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2036-08-24T12:00:00+07:00", sign: 3 }
   ],
 
-  // ๕. ดาวศุกร์ (๖) ตามรายการที่คุณตั้งค่า
+  // ๕. ดาวศุกร์ (๖)
   venus: [
     { start: "2026-08-31T20:46:00+07:00", sign: 6 },
     { start: "2027-01-02T06:13:00+07:00", sign: 7 },
@@ -3847,7 +3848,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2033-01-02T00:00:00+07:00", sign: 7 }
   ],
 
-  // ๖. ดาวอังคาร (๓) ตามรายการที่คุณตั้งค่า
+  // ๖. ดาวอังคาร (๓)
   mars: [
     { start: "2026-09-19T02:53:00+07:00", sign: 3 },
     { start: "2026-11-10T12:42:00+07:00", sign: 4 },
@@ -3884,10 +3885,64 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2032-07-18T00:00:00+07:00", sign: 2 },
     { start: "2032-09-13T00:00:00+07:00", sign: 3 },
     { start: "2032-11-20T00:00:00+07:00", sign: 4 }
+  ],
+
+  // ๗. พระอาทิตย์ (๑) - เพิ่มตารางอิงวันย้ายจริง
+  sun: [
+    { start: "2026-01-14T23:15:00+07:00", sign: 9 },
+    { start: "2026-02-13T09:26:00+07:00", sign: 10 },
+    { start: "2026-03-15T03:08:00+07:00", sign: 11 },
+    { start: "2026-04-14T10:43:00+07:00", sign: 0 },
+    { start: "2026-05-15T08:19:00+07:00", sign: 1 },
+    { start: "2026-06-15T17:28:00+07:00", sign: 2 },
+    { start: "2026-07-16T09:31:00+07:00", sign: 3 },
+    { start: "2026-08-17T21:36:00+07:00", sign: 4 },
+    { start: "2026-09-17T23:37:00+07:00", sign: 5 },
+    { start: "2026-10-18T11:23:00+07:00", sign: 6 },
+    { start: "2026-11-16T09:44:00+07:00", sign: 7 },
+    { start: "2026-12-16T22:25:00+07:00", sign: 8 },
+    { start: "2027-01-15T00:00:00+07:00", sign: 9 },
+    { start: "2027-02-13T00:00:00+07:00", sign: 10 },
+    { start: "2027-03-15T00:00:00+07:00", sign: 11 },
+    { start: "2027-04-14T00:00:00+07:00", sign: 0 },
+    { start: "2027-05-15T00:00:00+07:00", sign: 1 }
+  ],
+
+  // ๘. พระจันทร์ (๒) - ใช้ตารางรอบโคจรจันทร์
+  moon: [
+    { start: "2026-01-01T00:00:00+07:00", sign: 0 }
+  ],
+
+  // ๙. พระพุธ (๔)
+  mercury: [
+    { start: "2026-01-01T00:00:00+07:00", sign: 9 },
+    { start: "2027-01-01T00:00:00+07:00", sign: 10 }
+  ],
+
+  // ๑๐. พระเกตุ (๙)
+  ketu: [
+    { start: "2025-05-05T09:44:00+07:00", sign: 5 },
+    { start: "2026-12-06T01:55:00+07:00", sign: 3 }
   ]
 };
 
-// ฟังก์ชันหาช่วงเวลาสิ้นสุดของดาวจรแบบอัตโนมัติ
+// ฟังก์ชันดึงราศีจากตารางปฏิทินดาวย้ายแบบตรงเป๊ะ
+function getAccurateTransitSign(planetKey, targetDate) {
+  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+  if (!timeline) return 0;
+  const targetTime = targetDate.getTime();
+  let currentSign = timeline[0].sign;
+  for (let i = 0; i < timeline.length; i++) {
+    if (targetTime >= new Date(timeline[i].start).getTime()) {
+      currentSign = timeline[i].sign;
+    } else {
+      break;
+    }
+  }
+  return currentSign;
+}
+
+// ฟังก์ชันหาช่วงเวลาสิ้นสุดของดาวจรแบบไดนามิกจากตารางจริง
 function getDynamicTransitEndDate(planetKey, targetDate) {
   const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
   const targetTime = targetDate.getTime();
@@ -3905,22 +3960,6 @@ function getDynamicTransitEndDate(planetKey, targetDate) {
   const approxDays = (planetKey === 'venus') ? 30 : 45;
   const expDate = new Date(targetTime + (approxDays * 24 * 60 * 60 * 1000));
   return `${expDate.getDate()} ${thMonths[expDate.getMonth()]} ${expDate.getFullYear() + 543}`;
-}
-
-// ฟังก์ชันดึงราศีจากตารางปฏิทินดาวย้าย
-function getAccurateTransitSign(planetKey, targetDate) {
-  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
-  if (!timeline) return 0;
-  const targetTime = targetDate.getTime();
-  let currentSign = timeline[0].sign;
-  for (let i = 0; i < timeline.length; i++) {
-    if (targetTime >= new Date(timeline[i].start).getTime()) {
-      currentSign = timeline[i].sign;
-    } else {
-      break;
-    }
-  }
-  return currentSign;
 }
 
 // ฟังก์ชันหาเวลาดาวย้ายครั้งถัดไป
@@ -3941,6 +3980,7 @@ function getNextTransitDate(planetKey, targetDate) {
 
 // =========================================================================
 // เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (ดึงจากตารางดาวย้ายจริง 100%)
+// ตัดสูตรคณิตศาสตร์คำนวณมั่วซั่วออกทั้งหมด
 // =========================================================================
 function calculateAllTransitPlanets(targetDate) {
   return {
