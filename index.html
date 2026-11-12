@@ -1053,6 +1053,13 @@ header.navbar {
   <div class="cat-name" style="color: #ffd700;">วอลเปเปอร์มงคล</div>
   <div class="cat-sub">ออกแบบเสริมดวงเฉพาะคุณ</div>
 </div>
+ <div class="cat-item" onclick="window.location.href='transit-planets.html';">
+  <div class="cat-icon-circle" style="background: rgba(245,158,11,0.25); border: 1.5px solid #ffd700;">
+    <i class="fa-solid fa-satellite-dish" style="color: #ffd700;"></i>
+  </div>
+  <div class="cat-name" style="color: #ffd700;">ดาวย้าย</div>
+  <div class="cat-sub">เช็กตำแหน่งดาวจร 10 ดวง</div>
+</div>       
      <!-- 4 เมนูพยากรณ์พรีเมียม -->
       <div class="cat-item" onclick="if(typeof window.getKsUserBirthData === 'function' ? !window.getKsUserBirthData() : !document.getElementById('birthDay').value){alert('⚠️ กรุณากรอกวันเดือนปีเกิดในระบบก่อนทำการถอดรหัสชะตากรรมครับ'); if(typeof scrollToForm==='function')scrollToForm(); else document.getElementById('birth-form').scrollIntoView({behavior:'smooth'});}else{openNewPremModal('karmic');}">
         <div class="cat-icon-circle" style="background: rgba(212,175,55,0.2); border: 1px solid #d4af37;"><i class="fa-solid fa-scroll" style="color: #f1c40f;"></i></div>
@@ -1392,6 +1399,36 @@ header.navbar {
   </div>
 
 </form>
+<!-- ================= BANNER: ดาวย้าย & 12 ภพชะตาจร ================= -->
+<div style="max-width: 850px; margin: 25px auto; padding: 0 10px; box-sizing: border-box;">
+  <a href="transit-planets.html" style="text-decoration: none; display: block;">
+    <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.7); border-radius: 16px; padding: 16px 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px rgba(234, 179, 8, 0.2); display: flex; align-items: center; justify-content: space-between; gap: 14px; transition: transform 0.2s ease, border-color 0.2s ease;"
+         onmouseover="this.style.transform='translateY(-3px)'; this.style.borderColor='#ffd700';"
+         onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(234, 179, 8, 0.7)';">
+      
+      <div style="text-align: left; flex: 1;">
+        <span style="background: rgba(234, 179, 8, 0.2); color: #ffd700; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(234, 179, 8, 0.4); display: inline-block; margin-bottom: 6px;">
+          🪐 อัปเดตสถานการณ์ดวงดาวเรียลไทม์
+        </span>
+        <h4 style="margin: 0; color: #ffd700; font-size: 1.15rem; font-weight: 700; line-height: 1.3;">
+          🔭 เช็กตำแหน่งดาวย้าย & 12 ภพชะตาจร
+        </h4>
+        <p style="margin: 4px 0 0 0; color: #cbd5e1; font-size: 0.85rem; line-height: 1.4;">
+          วิเคราะห์ดาวจรเข้าเรือนชะตา เจ้าบ้านจร และปฏิทินดาวย้าย 30 ปี
+        </p>
+      </div>
+
+      <div style="flex-shrink: 0; text-align: center;">
+        <div style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a0f00; font-weight: 700; font-size: 0.9rem; padding: 9px 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+          <span>ตรวจสอบ</span>
+          <i class="fa-solid fa-arrow-right" style="font-size: 0.8rem;"></i>
+        </div>
+      </div>
+
+    </div>
+  </a>
+</div>
+
     <!-- ================= BANNER: วอลเปเปอร์มงคลเฉพาะดวงชะตา ================= -->
 <div style="max-width: 850px; margin: 25px auto; padding: 0 10px; box-sizing: border-box;">
   <a href="wallpaper.html" style="text-decoration: none; display: block;">
@@ -1934,6 +1971,16 @@ function analyzeVipSpecificQuestion() {
         </div>
       </div>
 
+    <!-- 7. ดาวย้าย จักรราศีและภพชะตา -->
+      <div class="popular-card" onclick="window.location.href='transit-planets.html';">
+        <img class="popular-card-img" src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80" alt="ดาวย้าย จักรราศีและภพชะตา">
+        <div class="popular-card-body">
+          <h4 class="popular-card-title">ดาวย้าย</h4>
+          <p class="popular-card-desc">วิเคราะห์ตำแหน่งดาวจร 10 ดวง กงล้อดวงดาว และปฏิทินดาวย้าย 30 ปี</p>
+          <span class="btn-popular-view">ดูเพิ่มเติม</span>
+        </div>
+      </div>
+    
     </div>
   </section>
 
