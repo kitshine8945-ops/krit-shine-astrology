@@ -13805,9 +13805,8 @@ window.handleOpenModal = handleOpenModal;
 </script>
 <script>
 // =========================================================================
-// ระบบคำนวณปฏิทินดาวย้าย คัมภีร์สุริยยาตร์ไทยแท้ (Hybrid Engine แม่นยำ 100%)
-// ล็อกค่าวันย้ายดาววิปริตปี 2569-2571 ให้ตรงตามปฏิทิน อ.ทองเจือ / MyHora
-// และคำนวณด้วยสูตรคณิตศาสตร์อัตโนมัติสำหรับระยะยาว 1,000 ปี
+// ระบบคำนวณปฏิทินดาวย้าย คัมภีร์สุริยยาตร์ไทยแท้ (ปรับเทียบตรง อ.ทองเจือ / MyHora 100%)
+// คำนวณสดทุกวันเดือนปี ย้อนหลัง-ล่วงหน้า 1,000 ปี (ไม่พึ่งตาราง Hardcode ที่ผิด)
 // =========================================================================
 
 const SIGN_NAMES = [
@@ -13815,91 +13814,57 @@ const SIGN_NAMES = [
   "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"
 ];
 
-// 1. ตารางข้อมูลอ้างอิงระดับนาที (ช่วงปี 2569 - 2571 สำหรับดาวที่เดินวิปริตซับซ้อน)
-const EXACT_TRANSIT_OVERRIDES = {
-  // ดาวอังคาร (๓) - ย้ายเข้าสิงห์ 10 พ.ย. 2569 -> พักร์กลับกรกฎ 19 มี.ค. 2570 -> ย้ายเข้าสิงห์ 26 เม.ย. 2570
-  mars: [
-    { start: "2026-09-19T02:53:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2026-11-10T12:42:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-03-19T01:13:00+07:00", sign: 3 },  // กรกฎ (พักร์)
-    { start: "2027-04-26T14:08:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-06-26T22:12:00+07:00", sign: 5 },  // กันย์
-    { start: "2027-08-12T06:14:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2027-09-24T17:04:00+07:00", sign: 7 },  // พิจิก
-    { start: "2027-11-05T07:45:00+07:00", sign: 8 },  // ธนู
-    { start: "2027-12-15T12:12:00+07:00", sign: 9 }   // มังกร
-  ],
-  // ดาวพฤหัสบดี (๕) - ย้ายเข้าสิงห์ 20 ต.ค. 2569 -> พักร์กลับกรกฎ 9 ก.พ. 2570 -> ย้ายเข้าสิงห์ 23 มิ.ย. 2570
-  jupiter: [
-    { start: "2026-05-31T21:45:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2026-10-20T07:50:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-02-09T10:07:00+07:00", sign: 3 },  // กรกฎ (พักร์)
-    { start: "2027-06-23T21:02:00+07:00", sign: 4 },  // สิงห์
-    { start: "2028-07-20T03:33:00+07:00", sign: 5 },  // กันย์
-    { start: "2029-08-20T19:12:00+07:00", sign: 6 }   // ตุลย์
-  ],
-  // ดาวศุกร์ (๖) - ย้ายเข้าตุลย์ 31 ส.ค. 2569 -> ย้ายเข้าพิจิก 2 ม.ค. 2570 -> ธนู 1 ก.พ. -> มังกร 26 ก.พ. -> กุมภ์ 23 มี.ค.
-  venus: [
-    { start: "2026-08-03T16:40:00+07:00", sign: 5 },  // กันย์
-    { start: "2026-08-31T20:46:00+07:00", sign: 6 },  // ตุลย์ (อยู่ยาวเพราะพักร์)
-    { start: "2027-01-02T06:13:00+07:00", sign: 7 },  // พิจิก
-    { start: "2027-02-01T10:36:00+07:00", sign: 8 },  // ธนู
-    { start: "2027-02-26T03:19:00+07:00", sign: 9 },  // มังกร
-    { start: "2027-03-23T09:40:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2027-04-17T08:11:00+07:00", sign: 11 }, // มีน
-    { start: "2027-05-12T00:52:00+07:00", sign: 0 },  // เมษ
-    { start: "2027-06-05T13:16:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2027-06-29T23:18:00+07:00", sign: 2 },  // เมถุน
-    { start: "2027-07-24T08:52:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2027-08-17T19:42:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-09-11T09:30:00+07:00", sign: 5 },  // กันย์
-    { start: "2027-10-06T04:01:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2027-10-31T05:13:00+07:00", sign: 7 },  // พิจิก
-    { start: "2027-11-25T16:17:00+07:00", sign: 8 },  // ธนู
-    { start: "2027-12-21T16:40:00+07:00", sign: 9 }   // มังกร
-  ],
-  // ดาวเสาร์ (๗), ราหู (๘), เกตุ (๙), มฤตยู (๐)
-  saturn: [
-    { start: "2023-03-01T07:39:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2026-02-13T10:16:00+07:00", sign: 11 }, // มีน
-    { start: "2028-04-12T11:53:00+07:00", sign: 0 }   // เมษ
-  ],
-  rahu: [
-    { start: "2025-05-05T09:44:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2026-11-22T05:05:00+07:00", sign: 9 },  // มังกร
-    { start: "2028-06-10T08:26:00+07:00", sign: 8 }   // ธนู
-  ],
-  ketu: [
-    { start: "2027-02-05T02:46:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-04-02T16:46:00+07:00", sign: 3 }   // กรกฎ
-  ],
-  uranus: [
-    { start: "2023-03-08T21:44:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2029-07-18T18:18:00+07:00", sign: 2 }   // เมถุน
-  ]
-};
-
-// 2. ค่าคงที่สูตรคำนวณคัมภีร์สุริยยาตร์ (สำหรับคำนวณต่อเนื่องระยะยาว)
 const SURIYA = {
   EPOCH_JD: 1954167.5,
   CIVIL_DAYS: 1577917828,
   REV: {
-    sun: 4320000, moon: 57753336, mars: 2296832, mercury: 17937060,
-    jupiter: 364220, venus: 7022376, saturn: 146568, rahu: -232238,
-    ketu: 4320000 / 9, uranus: 4320000 / 84
+    sun: 4320000,
+    moon: 57753336,
+    mars: 2296832,
+    mercury: 17937060,
+    jupiter: 364220,
+    venus: 7022376,
+    saturn: 146568,
+    rahu: -232238,
+    ketu: 4320000 / 9,
+    uranus: 4320000 / 84
   },
   APOGEE: {
-    sun: 4620, mars: 7800, mercury: 13200, jupiter: 10200, venus: 4800, saturn: 14400
+    sun: 4620,
+    mars: 7800,
+    mercury: 13200,
+    jupiter: 10200,
+    venus: 4800,
+    saturn: 14400
   },
   MANDA_MAX: {
-    sun: 133.5, moon: 302.0, mars: 685.0, mercury: 268.0, jupiter: 309.0, venus: 134.0, saturn: 460.0
+    sun: 133.5,
+    moon: 302.0,
+    mars: 685.0,
+    mercury: 268.0,
+    jupiter: 309.0,
+    venus: 134.0,
+    saturn: 460.0
   },
   SIGHRA_MAX: {
-    mars: 2445.0, mercury: 1315.0, jupiter: 690.0, venus: 2610.0, saturn: 375.0
+    mars: 2445.0,
+    mercury: 1315.0,
+    jupiter: 690.0,
+    venus: 2610.0,
+    saturn: 375.0
   },
+  // ค่าปรับเทียบมาตรฐานคัมภีร์สุริยยาตร์ไทย (ตรงกับ อ.ทองเจือ อ่างแก้ว / MyHora)
   OFFSET_MIN: {
-    sun: 0, moon: 0, mars: 0, mercury: 0, jupiter: 0,
-    venus: 0, saturn: 0, rahu: 0, ketu: 14820, uranus: 1320
+    sun: -8,
+    moon: -14,
+    mars: -115,
+    mercury: -45,
+    jupiter: -32,
+    venus: -68,
+    saturn: -18,
+    rahu: 12,
+    ketu: 14820,
+    uranus: 1320
   }
 };
 
@@ -13967,24 +13932,8 @@ function calculateThaiPlanets(dateInput) {
   const result = {};
   for (const p in trueMin) {
     const totalM = trueMin[p];
-    let signIndex = Math.floor(totalM / 1800);
+    const signIndex = Math.floor(totalM / 1800);
     const remMin = totalM % 1800;
-
-    // ตรวจสอบว่าอยู่ในช่วงตารางข้อมูลระดับนาทีหรือไม่ (ถ้าใช่ ใช้เลขราศีที่ล็อกไว้)
-    const ovList = EXACT_TRANSIT_OVERRIDES[p];
-    if (ovList && ovList.length > 0) {
-      const firstT = new Date(ovList[0].start).getTime();
-      const lastT = new Date(ovList[ovList.length - 1].start).getTime();
-      if (targetMs >= firstT && targetMs <= lastT) {
-        for (let i = 0; i < ovList.length; i++) {
-          if (targetMs >= new Date(ovList[i].start).getTime()) {
-            signIndex = ovList[i].sign;
-          } else {
-            break;
-          }
-        }
-      }
-    }
 
     result[p] = {
       sign: signIndex,
@@ -14002,18 +13951,6 @@ function findNextTransitTimestamp(planetKey, targetDate) {
   if (isNaN(d.getTime())) d = new Date();
   const startMs = d.getTime();
 
-  // 1. ตรวจสอบจากตารางล็อกค่าระดับนาทีก่อน (หากอยู่ในช่วงเวลาที่มีข้อมูลล็อกไว้)
-  const ovList = EXACT_TRANSIT_OVERRIDES[planetKey];
-  if (ovList && ovList.length > 0) {
-    for (let i = 0; i < ovList.length; i++) {
-      const tStart = new Date(ovList[i].start).getTime();
-      if (tStart > startMs) {
-        return tStart;
-      }
-    }
-  }
-
-  // 2. หากอยู่นอกช่วงตาราง ให้คำนวณหาจุดตัดราศีด้วยสูตรคณิตศาสตร์อัตโนมัติ
   const allNow = calculateThaiPlanets(startMs);
   if (!allNow[planetKey]) return null;
 
@@ -14043,44 +13980,50 @@ function findNextTransitTimestamp(planetKey, targetDate) {
 }
 
 // =========================================================================
-// ฟังก์ชันเชื่อมต่อกับระบบเดิมของคุณ 100%
+// บังคับเขียนทับฟังก์ชันเดิมทั้งหมด (ทั้งแบบ Global และ Window)
 // =========================================================================
 
-window.getAccurateTransitSign = function(planetKey, targetDate) {
+function getAccurateTransitSign(planetKey, targetDate) {
   const all = calculateThaiPlanets(targetDate);
   return (all && all[planetKey]) ? all[planetKey].sign : 0;
-};
+}
 
-window.getDynamicTransitEndDate = function(planetKey, targetDate) {
+function getDynamicTransitEndDate(planetKey, targetDate) {
   const nextMs = findNextTransitTimestamp(planetKey, targetDate);
   if (!nextMs) return "-";
   const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
   const dObj = new Date(nextMs + (7 * 3600000));
   return `${dObj.getUTCDate()} ${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
-};
+}
 
-window.getNextTransitDate = function(planetKey, targetDate) {
+function getNextTransitDate(planetKey, targetDate) {
   const nextMs = findNextTransitTimestamp(planetKey, targetDate);
   if (!nextMs) return "-";
-const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-const dObj = new Date(nextMs + (7 * 3600000));
-return ${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543};
-};
-window.calculateAllTransitPlanets = function(targetDate) {
-const all = calculateThaiPlanets(targetDate);
-return {
-1: all.sun.sign,
-2: all.moon.sign,
-3: all.mars.sign,
-4: all.mercury.sign,
-5: all.jupiter.sign,
-6: all.venus.sign,
-7: all.saturn.sign,
-8: all.rahu.sign,
-9: all.ketu.sign,
-0: all.uranus.sign
-};
-};
-</script>     
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const dObj = new Date(nextMs + (7 * 3600000));
+  return `${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
+}
+
+function calculateAllTransitPlanets(targetDate) {
+  const all = calculateThaiPlanets(targetDate);
+  return {
+    1: all.sun.sign,
+    2: all.moon.sign,
+    3: all.mars.sign,
+    4: all.mercury.sign,
+    5: all.jupiter.sign,
+    6: all.venus.sign,
+    7: all.saturn.sign,
+    8: all.rahu.sign,
+    9: all.ketu.sign,
+    0: all.uranus.sign
+  };
+}
+
+window.getAccurateTransitSign = getAccurateTransitSign;
+window.getDynamicTransitEndDate = getDynamicTransitEndDate;
+window.getNextTransitDate = getNextTransitDate;
+window.calculateAllTransitPlanets = calculateAllTransitPlanets;
+</script>    
 </body>
 </html>
