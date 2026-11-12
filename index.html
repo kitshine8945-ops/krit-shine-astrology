@@ -13803,5 +13803,213 @@ renderBaziDirect();
 
 window.handleOpenModal = handleOpenModal;
 </script>
+ <script>
+// =========================================================================
+// ระบบคำนวณปฏิทินดาวย้าย คัมภีร์สุริยยาตร์ไทยแท้ (แยก Script กันปีกกาชนกัน)
+// =========================================================================
+
+const SIGN_NAMES = [
+  "เมษ", "พฤษภ", "เมถุน", "กรกฎ", "สิงห์", "กันย์",
+  "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"
+];
+
+const SURIYA = {
+  EPOCH_JD: 1954167.5,
+  CIVIL_DAYS: 1577917828,
+  REV: {
+    sun: 4320000,
+    moon: 57753336,
+    mars: 2296832,
+    mercury: 17937060,
+    jupiter: 364220,
+    venus: 7022376,
+    saturn: 146568,
+    rahu: -232238,
+    ketu: 4320000 / 9,
+    uranus: 4320000 / 84
+  },
+  APOGEE: {
+    sun: 4620,
+    mars: 7800,
+    mercury: 13200,
+    jupiter: 10200,
+    venus: 4800,
+    saturn: 14400
+  },
+  MANDA_MAX: {
+    sun: 133.5,
+    moon: 302.0,
+    mars: 685.0,
+    mercury: 268.0,
+    jupiter: 309.0,
+    venus: 134.0,
+    saturn: 460.0
+  },
+  SIGHRA_MAX: {
+    mars: 2445.0,
+    mercury: 1315.0,
+    jupiter: 690.0,
+    venus: 2610.0,
+    saturn: 375.0
+  },
+  OFFSET_MIN: {
+    sun: 0, moon: 0, mars: 0, mercury: 0, jupiter: 0,
+    venus: 0, saturn: 0, rahu: 0, ketu: 14820, uranus: 1320
+  }
+};
+
+function normMin(minutes) {
+  let m = minutes % 21600;
+  return m < 0 ? m + 21600 : m;
+}
+
+function sinMin(minutes) {
+  return Math.sin((minutes / 21600) * 2 * Math.PI);
+}
+
+function calcSighraEq(meanSunMin, sighraMeanMin, maxEqMin) {
+  const anomaly = normMin(sighraMeanMin - meanSunMin);
+  const rad = (anomaly / 21600) * 2 * Math.PI;
+  const r = Math.sin((maxEqMin / 21600) * 2 * Math.PI);
+  const eqRad = Math.atan2(r * Math.sin(rad), 1 + r * Math.cos(rad));
+  return (eqRad / (2 * Math.PI)) * 21600;
+}
+
+function calculateThaiPlanets(dateInput) {
+  let d = new Date(dateInput);
+  // ป้องกันกรณีส่งวันที่ผิดรูปแบบเข้ามา (Invalid Date) ให้ใช้วันที่ปัจจุบันแทนไม่ให้โค้ดพัง
+  if (isNaN(d.getTime())) {
+    d = new Date();
+  }
+
+  const jd = (d.getTime() / 86400000) + 2440587.5;
+  const harakhun = jd - SURIYA.EPOCH_JD;
+  const totalCircles = 21600;
+
+  const mean = {};
+  for (const p in SURIYA.REV) {
+    const rev = (harakhun * SURIYA.REV[p]) / SURIYA.CIVIL_DAYS;
+    mean[p] = normMin((rev * totalCircles) + (SURIYA.OFFSET_MIN[p] || 0));
+  }
+
+  const moonApogeeRev = (harakhun * 488203) / SURIYA.CIVIL_DAYS;
+  const moonApogee = normMin((moonApogeeRev * totalCircles) + 5400);
+
+  const trueMin = {};
+
+  const sunAnomaly = normMin(mean.sun - SURIYA.APOGEE.sun);
+  trueMin.sun = normMin(mean.sun - SURIYA.MANDA_MAX.sun * sinMin(sunAnomaly));
+
+  const moonAnomaly = normMin(mean.moon - moonApogee);
+  trueMin.moon = normMin(mean.moon - SURIYA.MANDA_MAX.moon * sinMin(moonAnomaly));
+
+  ["mercury", "venus"].forEach(p => {
+    const mandaSun = normMin(mean.sun - SURIYA.APOGEE[p]);
+    const step1 = normMin(mean.sun - (SURIYA.MANDA_MAX[p] / 2) * sinMin(mandaSun));
+    const sighraCorr = calcSighraEq(step1, mean[p], SURIYA.SIGHRA_MAX[p]);
+    trueMin[p] = normMin(step1 + sighraCorr);
+  });
+
+  ["mars", "jupiter", "saturn"].forEach(p => {
+    const mandaAnom = normMin(mean[p] - SURIYA.APOGEE[p]);
+    const step1 = normMin(mean[p] - SURIYA.MANDA_MAX[p] * sinMin(mandaAnom));
+    const sighraCorr = calcSighraEq(step1, mean.sun, SURIYA.SIGHRA_MAX[p]);
+    trueMin[p] = normMin(step1 + sighraCorr);
+  });
+
+  trueMin.rahu = normMin(mean.rahu + 10800);
+  trueMin.ketu = normMin(mean.ketu);
+  trueMin.uranus = normMin(mean.uranus);
+
+  const result = {};
+  for (const p in trueMin) {
+    const totalM = trueMin[p];
+    const signIndex = Math.floor(totalM / 1800);
+    const remMin = totalM % 1800;
+    result[p] = {
+      sign: signIndex,
+      signName: SIGN_NAMES[signIndex],
+      degree: Math.floor(remMin / 60),
+      minute: Math.floor(remMin % 60),
+      totalDegrees: +(totalM / 60).toFixed(4)
+    };
+  }
+  return result;
+}
+
+function findNextTransitTimestamp(planetKey, targetDate) {
+  let d = new Date(targetDate);
+  if (isNaN(d.getTime())) d = new Date();
+  const startMs = d.getTime();
+
+  const allNow = calculateThaiPlanets(startMs);
+  if (!allNow[planetKey]) return null;
+
+  const initialSign = allNow[planetKey].sign;
+  const stepHours = {
+    moon: 4, sun: 12, mercury: 12, venus: 12, mars: 12,
+    ketu: 24, jupiter: 24, rahu: 24, saturn: 48, uranus: 72
+  }[planetKey] || 12;
+
+  let t1 = startMs;
+  let t2 = t1 + stepHours * 3600000;
+
+  while (calculateThaiPlanets(t2)[planetKey].sign === initialSign) {
+    t1 = t2;
+    t2 += stepHours * 3600000;
+  }
+
+  while (t2 - t1 > 60000) {
+    const mid = Math.floor((t1 + t2) / 2);
+    if (calculateThaiPlanets(mid)[planetKey].sign === initialSign) {
+      t1 = mid;
+    } else {
+      t2 = mid;
+    }
+  }
+  return t2;
+}
+
+// =========================================================================
+// เขียนทับฟังก์ชันเดิมอย่างปลอดภัย (Override Global Functions)
+// =========================================================================
+
+window.getAccurateTransitSign = function(planetKey, targetDate) {
+  const all = calculateThaiPlanets(targetDate);
+  return (all && all[planetKey]) ? all[planetKey].sign : 0;
+};
+
+window.getDynamicTransitEndDate = function(planetKey, targetDate) {
+  const nextMs = findNextTransitTimestamp(planetKey, targetDate);
+  if (!nextMs) return "-";
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const dObj = new Date(nextMs + (7 * 3600000));
+  return `${dObj.getUTCDate()} ${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
+};
+
+window.getNextTransitDate = function(planetKey, targetDate) {
+  const nextMs = findNextTransitTimestamp(planetKey, targetDate);
+  if (!nextMs) return "-";
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const dObj = new Date(nextMs + (7 * 3600000));
+  return `${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
+};
+
+window.calculateAllTransitPlanets = function(targetDate) {
+  const all = calculateThaiPlanets(targetDate);
+  return {
+    1: all.sun.sign,
+    2: all.moon.sign,
+    3: all.mars.sign,
+    4: all.mercury.sign,
+    5: all.jupiter.sign,
+    6: all.venus.sign,
+    7: all.saturn.sign,
+    8: all.rahu.sign,
+    9: all.ketu.sign,
+    0: all.uranus.sign
+  };
+};
+</script>     
 </body>
 </html>
