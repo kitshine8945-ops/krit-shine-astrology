@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta name="description" content="Krit Shine Astrology ผูกดวงชะตาวางลัคนาสุริยยาตร์ คำนวณหวยมงคล เลขเด่นประจำวัน เลขเด็ดเฉพาะดวงชะตา ทำนายฝัน กราฟชีวิต และศาสตร์พยากรณ์ครบวงจร">
-<meta name="keywords" content="คำนวณหวยมงคล, เลขเด็ดงวดนี้, เลขมงคลประจำวัน, เลขเด่นเฉพาะดวง, ทำนายฝันเลขเด็ด, ผูกดวงลัคนา, ดูดวงวันจร, Krit Shine Astrology">  
+<meta name="description" content="Krit Shine Astrology ผูกดวงชะตาวางลัคนาสุริยยาตร์ คำนวณเลขมงคล เลขเด่นประจำวัน เลขนำโชคเฉพาะดวงชะตา ทำนายฝัน กราฟชีวิต และศาสตร์พยากรณ์ครบวงจร">
+<meta name="keywords" content="คำนวณเลขมงคล, เลขนำโชคประจำวัน, เลขเด่นเฉพาะดวง, ทำนายฝันเลขมงคล, ผูกดวงลัคนา, ดูดวงวันจร, Krit Shine Astrology">
 <meta name="google-site-verification" content="5GQq7ALoSE5mVCpAR9prIolvbbeRtnIXiigc9bjJpjk" />
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1071,12 +1071,12 @@ header.navbar {
         <div class="cat-sub">เปิดสายธารเงิน & รหัสรวย</div>
       </div>
       
-      <!-- เมนูคำนวณหวยมงคล -->
-      <div class="cat-item" onclick="openLottoModal()">
-        <div class="cat-icon-circle" style="background: rgba(245,158,11,0.2); border: 1px solid #f59e0b;"><i class="fa-solid fa-ticket" style="color: #f59e0b;"></i></div>
-        <div class="cat-name">คำนวณหวยมงคล</div>
-        <div class="cat-sub">เลขเด่นประจำวัน & เฉพาะดวง</div>
-      </div>
+     <!-- เมนูคำนวณเลขมงคล -->
+     <div class="cat-item" onclick="openLottoModal()">
+     <div class="cat-icon-circle" style="background: rgba(245,158,11,0.2); border: 1px solid #f59e0b;"><i class="fa-solid fa-ticket" style="color: #f59e0b;"></i></div>
+     <div class="cat-name">คำนวณเลขมงคล</div>
+     <div class="cat-sub">เลขเด่นประจำวัน & เสริมโชค</div>
+  </div>
 
 <div class="cat-item" onclick="var bD=document.getElementById('birthDay').value; if(!bD){alert('กรุณากรอกวันเดือนปีเกิดก่อนครับ'); scrollToForm();}else{openFeatureModal('daily');}">
         <div class="cat-icon-circle"><i class="fa-solid fa-sun"></i></div>
@@ -1868,16 +1868,15 @@ function analyzeVipSpecificQuestion() {
 
 <div class="popular-grid" style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 20px !important;">
       
-      <!-- 1. คำนวณหวยมงคล (แถว 1 ช่อง 1) -->
-      <div class="popular-card" onclick="openLottoModal()">
-        <img class="popular-card-img" src="1.jpg" alt="คำนวณหวยมงคล">
-        <div class="popular-card-body">
-          <h4 class="popular-card-title">คำนวณหวยมงคล</h4>
-          <p class="popular-card-desc">เลขเด่นประจำวัน เลขเฉพาะดวง วิเคราะห์เลขมงคลนำโชค</p>
-          <span class="btn-popular-view">ดูเพิ่มเติม</span>
-        </div>
-      </div>
-
+<!-- 1. คำนวณเลขมงคล (แถว 1 ช่อง 1) -->
+<div class="popular-card" onclick="openLottoModal()">
+  <img class="popular-card-img" src="1.jpg" alt="คำนวณเลขมงคล">
+  <div class="popular-card-body">
+    <h4 class="popular-card-title">คำนวณเลขมงคล</h4>
+    <p class="popular-card-desc">เลขเด่นประจำวัน เลขเฉพาะดวง วิเคราะห์ตัวเลขเสริมพลังบวก</p>
+    <span class="btn-popular-view">ดูเพิ่มเติม</span>
+  </div>
+</div>
       <!-- 2. ดูดวงตามลัคนา (แถว 1 ช่อง 2) -->
       <div class="popular-card" onclick="scrollToFormVip()">
         <img class="popular-card-img" src="2.jpg" alt="ดูดวงตามลัคนา">
@@ -1993,16 +1992,16 @@ function analyzeVipSpecificQuestion() {
       </div>
     </div>
 <!-- ข้อสงวนสิทธิ์ Footer (โทนสีแดง) -->
-    <div style="max-width: 900px; margin: 0 auto 15px; font-size: 0.72rem; color: #fca5a5; line-height: 1.6; text-align: center; border-top: 1px dashed rgba(248, 113, 113, 0.4); padding: 12px 14px; background: rgba(239, 68, 68, 0.08); border-radius: 10px;">
-      <i class="fa-solid fa-scale-balanced" style="color: #ef4444; margin-right: 4px;"></i>
-      <strong style="color: #fee2e2;">ข้อสงวนสิทธิ์ (Disclaimer):</strong> 
-     "การพยากรณ์ชะตาชีวิตเป็นการวิเคราะห์ตามหลักโหราศาสตร์เพื่อเป็นแนวทางและเสริมสร้างกำลังใจเท่านั้น ผลลัพธ์ถือเป็นความเชื่อส่วนบุคคลและขึ้นอยู่กับวิจารณญาณของแต่ละท่าน ทั้งนี้ ทางเว็บไซต์ไม่รับประกันผลลัพธ์ และไม่รับผิดชอบต่อการตัดสินใจใดๆ ของผู้ใช้งานในทุกกรณี"
+<div style="max-width: 900px; margin: 0 auto 15px; font-size: 0.72rem; color: #fca5a5; line-height: 1.6; text-align: center; border-top: 1px dashed rgba(248, 113, 113, 0.4); padding: 12px 14px; background: rgba(239, 68, 68, 0.08); border-radius: 10px;">
+      <i class="fa-solid fa-shield-halved" style="color: #ef4444; margin-right: 4px;"></i>
+      <strong style="color: #fee2e2;">ข้อสงวนสิทธิ์และวัตถุประสงค์ (Disclaimer):</strong> 
+      เนื้อหาและบริการทั้งหมดจัดทำขึ้นเพื่อความบันเทิงและเป็นแนวทางตามหลักโหราศาสตร์ส่วนบุคคลเท่านั้น ไม่สนับสนุนการพนันหรือสิ่งผิดกฎหมายทุกชนิด ทั้งนี้ การพยากรณ์ชะตาชีวิตเป็นการวิเคราะห์ตามหลักโหราศาสตร์เพื่อเสริมสร้างกำลังใจ ผลลัพธ์ถือเป็นความเชื่อส่วนบุคคลและขึ้นอยู่กับวิจารณญาณของแต่ละท่าน ทางเว็บไซต์ไม่รับประกันผลลัพธ์ และไม่รับผิดชอบต่อการตัดสินใจใดๆ ของผู้ใช้งานในทุกกรณี[cite: 1]
     </div>
     <div class="footer-bottom">&copy; 2026 Krit Shine Astrology. สงวนลิขสิทธิ์ทุกประการ</div>
   </footer>
 
   <!-- ================= POPUP MODALS ================= -->
-    <!-- MODAL: ทำนายตัวเลข & หวยมงคลเฉพาะบุคคล -->
+<!-- MODAL: ทำนายตัวเลข & เลขมงคลเฉพาะบุคคล -->
 <div class="modal-overlay" id="modal-lotto">
     <div class="modal-content" style="max-width: 650px;">
         <div class="modal-close-btn" onclick="closeModal('modal-lotto')"><i class="fa-solid fa-xmark"></i></div>
@@ -2014,10 +2013,10 @@ function analyzeVipSpecificQuestion() {
             <button type="button" class="tier-btn" id="btn-lotto-vip" onclick="switchLottoMode('vip')"><i class="fa-solid fa-crown"></i> ถอดรหัสเลขเด่นเฉพาะบุคคล (VIP)</button>
         </div>
 
-        <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-ticket"></i> คำนวณเลขมงคล & สถิติดวงดาว</h3>
-        
-        <div id="lottoFreeBox" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft); text-align:center;">
-            <h4 style="color:#ffd700; margin-bottom:8px;">สถิติเลขเด่นงวดนี้ (พลังงานดาวประจำวัน)</h4>
+      <h3 style="color:var(--gold-bright); text-align:center; margin-bottom:12px;"><i class="fa-solid fa-ticket"></i> คำนวณเลขมงคล & สถิติดวงดาว</h3>
+
+<div id="lottoFreeBox" style="background:rgba(14,20,38,0.9); padding:18px; border-radius:12px; border:1px solid var(--border-soft); text-align:center;">
+    <h4 style="color:#ffd700; margin-bottom:8px;">สถิติเลขเด่นประจำวัน (พลังงานดาวเสริมโชค)</h4>
             <div style="font-size: 2rem; font-weight: bold; color: #81c784; margin: 12px 0;" id="lottoFreeNum">5 - 8 - 9</div>
             <p style="font-size:0.86rem; color:#cfd8dc;">วิเคราะห์จากกระแสพลังงานดาวประจำวันและสถิติย้อนหลัง</p>
         </div>
@@ -2030,12 +2029,12 @@ function analyzeVipSpecificQuestion() {
         </div>
     </div>
 </div>
-  <!-- MODAL: ทำนายฝัน & ถอดรหัสเลขเด็ด -->
+<!-- MODAL: ทำนายฝัน & ถอดรหัสเลขมงคล -->
   <div class="modal-overlay" id="modal-dream">
     <div class="modal-content" style="max-width: 680px;">
       <div class="modal-close-btn" onclick="closeModal('modal-dream')"><i class="fa-solid fa-xmark"></i></div>
       <div class="profile-astro-badge dynamic-user-badge"></div>
-      <h3 style="color: var(--gold-bright); text-align: center; margin-bottom: 6px;"><i class="fa-solid fa-cloud-moon"></i> ทำนายฝัน & ถอดรหัสเลขเด็ด</h3>
+      <h3 style="color: var(--gold-bright); text-align: center; margin-bottom: 6px;"><i class="fa-solid fa-cloud-moon"></i> ทำนายฝัน & ถอดรหัสเลขมงคล</h3>
       <p style="font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:14px;">พิมพ์สิ่งที่ท่านฝันเห็น (เช่น งู, พระ, ฟันหัก, น้ำท่วม, เงิน, ช้าง, รถ)</p>
       <div style="display:flex; gap:8px;">
         <input type="text" id="dreamInput" class="form-control" placeholder="พิมพ์คำค้นหาความฝัน..." value="">
@@ -11425,10 +11424,10 @@ function printReportBox() {
         printWindow.close();
     }, 500);
 }
-// สถานะโหมดหวยปัจจุบัน
+// สถานะโหมดเลขมงคลปัจจุบัน
 AppState.currentLottoMode = 'free';
 
-// ฟังก์ชันเปิด Modal หวย (ตรวจสอบการกรอกวันเกิดก่อนเปิด)
+// ฟังก์ชันเปิด Modal เลขมงคล (ตรวจสอบการกรอกวันเกิดก่อนเปิด)
 function openLottoModal() {
     var bD = document.getElementById('birthDay');
     if (!bD || !bD.value) {
@@ -11441,7 +11440,7 @@ function openLottoModal() {
         return;
     }
     
-    // เปิด Modal หวย
+    // เปิด Modal เลขมงคล
     var modal = document.getElementById('modal-lotto');
     if (modal) {
         modal.style.setProperty('display', 'flex', 'important');
@@ -11450,7 +11449,6 @@ function openLottoModal() {
     }
     switchLottoMode('free');
 }
-
 // ฟังก์ชันสลับโหมด ฟรี / VIP
 function switchLottoMode(mode) {
     AppState.currentLottoMode = mode;
