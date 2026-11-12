@@ -149,7 +149,17 @@
       <div>📅 วันกำเนิด: <b id="dspBirth">-</b> | ลัคนาสถิต: <b id="dspAsc" style="color:var(--gold-light);">-</b> | พระอาทิตย์อุทัย: <b id="dspSunrise" style="color:#38bdf8;">-</b></div>
       <div>📍 สถานที่: <b id="dspLoc">-</b> | ⚡ วันเวลาจรที่ตรวจสอบ: <b id="dspTransit" style="color:var(--accent);">-</b></div>
     </div>
-<!-- 1. กล่องโหมดฟรี (แสดงตารางย่อตามรูปตัวอย่าง) -->
+<!-- 🌟 ส่วนกงล้อดวงดาวและแถบสี (วางไว้นอกกล่อง เพื่อให้โหมดฟรีและ VIP มองเห็นวงล้อได้ตลอดเวลา) -->
+    <div class="star-legend-bar">
+      <div class="legend-item"><span class="legend-color" style="background:#1e3a8a;"></span> <span style="color:#93c5fd;">ดาวพื้นดวงกำเนิด (วงใน)</span></div>
+      <div class="legend-item"><span class="legend-color" style="background:#ea580c;"></span> <span style="color:#fb923c;">ดาวจรปัจจุบัน (วงนอก)</span></div>
+    </div>
+
+    <div class="chart-wheel-card">
+      <svg id="astroWheelSvg" class="transit-wheel-svg" viewBox="0 0 540 540"></svg>
+    </div>
+
+    <!-- 1. กล่องโหมดฟรี (แสดงตารางย่อตามรูปตัวอย่าง) -->
     <div id="transit-free-box" style="display: block;">
       <div class="astro-nav-tabs">
         <span class="astro-tab-link active" onclick="switchFreeSubView('atHome', this)">จรอยู่บ้าน</span>
@@ -159,17 +169,8 @@
       <div class="result-box" id="freeResultDisplayBox"></div>
     </div>
 
-    <!-- 2. กล่องโหมด VIP (แสดงกงล้อ SVG และคำพยากรณ์เชิงลึกเดิม) -->
+    <!-- 2. กล่องโหมด VIP (แสดงเฉพาะคำพยากรณ์เชิงลึกเดิม) -->
     <div id="transit-vip-box" style="display: none;">
-      <div class="star-legend-bar">
-        <div class="legend-item"><span class="legend-color" style="background:#1e3a8a;"></span> <span style="color:#93c5fd;">ดาวพื้นดวงกำเนิด (วงใน)</span></div>
-        <div class="legend-item"><span class="legend-color" style="background:#ea580c;"></span> <span style="color:#fb923c;">ดาวจรปัจจุบัน (วงนอก)</span></div>
-      </div>
-
-      <div class="chart-wheel-card">
-        <svg id="astroWheelSvg" class="transit-wheel-svg" viewBox="0 0 540 540"></svg>
-      </div>
-
       <div class="astro-nav-tabs">
         <span class="astro-tab-link active" onclick="switchView('transitAtHome', this)">จรอยู่บ้าน (เชิงลึก)</span>
         <span class="astro-tab-link" onclick="switchView('homeAtTransit', this)">เจ้าบ้านจร (เชิงลึก)</span>
@@ -179,7 +180,6 @@
       <div class="result-box" id="resultDisplayBox"></div>
     </div>
 
-    <div class="result-box" id="resultDisplayBox"></div>
   </div>
 </div>
 <!-- ดึงข้อมูลดาวย้าย 30 ปีชุดเดียวกับเว็บหลัก -->
