@@ -3694,8 +3694,7 @@ if (typeof applyAgeChange === 'function') {
       }
     }
 // =========================================================================
-// ระบบคำนวณปฏิทินดาวย้าย คัมภีร์สุริยยาตร์ไทยแท้ (มาตรฐาน อ.ทองเจือ / MyHora)
-// คำนวณสดด้วยคณิตศาสตร์ ครอบคลุม 1,000+ ปี รองรับเดินหน้า-ถอยหลังครบ 10 ดวง
+// ระบบคำนวณปฏิทินดาวย้าย คัมภีร์สุริยยาตร์ไทยแท้ (ครบ 10 ดวง + กัน Error ตัวแปรเดิม)
 // =========================================================================
 
 const SIGN_NAMES = [
@@ -3765,7 +3764,6 @@ function calcSighraEq(meanSunMin, sighraMeanMin, maxEqMin) {
   return (eqRad / (2 * Math.PI)) * 21600;
 }
 
-// ฟังก์ชันหลักคำนวณตำแหน่งดาวทั้ง 10 ดวง ณ เวลาที่กำหนด
 function calculateThaiPlanets(dateInput) {
   const d = new Date(dateInput);
   const jd = (d.getTime() / 86400000) + 2440587.5;
@@ -3823,7 +3821,6 @@ function calculateThaiPlanets(dateInput) {
   return result;
 }
 
-// ฟังก์ชันค้นหา Timestamp ที่ดาวย้ายราศีครั้งถัดไป (ความละเอียด 1 นาที)
 function findNextTransitTimestamp(planetKey, targetDate) {
   const startMs = new Date(targetDate).getTime();
   const initialData = calculateThaiPlanets(startMs)[planetKey];
@@ -3854,27 +3851,29 @@ function findNextTransitTimestamp(planetKey, targetDate) {
   return t2;
 }
 
+// ตัวแปรกัน Error เผื่อโค้ดบรรทัดอื่นในไฟล์เรียกหาชื่อ PLANET_TRANSIT_LOOKUP
+const PLANET_TRANSIT_LOOKUP = {
+  sun: [], moon: [], mars: [], mercury: [], jupiter: [],
+  venus: [], saturn: [], rahu: [], ketu: [], uranus: []
+};
+
 // =========================================================================
-// ฟังก์ชันเชื่อมต่อกับระบบเดิมของคุณ 100% (ไม่ต้องแก้ชื่อฟังก์ชันในไฟล์อื่น)
+// ฟังก์ชันเชื่อมต่อกับระบบเดิมของคุณ 100%
 // =========================================================================
 
-// 1. คืนค่ารหัสราศีปัจจุบัน (0-11) ของดาวที่ระบุ
 function getAccurateTransitSign(planetKey, targetDate) {
   const data = calculateThaiPlanets(targetDate)[planetKey];
   return data ? data.sign : 0;
 }
 
-// 2. คืนค่าวันที่ดาวย้ายราศีครั้งถัดไป (รูปแบบ: "22 มี.ค. 2570")
 function getDynamicTransitEndDate(planetKey, targetDate) {
   const nextMs = findNextTransitTimestamp(planetKey, targetDate);
   if (!nextMs) return "-";
   const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-  // ปรับเวลาเป็นโซนไทย (UTC+7) ก่อนดึงวันที่
   const dObj = new Date(nextMs + (7 * 3600000));
   return `${dObj.getUTCDate()} ${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
 }
 
-// 3. คืนค่าเดือนและปีที่ดาวย้ายราศีครั้งถัดไป (รูปแบบ: "มี.ค. 2570")
 function getNextTransitDate(planetKey, targetDate) {
   const nextMs = findNextTransitTimestamp(planetKey, targetDate);
   if (!nextMs) return "-";
@@ -3883,7 +3882,6 @@ function getNextTransitDate(planetKey, targetDate) {
   return `${thMonths[dObj.getUTCMonth()]} ${dObj.getUTCFullYear() + 543}`;
 }
 
-// 4. คืนค่ารหัสราศีปัจจุบันครบทั้ง 10 ดวง
 function calculateAllTransitPlanets(targetDate) {
   const all = calculateThaiPlanets(targetDate);
   return {
