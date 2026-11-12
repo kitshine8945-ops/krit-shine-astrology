@@ -3957,6 +3957,7 @@ function calculateAllTransitPlanets(targetDate) {
   };
 }
 
+// ฟังก์ชันหลักสำหรับค้นหาราศีจากตารางดาวย้าย
 function getAccurateTransitSign(planetKey, targetDate) {
   const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
   if (!timeline) return 0;
