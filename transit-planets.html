@@ -864,7 +864,6 @@ function renderTransitAtHome() {
     const card = document.createElement('div');
     card.style.cssText = 'background: rgba(15, 23, 42, 0.85); border: 1px solid ' + borderColor + '; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
 
-    // ส่วนหัวของการ์ดแบบยืดหยุ่น (ไม่หักบรรทัด ไม่ทับกัน)
     const header = document.createElement('div');
     header.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px;';
 
@@ -891,10 +890,11 @@ function renderTransitAtHome() {
     badge.textContent = statusTag;
     card.appendChild(badge);
 
-    let overviewText = 'ในช่วงเวลานี้ ' + pInfo.name + ' โคจรเข้าสถิตใน ภพ' + hInfo.name + ' ราศี' + ZODIAC_NAMES[pSign].replace('ราศี', '') + (digObj.label ? ' ได้ตำแหน่งมาตรฐาน ' + digObj.label : '') + ' ส่งผลให้พลังงานหลักด้าน' + pInfo.core + ' เข้ามามีบทบาทโดยตรงต่อ' + hInfo.area + ' (' + hInfo.focus + ') โดย' + digObj.desc + ' ';
+    // 🌟 ตรงนี้คือข้อความใหม่ที่ดึงข้อมูลดาวและภพมาผสมกันแบบเฉพาะตัว ไม่ซ้ำซาก
+    let overviewText = `ในช่วงเวลานี้ ${pInfo.name} โคจรเข้าสถิตในเรือน${hInfo.name} (${ZODIAC_NAMES[pSign]}${digObj.label ? ' ' + digObj.label : ''}) ส่งผลกระทบโดยตรงต่อ${hInfo.area} (${hInfo.focus}) โดยมีกำลังหลักด้าน${pInfo.core} ${digObj.desc} `;
     overviewText += isBadHouse
-      ? 'เนื่องจากเป็นการโคจรเข้าสู่เรือนทุสถานภพ จึงมักนำพาบททดสอบ ความล่าช้า หรือความขัดแย้งมาให้เจ้าชะตาต้องใช้สติในการแก้ไขปัญหา แต่หากผ่านพ้นไปได้จะกลายเป็นประสบการณ์ที่แข็งแกร่ง'
-      : 'ถือเป็นจังหวะเวลาที่ดีที่ดวงดาวโคจรมาให้คุณ เปิดประตูแห่งโอกาสและความราบรื่นให้แก่เจ้าชะตาในเรื่องที่เกี่ยวข้องอย่างชัดเจน';
+      ? `เนื่องจากโคจรเข้าสู่ภพทุสถานภพ จึงเป็นจังหวะที่ต้องระมัดระวังรอบคอบ เตรียมรับมือกับปัญหาอุปสรรคหรือภาระที่เข้ามาทดสอบความอดทน`
+      : `นับเป็นจังหวะเวลาที่เกื้อหนุนและเปิดประตูแห่งโอกาสสำคัญให้เจ้าชะตาสามารถขับเคลื่อนเรื่อง${hInfo.area} ไปสู่ความสำเร็จได้อย่างราบรื่น`;
 
     const sections = [
       { label: '📌 ภาพรวมคำพยากรณ์: ', text: overviewText, color: '#f1f5f9' },
@@ -945,7 +945,6 @@ function renderHomeAtTransit() {
     const card = document.createElement('div');
     card.style.cssText = 'background: rgba(15, 23, 42, 0.85); border: 1px solid ' + borderColor + '; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
 
-    // ส่วนหัวของการ์ดแบบยืดหยุ่น (ไม่หักบรรทัด ไม่ชนกัน)
     const header = document.createElement('div');
     header.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px;';
 
@@ -966,15 +965,16 @@ function renderHomeAtTransit() {
     header.appendChild(spanZodiac);
     card.appendChild(header);
 
-    let deepAnalysis = 'เจ้าเรือนภพ' + THAI_HOUSES[h] + ' ของคุณคือ ' + lordInfo.name + ' ในช่วงเวลานี้โคจรไปสถิตอยู่ใน ภพ' + THAI_HOUSES[targetHouseIdx] + ' (' + ZODIAC_NAMES[lordTransitSign] + ') ' + digObj.label + ' ';
+    // 🌟 ตรงนี้คือข้อความเชื่อมโยงเรือนชะตาใหม่ ไม่ซ้ำซากจำเจแน่นอน
+    let deepAnalysis = `เจ้าเรือนภพ${THAI_HOUSES[h]} (${srcHouse.area}) ของคุณคือ ${lordInfo.name} ซึ่งในรอบเวลานี้ได้โคจรไปสถิต ณ ${dstHouse.name} (${ZODIAC_NAMES[lordTransitSign]}${digObj.label ? ' ' + digObj.label : ''}) `;
     if (isSelfHouse) {
-      deepAnalysis += 'ได้ตำแหน่งพิเศษเรียกว่า "เกษตรเจ้าเรือน" หมายความว่าเรื่องราวของ' + srcHouse.area + ' มีความเข้มแข็ง มั่นคง เป็นปึกแผ่น และมีพลังอำนาจในตัวเองสูงสุด เจ้าชะตาสามารถควบคุมจัดการและกำหนดทิศทางเรื่องนี้ได้ด้วยตนเองอย่างเต็มที่โดยไม่ต้องพึ่งพาใคร ';
+      deepAnalysis += `ได้ตำแหน่งพิเศษ "เกษตรเจ้าเรือน" ทำให้เรื่องราวของ${srcHouse.area} มีความมั่นคง เข้มแข็ง และเป็นปึกแผ่นสูงสุด เจ้าชะตาสามารถควบคุมจัดการและกำหนดทิศทางเรื่องนี้ได้ด้วยตนเองอย่างเต็มที่ `;
     } else if (isTargetBad) {
-      deepAnalysis += 'เป็นการโคจรเข้าสู่เรือนทุสถานภพ หมายความว่าเรื่องราวเกี่ยวกับ' + srcHouse.area + ' กำลังเผชิญกับความผันผวน อุปสรรค การปรับเปลี่ยนโครงสร้าง หรือมีเหตุให้ต้องเข้าไปแก้ไขปัญหาที่เกี่ยวข้องกับเรื่องของ' + dstHouse.area + ' ';
+      deepAnalysis += `เป็นการโคจรเข้าสู่เรือนทุสถานภพ บ่งบอกว่าเรื่องราวของ${srcHouse.area} กำลังเผชิญกับการปรับเปลี่ยน โครงสร้างสะดุด หรือมีภาระที่ต้องเข้าไปเกี่ยวข้องกับปัญหาในเรื่อง${dstHouse.area} `;
     } else {
-      deepAnalysis += 'เป็นการเชื่อมโยงกระแสพลังงานที่ดีเยี่ยม หมายความว่าเรื่องราวของ' + srcHouse.area + ' จะส่งผลเกื้อหนุน ชักนำโอกาส และสร้างความสำเร็จเชื่อมโยงไปสู่เรื่องของ' + dstHouse.area + ' อย่างชัดเจน ';
+      deepAnalysis += `เป็นการเชื่อมโยงกระแสพลังงานที่ส่งเสริมกันอย่างลงตัว ส่งผลให้เรื่องราวของ${srcHouse.area} จะไหลเวียนไปเกื้อหนุนและสร้างความสำเร็จเชื่อมโยงไปสู่เรื่องของ${dstHouse.area} `;
     }
-    deepAnalysis += digObj.desc;
+    deepAnalysis += `${digObj.desc}`;
 
     const sections = [
       { label: '🔮 การเชื่อมโยงดวงชะตา: ', text: deepAnalysis, color: '#f1f5f9' },
