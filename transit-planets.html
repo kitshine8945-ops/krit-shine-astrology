@@ -188,13 +188,7 @@
 <script>
  // ฟังก์ชันสลับโหมดระหว่าง ฟรี และ VIP
 function switchTransitTier(tier) {
-  const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  if (tier === 'vip' && !isVip) {
-    alert("⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น");
-    if (typeof openFeatureModal === 'function') openFeatureModal('member');
-    else window.location.href = 'index.html';
-    return;
-  }
+  // เปิดให้ดูได้ทั้งคู่ ไม่ล็อกวงล้อแล้ว
   const btnFree = document.getElementById('btn-transit-free');
   const btnVip = document.getElementById('btn-transit-vip');
   if (btnFree) btnFree.classList.toggle('active', tier === 'free');
@@ -202,14 +196,24 @@ function switchTransitTier(tier) {
   
   const freeBox = document.getElementById('transit-free-box');
   const vipBox = document.getElementById('transit-vip-box');
-  if (freeBox) freeBox.style.display = (tier === 'free') ? 'block' : 'none';
-  if (vipBox) vipBox.style.display = (tier === 'vip') ? 'block' : 'none';
-
+  
   if (tier === 'free') {
+    if (freeBox) freeBox.style.display = 'block';
+    if (vipBox) vipBox.style.display = 'none';
     renderFreeView();
-  } else if (typeof calcState !== 'undefined' && calcState) {
-    drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
-    renderTransitAtHome();
+    // วาดกงล้อให้แสดงในโหมดฟรีด้วย
+    if (typeof calcState !== 'undefined' && calcState) {
+      drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
+    }
+  } else {
+    // โหมด VIP (แสดงคำพยากรณ์เชิงลึกเต็มรูปแบบ)
+    if (freeBox) freeBox.style.display = 'none';
+    if (vipBox) vipBox.style.display = 'block';
+    
+    if (typeof calcState !== 'undefined' && calcState) {
+      drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
+      renderTransitAtHome();
+    }
   }
 }
 let currentFreeSubView = 'atHome';
