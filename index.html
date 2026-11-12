@@ -3697,7 +3697,7 @@ if (typeof applyAgeChange === 'function') {
 // ตารางปฏิทินดาวย้ายมาตรฐานสุริยยาตร์ไทย 30 ปีเต็ม (พ.ศ. 2568 - 2598)
 // =========================================================================
 const PLANET_TRANSIT_LOOKUP = {
-  // ๑. ดาวพฤหัสบดี (๕) ครบ 30 ปี
+  // ๑. ดาวพฤหัสบดี (๕)
   jupiter: [
     { start: "2025-05-15T00:00:00+07:00", sign: 2 },
     { start: "2026-05-31T21:45:00+07:00", sign: 3 },
@@ -3736,7 +3736,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2055-07-26T12:45:00+07:00", sign: 6 }
   ],
 
-  // ๒. ดาวเสาร์ (๗) ครบ 30 ปี
+  // ๒. ดาวเสาร์ (๗)
   saturn: [
     { start: "2023-03-01T07:39:00+07:00", sign: 10 },
     { start: "2026-02-13T10:16:00+07:00", sign: 11 },
@@ -3755,7 +3755,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2053-09-15T18:00:00+07:00", sign: 0 }
   ],
 
-  // ๓. พระราหู (๘) ครบ 30 ปี
+  // ๓. พระราหู (๘)
   rahu: [
     { start: "2023-10-17T06:22:00+07:00", sign: 11 },
     { start: "2025-05-05T09:44:00+07:00", sign: 10 },
@@ -3779,7 +3779,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2036-08-24T12:00:00+07:00", sign: 3 }
   ],
 
-  // ๕. ดาวศุกร์ (๖)
+  // ๕. ดาวศุกร์ (๖) ตามรายการที่คุณตั้งค่า
   venus: [
     { start: "2026-08-31T20:46:00+07:00", sign: 6 },
     { start: "2027-01-02T06:13:00+07:00", sign: 7 },
@@ -3847,7 +3847,7 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2033-01-02T00:00:00+07:00", sign: 7 }
   ],
 
-  // ๖. ดาวอังคาร (๓)
+  // ๖. ดาวอังคาร (๓) ตามรายการที่คุณตั้งค่า
   mars: [
     { start: "2026-09-19T02:53:00+07:00", sign: 3 },
     { start: "2026-11-10T12:42:00+07:00", sign: 4 },
@@ -3940,71 +3940,20 @@ function getNextTransitDate(planetKey, targetDate) {
 }
 
 // =========================================================================
-// เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (๑ ถึง ๐) ดึงจากตารางดาวย้ายจริง
+// เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (ดึงจากตารางดาวย้ายจริง 100%)
 // =========================================================================
 function calculateAllTransitPlanets(targetDate) {
-  const yCE = targetDate.getFullYear();
-  const m = targetDate.getMonth() + 1;
-  const d = targetDate.getDate();
-
-  const jup  = getAccurateTransitSign('jupiter', targetDate);
-  const sat  = getAccurateTransitSign('saturn', targetDate);
-  const rah  = getAccurateTransitSign('rahu', targetDate);
-  const ura  = getAccurateTransitSign('uranus', targetDate);
-  const mars = getAccurateTransitSign('mars', targetDate);
-  const ven  = getAccurateTransitSign('venus', targetDate);
-
-  function calcJD(y, mon, day) {
-    let Y = y, M = mon;
-    if (M <= 2) { Y -= 1; M += 12; }
-    let A = Math.floor(Y / 100);
-    let B = 2 - A + Math.floor(A / 4);
-    return Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + day + B - 1524.5;
-  }
-
-  const jd = calcJD(yCE, m, d);
-  const dEpoch = jd - 2451545.0;
-  const T = dEpoch / 36525.0;
-  const ayanamsa = 23.858072 + 1.396042 * T;
-  const norm = deg => ((deg % 360) + 360) % 360;
-
-  // อาทิตย์จร (๑)
-  const L_sun = norm(280.46646 + 36000.76983 * T);
-  const M_sun = norm(357.52911 + 35999.05029 * T) * (Math.PI / 180.0);
-  const sunTrue = norm(L_sun + 1.914602 * Math.sin(M_sun));
-  const sunSign = Math.floor(norm(sunTrue - ayanamsa) / 30);
-
-  // จันทร์จร (๒)
-  const moonMean = norm(218.3164477 + 13.17639648 * dEpoch);
-  const moonAnom = norm(134.9633964 + 13.06499295 * dEpoch) * (Math.PI / 180.0);
-  const moonEq = 6.288774 * Math.sin(moonAnom) + 1.274027 * Math.sin(2 * (moonMean * Math.PI / 180.0) - moonAnom);
-  const moonSign = Math.floor(norm(moonMean + moonEq - ayanamsa) / 30);
-
-  // พุธจร (๔)
-  const mercAnom = norm(168.65 + 4.092334 * dEpoch) * (Math.PI / 180.0);
-  const mercSign = Math.floor(norm(sunTrue + 22.5 * Math.sin(mercAnom) - ayanamsa) / 30);
-
-  // เกตุจร (๙)
-  let ketuSign = 0;
-  const targetTime = targetDate.getTime();
-  if (targetTime >= new Date("2026-10-14T22:46:00+07:00").getTime() && targetTime < new Date("2026-12-10T12:46:00+07:00").getTime()) {
-    ketuSign = 6;
-  } else {
-    const ketuMean = norm(270.0 - 0.5295376 * dEpoch);
-    ketuSign = Math.floor(norm(ketuMean - ayanamsa) / 30);
-  }
-
   return {
-    1: sunSign,
-    2: moonSign,
-    3: mars, // วิ่งตรงตามตารางดาวย้ายจริง (ย้าย 19 มี.ค. 2570)
-    4: mercSign,
-    5: jup,
-    6: ven,  // วิ่งตรงตามตารางดาวย้ายจริง
-    7: sat,
-    8: rah,
-    9: ketuSign,
-    0: ura
+    1: getAccurateTransitSign('sun', targetDate),     // อาทิตย์ (๑)
+    2: getAccurateTransitSign('moon', targetDate),    // จันทร์ (๒)
+    3: getAccurateTransitSign('mars', targetDate),    // อังคาร (๓)
+    4: getAccurateTransitSign('mercury', targetDate), // พุธ (๔)
+    5: getAccurateTransitSign('jupiter', targetDate), // พฤหัสบดี (๕)
+    6: getAccurateTransitSign('venus', targetDate),   // ศุกร์ (๖)
+    7: getAccurateTransitSign('saturn', targetDate),  // เสาร์ (๗)
+    8: getAccurateTransitSign('rahu', targetDate),    // ราหู (๘)
+    9: getAccurateTransitSign('ketu', targetDate),    // เกตุ (๙)
+    0: getAccurateTransitSign('uranus', targetDate)   // มฤตยู (๐)
   };
 }
 
