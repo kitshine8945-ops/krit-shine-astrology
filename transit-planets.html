@@ -212,7 +212,6 @@ function switchTransitTier(tier) {
     renderTransitAtHome();
   }
 }
-
 let currentFreeSubView = 'atHome';
 function switchFreeSubView(subView, el) {
   document.querySelectorAll('#transit-free-box .astro-tab-link').forEach(btn => btn.classList.remove('active'));
@@ -543,8 +542,22 @@ function handleCalculate() {
   document.getElementById('dspLoc').textContent = `จ.${pName} - อ.${ampName}`;
   document.getElementById('dspTransit').textContent = `${tD}/${tM}/${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
 
-  drawWheelFixedZodiac(ascSign, planetsNatal, planetsTransit);
+ drawWheelFixedZodiac(ascSign, planetsNatal, planetsTransit);
   renderTransitAtHome();
+  renderFreeView();
+
+  // เช็กว่าปัจจุบันอยู่แท็บไหน แล้วเปิดแสดงผลให้ตรงกัน
+  const vipBox = document.getElementById('transit-vip-box');
+  const freeBox = document.getElementById('transit-free-box');
+  const isVipTabActive = document.getElementById('btn-transit-vip') && document.getElementById('btn-transit-vip').classList.contains('active');
+
+  if (isVipTabActive) {
+    if (vipBox) vipBox.style.display = 'block';
+    if (freeBox) freeBox.style.display = 'none';
+  } else {
+    if (vipBox) vipBox.style.display = 'none';
+    if (freeBox) freeBox.style.display = 'block';
+  }
 }
 
 window.handleCalculate = handleCalculate;
