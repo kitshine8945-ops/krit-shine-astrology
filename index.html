@@ -3779,183 +3779,130 @@ const PLANET_TRANSIT_LOOKUP = {
     { start: "2036-08-24T12:00:00+07:00", sign: 3 }
   ],
 
-// ๕. ดาวศุกร์ (๖) ขยายช่วงเวลาการย้ายราศีและช่วงพักร์ต่อเนื่องระยะยาว
+  // ๕. ดาวศุกร์ (๖) ขยายช่วงเวลาการย้ายราศีและช่วงพักร์ต่อเนื่องระยะยาว
   venus: [
-    { start: "2026-08-31T20:46:00+07:00", sign: 6 }, // ตุลย์
-    { start: "2027-01-02T06:13:00+07:00", sign: 7 }, // พิจิก
-    { start: "2027-02-08T00:00:00+07:00", sign: 8 }, // ธนู
-    { start: "2027-03-05T00:00:00+07:00", sign: 9 }, // มังกร
-    { start: "2027-03-31T00:00:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2027-04-26T00:00:00+07:00", sign: 11 }, // มีน
-    { start: "2027-05-22T00:00:00+07:00", sign: 0 },  // เมษ
-    { start: "2027-06-16T00:00:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2027-07-12T00:00:00+07:00", sign: 2 },  // เมถุน
-    { start: "2027-08-07T00:00:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2027-09-04T00:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2027-10-04T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2027-11-06T00:00:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2027-12-12T00:00:00+07:00", sign: 7 },  // พิจิก
-    { start: "2028-01-19T00:00:00+07:00", sign: 8 },  // ธนู
-    { start: "2028-03-01T00:00:00+07:00", sign: 9 },  // มังกร
-    { start: "2028-04-10T14:00:00+07:00", sign: 1 },  // พฤษภ (พักร์)
-    { start: "2028-07-15T09:30:00+07:00", sign: 2 },  // เมถุน
-    { start: "2028-08-11T00:00:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2028-09-06T00:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2028-10-02T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2028-10-28T00:00:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2028-11-23T00:00:00+07:00", sign: 7 },  // พิจิก
-    { start: "2028-12-19T00:00:00+07:00", sign: 8 },  // ธนู
-    { start: "2029-01-14T00:00:00+07:00", sign: 9 },  // มังกร
-    { start: "2029-02-10T00:00:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2029-03-08T00:00:00+07:00", sign: 11 }, // มีน
-    { start: "2029-04-04T00:00:00+07:00", sign: 0 },  // เมษ
-    { start: "2029-05-02T00:00:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2029-05-31T00:00:00+07:00", sign: 2 },  // เมถุน
-    { start: "2029-07-01T00:00:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2029-08-07T00:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2029-09-17T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2029-11-20T18:00:00+07:00", sign: 8 },  // ธนู (พักร์ข้ามปี)
-    { start: "2030-03-05T08:00:00+07:00", sign: 9 },  // มังกร
-    { start: "2030-04-03T00:00:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2030-05-01T00:00:00+07:00", sign: 11 }, // มีน
-    { start: "2030-05-28T00:00:00+07:00", sign: 0 },  // เมษ
-    { start: "2030-06-24T00:00:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2030-07-21T00:00:00+07:00", sign: 2 },  // เมถุน
-    { start: "2030-08-17T00:00:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2030-09-13T00:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2030-10-11T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2030-11-09T00:00:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2030-12-08T00:00:00+07:00", sign: 7 },  // พิจิก
-    { start: "2031-01-08T00:00:00+07:00", sign: 8 },  // ธนู
-    { start: "2031-02-12T00:00:00+07:00", sign: 9 },  // มังกร
-    { start: "2031-07-02T11:00:00+07:00", sign: 3 },  // กรกฎ (พักร์)
-    { start: "2031-10-18T16:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2031-11-17T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2031-12-15T00:00:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2032-01-12T00:00:00+07:00", sign: 7 },  // พิจิก
-    { start: "2032-02-08T00:00:00+07:00", sign: 8 },  // ธนู
-    { start: "2032-03-06T00:00:00+07:00", sign: 9 },  // มังกร
-    { start: "2032-04-02T00:00:00+07:00", sign: 10 }, // กุมภ์
-    { start: "2032-04-29T00:00:00+07:00", sign: 11 }, // มีน
-    { start: "2032-05-26T00:00:00+07:00", sign: 0 },  // เมษ
-    { start: "2032-06-23T00:00:00+07:00", sign: 1 },  // พฤษภ
-    { start: "2032-07-21T00:00:00+07:00", sign: 2 },  // เมถุน
-    { start: "2032-08-19T00:00:00+07:00", sign: 3 },  // กรกฎ
-    { start: "2032-09-18T00:00:00+07:00", sign: 4 },  // สิงห์
-    { start: "2032-10-19T00:00:00+07:00", sign: 5 },  // กันย์
-    { start: "2032-11-23T00:00:00+07:00", sign: 6 },  // ตุลย์
-    { start: "2033-01-02T00:00:00+07:00", sign: 7 }   // พิจิก
+    { start: "2026-08-31T20:46:00+07:00", sign: 6 },
+    { start: "2027-01-02T06:13:00+07:00", sign: 7 },
+    { start: "2027-02-08T00:00:00+07:00", sign: 8 },
+    { start: "2027-03-05T00:00:00+07:00", sign: 9 },
+    { start: "2027-03-31T00:00:00+07:00", sign: 10 },
+    { start: "2027-04-26T00:00:00+07:00", sign: 11 },
+    { start: "2027-05-22T00:00:00+07:00", sign: 0 },
+    { start: "2027-06-16T00:00:00+07:00", sign: 1 },
+    { start: "2027-07-12T00:00:00+07:00", sign: 2 },
+    { start: "2027-08-07T00:00:00+07:00", sign: 3 },
+    { start: "2027-09-04T00:00:00+07:00", sign: 4 },
+    { start: "2027-10-04T00:00:00+07:00", sign: 5 },
+    { start: "2027-11-06T00:00:00+07:00", sign: 6 },
+    { start: "2027-12-12T00:00:00+07:00", sign: 7 },
+    { start: "2028-01-19T00:00:00+07:00", sign: 8 },
+    { start: "2028-03-01T00:00:00+07:00", sign: 9 },
+    { start: "2028-04-10T14:00:00+07:00", sign: 1 },
+    { start: "2028-07-15T09:30:00+07:00", sign: 2 },
+    { start: "2028-08-11T00:00:00+07:00", sign: 3 },
+    { start: "2028-09-06T00:00:00+07:00", sign: 4 },
+    { start: "2028-10-02T00:00:00+07:00", sign: 5 },
+    { start: "2028-10-28T00:00:00+07:00", sign: 6 },
+    { start: "2028-11-23T00:00:00+07:00", sign: 7 },
+    { start: "2028-12-19T00:00:00+07:00", sign: 8 },
+    { start: "2029-01-14T00:00:00+07:00", sign: 9 },
+    { start: "2029-02-10T00:00:00+07:00", sign: 10 },
+    { start: "2029-03-08T00:00:00+07:00", sign: 11 },
+    { start: "2029-04-04T00:00:00+07:00", sign: 0 },
+    { start: "2029-05-02T00:00:00+07:00", sign: 1 },
+    { start: "2029-05-31T00:00:00+07:00", sign: 2 },
+    { start: "2029-07-01T00:00:00+07:00", sign: 3 },
+    { start: "2029-08-07T00:00:00+07:00", sign: 4 },
+    { start: "2029-09-17T00:00:00+07:00", sign: 5 },
+    { start: "2029-11-20T18:00:00+07:00", sign: 8 },
+    { start: "2030-03-05T08:00:00+07:00", sign: 9 },
+    { start: "2030-04-03T00:00:00+07:00", sign: 10 },
+    { start: "2030-05-01T00:00:00+07:00", sign: 11 },
+    { start: "2030-05-28T00:00:00+07:00", sign: 0 },
+    { start: "2030-06-24T00:00:00+07:00", sign: 1 },
+    { start: "2030-07-21T00:00:00+07:00", sign: 2 },
+    { start: "2030-08-17T00:00:00+07:00", sign: 3 },
+    { start: "2030-09-13T00:00:00+07:00", sign: 4 },
+    { start: "2030-10-11T00:00:00+07:00", sign: 5 },
+    { start: "2030-11-09T00:00:00+07:00", sign: 6 },
+    { start: "2030-12-08T00:00:00+07:00", sign: 7 },
+    { start: "2031-01-08T00:00:00+07:00", sign: 8 },
+    { start: "2031-02-12T00:00:00+07:00", sign: 9 },
+    { start: "2031-07-02T11:00:00+07:00", sign: 3 },
+    { start: "2031-10-18T16:00:00+07:00", sign: 4 },
+    { start: "2031-11-17T00:00:00+07:00", sign: 5 },
+    { start: "2031-12-15T00:00:00+07:00", sign: 6 },
+    { start: "2032-01-12T00:00:00+07:00", sign: 7 },
+    { start: "2032-02-08T00:00:00+07:00", sign: 8 },
+    { start: "2032-03-06T00:00:00+07:00", sign: 9 },
+    { start: "2032-04-02T00:00:00+07:00", sign: 10 },
+    { start: "2032-04-29T00:00:00+07:00", sign: 11 },
+    { start: "2032-05-26T00:00:00+07:00", sign: 0 },
+    { start: "2032-06-23T00:00:00+07:00", sign: 1 },
+    { start: "2032-07-21T00:00:00+07:00", sign: 2 },
+    { start: "2032-08-19T00:00:00+07:00", sign: 3 },
+    { start: "2032-09-18T00:00:00+07:00", sign: 4 },
+    { start: "2032-10-19T00:00:00+07:00", sign: 5 },
+    { start: "2032-11-23T00:00:00+07:00", sign: 6 },
+    { start: "2033-01-02T00:00:00+07:00", sign: 7 }
   ],
 
   // ๖. ดาวอังคาร (๓) ขยายช่วงเวลาการย้ายราศีต่อเนื่องระยะยาว
   mars: [
-    { start: "2026-09-19T02:53:00+07:00", sign: 3 }, // กรกฎ
-    { start: "2026-11-10T12:42:00+07:00", sign: 4 }, // สิงห์
-    { start: "2027-04-15T00:00:00+07:00", sign: 5 }, // กันย์
-    { start: "2027-06-08T00:00:00+07:00", sign: 6 }, // ตุลย์
-    { start: "2027-07-26T00:00:00+07:00", sign: 7 }, // พิจิก
-    { start: "2027-09-10T00:00:00+07:00", sign: 8 }, // ธนู
-    { start: "2027-10-25T00:00:00+07:00", sign: 9 }, // มังกร
-    { start: "2027-12-10T00:00:00+07:00", sign: 10}, // กุมภ์
-    { start: "2028-01-26T00:00:00+07:00", sign: 11}, // มีน
-    { start: "2028-03-16T00:00:00+07:00", sign: 0 }, // เมษ
-    { start: "2028-05-08T00:00:00+07:00", sign: 1 }, // พฤษภ
-    { start: "2028-07-10T00:00:00+07:00", sign: 2 }, // เมถุน
-    { start: "2028-10-25T15:00:00+07:00", sign: 4 }, // สิงห์ (พักร์)
-    { start: "2029-05-12T08:00:00+07:00", sign: 5 }, // กันย์
-    { start: "2029-07-11T00:00:00+07:00", sign: 6 }, // ตุลย์
-    { start: "2029-08-27T00:00:00+07:00", sign: 7 }, // พิจิก
-    { start: "2029-10-13T00:00:00+07:00", sign: 8 }, // ธนู
-    { start: "2029-11-28T00:00:00+07:00", sign: 9 }, // มังกร
-    { start: "2030-01-14T00:00:00+07:00", sign: 10}, // กุมภ์
-    { start: "2030-03-03T00:00:00+07:00", sign: 11}, // มีน
-    { start: "2030-04-22T00:00:00+07:00", sign: 0 }, // เมษ
-    { start: "2030-06-12T00:00:00+07:00", sign: 1 }, // พฤษภ
-    { start: "2030-08-08T00:00:00+07:00", sign: 2 }, // เมถุน
-    { start: "2030-12-05T10:00:00+07:00", sign: 5 }, // กันย์ (พักร์)
-    { start: "2031-06-20T14:00:00+07:00", sign: 6 }, // ตุลย์
-    { start: "2031-08-13T00:00:00+07:00", sign: 7 }, // พิจิก
-    { start: "2031-09-29T00:00:00+07:00", sign: 8 }, // ธนู
-    { start: "2031-11-15T00:00:00+07:00", sign: 9 }, // มังกร
-    { start: "2032-01-01T00:00:00+07:00", sign: 10}, // กุมภ์
-    { start: "2032-02-18T00:00:00+07:00", sign: 11}, // มีน
-    { start: "2032-04-07T00:00:00+07:00", sign: 0 }, // เมษ
-    { start: "2032-05-26T00:00:00+07:00", sign: 1 }, // พฤษภ
-    { start: "2032-07-18T00:00:00+07:00", sign: 2 }, // เมถุน
-    { start: "2032-09-13T00:00:00+07:00", sign: 3 }, // กรกฎ
-    { start: "2032-11-20T00:00:00+07:00", sign: 4 }  // สิงห์
+    { start: "2026-09-19T02:53:00+07:00", sign: 3 },
+    { start: "2026-11-10T12:42:00+07:00", sign: 4 },
+    { start: "2027-04-15T00:00:00+07:00", sign: 5 },
+    { start: "2027-06-08T00:00:00+07:00", sign: 6 },
+    { start: "2027-07-26T00:00:00+07:00", sign: 7 },
+    { start: "2027-09-10T00:00:00+07:00", sign: 8 },
+    { start: "2027-10-25T00:00:00+07:00", sign: 9 },
+    { start: "2027-12-10T00:00:00+07:00", sign: 10 },
+    { start: "2028-01-26T00:00:00+07:00", sign: 11 },
+    { start: "2028-03-16T00:00:00+07:00", sign: 0 },
+    { start: "2028-05-08T00:00:00+07:00", sign: 1 },
+    { start: "2028-07-10T00:00:00+07:00", sign: 2 },
+    { start: "2028-10-25T15:00:00+07:00", sign: 4 },
+    { start: "2029-05-12T08:00:00+07:00", sign: 5 },
+    { start: "2029-07-11T00:00:00+07:00", sign: 6 },
+    { start: "2029-08-27T00:00:00+07:00", sign: 7 },
+    { start: "2029-10-13T00:00:00+07:00", sign: 8 },
+    { start: "2029-11-28T00:00:00+07:00", sign: 9 },
+    { start: "2030-01-14T00:00:00+07:00", sign: 10 },
+    { start: "2030-03-03T00:00:00+07:00", sign: 11 },
+    { start: "2030-04-22T00:00:00+07:00", sign: 0 },
+    { start: "2030-06-12T00:00:00+07:00", sign: 1 },
+    { start: "2030-08-08T00:00:00+07:00", sign: 2 },
+    { start: "2030-12-05T10:00:00+07:00", sign: 5 },
+    { start: "2031-06-20T14:00:00+07:00", sign: 6 },
+    { start: "2031-08-13T00:00:00+07:00", sign: 7 },
+    { start: "2031-09-29T00:00:00+07:00", sign: 8 },
+    { start: "2031-11-15T00:00:00+07:00", sign: 9 },
+    { start: "2032-01-01T00:00:00+07:00", sign: 10 },
+    { start: "2032-02-18T00:00:00+07:00", sign: 11 },
+    { start: "2032-04-07T00:00:00+07:00", sign: 0 },
+    { start: "2032-05-26T00:00:00+07:00", sign: 1 },
+    { start: "2032-07-18T00:00:00+07:00", sign: 2 },
+    { start: "2032-09-13T00:00:00+07:00", sign: 3 },
+    { start: "2032-11-20T00:00:00+07:00", sign: 4 }
   ]
 };
 
-// ฟังก์ชันหาช่วงเวลาสิ้นสุดของดาวจรแบบอัตโนมัติ (ไม่ฮาร์ดโค้ดวัน)
-function getDynamicTransitEndDate(planetKey, targetDate) {
-  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
-  const targetTime = targetDate.getTime();
-  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-
-  if (timeline && timeline.length > 0) {
-    for (let i = 0; i < timeline.length; i++) {
-      const tStart = new Date(timeline[i].start).getTime();
-      if (tStart > targetTime) {
-        const dObj = new Date(timeline[i].start);
-        return `${dObj.getDate()} ${thMonths[dObj.getMonth()]} ${dObj.getFullYear() + 543}`;
-      }
-    }
-  }
-  const approxDays = (planetKey === 'venus') ? 30 : 45;
-  const expDate = new Date(targetTime + (approxDays * 24 * 60 * 60 * 1000));
-  return `${expDate.getDate()} ${thMonths[expDate.getMonth()]} ${expDate.getFullYear() + 543}`;
-}
-
-// ฟังก์ชันดึงราศีจากตารางปฏิทินดาวย้าย
-function getAccurateTransitSign(planetKey, targetDate) {
-  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
-  if (!timeline) return 0;
-  const targetTime = targetDate.getTime();
-  let currentSign = timeline[0].sign;
-  for (let i = 0; i < timeline.length; i++) {
-    if (targetTime >= new Date(timeline[i].start).getTime()) {
-      currentSign = timeline[i].sign;
-    } else {
-      break;
-    }
-  }
-  return currentSign;
-}
-
-// ฟังก์ชันหาเวลาดาวย้ายครั้งถัดไป (สำหรับแสดงผลข้อความ VIP)
-function getNextTransitDate(planetKey, targetDate) {
-  const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
-  if (!timeline) return "-";
-  const targetTime = targetDate.getTime();
-  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-  for (let i = 0; i < timeline.length; i++) {
-    const tStart = new Date(timeline[i].start).getTime();
-    if (tStart > targetTime) {
-      const dObj = new Date(timeline[i].start);
-      return `${thMonths[dObj.getMonth()]} ${dObj.getFullYear() + 543}`;
-    }
-  }
-  return "พ.ศ. 2575+";
-}
-
 // =========================================================================
-// เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (๑ ถึง ๐) ครบชุด
-// รองรับดาวศุกร์พักร์ค้างราศีตุลย์ยาวถึง ม.ค. 2570 และเกตุเดินทวนเข็ม
+// เอ็นจินคำนวณตำแหน่ง 12 ราศีของดาวจรทั้ง 10 ดวง (๑ ถึง ๐) ดึงจากตารางดาวย้ายจริง
 // =========================================================================
 function calculateAllTransitPlanets(targetDate) {
   const yCE = targetDate.getFullYear();
   const m = targetDate.getMonth() + 1;
   const d = targetDate.getDate();
 
-  // 1. ดาวใหญ่และดาวเดินพิเศษ ดึงจากตาราง 30 ปี
-  const jup = getAccurateTransitSign('jupiter', targetDate);
-  const sat = getAccurateTransitSign('saturn', targetDate);
-  const rah = getAccurateTransitSign('rahu', targetDate);
-  const ura = getAccurateTransitSign('uranus', targetDate);
+  // ดึงตำแหน่งดาวจากตาราง 30 ปีจริงครบทุกดวง (รวมดาวอังคารและดาวศุกร์)
+  const jup  = getAccurateTransitSign('jupiter', targetDate);
+  const sat  = getAccurateTransitSign('saturn', targetDate);
+  const rah  = getAccurateTransitSign('rahu', targetDate);
+  const ura  = getAccurateTransitSign('uranus', targetDate);
   const mars = getAccurateTransitSign('mars', targetDate);
+  const ven  = getAccurateTransitSign('venus', targetDate);
 
-  // 2. คำนวณวันจูเลียนสัมบูรณ์
   function calcJD(y, mon, day) {
     let Y = y, M = mon;
     if (M <= 2) { Y -= 1; M += 12; }
@@ -3965,7 +3912,7 @@ function calculateAllTransitPlanets(targetDate) {
   }
 
   const jd = calcJD(yCE, m, d);
-  const dEpoch = jd - 2451545.0; // วันนับจาก J2000.0
+  const dEpoch = jd - 2451545.0;
   const T = dEpoch / 36525.0;
   const ayanamsa = 23.858072 + 1.396042 * T;
   const norm = deg => ((deg % 360) + 360) % 360;
@@ -3976,7 +3923,7 @@ function calculateAllTransitPlanets(targetDate) {
   const sunTrue = norm(L_sun + 1.914602 * Math.sin(M_sun));
   const sunSign = Math.floor(norm(sunTrue - ayanamsa) / 30);
 
-  // จันทร์จร (๒) โคจร 13.176 องศา/วัน
+  // จันทร์จร (๒)
   const moonMean = norm(218.3164477 + 13.17639648 * dEpoch);
   const moonAnom = norm(134.9633964 + 13.06499295 * dEpoch) * (Math.PI / 180.0);
   const moonEq = 6.288774 * Math.sin(moonAnom) + 1.274027 * Math.sin(2 * (moonMean * Math.PI / 180.0) - moonAnom);
@@ -3986,25 +3933,11 @@ function calculateAllTransitPlanets(targetDate) {
   const mercAnom = norm(168.65 + 4.092334 * dEpoch) * (Math.PI / 180.0);
   const mercSign = Math.floor(norm(sunTrue + 22.5 * Math.sin(mercAnom) - ayanamsa) / 30);
 
-  // ศุกร์จร (๖) ปรากฏการณ์พักร์ช่วง 31 ส.ค. 2569 (2026) ถึง 2 ม.ค. 2570 (2027) สถิตราศีตุลย์
-  let venSign = 0;
-  const targetTime = targetDate.getTime();
-  const venStart = new Date("2026-08-31T20:46:00+07:00").getTime();
-  const venEnd = new Date("2027-01-02T06:13:00+07:00").getTime();
-
-  if (targetTime >= venStart && targetTime < venEnd) {
-    venSign = 6; // สถิตราศีตุลย์
-  } else if (targetTime >= venEnd && targetTime < new Date("2027-01-28T00:00:00+07:00").getTime()) {
-    venSign = 7; // สถิตราศีพิจิก
-  } else {
-    const venAnom = norm(48.005 + 1.602130 * dEpoch) * (Math.PI / 180.0);
-    venSign = Math.floor(norm(sunTrue + 46.0 * Math.sin(venAnom) - ayanamsa) / 30);
-  }
-
-  // เกตุจร (๙) โคจรถอยหลังตามปฏิทินโหรไทย (ช่วง ต.ค. - ธ.ค. 2569 สถิตราศีตุลย์)
+  // เกตุจร (๙)
   let ketuSign = 0;
+  const targetTime = targetDate.getTime();
   if (targetTime >= new Date("2026-10-14T22:46:00+07:00").getTime() && targetTime < new Date("2026-12-10T12:46:00+07:00").getTime()) {
-    ketuSign = 6; // ราศีตุลย์
+    ketuSign = 6;
   } else {
     const ketuMean = norm(270.0 - 0.5295376 * dEpoch);
     ketuSign = Math.floor(norm(ketuMean - ayanamsa) / 30);
@@ -4013,10 +3946,10 @@ function calculateAllTransitPlanets(targetDate) {
   return {
     1: sunSign,
     2: moonSign,
-    3: mars,
+    3: mars, // ดึงค่าจากตารางดาวย้ายจริงของดาวอังคาร
     4: mercSign,
     5: jup,
-    6: venSign,
+    6: ven,  // ดึงค่าจากตารางดาวย้ายจริงของดาวศุกร์
     7: sat,
     8: rah,
     9: ketuSign,
