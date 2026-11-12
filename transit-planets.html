@@ -194,7 +194,7 @@ function switchTransitTier(tier) {
     alert("⚠️ ฟีเจอร์นี้สงวนสิทธิ์เฉพาะสมาชิก VIP เท่านั้น");
     if (typeof openFeatureModal === 'function') openFeatureModal('member');
     else window.location.href = 'index.html';
-    return; // หยุดการทำงาน ไม่ให้เปลี่ยนหน้า
+    return;
   }
 
   const btnFree = document.getElementById('btn-transit-free');
@@ -209,16 +209,15 @@ function switchTransitTier(tier) {
     if (freeBox) freeBox.style.display = 'block';
     if (vipBox) vipBox.style.display = 'none';
     renderFreeView();
-    if (typeof calcState !== 'undefined' && calcState) {
-      drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
-    }
   } else {
     if (freeBox) freeBox.style.display = 'none';
     if (vipBox) vipBox.style.display = 'block';
-    if (typeof calcState !== 'undefined' && calcState) {
-      drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
-      renderTransitAtHome();
-    }
+    renderTransitAtHome();
+  }
+
+  // วาดกงล้อดวงดาวให้แสดงผลเสมอไม่ว่าจะอยู่แท็บไหน
+  if (typeof calcState !== 'undefined' && calcState) {
+    drawWheelFixedZodiac(calcState.ascSign, calcState.planetsNatal, calcState.planetsTransit);
   }
 }
 let currentFreeSubView = 'atHome';
