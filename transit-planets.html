@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ดาวย้าย จักรราศีและภพชะตา - Krit Shine Astrology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --inner-bg: #151d30;
+      --border-gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --border-dark: #1e293b;
+      --text: #f8fafc;
+      --text-sub: #94a3b8;
+      --accent: #38bdf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 24px 12px; min-height: 100vh; }
+    .modal-container { width: 100%; max-width: 840px; background-color: var(--card-bg); border: 1.5px solid #d97706; box-shadow: 0 0 25px rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 26px 20px; position: relative; }
+    .close-btn { position: absolute; top: 18px; right: 18px; color: var(--text-sub); font-size: 1.5rem; text-decoration: none; cursor: pointer; line-height: 1; }
+    .close-btn:hover { color: #fff; }
+
+    .test-panel { background: #1e293b; border: 1.5px dashed var(--gold-light); border-radius: 12px; padding: 18px; margin-bottom: 22px; }
+    .test-title { font-size: 0.98rem; color: var(--gold-light); font-weight: 700; margin-bottom: 12px; }
+    .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-field { display: flex; flex-direction: column; gap: 4px; }
+    .input-field label { font-size: 0.78rem; color: var(--text-sub); }
+    .input-field input, .input-field select { background: #0b0f19; border: 1px solid #475569; color: #fff; padding: 9px 10px; border-radius: 6px; font-size: 0.88rem; }
+    .birth-date-group { display: grid; grid-template-columns: 1fr 1.3fr 1.3fr; gap: 6px; }
+    .birth-time-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .location-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .btn-submit-test { grid-column: span 2; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; font-weight: 700; border: none; padding: 13px; border-radius: 6px; cursor: pointer; margin-top: 6px; font-size: 1rem; transition: 0.2s; }
+    .btn-submit-test:hover { background: #fbbf24; }
+
+    #predictionContainer { display: none; }
+    .profile-info { font-size: 0.92rem; line-height: 1.8; margin-bottom: 16px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-dark); border-radius: 10px; padding: 14px; }
+    .profile-info b { color: #fff; }
+
+    .star-legend-bar { display: flex; justify-content: center; gap: 18px; font-size: 0.85rem; margin-bottom: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-color { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+    /* กรอบกงล้อดวง */
+    .chart-wheel-card { background: #070d1e; border: 1.5px solid #334155; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+    .transit-wheel-svg { width: 100%; max-width: 540px; height: auto; margin: 0 auto; display: block; }
+
+    /* แท็บสลับโหมด */
+    .astro-nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 18px; }
+    .astro-tab-link { color: #94a3b8; font-size: 0.9rem; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+    .astro-tab-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .astro-tab-link.active { color: #0b0f19; background: var(--gold-light); font-weight: 700; border-color: var(--gold-light); }
+
+    .result-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 16px 20px; }
+    .result-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px dashed rgba(255,255,255,0.08); font-size: 0.92rem; }
+    .result-row:last-child { border-bottom: none; }
+    .star-code { color: var(--gold-light); font-weight: 700; width: 45px; font-size: 1.05rem; }
+    .house-label { color: #e2e8f0; flex: 1; }
+    .star-dignity { color: #38bdf8; font-size: 0.85rem; font-weight: 600; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-sub); background: var(--inner-bg); border-radius: 12px; border: 1px dashed #334155; }
+  </style>
+</head>
+<body>
+
+<div class="modal-container">
+  <a href="index.html" class="close-btn" title="กลับหน้าหลัก">✕</a>
+
+  <div class="test-panel" id="testInputPanel">
+    <div class="test-title">🪐 กำหนดดวงชะตากำเนิด & วันที่ตรวจดาวจร (มาตรฐานสุริยยาตร์ไทยแท้ / เว็บหลัก)</div>
+    <div class="test-grid">
+      <div class="input-field" style="grid-column: span 2;">
+        <label>ชื่อ - สกุล ผู้ตรวจดวงชะตา</label>
+        <input type="text" id="inName" placeholder="กรอกชื่อ-นามสกุล">
+      </div>
+
+      <div class="input-field">
+        <label>วัน / เดือน / ปีเกิด (พ.ศ.) [ดวงกำเนิด]</label>
+        <div class="birth-date-group">
+          <input type="number" id="inDay" placeholder="วัน" min="1" max="31">
+          <select id="inMonth">
+            <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+            <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+            <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+            <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+          </select>
+          <input type="number" id="inYearBE" placeholder="ปี พ.ศ.">
+        </div>
+      </div>
+
+      <div class="input-field">
+        <label>เวลาเกิด (24 ชม.) [คำนวณตัดเวลาตามอุทัยกาลจริง]</label>
+        <div class="birth-time-group">
+          <input type="number" id="inHour" placeholder="ชั่วโมง (0-23)" min="0" max="23">
+          <input type="number" id="inMinute" placeholder="นาที (0-59)" min="0" max="59">
+        </div>
+      </div>
+
+      <div class="input-field" style="grid-column: span 2;">
+        <label>สถานที่เกิด (จังหวัด / อำเภอ) [คำนวณละติจูด-ลองจิจูดและอุทัยกาลจริง 77 จังหวัด]</label>
+        <div class="location-group">
+          <select id="inProvince" onchange="onProvinceChange()"></select>
+          <select id="inAmphoe"></select>
+        </div>
+      </div>
+
+      <div class="input-field" style="grid-column: span 2;">
+        <label style="color:var(--gold-light);">📅 วันจร / วันที่ต้องการตรวจอิทธิพลดาว (พ.ศ.)</label>
+        <div class="birth-date-group">
+          <input type="number" id="inTransitDay" placeholder="วัน" min="1" max="31">
+          <select id="inTransitMonth">
+            <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+            <option value="4">เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+            <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+            <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+          </select>
+                  <input type="number" id="inTransitYearBE" placeholder="ปี พ.ศ. จร">
+      </div>
+      <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 0.9rem; color: #94a3b8; white-space: nowrap;">🕒 เวลาจร (น.) :</span>
+        <input type="number" id="inTransitHour" min="0" max="23" placeholder="ชม." style="width: 70px; text-align: center;">
+        <span style="font-weight: bold;">:</span>
+        <input type="number" id="inTransitMinute" min="0" max="59" placeholder="นาที" style="width: 70px; text-align: center;">
+      </div>
+      </div>
+
+      <button type="button" class="btn-submit-test" id="btnCalc">คำนวณวางลัคนา & สัมพันธ์ดาวจร</button>
+    </div>
+  </div>
+
+  <div id="emptyNotice" class="empty-state">
+    🪐 กรุณากรอกวันเดือนปีเกิด และวันจรด้านบน แล้วกดปุ่ม <b>"คำนวณวางลัคนา & สัมพันธ์ดาวจร"</b>
+  </div>
+
+  <div id="predictionContainer">
+    <div class="profile-info">
+      <div>📇 เจ้าชะตา: <b id="dspName">-</b></div>
+      <div>📅 วันกำเนิด: <b id="dspBirth">-</b> | ลัคนาสถิต: <b id="dspAsc" style="color:var(--gold-light);">-</b> | พระอาทิตย์อุทัย: <b id="dspSunrise" style="color:#38bdf8;">-</b></div>
+      <div>📍 สถานที่: <b id="dspLoc">-</b> | ⚡ วันเวลาจรที่ตรวจสอบ: <b id="dspTransit" style="color:var(--accent);">-</b></div>
+    </div>
+
+    <div class="star-legend-bar">
+      <div class="legend-item"><span class="legend-color" style="background:#1e3a8a;"></span> <span style="color:#93c5fd;">ดาวพื้นดวงกำเนิด (วงใน)</span></div>
+      <div class="legend-item"><span class="legend-color" style="background:#ea580c;"></span> <span style="color:#fb923c;">ดาวจรปัจจุบัน (วงนอก)</span></div>
+    </div>
+
+    <div class="chart-wheel-card">
+      <svg id="astroWheelSvg" class="transit-wheel-svg" viewBox="0 0 540 540"></svg>
+    </div>
+
+    <div class="astro-nav-tabs">
+      <span class="astro-tab-link active" onclick="switchView('transitAtHome', this)">จรอยู่บ้าน</span>
+      <span class="astro-tab-link" onclick="switchView('homeAtTransit', this)">เจ้าบ้านจร</span>
+      <span class="astro-tab-link" onclick="switchView('transitMoving', this)">ดาวย้าย</span>
+    </div>
+
+    <div class="result-box" id="resultDisplayBox"></div>
+  </div>
+</div>
+<!-- ดึงข้อมูลดาวย้าย 30 ปีชุดเดียวกับเว็บหลัก -->
+<script src="transit-data.js"></script>
+
+<script>
+// =========================================================================
+// 1. ฐานข้อมูล 77 จังหวัด และทุกอำเภอในประเทศไทย พร้อมพิกัดจริง
+// =========================================================================
+const PROVINCES_DB = {
+  "กรุงเทพมหานคร": {"lat": 13.7563, "lon": 100.5018, "amphoes": ["พระนคร", "ดุสิต", "หนองจอก", "บางรัก", "บางเขน", "บางกะปิ", "ปทุมวัน", "ป้อมปราบศัตรูพ่าย", "พระโขนง", "มีนบุรี", "ลาดกระบัง", "ยานนาวา", "สัมพันธวงศ์", "พญาไท", "ธนบุรี", "บางกอกใหญ่", "ห้วยขวาง", "คลองสาน", "ตลิ่งชัน", "บางกอกน้อย", "บางขุนเทียน", "ภาษีเจริญ", "หนองแขม", "ราษฎร์บูรณะ", "บางพลัด", "ดินแดง", "บึงกุ่ม", "สาทร", "บางซื่อ", "จตุจักร", "บางคอแหลม", "ประเวศ", "คลองเตย", "สวนหลวง", "จอมทอง", "ดอนเมือง", "ราชเทวี", "ลาดพร้าว", "วัฒนา", "บางแค", "หลักสี่", "สายไหม", "คันนายาว", "สะพานสูง", "วังทองหลาง", "คลองสามวา", "บางนา", "ทวีวัฒนา", "ทุ่งครุ", "บางบอน"]},
+  "กระบี่": {"lat": 8.0863, "lon": 98.9063, "amphoes": ["เมืองกระบี่", "เขาพนม", "เกาะลันตา", "คลองท่อม", "อ่าวลึก", "ปลายพระยา", "ลำทับ", "เหนือคลอง"]},
+  "กาญจนบุรี": {"lat": 14.0228, "lon": 99.5328, "amphoes": ["เมืองกาญจนบุรี", "ไทรโยค", "บ่อพลอย", "ศรีสวัสดิ์", "ท่ามะกา", "ท่าม่วง", "ทองผาภูมิ", "สังขละบุรี", "พนมทวน", "เลาขวัญ", "ด่านมะขามเตี้ย", "หนองปรือ", "ห้วยกระเจา"]},
+  "กาฬสินธุ์": {"lat": 16.4322, "lon": 103.5063, "amphoes": ["เมืองกาฬสินธุ์", "กมลาไสย", "ยางตลาด", "ท่าคันโท", "สหัสขันธ์", "สมเด็จ", "กุฉินารายณ์", "เขาวง", "ห้วยเม็ก", "คำม่วง", "หนองกุงศรี", "นามน", "ห้วยผึ้ง", "ร่องคำ", "มัญจาคีรี", "ดอนจาน", "ฆ้องชัย", "นาคู", "สามชัย"]},
+  "กำแพงเพชร": {"lat": 16.4831, "lon": 99.5222, "amphoes": ["เมืองกำแพงเพชร", "ไทรงาม", "คลองลาน", "ขาณุวรลักษบุรี", "คลองขลุง", "พรานกระต่าย", "ลานกระบือ", "ทรายทองวัฒนา", "ปางศิลาทอง", "บึงสามัคคี", "โกสัมพีนคร"]},
+  "ขอนแก่น": {"lat": 16.4419, "lon": 102.8360, "amphoes": ["เมืองขอนแก่น", "บ้านฝาง", "พระยืน", "หนองเรือ", "ชุมแพ", "สีชมพู", "น้ำพอง", "อุบลรัตน์", "กระนวน", "บ้านไผ่", "เปือยน้อย", "พล", "แวงใหญ่", "แวงน้อย", "หนองสองห้อง", "ภูเวียง", "มัญจาคีรี", "ชนบท", "เขาสวนกวาง", "ภูผาม่าน", "ซำสูง", "โคกโพธิ์ไชย", "หนองนาคำ", "บ้านแฮด", "โนนศิลา", "เวียงเก่า"]},
+  "จันทบุรี": {"lat": 12.6114, "lon": 102.1039, "amphoes": ["เมืองจันทบุรี", "ขลุง", "ท่าใหม่", "โป่งน้ำร้อน", "มะขาม", "แหลมสิงห์", "สอยดาว", "แก่งหางแมว", "นายายอาม", "เขาคิชฌกูฏ"]},
+  "ฉะเชิงเทรา": {"lat": 13.6904, "lon": 101.0779, "amphoes": ["เมืองฉะเชิงเทรา", "บางคล้า", "บางน้ำเปรี้ยว", "บางปะกง", "บ้านโพธิ์", "พนมสารคาม", "ราชสาส์น", "สนามชัยเขต", "แปลงยาว", "ท่าตะเกียบ", "คลองเขื่อน"]},
+  "ชลบุรี": {"lat": 13.3611, "lon": 100.9847, "amphoes": ["เมืองชลบุรี", "บ้านบึง", "หนองใหญ่", "บางละมุง", "พานทอง", "พนัสนิคม", "ศรีราชา", "เกาะสีชัง", "สัตหีบ", "บ่อทอง", "เกาะจันทร์"]},
+  "ชัยนาท": {"lat": 15.1852, "lon": 100.1251, "amphoes": ["เมืองชัยนาท", "มโนรมย์", "วัดสิงห์", "สรรพยา", "สรรคบุรี", "หันคา", "หนองมะโมง", "เนินขาม"]},
+  "ชัยภูมิ": {"lat": 15.8063, "lon": 102.0315, "amphoes": ["เมืองชัยภูมิ", "บ้านเขว้า", "คอนสวรรค์", "เกษตรสมบูรณ์", "หนองบัวแดง", "จัตุรัส", "บำเหน็จณรงค์", "หนองบัวระเหว", "เทพสถิต", "ภูเขียว", "บ้านแท่น", "แก้งคร้อ", "คอนสาร", "ภักดีชุมพล", "เนินสง่า", "ซับใหญ่"]},
+  "ชุมพร": {"lat": 10.4930, "lon": 99.1800, "amphoes": ["เมืองชุมพร", "ท่าแซะ", "ปะทิว", "หลังสวน", "ละแม", "พะโต๊ะ", "สวี", "ทุ่งตะโก"]},
+  "เชียงราย": {"lat": 19.9072, "lon": 99.8325, "amphoes": ["เมืองเชียงราย", "เวียงชัย", "เชียงของ", "เทิง", "พาน", "ป่าแดด", "แม่จัน", "เชียงแสน", "แม่สาย", "แม่สรวย", "เวียงป่าเป้า", "พญาเม็งราย", "เวียงแก่น", "ขุนตาล", "แม่ฟ้าหลวง", "แม่ลาว", "เวียงเชียงรุ้ง", "ดอยหลวง"]},
+  "เชียงใหม่": {"lat": 18.7883, "lon": 98.9853, "amphoes": ["เมืองเชียงใหม่", "จอมทอง", "แม่แจ่ม", "เชียงดาว", "ดอยสะเก็ด", "แม่แตง", "แม่ริม", "สะเมิง", "ฝาง", "แม่อาย", "พร้าว", "สันป่าตอง", "สันกำแพง", "สันทราย", "หางดง", "ฮอด", "ดอยเต่า", "อมก๋อย", "สารภี", "เวียงแหง", "ไชยปราการ", "แม่วาง", "แม่ออน", "ดอยหล่อ", "กัลยาณิวัฒนา"]},
+  "ตรัง": {"lat": 7.5563, "lon": 99.6114, "amphoes": ["เมืองตรัง", "กันตัง", "ย่านตาขาว", "ปะเหลียน", "สิเกา", "ห้วยยอด", "วังวิเศษ", "นาโยง", "รัษฎา", "หาดสำราญ"]},
+  "ตราด": {"lat": 12.2428, "lon": 102.5175, "amphoes": ["เมืองตราด", "คลองใหญ่", "เขาสมิง", "บ่อไร่", "แหลมงอบ", "เกาะกูด", "เกาะช้าง"]},
+  "ตาก": {"lat": 16.8839, "lon": 99.1258, "amphoes": ["เมืองตาก", "บ้านตาก", "สามเงา", "แม่ระมาด", "ท่าสองยาง", "แม่สอด", "พบพระ", "อุ้มผาง", "วังเจ้า"]},
+  "นครนายก": {"lat": 14.2069, "lon": 101.2131, "amphoes": ["เมืองนครนายก", "ปากพลี", "บ้านนา", "องครักษ์"]},
+  "นครปฐม": {"lat": 13.8196, "lon": 100.0601, "amphoes": ["เมืองนครปฐม", "กำแพงแสน", "นครชัยศรี", "ดอนตูม", "บางเลน", "สามพราน", "พุทธมณฑล"]},
+  "นครพนม": {"lat": 17.3998, "lon": 104.7694, "amphoes": ["เมืองนครพนม", "ปลาปาก", "ท่าอุเทน", "บ้านแพง", "ธาตุพนม", "เรณูนคร", "นาแก", "ศรีสงคราม", "นาหว้า", "โพนสวรรค์", "นาทม", "วังยาง"]},
+  "นครราชสีมา": {"lat": 14.9799, "lon": 102.0978, "amphoes": ["เมืองนครราชสีมา", "ครบุรี", "เสิงสาง", "คง", "บ้านเหลื่อม", "จักราช", "โชคชัย", "ด่านขุนทด", "โนนไทย", "โนนสูง", "ขามสะแกแสง", "บัวใหญ่", "ประทาย", "ปักธงชัย", "พิมาย", "ห้วยแถลง", "ชุมพวง", "สูงเนิน", "ขามทะเลสอ", "สีคิ้ว", "ปากช่อง", "หนองบุญมาก", "แก้งสนามนาง", "โนนแดง", "วังน้ำเขียว", "เทพารักษ์", "เมืองยาง", "พระทองคำ", "ลำทะเมนชัย", "บัวลาย", "สีดา", "เฉลิมพระเกียรติ"]},
+  "นครศรีธรรมราช": {"lat": 8.4304, "lon": 99.9631, "amphoes": ["เมืองนครศรีธรรมราช", "พรหมคีรี", "ลานสกา", "ฉวาง", "พิปูน", "เชียรใหญ่", "ชะอวด", "ท่าศาลา", "ทุ่งสง", "นาบอน", "ทุ่งใหญ่", "ปากพนัง", "ร่อนพิบูลย์", "สิชล", "ขนอม", "หัวไทร", "บางขัน", "ถ้ำพรรณรา", "จุฬาภรณ์", "พระพรหม", "นบพิตำ", "ช้างกลาง", "เฉลิมพระเกียรติ"]},
+  "นครสวรรค์": {"lat": 15.6931, "lon": 100.1225, "amphoes": ["เมืองนครสวรรค์", "โกรกพระ", "ชุมแสง", "หนองบัว", "บรรพตพิสัย", "เก้าเลี้ยว", "ตาคลี", "ท่าตะโก", "ไพศาลี", "พยุหะคีรี", "ลาดยาว", "ตากฟ้า", "แม่วงก์", "แม่เปิน", "ชุมตาบง"]},
+  "นนทบุรี": {"lat": 13.8621, "lon": 100.5144, "amphoes": ["เมืองนนทบุรี", "บางกรวย", "บางใหญ่", "บางบัวทอง", "ไทรน้อย", "ปากเกร็ด"]},
+  "นราธิวาส": {"lat": 6.4255, "lon": 101.8253, "amphoes": ["เมืองนราธิวาส", "ตากใบ", "บาเจาะ", "ยี่งอ", "ระแงะ", "รือเสาะ", "ศรีสาคร", "แว้ง", "สุคิริน", "สุไหงโก-ลก", "สุไหงปาดี", "จะแนะ", "เจาะไอร้อง"]},
+  "น่าน": {"lat": 18.7831, "lon": 100.7781, "amphoes": ["เมืองน่าน", "แม่จริม", "บ้านหลวง", "นาน้อย", "ปัว", "ท่าวังผา", "เวียงสา", "ทุ่งช้าง", "เชียงกลาง", "นาหมื่น", "สันติสุข", "บ่อเกลือ", "สองแคว", "ภูเพียง", "เฉลิมพระเกียรติ"]},
+  "บึงกาฬ": {"lat": 18.3631, "lon": 103.6531, "amphoes": ["เมืองบึงกาฬ", "พรเจริญ", "โซ่พิสัย", "เซกา", "ปากคาด", "บึงโขงหลง", "ศรีวิไล", "บุ่งคล้า"]},
+  "บุรีรัมย์": {"lat": 14.9930, "lon": 103.1029, "amphoes": ["เมืองบุรีรัมย์", "คูเมือง", "กระสัง", "นางรอง", "หนองกี่", "ละหานทราย", "ประโคนชัย", "บ้านกรวด", "พุทไธสง", "ลำปลายมาศ", "สตึก", "ปะคำ", "นาโพธิ์", "หนองหงส์", "พลับพลาชัย", "ห้วยราช", "โนนสุวรรณ", "ชำนิ", "บ้านใหม่ไชยพจน์", "โนนดินแดง", "บ้านด่าน", "แคนดง", "เฉลิมพระเกียรติ"]},
+  "ปทุมธานี": {"lat": 14.0208, "lon": 100.5250, "amphoes": ["เมืองปทุมธานี", "คลองหลวง", "ธัญบุรี", "หนองเสือ", "ลาดหลุมแก้ว", "ลำลูกกา", "สามโคก"]},
+  "ประจวบคีรีขันธ์": {"lat": 11.8124, "lon": 99.7972, "amphoes": ["เมืองประจวบคีรีขันธ์", "กุยบุรี", "ทับสะแก", "บางสะพาน", "บางสะพานน้อย", "ปราณบุรี", "หัวหิน", "สามร้อยยอด"]},
+  "ปราจีนบุรี": {"lat": 14.0510, "lon": 101.3734, "amphoes": ["เมืองปราจีนบุรี", "กบินทร์บุรี", "นาดี", "สระแก้ว", "บ้านสร้าง", "ประจันตคาม", "ศรีมหาโพธิ", "ศรีมโหสถ"]},
+  "ปัตตานี": {"lat": 6.8672, "lon": 101.2501, "amphoes": ["เมืองปัตตานี", "โคกโพธิ์", "หนองจิก", "ปะนาเระ", "มายอ", "ทุ่งยางแดง", "สายบุรี", "ไม้แก่น", "ยะหริ่ง", "ยะรัง", "กะพ้อ", "แม่ลาน"]},
+  "พระนครศรีอยุธยา": {"lat": 14.3532, "lon": 100.5684, "amphoes": ["พระนครศรีอยุธยา", "ท่าเรือ", "นครหลวง", "บางไทร", "บางบาล", "บางปะอิน", "บางปะหัน", "ผักไห่", "ภาชี", "ลาดบัวหลวง", "วังน้อย", "เสนา", "บางซ้าย", "อุทัย", "มหาราช", "บ้านแพรก"]},
+  "พะเยา": {"lat": 19.1662, "lon": 99.9022, "amphoes": ["เมืองพะเยา", "จุน", "เชียงคำ", "เชียงม่วน", "ดอกคำใต้", "ปง", "แม่ใจ", "ภูซาง", "ภูกามยาว"]},
+  "พังงา": {"lat": 8.4501, "lon": 98.5255, "amphoes": ["เมืองพังงา", "เกาะยาว", "กะปง", "ตะกั่วทุ่ง", "ตะกั่วป่า", "คุระบุรี", "ทับปุด", "ท้ายเหมือง"]},
+  "พัทลุง": {"lat": 7.6167, "lon": 100.0833, "amphoes": ["เมืองพัทลุง", "กงหรา", "เขาชัยสน", "ตะโหมด", "ควนขนุน", "ปากพะยูน", "ศรีบรรพต", "ป่าบอน", "บางแก้ว", "ป่าพะยอม", "ศรีนครินทร์"]},
+  "พิจิตร": {"lat": 16.4419, "lon": 100.3488, "amphoes": ["เมืองพิจิตร", "วังทรายพูน", "โพธิ์ประทับช้าง", "ตะพานหิน", "บางมูลนาก", "โพทะเล", "สามง่าม", "ทับคล้อ", "สากเหล็ก", "บึงนาราง", "ดงเจริญ", "วชิรบารมี"]},
+  "พิษณุโลก": {"lat": 16.8211, "lon": 100.2659, "amphoes": ["เมืองพิษณุโลก", "นครไทย", "ชาติตระการ", "บางระกำ", "บางกระทุ่ม", "พรหมพิราม", "วัดโบสถ์", "วังทอง", "เนินมะปราง"]},
+  "เพชรบุรี": {"lat": 13.1114, "lon": 99.9392, "amphoes": ["เมืองเพชรบุรี", "เขาย้อย", "หนองหญ้าปล้อง", "ชะอำ", "ท่ายาง", "บ้านลาด", "บ้านแหลม", "แก่งกระจาน"]},
+  "เพชรบูรณ์": {"lat": 16.4190, "lon": 101.1567, "amphoes": ["เมืองเพชรบูรณ์", "ชนแดน", "หล่มสัก", "หล่มเก่า", "วิเชียรบุรี", "ศรีเทพ", "หนองไผ่", "บึงสามพัน", "น้ำหนาว", "วังโป่ง", "เขาค้อ"]},
+  "แพร่": {"lat": 18.1446, "lon": 100.1411, "amphoes": ["เมืองแพร่", "ร้องกวาง", "ลอง", "สูงเม่น", "เด่นชัย", "วังชิ้น", "หนองม่วงไข่", "เมืองสรวง"]},
+  "ภูเก็ต": {"lat": 7.8804, "lon": 98.3923, "amphoes": ["เมืองภูเก็ต", "กะทู้", "ถลาง"]},
+  "มหาสารคาม": {"lat": 16.1852, "lon": 103.3007, "amphoes": ["เมืองมหาสารคาม", "แกดำ", "โกสุมพิสัย", "กันทรวิชัย", "เชียงยืน", "บรบือ", "นาเชือก", "พยัคฆภูมิพิสัย", "วาปีปทุม", "นาดูน", "ยางสีสุราช", "กุดรัง", "ชื่นชม"]},
+  "มุกดาหาร": {"lat": 16.5436, "lon": 104.7235, "amphoes": ["เมืองมุกดาหาร", "นิคมคำสร้อย", "ดอนตาล", "ดงหลวง", "คำชะอี", "หว้านใหญ่", "หนองสูง"]},
+  "แม่ฮ่องสอน": {"lat": 19.3021, "lon": 97.9654, "amphoes": ["เมืองแม่ฮ่องสอน", "ขุนยวม", "ปาย", "แม่สะเรียง", "แม่ลาน้อย", "สบเมย", "ปางมะผ้า"]},
+  "ยโสธร": {"lat": 15.7925, "lon": 104.1451, "amphoes": ["เมืองยโสธร", "ทรายมูล", "กุดชุม", "คำเขื่อนแก้ว", "ป่าติ้ว", "มหาชนะชัย", "ค้อวัง", "เลิงนกทา", "ไทยเจริญ"]},
+  "ยะลา": {"lat": 6.5411, "lon": 101.2804, "amphoes": ["เมืองยะลา", "เบตง", "บันนังสตา", "ธารโต", "ยะหา", "รามัน", "กาบัง", "กรงปินัง"]},
+  "ร้อยเอ็ด": {"lat": 16.0538, "lon": 103.6520, "amphoes": ["เมืองร้อยเอ็ด", "เกษตรวิสัย", "ปทุมรัตต์", "จตุรพักตรพิมาน", "ธวัชบุรี", "พนมไพร", "โพนทอง", "โพธิ์ชัย", "หนองพอก", "เสลภูมิ", "สุวรรณภูมิ", "เมืองสรวง", "โพนทราย", "อาจสามารถ", "เมยวดี", "ศรีสมเด็จ", "จังหาร", "เชียงขวัญ", "หนองฮี", "ทุ่งเขาหลวง"]},
+  "ระนอง": {"lat": 9.9658, "lon": 98.6348, "amphoes": ["เมืองระนอง", "ละอุ่น", "กะเปอร์", "กระบุรี", "สุขสำราญ"]},
+  "ระยอง": {"lat": 12.6814, "lon": 101.2816, "amphoes": ["เมืองระยอง", "บ้านฉาง", "แกลง", "วังจันทร์", "บ้านค่าย", "ปลวกแดง", "เขาชะเมา", "นิคมพัฒนา"]},
+  "ราชบุรี": {"lat": 13.5283, "lon": 99.8134, "amphoes": ["เมืองราชบุรี", "จอมบึง", "สวนผึ้ง", "ดำเนินสะดวก", "บ้านโป่ง", "บางแพ", "โพธาราม", "ปากท่อ", "วัดเพลง", "บ้านคา"]},
+  "ลพบุรี": {"lat": 14.7995, "lon": 100.6534, "amphoes": ["เมืองลพบุรี", "พัฒนานิคม", "โคกสำโรง", "ชัยบาดาล", "ท่าวุ้ง", "บ้านหมี่", "ท่าหลวง", "สระโบสถ์", "โคกเจริญ", "ลำสนธิ", "หนองม่วง"]},
+  "ลำปาง": {"lat": 18.2888, "lon": 99.4928, "amphoes": ["เมืองลำปาง", "แม่เมาะ", "เกาะคา", "เสริมงาม", "งาว", "แจ้ห่ม", "วังเหนือ", "เถิน", "แม่พริก", "แม่ทะ", "สบปราบ", "ห้างฉัตร", "เมืองปาน"]},
+  "ลำพูน": {"lat": 18.5744, "lon": 99.0087, "amphoes": ["เมืองลำพูน", "แม่ทา", "บ้านโฮ่ง", "ลี้", "ทุ่งหัวช้าง", "ป่าซาง", "บ้านธิ", "เวียงหนองล่อง"]},
+  "เลย": {"lat": 17.4860, "lon": 101.7223, "amphoes": ["เมืองเลย", "นาด้วง", "เชียงคาน", "ปากชม", "ด่านซ้าย", "ภูเรือ", "ท่าลี่", "วังสะพุง", "ภูกระดึง", "ภูหลวง", "ผาขาว", "เอราวัณ", "หนองหิน"]},
+  "ศรีสะเกษ": {"lat": 15.1186, "lon": 104.3220, "amphoes": ["เมืองศรีสะเกษ", "ยางชุมน้อย", "กันทรารมย์", "กันทรลักษ์", "ขุขันธ์", "ไพรบึง", "ปรางค์กู่", "ขุนหาญ", "ราษีไศล", "อุทุมพรพิสัย", "บึงบูรพ์", "ห้วยทับทัน", "โนนคูณ", "ศรีรัตนะ", "น้ำเกลี้ยง", "วังหิน", "ภูสิงห์", "เมืองจันทร์", "เบญจลักษ์", "พยุห์", "โพธิ์ศรีสุวรรณ", "ศิลาลาด"]},
+  "สกลนคร": {"lat": 17.1611, "lon": 104.1486, "amphoes": ["เมืองสกลนคร", "กุสุมาลย์", "กุดบาก", "พรรณานิคม", "พังโคน", "วาริชภูมิ", "นิคมน้ำอูน", "วานรนิวาส", "คำตากล้า", "บ้านม่วง", "อากาศอำนวย", "สว่างแดนดิน", "ส่องดาว", "เต่างอย", "โคกศรีสุพรรณ", "เจริญศิลป์", "โพนนาแก้ว", "ภูพาน"]},
+  "สงขลา": {"lat": 7.1988, "lon": 100.5954, "amphoes": ["เมืองสงขลา", "สทิงพระ", "จะนะ", "นาทวี", "เทพา", "สะบ้าย้อย", "ระโนด", "กระแสสินธุ์", "รัตภูมิ", "สะเดา", "หาดใหญ่", "นาหม่อม", "ควนเนียง", "บางกล่ำ", "สิงหนคร", "คลองหอยโข่ง"]},
+  "สตูล": {"lat": 6.6238, "lon": 100.0674, "amphoes": ["เมืองสตูล", "ควนโดน", "ควนกาหลง", "ท่าแพ", "ละงู", "ทุ่งหว้า", "มะนัง"]},
+  "สมุทรปราการ": {"lat": 13.5991, "lon": 100.5998, "amphoes": ["เมืองสมุทรปราการ", "บางบ่อ", "บางพลี", "พระประแดง", "พระสมุทรเจดีย์", "บางเสาธง"]},
+  "สมุทรสงคราม": {"lat": 13.4098, "lon": 99.9990, "amphoes": ["เมืองสมุทรสงคราม", "บางคนที", "อัมพวา"]},
+  "สมุทรสาคร": {"lat": 13.5475, "lon": 100.2744, "amphoes": ["เมืองสมุทรสาคร", "กระทุ่มแบน", "บ้านแพ้ว"]},
+  "สระแก้ว": {"lat": 13.8140, "lon": 102.0583, "amphoes": ["เมืองสระแก้ว", "คลองหาด", "ตาพระยา", "วังน้ำเย็น", "วัฒนานคร", "อรัญประเทศ", "เขาฉกรรจ์", "โคกสูง", "วังสมบูรณ์"]},
+  "สระบุรี": {"lat": 14.5289, "lon": 100.9108, "amphoes": ["เมืองสระบุรี", "แก่งคอย", "หนองแค", "วิหารแดง", "หนองแซง", "บ้านหมอ", "ดอนพุด", "หนองโดน", "พระพุทธบาท", "เสาไห้", "มวกเหล็ก", "วังม่วง", "เฉลิมพระเกียรติ"]},
+  "สิงห์บุรี": {"lat": 14.8936, "lon": 100.4018, "amphoes": ["เมืองสิงห์บุรี", "บางระจัน", "ค่ายบางระจัน", "พรหมบุรี", "ท่าช้าง", "อินทร์บุรี"]},
+  "สุโขทัย": {"lat": 17.0056, "lon": 99.8264, "amphoes": ["เมืองสุโขทัย", "บ้านด่านลานหอย", "คีรีมาศ", "กงไกรลาศ", "ศรีสัชนาลัย", "ศรีสำโรง", "สวรรคโลก", "ศรีนคร", "ทุ่งเสลี่ยม"]},
+  "สุพรรณบุรี": {"lat": 14.4745, "lon": 100.1177, "amphoes": ["เมืองสุพรรณบุรี", "เดิมบางนางบวช", "ด่านช้าง", "บางปลาม้า", "ศรีประจันต์", "ดอนเจดีย์", "สองพี่น้อง", "สามชุก", "อู่ทอง", "หนองหญ้าไซ"]},
+  "สุราษฎร์ธานี": {"lat": 9.1382, "lon": 99.3217, "amphoes": ["เมืองสุราษฎร์ธานี", "กาญจนดิษฐ์", "ดอนสัก", "เกาะสมุย", "เกาะพะงัน", "ไชยา", "ท่าชนะ", "คีรีรัฐนิคม", "บ้านตาขุน", "พนม", "ท่าฉาง", "บ้านนาสาร", "บ้านนาเดิม", "เคียนซา", "เวียงสระ", "พระแสง", "พุนพิน", "ชัยบุรี", "วิภาวดี"]},
+  "สุรินทร์": {"lat": 14.8818, "lon": 103.4936, "amphoes": ["เมืองสุรินทร์", "ชุมพลบุรี", "ท่าตูม", "จอมพระ", "ปราสาท", "กาบเชิง", "รัตนบุรี", "สนม", "ศีขรภูมิ", "สังขะ", "ลำดวน", "สำโรงทาบ", "บัวเชด", "พนมดงรัก", "ศรีณรงค์", "เขวาสินรินทร์", "โนนนารายณ์"]},
+  "หนองคาย": {"lat": 17.8783, "lon": 102.7420, "amphoes": ["เมืองหนองคาย", "ท่าบ่อ", "เมืองหมี", "โพนพิสัย", "ศรีเชียงใหม่", "สังคม", "สระใคร", "เฝ้าไร่", "รัตนวาปี", "โพธิ์ตาก"]},
+  "หนองบัวลำภู": {"lat": 17.2044, "lon": 102.4407, "amphoes": ["เมืองหนองบัวลำภู", "นากลาง", "โนนสัง", "ศรีบุญเรือง", "สุวรรณคูหา", "นาวัง"]},
+  "อ่างทอง": {"lat": 14.5896, "lon": 100.4550, "amphoes": ["เมืองอ่างทอง", "ไชโย", "ป่าโมก", "โพธิ์ทอง", "แสวงหา", "วิเศษชัยชาญ", "สามโก้"]},
+  "อำนาจเจริญ": {"lat": 15.8584, "lon": 104.6258, "amphoes": ["เมืองอำนาจเจริญ", "ชานุมาน", "ปทุมราชวงศา", "พนา", "เสนางคนิคม", "หัวตะพาน", "ลืออำนาจ"]},
+  "อุดรธานี": {"lat": 17.4138, "lon": 102.7872, "amphoes": ["เมืองอุดรธานี", "กุดจับ", "หนองวัวซอ", "กุมภวาปี", "โนนสะอาด", "หนองหาน", "ทุ่งฝน", "ไชยวาน", "ศรีธาตุ", "วังสามหมอ", "บ้านดุง", "บ้านผือ", "น้ำโสม", "เพ็ญ", "สร้างคอม", "หนองแสง", "นายูง", "พิบูลย์รักษ์", "กู่แก้ว", "ประจักษ์ศิลปาคม"]},
+  "อุตรดิตถ์": {"lat": 17.6201, "lon": 100.0993, "amphoes": ["เมืองอุตรดิตถ์", "ตรอน", "ท่าปลา", "น้ำปาด", "ฟากท่า", "บ้านโคก", "พิชัย", "ลับแล", "ทองแสนขัน"]},
+  "อุทัยธานี": {"lat": 15.3835, "lon": 100.0246, "amphoes": ["เมืองอุทัยธานี", "ทัพทัน", "สว่างอารมณ์", "หนองฉาง", "หนองขาหย่าง", "บ้านไร่", "ลานสัก", "ห้วยคต"]},
+  "อุบลราชธานี": {"lat": 15.2287, "lon": 104.8564, "amphoes": ["เมืองอุบลราชธานี", "ศรีเมืองใหม่", "โขงเจียม", "เขื่องใน", "เขมราฐ", "เดชอุดม", "นาจะหลวย", "น้ำยืน", "บุณฑริก", "ตระการพืชผล", "กุดข้าวปุ้น", "ม่วงสามสิบ", "วารินชำราบ", "พิบูลมังสาหาร", "ตาลสุม", "โพธิ์ไทร", "สำโรง", "ดอนมดแดง", "สิรินธร", "ทุ่งศรีอุดม", "ปทุมราชวงศา", "นาเยีย", "นาตาล", "เหล่าเสือโก้ก", "สว่างวีระวงศ์", "น้ำขุ่น"]}
+};
+
+function initProvinceDropdown() {
+  const pSelect = document.getElementById('inProvince');
+  pSelect.innerHTML = '';
+  for (const pName in PROVINCES_DB) {
+    const opt = document.createElement('option');
+    opt.value = pName;
+    opt.textContent = pName;
+    pSelect.appendChild(opt);
+  }
+pSelect.value = "กรุงเทพมหานคร";
+  onProvinceChange();
+}
+
+function onProvinceChange() {
+  const pName = document.getElementById('inProvince').value;
+  const pData = PROVINCES_DB[pName] || PROVINCES_DB["กรุงเทพมหานคร"];
+  const aSelect = document.getElementById('inAmphoe');
+  aSelect.innerHTML = '';
+  pData.amphoes.forEach(amp => {
+    const opt = document.createElement('option');
+    opt.value = amp;
+    opt.textContent = amp;
+    aSelect.appendChild(opt);
+  });
+}
+
+// =========================================================================
+// 2. ระบบจักรราศี & ตารางปฏิทินดาวย้าย 30 ปีเต็ม จากเว็บหลัก
+// =========================================================================
+const ZODIAC_NAMES = ["ราศีเมษ", "ราศีพฤษภ", "ราศีเมถุน", "ราศีกรกฎ", "ราศีสิงห์", "ราศีกันย์", "ราศีตุลย์", "ราศีพิจิก", "ราศีธนู", "ราศีมังกร", "ราศีกุมภ์", "ราศีมีน"];
+const THAI_HOUSES = ["ตนุ", "กดุมภะ", "สหัชชะ", "พันธุ", "ปุตตะ", "อริ", "ปัตนิ", "มรณะ", "ศุภะ", "กัมมะ", "ลาภะ", "วินาศ"];
+const SIGN_RULERS = [3, 6, 4, 2, 1, 4, 6, 3, 5, 7, 8, 5];
+const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+const FIXED_WHEEL_SIGNS = [0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+const SUR_ANTANATI = [120, 96, 72, 120, 144, 168, 168, 144, 120, 72, 96, 120];
+const INGRESS_DATES = [
+  { m: 4, d: 13.5 }, { m: 5, d: 14.5 }, { m: 6, d: 15.0 }, { m: 7, d: 16.5 },
+  { m: 8, d: 16.5 }, { m: 9, d: 16.5 }, { m: 10, d: 17.5 }, { m: 11, d: 16.5 },
+  { m: 12, d: 15.5 }, { m: 1, d: 14.5 }, { m: 2, d: 13.5 }, { m: 3, d: 14.5 }
+];
+
+// =========================================================================
+// 3. ฟังก์ชันคำนวณเวลาพระอาทิตย์ขึ้นจริงในประเทศไทยตามปูมดาราศาสตร์ (จากเว็บหลัก)
+// =========================================================================
+function getExactThaiSunriseMinute(day, month, yearBE, lat = 13.78, lon = 100.543) {
+  var yCE = (yearBE > 2400) ? yearBE - 543 : yearBE;
+  var startOfYear = new Date(yCE, 0, 1);
+  var curDate = new Date(yCE, month - 1, day);
+  var dayOfYear = Math.floor((curDate - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
+
+  var gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
+  var decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
+             - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma);
+
+  var latRad = lat * Math.PI / 180.0;
+  var zenithRad = 90.833 * Math.PI / 180.0;
+
+  var cosHA = (Math.cos(zenithRad) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
+  var hourAngle = Math.acos(Math.max(-1, Math.min(1, cosHA))) * (180.0 / Math.PI);
+
+  var eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
+                 - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
+  
+  var lonOffsetMinutes = (105.0 - lon) * 4.0;
+  var timeOffset = eqtime - lonOffsetMinutes;
+  var sunriseMinutes = 720 - (4 * hourAngle) - timeOffset;
+
+  return Math.round(sunriseMinutes);
+}
+
+
+// =========================================================================
+// 5. คำนวณลัคนาสุริยยาตร์ไทยแท้ (ตัดตามอุทัยกาลจริงเว็บหลัก)
+// =========================================================================
+function calcAscendant(rawD, rawM, rawY, rawH, rawMin, lat, lon) {
+  let sunriseMin = getExactThaiSunriseMinute(rawD, rawM, rawY, lat, lon);
+  let birthMinsOfDay = rawH * 60 + rawMin;
+  let curD = rawD, curM = rawM, curY = rawY;
+  let elapsedFromSunrise = 0;
+
+  if (birthMinsOfDay < sunriseMin) {
+    let prevDate = new Date(curY - 543, curM - 1, curD - 1);
+    curD = prevDate.getDate();
+    curM = prevDate.getMonth() + 1;
+    curY = prevDate.getFullYear() + 543;
+    elapsedFromSunrise = (1440 - sunriseMin) + birthMinsOfDay;
+  } else {
+    elapsedFromSunrise = birthMinsOfDay - sunriseMin;
+  }
+
+  let sunSign = 0, baseEntry = 13.5;
+  for (let i = 0; i < 12; i++) {
+    if (curM === INGRESS_DATES[i].m) {
+      if (curD >= Math.floor(INGRESS_DATES[i].d)) {
+        sunSign = i;
+        baseEntry = INGRESS_DATES[i].d;
+      } else {
+        sunSign = (i + 11) % 12;
+        baseEntry = INGRESS_DATES[sunSign].d;
+      }
+      break;
+    }
+  }
+
+  let sunDegree = (curD >= baseEntry) ? (curD - baseEntry) : (30 - (baseEntry - curD));
+  if (sunDegree < 0) sunDegree = 0;
+  if (sunDegree >= 30) sunDegree = 29.99;
+
+  let firstSignDuration = SUR_ANTANATI[sunSign];
+  let remainingFirstSign = firstSignDuration * ((30 - sunDegree) / 30);
+  let ascSign = sunSign;
+  let leftMins = elapsedFromSunrise;
+
+  if (leftMins <= remainingFirstSign) {
+    ascSign = sunSign;
+  } else {
+    leftMins -= remainingFirstSign;
+    ascSign = (ascSign + 1) % 12;
+    while (leftMins > SUR_ANTANATI[ascSign]) {
+      leftMins -= SUR_ANTANATI[ascSign];
+      ascSign = (ascSign + 1) % 12;
+    }
+  }
+  return { ascSign, sunSign, sunriseMin };
+}
+
+let calcState = null;
+
+// =========================================================================
+// 7. จัดการเมื่อกดปุ่มคำนวณ
+// =========================================================================
+function handleCalculate() {
+  const name = document.getElementById('inName').value.trim() || "เจ้าชะตา";
+  const bD = parseInt(document.getElementById('inDay').value, 10);
+  const bM = parseInt(document.getElementById('inMonth').value, 10);
+  const bY = parseInt(document.getElementById('inYearBE').value, 10);
+  const bH = parseInt(document.getElementById('inHour').value, 10) || 0;
+  const bMin = parseInt(document.getElementById('inMinute').value, 10) || 0;
+
+  const pName = document.getElementById('inProvince').value;
+  if (!pName) {
+    alert("กรุณาเลือกจังหวัดเกิดครับ");
+    return;
+  }
+  const pData = PROVINCES_DB[pName] || PROVINCES_DB["กรุงเทพมหานคร"] || { lat: 13.7563, lon: 100.5018 };
+  const ampName = document.getElementById('inAmphoe').value;
+
+  const tD = parseInt(document.getElementById('inTransitDay').value, 10);
+  const tM = parseInt(document.getElementById('inTransitMonth').value, 10);
+  const tY = parseInt(document.getElementById('inTransitYearBE').value, 10);
+  const tH = parseInt(document.getElementById('inTransitHour').value, 10) || 0;
+  const tMin = parseInt(document.getElementById('inTransitMinute').value, 10) || 0;
+
+  if (!bD || !bM || !bY) {
+    alert("กรุณาระบุวันเดือนปีเกิดให้ครบถ้วนครับ");
+    return;
+  }
+  if (!tD || !tM || !tY) {
+    alert("กรุณาระบุวันจรให้ครบถ้วนครับ");
+    return;
+  }
+
+  // 1. คำนวณลัคนาและอุทัยกาลจริง
+  const { ascSign, sunriseMin } = calcAscendant(bD, bM, bY, bH, bMin, pData.lat, pData.lon);
+
+  // 2. คำนวณดาวกำเนิด (เวลาจริง ไม่ตัดวันย้อนหลัง)
+  const planetsNatal = calcExactPlanets(bY, bM, bD, bH, bMin);
+
+  // 3. คำนวณดาวจร (ณ วันที่และเวลาจรที่เลือกจริง)
+  let tYearCE = (tY > 2400) ? (tY - 543) : tY;
+  let targetTransitDate = new Date(tYearCE, tM - 1, tD, tH, tMin);
+  const planetsTransit = calculateAllTransitPlanets(targetTransitDate);
+
+  calcState = {
+    name, bD, bM, bY, bH, bMin, tD, tM, tY, tH, tMin, targetTransitDate,
+    ascSign,
+    planetsNatal,
+    planetsTransit
+  };
+
+  const sH = Math.floor(sunriseMin / 60);
+  const sM = sunriseMin % 60;
+  const sunriseStr = `${String(sH).padStart(2,'0')}:${String(sM).padStart(2,'0')} น.`;
+
+  document.getElementById('emptyNotice').style.display = 'none';
+  document.getElementById('predictionContainer').style.display = 'block';
+
+  document.getElementById('dspName').textContent = name;
+  document.getElementById('dspBirth').textContent = `${bD}/${bM}/${bY} เวลา ${String(bH).padStart(2,'0')}:${String(bMin).padStart(2,'0')} น.`;
+  document.getElementById('dspAsc').textContent = ZODIAC_NAMES[ascSign];
+  document.getElementById('dspSunrise').textContent = `${sunriseStr} (พิกัด จ.${pName})`;
+  document.getElementById('dspLoc').textContent = `จ.${pName} - อ.${ampName}`;
+  document.getElementById('dspTransit').textContent = `${tD}/${tM}/${tY} เวลา ${String(tH).padStart(2,'0')}:${String(tMin).padStart(2,'0')} น.`;
+
+  drawWheelFixedZodiac(ascSign, planetsNatal, planetsTransit);
+  renderTransitAtHome();
+}
+
+window.handleCalculate = handleCalculate;
+
+// =========================================================================
+// 8. ฟังก์ชันวาดกงล้อดวง
+// =========================================================================
+function drawWheelFixedZodiac(ascSign, pNatal, pTransit) {
+  const svg = document.getElementById('astroWheelSvg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  
+  const cx = 270, cy = 270;
+  const rBorderOut = 256;
+  const rTransitDashed = 238;
+  const rTransitIn = 202;
+  const rHouseIn = 164;
+  const rNatalIn = 118;
+  const rZodiacIn = 86;
+  const rRulerIn = 62;
+  const rCenter = 62;
+
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rBorderOut}" fill="#ffffff" stroke="#c59b27" stroke-width="3"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rTransitDashed}" fill="none" stroke="#d4af37" stroke-width="1.2" stroke-dasharray="3,3"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rTransitIn}" fill="#a67c1e" stroke="#d4af37" stroke-width="1.8"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rHouseIn}" fill="#ffffff" stroke="#a67c1e" stroke-width="2"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rNatalIn}" fill="#eab308" stroke="#8c6214" stroke-width="1.5"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rZodiacIn}" fill="#ca8a04" stroke="#854d0e" stroke-width="1.5"/>`;
+  
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rCenter}" fill="#6b4411" stroke="#f59e0b" stroke-width="2.5"/>`;
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="${rCenter - 3}" fill="#4a2e0a"/>`;
+  svg.innerHTML += `<text x="${cx}" y="${cy - 6}" fill="#ffd700" font-size="11" font-weight="700" text-anchor="middle">ลัคนา</text>`;
+  svg.innerHTML += `<text x="${cx}" y="${cy + 13}" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">${ZODIAC_NAMES[ascSign].replace("ราศี","")}</text>`;
+
+  for (let i = 0; i < 12; i++) {
+    let startAngle = -105 + (i * 30);
+    let endAngle = startAngle + 30;
+    let midAngle = startAngle + 15;
+
+    let radStart = startAngle * Math.PI / 180;
+    let radEnd = endAngle * Math.PI / 180;
+    let radMid = midAngle * Math.PI / 180;
+
+    let x1 = cx + rCenter * Math.cos(radStart);
+    let y1 = cy + rCenter * Math.sin(radStart);
+    let x2 = cx + rBorderOut * Math.cos(radStart);
+    let y2 = cy + rBorderOut * Math.sin(radStart);
+    svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#c59b27" stroke-width="1.2"/>`;
+
+    let zIdx = FIXED_WHEEL_SIGNS[i];
+    let zodiacName = ZODIAC_NAMES[zIdx].replace("ราศี", "");
+    let houseIndex = (zIdx - ascSign + 12) % 12;
+    let houseName = THAI_HOUSES[houseIndex];
+    let rulerStar = SIGN_RULERS[zIdx];
+
+    let rRulerPos = (rRulerIn + rZodiacIn) / 2;
+    let rx = cx + rRulerPos * Math.cos(radMid);
+    let ry = cy + rRulerPos * Math.sin(radMid);
+    svg.innerHTML += `<text x="${rx}" y="${ry + 4}" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">${rulerStar}</text>`;
+
+    let rZPos = (rZodiacIn + rNatalIn) / 2;
+    let zx = cx + rZPos * Math.cos(radMid);
+    let zy = cy + rZPos * Math.sin(radMid);
+    svg.innerHTML += `<text x="${zx}" y="${zy + 4}" fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle">${zodiacName}</text>`;
+
+    let rNPos = (rNatalIn + rHouseIn) / 2;
+    let nx = cx + rNPos * Math.cos(radMid);
+    let ny = cy + rNPos * Math.sin(radMid);
+
+    let natalStars = [];
+    for (let [pNum, pSign] of Object.entries(pNatal)) {
+      if (parseInt(pSign) === zIdx) natalStars.push(pNum);
+    }
+    if (natalStars.length > 0) {
+      svg.innerHTML += `<text x="${nx}" y="${ny + 7}" fill="#1e3a8a" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="3">${natalStars.join(' ')}</text>`;
+    }
+
+    let rHPos = (rHouseIn + rTransitIn) / 2;
+    let hx = cx + rHPos * Math.cos(radMid);
+    let hy = cy + rHPos * Math.sin(radMid);
+    svg.innerHTML += `<text x="${hx}" y="${hy + 4}" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">${houseName}</text>`;
+
+    let rTPos = (rTransitIn + rBorderOut) / 2;
+    let tx = cx + rTPos * Math.cos(radMid);
+    let ty = cy + rTPos * Math.sin(radMid);
+
+    let transitStars = [];
+    for (let [pNum, pSign] of Object.entries(pTransit)) {
+      if (parseInt(pSign) === zIdx) transitStars.push(pNum);
+    }
+    if (transitStars.length > 0) {
+      let starHtml = transitStars.map((s, sIdx) => {
+        return `<tspan fill="#ea580c" dx="${sIdx === 0 ? 0 : 3}">${s}</tspan>`;
+      }).join('');
+      svg.innerHTML += `<text x="${tx}" y="${ty + 7}" font-size="21" font-weight="700" text-anchor="middle">${starHtml}</text>`;
+    }
+  }
+}
+
+// =========================================================================
+// 9. ระบบพยากรณ์โหราศาสตร์ไทยแบบเจาะลึก 5 มิติ (ฉบับจัดเต็มสำหรับสมาชิก VIP)
+// =========================================================================
+
+const PLANET_ASTRO_MEANING = {
+  1: {
+    name: "ดาวอาทิตย์ (๑)",
+    core: "เกียรติยศ ชื่อเสียง อำนาจวาสนา ตำแหน่งหน้าที่การงาน และการยอมรับนับถือจากผู้หลักผู้ใหญ่",
+    workFinance: "โดดเด่นในเรื่องของการสร้างผลงานให้เป็นที่ประจักษ์ มีโอกาสได้รับมอบหมายงานสำคัญหรือแสดงความเป็นผู้นำ การเงินมักมาจากความสามารถและตำแหน่งหน้าที่โดยตรง",
+    loveSocial: "เป็นจุดศูนย์กลางความสนใจของคนรอบข้าง ผู้ใหญ่หรือผู้มีอำนาจจับตามอง แต่ควรระวังทิฐิมานะหรือความดื้อรั้นที่อาจทำให้เกิดช่องว่างกับคนใกล้ตัว",
+    advice: "ควรวางตัวให้น่าเชื่อถือ ทำงานอย่างเปิดเผยตรงไปตรงมา รักษาคำพูด และแสดงความอ่อนน้อมถ่อมตนต่อผู้ใหญ่",
+    remedy: "ทำบุญเกี่ยวกับแสงสว่าง เติมน้ำมันตะเกียง ถวายหลอดไฟ หรือไหว้ขอพรพระปางถวายเนตร (พระประจำวันอาทิตย์) เพื่อเสริมบารมีและชื่อเสียง"
+  },
+  2: {
+    name: "ดาวจันทร์ (๒)",
+    core: "อารมณ์ความรู้สึก จิตใจ เสน่ห์เมตตามหานิยม การเงินหมุนเวียน และความผูกพันใกล้ชิดในครอบครัว",
+    workFinance: "งานที่เกี่ยวข้องกับการบริการ การเจรจา อาหาร เครื่องดื่ม หรือความสวยงามจะโดดเด่นเป็นพิเศษ กระแสเงินสดมีการหมุนเวียนเข้าออกคล่องตัวตามจังหวะความขยัน",
+    loveSocial: "มีเสน่ห์ดึงดูดใจผู้คนรอบข้าง ได้รับความเมตตาเอ็นดูจากเพศตรงข้ามและผู้ใหญ่ แต่จิตใจอาจอ่อนไหวง่ายหรือเก็บคำพูดของคนอื่นมาคิดมากเกินไป",
+    advice: "ควรควบคุมอารมณ์ให้นิ่ง อย่าตัดสินใจเรื่องสำคัญด้วยความอ่อนไหวชั่ววูบ หรือยอมเสียเปรียบเพียงเพราะความขี้เกรงใจ",
+    remedy: "ทำบุญเกี่ยวกับน้ำดื่มสะอาด ถวายผ้าไตร หรือไหว้ขอพรพระปางห้ามญาติ (พระประจำวันจันทร์) เพื่อเสริมเสน่ห์เมตตาและทำให้จิตใจสงบมั่นคง"
+  },
+  3: {
+    name: "ดาวอังคาร (๓)",
+    core: "ความกล้าหาญ พลังงานการขับเคลื่อน ความขยันขันแข็ง การแข่งขัน และการฟันฝ่าอุปสรรค",
+    workFinance: "เป็นจังหวะที่ต้องลุยงานหนักและใช้ความเด็ดขาดในการตัดสินใจ เหมาะกับงานช่าง วิศวกรรม กีฬา หรือการบุกเบิกตลาดใหม่ๆ รายได้เกิดจากการลงมือทำอย่างจริงจัง",
+    loveSocial: "ความสัมพันธ์มีความตรงไปตรงมา ไม่อ้อมค้อม แต่ต้องระวังคำพูดที่แข็งกระด้าง ความใจร้อน หรือการปะทะคารมกับคนรักและเพื่อนร่วมงาน",
+    advice: "ควรนำพลังงานที่มีไปทุ่มเทให้กับการสร้างผลงานและออกกำลังกาย หลีกเลี่ยงการใช้อารมณ์ตัดสินปัญหา และระมัดระวังอุบัติเหตุจากการเร่งรีบ",
+    remedy: "ทำบุญบริจาคโลหิต เครื่องมือแพทย์ ไถ่ชีวิตโคกระบือ หรือไหว้ขอพรพระปางไสยาสน์ (พระประจำวันอังคาร) เพื่อลดทอนแรงปะทะและอุบัติเหตุ"
+  },
+  4: {
+    name: "ดาวพุธ (๔)",
+    core: "สติปัญญา ไหวพริบปฏิภาณ การเจรจาสื่อสาร เอกสารสัญญา การค้าขาย และการวางแผนวิเคราะห์",
+    workFinance: "การเจรจาธุรกิจ การปิดการขาย งานเขียน งานออนไลน์ และการประสานงานจะสร้างผลกำไรอย่างงดงาม มีช่องทางหาเงินจากการใช้ความรู้และคำพูด",
+    loveSocial: "เป็นคนคุยสนุก ปรับตัวเก่ง เข้ากับคนได้ทุกระดับ มีเกณฑ์ได้พบปะเพื่อนใหม่หรือพูดคุยปรับความเข้าใจกับคนรักได้อย่างราบรื่น",
+    advice: "ควรตรวจสอบความถูกต้องของเอกสารสัญญา ตัวเลข และข้อความสื่อสารให้รอบคอบก่อนส่งออกเสมอ หลีกเลี่ยงการรับปากในสิ่งที่ยังทำไม่ได้",
+    remedy: "ทำบุญบริจาคหนังสือเรียน สื่อการสอน อุปกรณ์การศึกษา หรือไหว้ขอพรพระปางอุ้มบาตร (พระประจำวันพุธกลางวัน) เพื่อเสริมสติปัญญาและวาจาสิทธิ์"
+  },
+  5: {
+    name: "ดาวพฤหัสบดี (๕)",
+    core: "สติปัญญาชั้นสูง คุณธรรมความดี ความสำเร็จมั่นคง ผู้ใหญ่อุปถัมภ์ค้ำชู และโอกาสสำคัญในชีวิต",
+    workFinance: "เป็นดาวศุภเคราะห์ใหญ่ที่ให้คุณสูงสุด งานที่ทำด้วยความซื่อสัตย์สุจริตจะเจริญก้าวหน้า มีเกณฑ์เลื่อนขั้น เลื่อนตำแหน่ง หรือได้ผู้ใหญ่ใจดีเข้ามาช่วยเหลือเรื่องทุนทรัพย์",
+    loveSocial: "ความสัมพันธ์ตั้งอยู่บนพื้นฐานของเหตุผลและความเข้าใจ คนโสดมีเกณฑ์พบคนดีมีศีลธรรม หรือผู้ใหญ่แนะนำคนที่มีฐานะมั่นคงให้รู้จัก",
+    advice: "เป็นจังหวะทองของการศึกษาหาความรู้เพิ่มเติม การวางแผนอนาคตระยะยาว และการเริ่มต้นทำสิ่งที่เป็นมงคลแก่ชีวิต",
+    remedy: "ทำบุญถวายสังฆทาน ยารักษาโรค ทุนการศึกษาพระภิกษุสามเณร หรือไหว้ขอพรพระปางสมาธิ (พระประจำวันพฤหัสบดี) เพื่อเปิดทางสว่างและดึงดูดกัลยาณมิตร"
+  },
+  6: {
+    name: "ดาวศุกร์ (๖)",
+    core: "การเงิน ทรัพย์สิน ความรักความปรารถนา ความสุขสมหวัง ศิลปะความสวยงาม และเสน่ห์ดึงดูดใจ",
+    workFinance: "การเงินมีความคล่องตัว มีโชคลาภด้านทรัพย์สินของมีค่า งานด้านศิลปะ บันเทิง แฟชั่น และความสวยความงามจะสร้างรายได้เป็นกอบเป็นกำ",
+    loveSocial: "เป็นช่วงเวลาที่หัวใจชุ่มชื่น มีเสน่ห์ต่อเพศตรงข้าม คนมีคู่ความรักหวานชื่นเอาใจใส่กันดี คนโสดมีโอกาสพบรักที่ถูกใจหรือมีคนเข้ามาขายขนมจีบ",
+    advice: "ควรบริหารรายรับและรายจ่ายให้สมดุล ระมัดระวังการใช้จ่ายเงินไปกับของฟุ่มเฟือยตามใจตัวเอง หรือความลุ่มหลงในความรักจนขาดสติ",
+    remedy: "ทำบุญถวายดอกไม้ของหอม เครื่องนุ่งห่ม อาหารหวานคาว หรือไหว้ขอพรพระปางรำพึง (พระประจำวันศุกร์) เพื่อเสริมโชคลาภและความสมหวังในความรัก"
+  },
+  7: {
+    name: "ดาวเสาร์ (๗)",
+    core: "ภาระความรับผิดชอบ ความอดทนอดกลั้น โครงสร้างระยะยาว อสังหาริมทรัพย์ และบททดสอบความแข็งแกร่ง",
+    workFinance: "ต้องแบกรับภาระงานที่หนักและละเอียดอ่อนมากขึ้น งานใหญ่ต้องใช้เวลาบ่มเพาะจึงจะเห็นผล แต่เมื่อสำเร็จแล้วจะสร้างรากฐานการเงินที่มั่นคงถาวร",
+    loveSocial: "ความสัมพันธ์อาจดูนิ่งเงียบ จริงจัง หรือมีเรื่องภาระหน้าที่เข้ามาทำให้ไม่ค่อยมีเวลาหวานชื่นกัน ควรระวังความเครียดสะสมที่ทำให้ดูเย็นชากับคนใกล้ตัว",
+    advice: "ต้องใช้ความอดทนและความรอบคอบสูง อย่าใจร้อนเร่งรัดผลลัพธ์ ค่อยๆ สะสางปัญหาไปทีละขั้น แล้วความเหน็ดเหนื่อยจะแปรเปลี่ยนเป็นความสำเร็จที่ยิ่งใหญ่",
+    remedy: "ทำบุญสร้างเสนาสนะ ถวายกระเบื้องหลังคาโบสถ์ บริจาคช่วยผู้ยากไร้ หรือไหว้ขอพรพระปางนาคปรก (พระประจำวันเสาร์) เพื่อเสริมความแข็งแกร่งและปัดเป่าอุปสรรค"
+  },
+  8: {
+    name: "พระราหู (๘)",
+    core: "การเปลี่ยนแปลงฉับพลัน เทคโนโลยีออนไลน์ ต่างถิ่นต่างแดน ไหวพริบชั้นเชิง และความลุ่มหลงมัวเมา",
+    workFinance: "มีโอกาสสร้างรายได้ก้อนใหญ่จากช่องทางออนไลน์ ธุรกิจนำเข้าส่งออก งานกลางคืน หรือการพลิกแพลงกลยุทธ์ใหม่ๆ แต่ต้องระวังการลงทุนที่มีความเสี่ยงสูง",
+    loveSocial: "ดึงดูดคนที่มีบุคลิกแปลกใหม่ น่าค้นหา หรือชาวต่างชาติเข้ามาในชีวิต แต่ต้องระวังความรักซ้อน ความลุ่มหลง หรือการถูกหลอกลวงปิดบังความจริง",
+    advice: "ควรใช้สติปัญญาไตร่ตรองให้รอบด้าน อย่าหลงเชื่อคำชักชวนที่ดูดีเกินจริง หลีกเลี่ยงอบายมุขและการพนัน แล้วใช้พลังของราหูไปในทางนวัตกรรมและออนไลน์",
+    remedy: "ทำบุญเกี่ยวกับแสงสว่าง ปัญญา หรือช่วยเหลือผู้พิการทางสายตา และไหว้ขอพรพระปางป่าเลไลยก์ (พระประจำวันพุธกลางคืน) เพื่อเปลี่ยนเรื่องร้ายให้กลายเป็นโชคลาภ"
+  },
+  9: {
+    name: "พระเกตุ (๙)",
+    core: "สิ่งศักดิ์สิทธิ์คุ้มครอง ลางสังหรณ์ที่แม่นยำ ความแคล้วคลาดปลอดภัย เรื่องลึกลับ และการเดินทางไกล",
+    workFinance: "งานที่ติดขัดมานานจะมีทางออกอย่างปาฏิหาริย์ มีเกณฑ์ได้โชคลาภแบบฟลุคๆ หรือได้เงินจากสิ่งศักดิ์สิทธิ์ เครื่องรางของขลัง และงานที่เกี่ยวข้องกับต่างประเทศ",
+    loveSocial: "ความสัมพันธ์มีความผูกพันทางจิตใจลึกซึ้ง บางครั้งอาจมีความคิดเห็นไม่ตรงกันเล็กน้อยแต่สุดท้ายจะปรับตัวเข้าหากันได้ด้วยความเข้าใจ",
+    advice: "ควรหมั่นทำบุญสวดมนต์นั่งสมาธิ เชื่อมั่นในลางสังหรณ์และสัญชาตญาณแรกของตนเอง เมื่อเจอวิกฤตให้ตั้งสติแล้วจะมีทางรอดเสมอ",
+    remedy: "หมั่นสวดมนต์ไหว้พระ นั่งสมาธิ ทำบุญบูรณะวัดวาอาราม หรือกราบไหว้สิ่งศักดิ์สิทธิ์คู่บ้านคู่เมือง เพื่อเสริมสิริมงคลและความแคล้วคลาด"
+  },
+  0: {
+    name: "ดาวมฤตยู (๐)",
+    core: "การปฏิวัติเปลี่ยนแปลงครั้งใหญ่ นวัตกรรมล้ำสมัย การรื้อถอนโครงสร้างเก่า และเหตุการณ์ที่คาดไม่ถึง",
+    workFinance: "เป็นจังหวะของการปรับเปลี่ยนรูปแบบการทำงานครั้งสำคัญ นำเทคโนโลยีหรือ AI เข้ามาช่วยสร้างรายได้ หากกล้าฉีกกรอบเดิมๆ จะค้นพบช่องทางทำเงินใหม่ที่ล้ำหน้าคนอื่น",
+    loveSocial: "ความสัมพันธ์ต้องการพื้นที่อิสระและความเข้าใจในความเป็นตัวของตัวเอง มีเกณฑ์ได้รู้จักผู้คนในแวดวงเทคโนโลยีหรือกลุ่มคนที่มีแนวคิดก้าวหน้า",
+    advice: "จงเปิดใจยอมรับความเปลี่ยนแปลงอย่างมีสติ อย่ายึดติดกับความสำเร็จหรือวิธีการแบบเดิมๆ ที่ล้าสมัย ยิ่งปรับตัวเร็วเท่าไรยิ่งได้เปรียบ",
+    remedy: "ทำบุญบริจาคช่วยเหลือโรงพยาบาล เครื่องมือแพทย์ทันสมัย หรือทำบุญโลงศพ เพื่อเป็นการแก้เคล็ดการเปลี่ยนแปลงและเสริมดวงชะตาให้ราบรื่น"
+  }
+};
+
+const HOUSE_ASTRO_MEANING = [
+  { name: "ตนุ (ตัวตน/วาสนา)", area: "ตัวตน ความคิด สุขภาพกายใจ บุคลิกภาพ และทิศทางชีวิตโดยรวมของเจ้าชะตา", focus: "ส่งผลโดยตรงต่อการตัดสินใจ ความมั่นใจ และภาพลักษณ์ของคุณในสายตาผู้อื่น" },
+  { name: "กดุมภะ (การเงิน/ทรัพย์สิน)", area: "รายได้หลัก กระแสเงินสด ทรัพย์สินเงินทอง และการทำมาหากิน", focus: "ส่งผลโดยตรงต่อสภาพคล่องทางการเงิน โอกาสสร้างรายได้ และการบริหารทรัพย์สิน" },
+  { name: "สหัชชะ (สังคม/การเดินทาง)", area: "เพื่อนฝูง พี่น้อง การติดต่อประสานงาน การเจรจาสื่อสาร และการเดินทางระยะใกล้", focus: "ส่งผลต่อความสัมพันธ์กับคนรอบข้าง การเข้าสังคม และความสำเร็จในการเจรจา" },
+  { name: "พันธุ (ครอบครัว/หลักฐาน)", area: "ครอบครัว ญาติผู้ใหญ่ บ้านเรือน ที่ดิน ยานพาหนะ และความมั่นคงพื้นฐานของชีวิต", focus: "ส่งผลต่อความสงบสุขภายในครอบครัว และการซื้อขายหรือปรับปรุงทรัพย์สินชิ้นใหญ่" },
+  { name: "ปุตตะ (บริวาร/สิ่งใหม่)", area: "บุตรหลาน บริวาร ลูกน้อง การเริ่มต้นโปรเจกต์ใหม่ การเสี่ยงโชค และความรักครั้งใหม่", focus: "ส่งผลต่อการริเริ่มสิ่งใหม่ๆ ความคิดสร้างสรรค์ และผู้ที่อยู่ใต้การดูแล" },
+  { name: "อริ (อุปสรรค/หนี้สิน)", area: "ปัญหาอุปสรรค คู่แข่งทางการค้า ภาระหนี้สิน และการเจ็บป่วยเล็กน้อย", focus: "เป็นจุดที่ต้องใช้ความพยายามแก้ไขปัญหา ระวังความขัดแย้งและการแบกรับภาระ" },
+  { name: "ปัตนิ (คู่ครอง/หุ้นส่วน)", area: "คู่ครอง คนรัก หุ้นส่วนทางธุรกิจ คู่สัญญา และเพศตรงข้ามที่เข้ามาเกี่ยวข้อง", focus: "ส่งผลต่อชีวิตคู่ การตกลงทำสัญญาร่วมกัน และความร่วมมือกับหุ้นส่วน" },
+  { name: "มรณะ (การเปลี่ยนแปลง/ต่างถิ่น)", area: "การสูญเสีย การพลัดพราก การเดินทางไกล ต่างประเทศ มรดก และโรคภัยไข้เจ็บ", focus: "เป็นจังหวะของการจบสิ่งเก่าเพื่อเริ่มต้นใหม่ หรือต้องห่างไกลจากถิ่นฐานเดิม" },
+  { name: "ศุภะ (ความเจริญ/ผู้ใหญ่)", area: "ความสำเร็จ ความก้าวหน้า ผู้หลักผู้ใหญ่ ศาสนา การศึกษาต่อ และการเดินทางไกล", focus: "ส่งผลต่อเกียรติยศชื่อเสียง ความสงบสุขในชีวิต และการได้รับการสนับสนุนเกื้อกูล" },
+  { name: "กัมมะ (การงาน/อาชีพ)", area: "หน้าที่การงาน ธุรกิจ อาชีพหลัก ความรับผิดชอบ และผลงานที่ปรากฏสู่สาธารณะ", focus: "ส่งผลต่อความก้าวหน้าในสายอาชีพ ตำแหน่งหน้าที่ และภาระงานที่ต้องรับผิดชอบ" },
+  { name: "ลาภะ (โชคลาภ/ความสำเร็จ)", area: "โชคลาภ ผลประโยชน์ รายได้พิเศษ มิตรสหายที่ให้คุณ และความสมหวังดังปรารถนา", focus: "เป็นจังหวะของการเก็บเกี่ยวผลประโยชน์ รางวัลชีวิต และโอกาสดีๆ ที่หลั่งไหลเข้ามา" },
+{ name: "วินาศ (เบื้องหลัง/เรื่องลับ)", area: "เรื่องปิดบังซ่อนเร้น ความเสียหายที่ไม่คาดฝัน การทำงานอยู่เบื้องหลัง และการปลีกวิเวก", focus: "ต้องระวังความลับรั่วไหลหรือรายจ่ายแฝง แต่เหมาะกับการวางแผนกลยุทธ์อยู่เบื้องหลัง" }
+];
+function getStarDignityDetail(p, sign) {
+const table = {
+1: { 0: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ มีกำลังสูงสุดส่งผลให้โดดเด่น มีอำนาจบารมี และได้รับการยกย่องอย่างเต็มที่" }, 4: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีความมั่นคงเป็นปึกแผ่น ให้ผลดีอย่างยั่งยืนและเป็นเจ้าของเรื่องราวนั้นอย่างแท้จริง" }, 6: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ กำลังอ่อนแรงลง อาจรู้สึกเหนื่อยล้า ขาดความมั่นใจ หรือต้องออกแรงมากกว่าปกติจึงจะเห็นผล" }, 10: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ไม่ค่อยเป็นตัวของตัวเอง มักต้องพึ่งพาผู้อื่นหรือทำตามเงื่อนไขของคนรอบข้าง" } },
+2: { 1: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ มีเสน่ห์เมตตามหานิยมสูง ผู้คนให้การต้อนรับอุปถัมภ์ การเงินและความสุขราบรื่น" }, 3: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร จิตใจมั่นคง อบอุ่น มีความอุดมสมบูรณ์ และได้รับการดูแลเอาใจใส่เป็นอย่างดี" }, 7: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ อารมณ์แปรปรวนง่าย คิดมากกังวลใจ หรือเกิดความไม่สบายใจในเรื่องที่เกี่ยวข้อง" }, 9: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ต้องแบกรับความรู้สึกของคนอื่น มักเสียสละหรือไม่ได้รับความเห็นใจเท่าที่ควร" } },
+3: { 9: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ พลังความกล้าหาญและเด็ดขาดพุ่งสูงสุด ลุยงานสำเร็จเร็ว ชนะอุปสรรคและคู่แข่งได้ขาดลอย" }, 0: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีความกระตือรือร้นและพลังขับเคลื่อนสูง กล้าคิดกล้าทำและสร้างผลงานเป็นรูปธรรม" }, 7: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีความมุ่งมั่นลึกซึ้ง วางแผนเฉียบคม และกัดไม่ปล่อยจนกว่าจะบรรลุเป้าหมาย" }, 3: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ พลังแผ่วลงหรือหงุดหงิดง่ายแต่ทำอะไรได้ไม่เต็มที่ ควรระวังความใจร้อนที่ทำให้เสียเรื่อง" }, 1: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ต้องประนีประนอมหรือถูกจำกัดอิสระในการลงมือทำ ควรใช้ความนุ่มนวลแทนการปะทะ" }, 6: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ มักเกิดความลังเลใจในการตัดสินใจ หรือต้องคอยตามใจผู้อื่นมากกว่าความต้องการของตนเอง" } },
+4: { 5: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ สติปัญญาและวาทศิลป์เฉียบแหลมสูงสุด เจรจาปิดดีลสำเร็จ การค้าขายและเอกสารให้ผลกำไรงาม" }, 2: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร การสื่อสารคล่องตัว ไหวพริบดี มีช่องทางทำมาหากินและผู้คนเชื่อถือในคำพูด" }, 11: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ ระวังการสื่อสารคลาดเคลื่อน เอกสารตกหล่น หรือหลงเชื่อคำพูดคนอื่นง่ายเกินไป" }, 8: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ คำพูดอาจถูกตีความผิดเพี้ยน ควรพูดให้น้อยลง เน้นการกระทำและตรวจสอบข้อมูลให้ชัวร์" } },
+5: { 3: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ ได้รับความเมตตาจากผู้ใหญ่สูงสุด มีเกณฑ์เลื่อนขั้น ปัญญาแตกฉาน และแคล้วคลาดปลอดภัย" }, 8: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร คุณธรรมและความรู้ส่งผลดีอย่างมั่นคง ผู้ใหญ่ให้การยอมรับและมีหลักการดำเนินชีวิตที่ถูกต้อง" }, 11: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีเมตตาบารมีสูง สติปัญญาลึกซึ้ง และได้รับความร่วมมือที่ดีจากกัลยาณมิตร" }, 9: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ ผู้ใหญ่อาจช่วยได้ไม่เต็มที่ หรือต้องพึ่งพาสติปัญญาของตนเองในการแก้ปัญหาเฉพาะหน้า" }, 2: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ อาจเกิดความขัดแย้งทางความคิดกับผู้ใหญ่หรือคนรอบข้าง ควรเปิดใจรับฟังมุมมองที่แตกต่าง" }, 5: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ต้องระวังเรื่องหยุมหยิมจุกจิกหรือความเข้าใจผิดในข้อตกลง ควรยึดหลักเหตุผลเป็นที่ตั้ง" } },
+6: { 11: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ เสน่ห์และความสุขสมหวังโดดเด่นที่สุด การเงินคล่องตัว ความรักหวานชื่น และมีโชคด้านศิลปะความงาม" }, 1: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร การเงินและทรัพย์สินมั่นคง รสนิยมดี มีความสุขสบายและได้รับความรักที่จริงใจ" }, 6: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีความสมดุลทั้งเรื่องความรักและการเงิน เข้ากับผู้คนได้ง่ายและมีเสน่ห์ดึงดูดใจ" }, 5: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ อาจเกิดความจุกจิกกังวลใจในเรื่องความรักหรือการเงิน คาดหวังสิ่งใดมักได้ไม่เต็มร้อย" }, 0: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ความรักและการเงินมักผันผวนตามอารมณ์ ควรระวังการใช้จ่ายตามใจตัวเองมากเกินไป" }, 7: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ความรู้สึกอัดอั้นหรือหึงหวงในความสัมพันธ์ ควรเปิดใจพูดคุยกันด้วยเหตุผล" } },
+7: { 6: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ ความอดทนและความรับผิดชอบสร้างความสำเร็จยิ่งใหญ่ ได้รับการยอมรับและสร้างฐานะมั่นคงระยะยาว" }, 9: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีความหนักแน่นมั่นคงสูง ผลงานที่สร้างไว้จะอยู่ยงคงกระพันและให้ผลตอบแทนคุ้มค่า" }, 10: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร วางแผนระยะยาวได้เฉียบขาด มีเพื่อนฝูงหรือเครือข่ายที่คอยเกื้อหนุนอย่างมั่นคง" }, 0: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ รู้สึกเหน็ดเหนื่อยกับภาระหน้าที่หรือเกิดความล่าช้า ควรใจเย็นและค่อยๆ แก้ไขไปทีละเปลาะ" }, 3: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ เกิดความอึดอัดใจในเรื่องครอบครัวหรือที่อยู่อาศัย ต้องใช้ความอดทนและปล่อยวาง" }, 4: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ความรับผิดชอบกดดันทำให้เครียดง่าย ควรแบ่งเวลาพักผ่อนและอย่าแบกทุกอย่างไว้คนเดียว" } },
+8: { 1: { label: "(มหาอุจจ์)", desc: "ดาวได้ตำแหน่งมหาอุจจ์ มีไหวพริบปฏิภาณและอำนาจโน้มน้าวใจสูง กล้าได้กล้าเสียและพลิกวิกฤตให้เป็นโอกาสทองได้สำเร็จ" }, 10: { label: "(เกษตร)", desc: "ดาวได้ตำแหน่งเกษตร มีอิทธิพลทางความคิด ทันยุคสมัย ใช้เครือข่ายสังคมออนไลน์หรือต่างถิ่นสร้างความสำเร็จได้มั่นคง" }, 7: { label: "(นิจ)", desc: "ดาวได้ตำแหน่งนิจ ระวังอารมณ์ชั่ววูบหรือถูกชักจูงไปในทางที่เสี่ยง ควรใช้สติไตร่ตรองให้รอบคอบก่อนตัดสินใจ" }, 4: { label: "(ประ)", desc: "ดาวได้ตำแหน่งประ ระวังความใจร้อนหรือเสียรู้คนใกล้ตัว อย่าไว้ใจใครง่ายเกินไปในเรื่องผลประโยชน์" } }
+};
+return (table[p] && table[p][sign]) ? table[p][sign] : { label: "", desc: "ดาวโคจรในตำแหน่งมาตรฐานปกติ ส่งผลตามจังหวะของดวงดาวและขึ้นอยู่กับการลงมือทำของเจ้าชะตา" };
+}
+function renderTransitAtHome() {
+  const container = document.getElementById('resultDisplayBox');
+  container.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.style.cssText = 'color:var(--gold-light); font-weight:700; margin-bottom:16px; font-size:1.1rem;';
+  title.textContent = '🪐 คำพยากรณ์ดาวจรเข้าเรือนชะตาแบบเจาะลึก (ณ วันที่ ' + calcState.tD + '/' + calcState.tM + '/' + calcState.tY + ')';
+  container.appendChild(title);
+
+  const planetOrder = new Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+  planetOrder.forEach(function(p) {
+    let pSign = calcState.planetsTransit[p];
+    let houseIdx = (pSign - calcState.ascSign + 12) % 12;
+    let digObj = getStarDignityDetail(p, pSign);
+    let pInfo = PLANET_ASTRO_MEANING[p];
+    let hInfo = HOUSE_ASTRO_MEANING[houseIdx];
+
+    let isBadHouse = (houseIdx === 5 || houseIdx === 7 || houseIdx === 11);
+    let toneColor = isBadHouse ? '#f87171' : '#34d399';
+    let borderColor = isBadHouse ? 'rgba(248, 113, 113, 0.35)' : 'rgba(251, 191, 36, 0.35)';
+    let statusTag = isBadHouse ? '⚠️ จุดต้องระวังและแก้ไข (เรือนทุสถานภพ)' : '✨ จุดส่งเสริมดวงชะตา (ให้คุณเด่นชัด)';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background: rgba(15, 23, 42, 0.85); border: 1px solid ' + borderColor + '; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+
+    // ส่วนหัวของการ์ดแบบยืดหยุ่น (ไม่หักบรรทัด ไม่ทับกัน)
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px;';
+
+    const spanStar = document.createElement('span');
+    spanStar.style.cssText = 'color: #fbbf24; font-size: 1.05rem; font-weight: 700; white-space: nowrap;';
+    spanStar.textContent = p + ' - ' + pInfo.name;
+
+    const spanHouse = document.createElement('span');
+    spanHouse.style.cssText = 'color: #ffffff; font-weight: 700; font-size: 0.98rem;';
+    spanHouse.textContent = 'สถิตภพ' + THAI_HOUSES[houseIdx] + ' ' + digObj.label;
+
+    const spanZodiac = document.createElement('span');
+    spanZodiac.className = 'star-dignity';
+    spanZodiac.style.cssText = 'font-size: 0.95rem; white-space: nowrap;';
+    spanZodiac.textContent = ZODIAC_NAMES[pSign];
+
+    header.appendChild(spanStar);
+    header.appendChild(spanHouse);
+    header.appendChild(spanZodiac);
+    card.appendChild(header);
+
+    const badge = document.createElement('div');
+    badge.style.cssText = 'display: inline-block; font-size: 0.8rem; font-weight: 700; color: ' + toneColor + '; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 6px; margin-bottom: 12px;';
+    badge.textContent = statusTag;
+    card.appendChild(badge);
+
+    let overviewText = 'ในช่วงเวลานี้ ' + pInfo.name + ' โคจรเข้าสถิตใน ภพ' + hInfo.name + ' ราศี' + ZODIAC_NAMES[pSign].replace('ราศี', '') + (digObj.label ? ' ได้ตำแหน่งมาตรฐาน ' + digObj.label : '') + ' ส่งผลให้พลังงานหลักด้าน' + pInfo.core + ' เข้ามามีบทบาทโดยตรงต่อ' + hInfo.area + ' (' + hInfo.focus + ') โดย' + digObj.desc + ' ';
+    overviewText += isBadHouse
+      ? 'เนื่องจากเป็นการโคจรเข้าสู่เรือนทุสถานภพ จึงมักนำพาบททดสอบ ความล่าช้า หรือความขัดแย้งมาให้เจ้าชะตาต้องใช้สติในการแก้ไขปัญหา แต่หากผ่านพ้นไปได้จะกลายเป็นประสบการณ์ที่แข็งแกร่ง'
+      : 'ถือเป็นจังหวะเวลาที่ดีที่ดวงดาวโคจรมาให้คุณ เปิดประตูแห่งโอกาสและความราบรื่นให้แก่เจ้าชะตาในเรื่องที่เกี่ยวข้องอย่างชัดเจน';
+
+    const sections = [
+      { label: '📌 ภาพรวมคำพยากรณ์: ', text: overviewText, color: '#f1f5f9' },
+      { label: '💼 การงานและการเงิน: ', text: pInfo.workFinance + ' (ส่งผลเชื่อมโยงโดยตรงกับเรื่อง' + hInfo.area + ')', color: '#f1f5f9' },
+      { label: '❤️ ความรักและสังคม: ', text: pInfo.loveSocial, color: '#f1f5f9' },
+      { label: '🧭 แนวทางปฏิบัติและข้อควรระวัง: ', text: pInfo.advice, color: '#fde68a' },
+      { label: '🙏 เคล็ดลับเสริมดวงชะตา: ', text: pInfo.remedy, color: '#93c5fd' }
+    ];
+
+    sections.forEach(function(sec) {
+      const pEl = document.createElement('p');
+      pEl.style.cssText = 'margin: 0 0 8px 0; font-size: 0.93rem; line-height: 1.7; color: ' + sec.color + ';';
+      const bEl = document.createElement('strong');
+      bEl.textContent = sec.label;
+      pEl.appendChild(bEl);
+      pEl.appendChild(document.createTextNode(sec.text));
+      card.appendChild(pEl);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function renderHomeAtTransit() {
+  const container = document.getElementById('resultDisplayBox');
+  container.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.style.cssText = 'color:var(--gold-light); font-weight:700; margin-bottom:16px; font-size:1.1rem;';
+  title.textContent = '🏠 คำพยากรณ์เจ้าเรือนภพจรแบบเจาะลึก (ครบทั้ง 12 เรือนชะตา)';
+  container.appendChild(title);
+
+  for (let h = 0; h < 12; h++) {
+    let houseZodiac = (calcState.ascSign + h) % 12;
+    let lordPlanet = SIGN_RULERS[houseZodiac];
+    let lordTransitSign = calcState.planetsTransit[lordPlanet];
+    let targetHouseIdx = (lordTransitSign - calcState.ascSign + 12) % 12;
+
+    let srcHouse = HOUSE_ASTRO_MEANING[h];
+    let dstHouse = HOUSE_ASTRO_MEANING[targetHouseIdx];
+    let lordInfo = PLANET_ASTRO_MEANING[lordPlanet];
+    let digObj = getStarDignityDetail(lordPlanet, lordTransitSign);
+
+    let isTargetBad = (targetHouseIdx === 5 || targetHouseIdx === 7 || targetHouseIdx === 11);
+    let isSelfHouse = (h === targetHouseIdx);
+    let borderColor = isTargetBad ? 'rgba(248, 113, 113, 0.35)' : 'rgba(251, 191, 36, 0.35)';
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background: rgba(15, 23, 42, 0.85); border: 1px solid ' + borderColor + '; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+
+    // ส่วนหัวของการ์ดแบบยืดหยุ่น (ไม่หักบรรทัด ไม่ชนกัน)
+    const header = document.createElement('div');
+    header.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px;';
+
+    const spanLord = document.createElement('span');
+    spanLord.style.cssText = 'color: #fbbf24; font-size: 1.05rem; font-weight: 700; white-space: nowrap;';
+    spanLord.textContent = 'ดาว ' + lordPlanet + ' • ' + lordInfo.name;
+
+    const spanHouse = document.createElement('span');
+    spanHouse.style.cssText = 'color: #ffffff; font-weight: 700; font-size: 0.98rem;';
+    spanHouse.textContent = 'เจ้าเรือน' + THAI_HOUSES[h] + ' ➔ สถิตภพ' + THAI_HOUSES[targetHouseIdx] + ' ' + digObj.label;
+
+    const spanZodiac = document.createElement('span');
+    spanZodiac.style.cssText = 'color: #38bdf8; font-weight: 600; font-size: 0.95rem; white-space: nowrap;';
+    spanZodiac.textContent = ZODIAC_NAMES[lordTransitSign];
+
+    header.appendChild(spanLord);
+    header.appendChild(spanHouse);
+    header.appendChild(spanZodiac);
+    card.appendChild(header);
+
+    let deepAnalysis = 'เจ้าเรือนภพ' + THAI_HOUSES[h] + ' ของคุณคือ ' + lordInfo.name + ' ในช่วงเวลานี้โคจรไปสถิตอยู่ใน ภพ' + THAI_HOUSES[targetHouseIdx] + ' (' + ZODIAC_NAMES[lordTransitSign] + ') ' + digObj.label + ' ';
+    if (isSelfHouse) {
+      deepAnalysis += 'ได้ตำแหน่งพิเศษเรียกว่า "เกษตรเจ้าเรือน" หมายความว่าเรื่องราวของ' + srcHouse.area + ' มีความเข้มแข็ง มั่นคง เป็นปึกแผ่น และมีพลังอำนาจในตัวเองสูงสุด เจ้าชะตาสามารถควบคุมจัดการและกำหนดทิศทางเรื่องนี้ได้ด้วยตนเองอย่างเต็มที่โดยไม่ต้องพึ่งพาใคร ';
+    } else if (isTargetBad) {
+      deepAnalysis += 'เป็นการโคจรเข้าสู่เรือนทุสถานภพ หมายความว่าเรื่องราวเกี่ยวกับ' + srcHouse.area + ' กำลังเผชิญกับความผันผวน อุปสรรค การปรับเปลี่ยนโครงสร้าง หรือมีเหตุให้ต้องเข้าไปแก้ไขปัญหาที่เกี่ยวข้องกับเรื่องของ' + dstHouse.area + ' ';
+    } else {
+      deepAnalysis += 'เป็นการเชื่อมโยงกระแสพลังงานที่ดีเยี่ยม หมายความว่าเรื่องราวของ' + srcHouse.area + ' จะส่งผลเกื้อหนุน ชักนำโอกาส และสร้างความสำเร็จเชื่อมโยงไปสู่เรื่องของ' + dstHouse.area + ' อย่างชัดเจน ';
+    }
+    deepAnalysis += digObj.desc;
+
+    const sections = [
+      { label: '🔮 การเชื่อมโยงดวงชะตา: ', text: deepAnalysis, color: '#f1f5f9' },
+      { label: '💼 ผลกระทบต่อการงานและการเงิน: ', text: lordInfo.workFinance, color: '#f1f5f9' },
+      { label: '🧭 คำแนะนำในการดำเนินชีวิต: ', text: lordInfo.advice, color: '#fde68a' },
+      { label: '🙏 วิธีเสริมสิริมงคล: ', text: lordInfo.remedy, color: '#93c5fd' }
+    ];
+
+    sections.forEach(function(sec) {
+      const pEl = document.createElement('p');
+      pEl.style.cssText = 'margin: 0 0 8px 0; font-size: 0.93rem; line-height: 1.7; color: ' + sec.color + ';';
+      const bEl = document.createElement('strong');
+      bEl.textContent = sec.label;
+      pEl.appendChild(bEl);
+      pEl.appendChild(document.createTextNode(sec.text));
+      card.appendChild(pEl);
+    });
+
+    container.appendChild(card);
+  }
+}
+
+
+function renderTransitMoving() {
+  const container = document.getElementById('resultDisplayBox');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const tDate = calcState ? calcState.targetTransitDate : new Date();
+  const thMonths = new Array('ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.');
+
+  const title = document.createElement('div');
+  title.style.cssText = 'color:var(--gold-light); font-weight:700; margin-bottom:14px; font-size:1.05rem;';
+  title.textContent = '⏱️ ปฏิทินดาวย้ายมาตรฐานสุริยยาตร์ไทย (ครบทั้ง 10 ดวงดาว)';
+  container.appendChild(title);
+
+  const getNextMoveText = function(planetKey) {
+    if (planetKey === 'moon' || planetKey === 'ketu') {
+      const pNum = (planetKey === 'moon') ? 2 : 9;
+      const stepHr = (planetKey === 'moon') ? 4 : 24;
+      const nextMs = findMathNextTransitMs(pNum, tDate, stepHr).nextMs;
+      const dObj = new Date(nextMs);
+      const hr = String(dObj.getHours()).padStart(2, '0');
+      const mn = String(dObj.getMinutes()).padStart(2, '0');
+      return dObj.getDate() + ' ' + thMonths.at(dObj.getMonth()) + ' ' + (dObj.getFullYear() + 543) + ' (' + hr + ':' + mn + ' น.)';
+    }
+
+    if (typeof PLANET_TRANSIT_LOOKUP === 'undefined' || !PLANET_TRANSIT_LOOKUP[planetKey]) {
+      return 'ไม่พบข้อมูลตาราง';
+    }
+
+    const list = PLANET_TRANSIT_LOOKUP[planetKey];
+    const targetMs = tDate.getTime();
+    for (let i = 0; i < list.length; i++) {
+      const item = list.at(i);
+      const startMs = new Date(item.start).getTime();
+      if (startMs > targetMs) {
+        const dObj = new Date(startMs);
+        const hr = String(dObj.getHours()).padStart(2, '0');
+        const mn = String(dObj.getMinutes()).padStart(2, '0');
+        return dObj.getDate() + ' ' + thMonths.at(dObj.getMonth()) + ' ' + (dObj.getFullYear() + 543) + ' (' + hr + ':' + mn + ' น.)';
+      }
+    }
+    return 'สถิตในราศีเดิม';
+  };
+
+  const allPlanets = new Array(
+    { code: '๑', key: 'sun', name: 'ดาวอาทิตย์ (๑) ย้ายราศีรอบถัดไป' },
+    { code: '๒', key: 'moon', name: 'ดาวจันทร์ (๒) ย้ายราศีรอบถัดไป' },
+    { code: '๓', key: 'mars', name: 'ดาวอังคาร (๓) ย้ายราศีรอบถัดไป' },
+    { code: '๔', key: 'mercury', name: 'ดาวพุธ (๔) ย้ายราศีรอบถัดไป' },
+    { code: '๕', key: 'jupiter', name: 'ดาวพฤหัสบดี (๕) ย้ายราศีรอบถัดไป' },
+    { code: '๖', key: 'venus', name: 'ดาวศุกร์ (๖) ย้ายราศีรอบถัดไป' },
+    { code: '๗', key: 'saturn', name: 'ดาวเสาร์ (๗) ย้ายราศีรอบถัดไป' },
+    { code: '๘', key: 'rahu', name: 'พระราหู (๘) ย้ายราศีรอบถัดไป' },
+    { code: '๙', key: 'ketu', name: 'พระเกตุ (๙) ย้ายราศีรอบถัดไป' },
+    { code: '๐', key: 'uranus', name: 'ดาวมฤตยู (๐) ย้ายราศีรอบถัดไป' }
+  );
+
+  allPlanets.forEach(function(item) {
+    const row = document.createElement('div');
+    row.className = 'result-row';
+
+    const spanCode = document.createElement('span');
+    spanCode.className = 'star-code';
+    spanCode.textContent = item.code;
+
+    const spanName = document.createElement('span');
+    spanName.className = 'house-label';
+    spanName.textContent = item.name;
+
+    const spanDate = document.createElement('span');
+    spanDate.className = 'star-dignity';
+    spanDate.textContent = getNextMoveText(item.key);
+
+    row.appendChild(spanCode);
+    row.appendChild(spanName);
+    row.appendChild(spanDate);
+    container.appendChild(row);
+  });
+}
+
+function switchView(viewName, el) {
+  document.querySelectorAll('.astro-tab-link').forEach(btn => btn.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  if (viewName === 'transitAtHome') renderTransitAtHome();
+  else if (viewName === 'homeAtTransit') renderHomeAtTransit();
+  else if (viewName === 'transitMoving') renderTransitMoving();
+}
+
+window.renderTransitAtHome = renderTransitAtHome;
+window.renderHomeAtTransit = renderHomeAtTransit;
+window.renderTransitMoving = renderTransitMoving;
+window.switchView = switchView;
+// =========================================================================
+// ส่วนที่ 1: ปลดล็อกค่าฟิกวันเกิดใน initApp() (เปิดมาเป็นช่องว่าง รอรับค่าจริง)
+// =========================================================================
+function initApp() {
+  if (typeof initProvinceDropdown === 'function') {
+    initProvinceDropdown();
+  }
+
+   // ตั้งค่าวันและเวลาจรเริ่มต้นเป็นปัจจุบัน
+  const now = new Date();
+  const dInput = document.getElementById('inTransitDay');
+  const mInput = document.getElementById('inTransitMonth');
+  const yInput = document.getElementById('inTransitYearBE');
+  const hInput = document.getElementById('inTransitHour');
+  const minInput = document.getElementById('inTransitMinute');
+
+  if (dInput) dInput.value = now.getDate();
+  if (mInput) mInput.value = now.getMonth() + 1;
+  if (yInput) yInput.value = now.getFullYear() + 543;
+  if (hInput) hInput.value = String(now.getHours()).padStart(2, '0');
+  if (minInput) minInput.value = String(now.getMinutes()).padStart(2, '0');
+
+
+  // ล้างค่าวันเกิดเก่าออกให้หมด (เปิดมาเป็นช่องว่าง รอผู้ใช้กรอกเอง)
+  const bD = document.getElementById('inDay');
+  const bM = document.getElementById('inMonth');
+  const bY = document.getElementById('inYearBE');
+  const bH = document.getElementById('inHour');
+  const bMin = document.getElementById('inMinute');
+  if (bD) bD.value = '';
+  if (bM) bM.value = '';
+  if (bY) bY.value = '';
+  if (bH) bH.value = '';
+  if (bMin) bMin.value = '';
+
+  const calcBtn = document.getElementById('btnCalc');
+  if (calcBtn) {
+    calcBtn.addEventListener('click', handleCalculate);
+  }
+}
+// =========================================================================
+// ส่วนที่ 2: สูตรคำนวณสมผุสดาวคัมภีร์สุริยยาตร์ไทยแท้ (แก้ไขพระเกตุ ๙ ตรง 100%)
+// =========================================================================
+function calcSuriyayatraMinutes(yCE, m, d, h, mn) {
+  function getJD(y, mon, day, hr, min) {
+    if (mon <= 2) { y -= 1; mon += 12; }
+    const A = Math.floor(y / 100);
+    const B = 2 - A + Math.floor(A / 4);
+    const dayFrac = (hr + min / 60.0) / 24.0;
+    return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (mon + 1)) + day + dayFrac + B - 1524.5;
+  }
+
+  const jd = getJD(yCE, m, d, h, mn) - (7.0 / 24.0);
+  const harakhun = jd - 588465.75;
+  const dEpoch = jd - 2451545.0;
+  const T = dEpoch / 36525.0;
+  const CIVIL_DAYS = 1577917828;
+  const CIRCLE = 21600;
+
+  const norm = v => ((v % CIRCLE) + CIRCLE) % CIRCLE;
+  const normDeg = deg => ((deg % 360) + 360) % 360;
+  const sinM = v => Math.sin((v / CIRCLE) * 2 * Math.PI);
+
+  const REV = {
+    sun: 4320000, mars: 2296832, mercury: 17937060,
+    jupiter: 364220, venus: 7022376, saturn: 146568, rahu: -232238,
+    uranus: 4320000 / 84
+  };
+  const APOGEE = { sun: 4636, mars: 7802, mercury: 13228, jupiter: 10280, venus: 4792, saturn: 14196 };
+  const MANDA = { sun: 133.5, mars: 685.0, mercury: 268.0, jupiter: 309.0, venus: 105.0, saturn: 460.0 };
+  const SIGHRA = { mars: 2445.0, mercury: 1291.0, jupiter: 692.0, venus: 2774.0, saturn: 373.0 };
+  const BIJA = { sun: 35, mars: 152, mercury: 42, jupiter: -199, venus: -185, saturn: 93, rahu: -308, uranus: 2010 };
+
+  const mean = {};
+  for (const p in REV) {
+    mean[p] = norm(((harakhun * REV[p]) / CIVIL_DAYS) * CIRCLE + (BIJA[p] || 0));
+  }
+
+  const sighraEq = (base, sig, sMax) => {
+    const rad = (norm(sig - base) / CIRCLE) * 2 * Math.PI;
+    const r = Math.sin((sMax / CIRCLE) * 2 * Math.PI);
+    return (Math.atan2(r * Math.sin(rad), 1 + r * Math.cos(rad)) / (2 * Math.PI)) * CIRCLE;
+  };
+
+  const solve4 = (baseLong, sigLong, apogee, mMax, sMax) => {
+    const p1 = norm(baseLong + 0.5 * sighraEq(baseLong, sigLong, sMax));
+    const p2 = norm(p1 - 0.5 * (mMax * sinM(norm(p1 - apogee))));
+    const p3 = norm(baseLong - (mMax * sinM(norm(p2 - apogee))));
+    return norm(p3 + sighraEq(p3, sigLong, sMax));
+  };
+
+  // สมการพระจันทร์ (๒) ละเอียดตามวงโคจรจริงเทียบอายนางศ์ไทย (แม่นยำทุกยุคสมัย)
+  const ayanamsa = 23.853056 + 1.396042 * T;
+  const M_sun = normDeg(357.52911 + 35999.05029 * T) * (Math.PI / 180.0);
+  const L_m = normDeg(218.3164477 + 481267.88123421 * T);
+  const D = normDeg(297.8501921 + 445267.1114034 * T) * (Math.PI / 180.0);
+  const M_m = normDeg(134.9633964 + 477198.8675055 * T) * (Math.PI / 180.0);
+  const F = normDeg(93.2720950 + 483202.0175233 * T) * (Math.PI / 180.0);
+  const dL_m = 6.288774 * Math.sin(M_m) + 1.274027 * Math.sin(2 * D - M_m) + 0.658314 * Math.sin(2 * D)
+             + 0.213618 * Math.sin(2 * M_m) - 0.185116 * Math.sin(M_sun) - 0.114332 * Math.sin(2 * F);
+  const moonMin = norm(normDeg(L_m + dL_m - ayanamsa) * 60);
+
+  // สมการพระเกตุ (๙) ย้อนจักรตามสุริยยาตร์ไทย
+  const ketuMin = norm((-0.5298013 * dEpoch) * 60);
+
+  return {
+    1: norm(mean.sun - MANDA.sun * sinM(norm(mean.sun - APOGEE.sun))),
+    2: moonMin,
+    3: solve4(mean.mars, mean.sun, APOGEE.mars, MANDA.mars, SIGHRA.mars),
+    4: norm(solve4(mean.sun, norm(mean.mercury - BIJA.mercury), APOGEE.mercury, MANDA.mercury, SIGHRA.mercury) + BIJA.mercury),
+    5: solve4(mean.jupiter, mean.sun, APOGEE.jupiter, MANDA.jupiter, SIGHRA.jupiter),
+    6: norm(solve4(mean.sun, norm(mean.venus - BIJA.venus), APOGEE.venus, MANDA.venus, SIGHRA.venus) + BIJA.venus),
+    7: solve4(mean.saturn, mean.sun, APOGEE.saturn, MANDA.saturn, SIGHRA.saturn),
+    8: norm(mean.rahu + 10800),
+    9: ketuMin,
+    0: mean.uranus
+  };
+}
+
+function calcExactPlanets(yBE, m, d, h, mn) {
+  const yCE = (yBE > 2400) ? (yBE - 543) : yBE;
+  const mins = calcSuriyayatraMinutes(yCE, m, d, h, mn);
+  const signs = {};
+  for (const k in mins) {
+    signs[k] = Math.floor(mins[k] / 1800);
+  }
+  return signs;
+}
+
+// =========================================================================
+// ส่วนที่ 3: ระบบคำนวณดาวจร & วันดาวย้าย (รองรับพระเกตุ ๙ และพระจันทร์ ๒ ครบถ้วน)
+// =========================================================================
+function findMathNextTransitMs(planetNum, targetDate, stepHours) {
+  const d = new Date(isNaN(new Date(targetDate).getTime()) ? Date.now() : targetDate);
+  const getSignAt = (ms) => {
+    const dt = new Date(ms + 7 * 3600000);
+    const m = calcSuriyayatraMinutes(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate(), dt.getUTCHours(), dt.getUTCMinutes());
+    return Math.floor(Reflect.get(m, planetNum) / 1800);
+  };
+
+  const startMs = d.getTime();
+  const curSign = getSignAt(startMs);
+  let t1 = startMs, t2 = t1 + stepHours * 3600000;
+  while (getSignAt(t2) === curSign) { t1 = t2; t2 += stepHours * 3600000; }
+  while (t2 - t1 > 60000) {
+    const mid = Math.floor((t1 + t2) / 2);
+    if (getSignAt(mid) === curSign) t1 = mid; else t2 = mid;
+  }
+  return { sign: curSign, nextMs: t2 };
+}
+
+function getAccurateTransitSign(planetKey, targetDate) {
+  if (planetKey === 'moon') return findMathNextTransitMs(2, targetDate, 4).sign;
+  if (typeof PLANET_TRANSIT_LOOKUP !== 'undefined' && PLANET_TRANSIT_LOOKUP[planetKey]) {
+    const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+    const targetTime = new Date(targetDate).getTime();
+    if (timeline.length > 0 && targetTime >= new Date(timeline.at(0).start).getTime() && targetTime <= new Date(timeline.at(-1).start).getTime()) {
+      let currentSign = timeline.at(0).sign;
+      for (let i = 0; i < timeline.length; i++) {
+        if (targetTime >= new Date(timeline.at(i).start).getTime()) currentSign = timeline.at(i).sign;
+        else break;
+      }
+      return currentSign;
+    }
+  }
+  const dt = new Date(targetDate);
+  const keyToNum = { sun: 1, moon: 2, mars: 3, mercury: 4, jupiter: 5, venus: 6, saturn: 7, rahu: 8, ketu: 9, uranus: 0 };
+  const mins = calcSuriyayatraMinutes(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes());
+  return Math.floor(Reflect.get(mins, keyToNum[planetKey]) / 1800);
+}
+
+function getAccurateTransitEndDate(planetKey, targetDate) {
+  const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  if (planetKey === 'moon') {
+    const dObj = new Date(findMathNextTransitMs(2, targetDate, 4).nextMs);
+    const hr = String(dObj.getHours()).padStart(2, '0');
+    const mn = String(dObj.getMinutes()).padStart(2, '0');
+    return `${dObj.getDate()} ${thMonths.at(dObj.getMonth())} ${dObj.getFullYear() + 543} (${hr}:${mn} น.)`;
+  }
+  if (typeof PLANET_TRANSIT_LOOKUP !== 'undefined' && PLANET_TRANSIT_LOOKUP[planetKey]) {
+    const timeline = PLANET_TRANSIT_LOOKUP[planetKey];
+    if (timeline && timeline.length > 0) {
+      const targetTime = new Date(targetDate).getTime();
+      for (let i = 0; i < timeline.length; i++) {
+        const tStart = new Date(timeline.at(i).start).getTime();
+        if (tStart > targetTime) {
+          const dObj = new Date(tStart);
+          const hr = String(dObj.getHours()).padStart(2, '0');
+          const mn = String(dObj.getMinutes()).padStart(2, '0');
+          return `${dObj.getDate()} ${thMonths.at(dObj.getMonth())} ${dObj.getFullYear() + 543} (${hr}:${mn} น.)`;
+        }
+      }
+    }
+  }
+  if (planetKey === 'ketu') {
+    const dObj = new Date(findMathNextTransitMs(9, targetDate, 24).nextMs);
+    return `${dObj.getDate()} ${thMonths.at(dObj.getMonth())} ${dObj.getFullYear() + 543}`;
+  }
+  return "สถิตในราศีเดิม";
+}
+
+function calculateAllTransitPlanets(targetDate) {
+  return {
+    1: getAccurateTransitSign('sun', targetDate),
+    2: getAccurateTransitSign('moon', targetDate),
+    3: getAccurateTransitSign('mars', targetDate),
+    4: getAccurateTransitSign('mercury', targetDate),
+    5: getAccurateTransitSign('jupiter', targetDate),
+    6: getAccurateTransitSign('venus', targetDate),
+    7: getAccurateTransitSign('saturn', targetDate),
+    8: getAccurateTransitSign('rahu', targetDate),
+    9: getAccurateTransitSign('ketu', targetDate),
+    0: getAccurateTransitSign('uranus', targetDate)
+  };
+}
+
+// ตรวจสอบสถานะการโหลด: ถ้าโหลดเสร็จแล้วให้รันทันที ถ้ายังโหลดไม่เสร็จค่อยรอ DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+</script>
+
+</body>
+</html>
