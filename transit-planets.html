@@ -85,9 +85,9 @@ body { background-color: var(--bg); color: var(--text); display: flex; justify-c
 
 .tier-switcher .tier-btn {
   flex: 1 1 100%; /* บังคับให้ปุ่มขยายเต็มความกว้าง เรียงบน-ล่างบนมือถือ */
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   color: #94a3b8;
-  border: none;
+  border: 1px solid rgba(234, 179, 8, 0.4);
   padding: 10px;
   border-radius: 10px;
   font-weight: 600;
@@ -99,6 +99,7 @@ body { background-color: var(--bg); color: var(--text); display: flex; justify-c
 .tier-switcher .tier-btn.active {
   background: #f59e0b !important;
   color: #0b0f19 !important;
+  border-color: #f59e0b !important;
   font-weight: 700;
 }
 
