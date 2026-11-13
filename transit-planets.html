@@ -20,12 +20,12 @@
       --accent: #38bdf8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
-    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 24px 12px; min-height: 100vh; }
-    .modal-container { width: 100%; max-width: 840px; background-color: var(--card-bg); border: 1.5px solid #d97706; box-shadow: 0 0 25px rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 26px 20px; position: relative; }
-    .close-btn { position: absolute; top: 18px; right: 18px; color: var(--text-sub); font-size: 1.5rem; text-decoration: none; cursor: pointer; line-height: 1; }
-    .close-btn:hover { color: #fff; }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 12px 6px; min-height: 100vh; overflow-x: hidden; }
+.modal-container { width: 100%; max-width: 840px; background-color: var(--card-bg); border: 1.5px solid #d97706; box-shadow: 0 0 25px rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 16px 12px; position: relative; box-sizing: border-box; overflow-x: hidden; }
+.close-btn { position: absolute; top: 14px; right: 14px; color: var(--text-sub); font-size: 1.5rem; text-decoration: none; cursor: pointer; line-height: 1; }
+.close-btn:hover { color: #fff; }
+    
     .test-panel { background: #1e293b; border: 1.5px dashed var(--gold-light); border-radius: 12px; padding: 18px; margin-bottom: 22px; }
     .test-title { font-size: 0.98rem; color: var(--gold-light); font-weight: 700; margin-bottom: 12px; }
     .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -63,20 +63,54 @@
     .house-label { color: #e2e8f0; flex: 1; }
     .star-dignity { color: #38bdf8; font-size: 0.85rem; font-weight: 600; }
     .empty-state { text-align: center; padding: 40px 20px; color: var(--text-sub); background: var(--inner-bg); border-radius: 12px; border: 1px dashed #334155; }
+
+    /* แท็บสลับโหมด (Tier Switcher) */
+.tier-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  background: rgba(8, 14, 28, 0.85);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(234, 179, 8, 0.4);
+  margin-bottom: 20px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.tier-switcher .tier-btn {
+  flex: 1 1 100%; /* บังคับให้ปุ่มขยายเต็มความกว้าง เรียงบน-ล่างบนมือถือ */
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  white-space: normal;
+}
+
+.tier-switcher .tier-btn.active {
+  background: #f59e0b !important;
+  color: #0b0f19 !important;
+  font-weight: 700;
+}
   </style>
 </head>
 <body>
 
 <div class="modal-container">
   <a href="index.html" class="close-btn" title="กลับหน้าหลัก">✕</a>
-<div class="tier-switcher" style="display: flex; background: rgba(8, 14, 28, 0.85); padding: 6px; border-radius: 14px; border: 1px solid rgba(234, 179, 8, 0.4); margin-bottom: 20px; gap: 8px;">
-    <button type="button" class="tier-btn active" id="btn-transit-free" onclick="switchTransitTier('free')" style="flex: 1; background: #f59e0b; color: #0b0f19; border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;">
+  
+  <div class="tier-switcher">
+    <button type="button" class="tier-btn active" id="btn-transit-free" onclick="switchTransitTier('free')">
       <i class="fa-regular fa-circle-check"></i> ดาวย้ายพื้นฐาน (ดูฟรี)
     </button>
-    <button type="button" class="tier-btn" id="btn-transit-vip" onclick="switchTransitTier('vip')" style="flex: 1; background: transparent; color: #94a3b8; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer;">
+    <button type="button" class="tier-btn" id="btn-transit-vip" onclick="switchTransitTier('vip')">
       <i class="fa-solid fa-crown"></i> วงล้อดวงดาว & คำพยากรณ์เชิงลึก (VIP)
     </button>
   </div>
+  
   <div class="test-panel" id="testInputPanel">
     <div class="test-title">🪐 กำหนดดวงชะตากำเนิด & วันที่ตรวจดาวจร (มาตรฐานสุริยยาตร์ไทยแท้ / เว็บหลัก)</div>
     <div class="test-grid">
