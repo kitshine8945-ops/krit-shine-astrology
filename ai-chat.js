@@ -170,11 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 🟢 เพิ่มตรงนี้: สั่งให้คำนวณและแสดงผลราศี/ลัคนาทันทีที่โหลดหน้าเว็บเสร็จ
+    // 🟢 สั่งให้อัปเดตและแสดงผลราศี/ลัคนาทันทีที่โหลดหน้าเว็บเสร็จ
     if (typeof updateChatProfileCard === 'function') {
-        updateChatProfileCard();
+        try {
+            updateChatProfileCard();
+        } catch (err) {
+            console.error("Profile card update error:", err);
+        }
     }
-});
 
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
