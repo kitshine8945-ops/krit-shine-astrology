@@ -39,7 +39,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าผลลัพธ์ที่คำนวณแล้วเท่านั้น (ไม่กวาดโดนค่าในฟอร์ม/ดรอปดาวน์)
+// 👤 ซิงค์ข้อมูลดวงชะตาและแยกแยะค่า "ราศีเกิด" กับ "ลัคนาสถิต" อย่างแม่นยำ 100%
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -62,36 +62,44 @@ function updateChatProfileCard() {
     let sunSignText = "-";
     let ascSignText = "-";
 
-    // 1. ดึงจาก ID ผลลัพธ์หลักโดยตรงก่อน
+    // 1. ดึงจาก ID หลักของหน้าเว็บก่อน
     const dispSun = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim();
     const dispAsc = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim();
 
     if (dispSun && dispSun !== "-") sunSignText = dispSun;
     if (dispAsc && dispAsc !== "-") ascSignText = dispAsc;
 
-    // 2. หากยังไม่มี ให้ค้นหาเฉพาะในส่วนผลลัพธ์ (ตัด tag form, select, input ออก 100%)
-    if (sunSignText === "-" || ascSignText === "-") {
-        const resultContainers = document.querySelectorAll('.result-section, .report-card, #result, .card, div');
-        for (let container of resultContainers) {
-            // ข้ามถ้าเป็นฟอร์มกรอกข้อมูล
-            if (container.closest('form') || container.tagName === 'SELECT' || container.tagName === 'INPUT') continue;
-            
-            const txt = container.innerText || "";
-            // เช็คว่าเป็นกล่องสรุปผลดวงชะตาจริง (ต้องมีคำว่าราศีเกิดหรือลัคนาสถิต)
-            if (txt.includes("ราศีเกิด") || txt.includes("ลัคนาสถิต")) {
+    // 2. ค้นหาแบบเจาะจงแยกส่วน (ป้องกันการดึงค่าปะปนกันระหว่างราศีกับลัคนา)
+    const allElements = document.querySelectorAll('div, span, p, strong, b');
+    for (let el of allElements) {
+        const txt = el.innerText ? el.innerText.trim() : "";
+        
+        // ค้นหาเฉพาะ "ราศีเกิด" หรือ "ราศี (อาทิตย์)"
+        if (sunSignText === "-" || sunSignText.includes("-")) {
+            if ((txt.includes("ราศีเกิด") || txt.includes("ราศี (อาทิตย์)")) && !txt.includes("ลัคนา")) {
                 for (let sign of validSigns) {
-                    if (sunSignText === "-" && (txt.includes("ราศีเกิด") || txt.includes("ราศี:")) && txt.includes(sign)) {
+                    if (txt.includes(sign)) {
                         sunSignText = "ราศี" + sign;
+                        break;
                     }
-                    if (ascSignText === "-" && (txt.includes("ลัคนาสถิต") || txt.includes("ลัคนา:")) && txt.includes(sign)) {
+                }
+            }
+        }
+
+        // ค้นหาเฉพาะ "ลัคนาสถิต" หรือ "ลัคนา" เท่านั้น
+        if (ascSignText === "-" || ascSignText.includes("-")) {
+            if (txt.includes("ลัคนาสถิต") || (txt.includes("ลัคนา") && !txt.includes("ราศีเกิด"))) {
+                for (let sign of validSigns) {
+                    if (txt.includes(sign)) {
                         ascSignText = "ราศี" + sign;
+                        break;
                     }
                 }
             }
         }
     }
 
-    // จัดรูปแบบคำนำหน้าให้ถูกต้อง
+    // จัดรูปแบบคำนำหน้าให้ถูกต้องสวยงาม
     if (sunSignText !== "-" && !sunSignText.startsWith("ราศี")) sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
     if (ascSignText !== "-" && !ascSignText.startsWith("ราศี")) ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
 
