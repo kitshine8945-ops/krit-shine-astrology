@@ -19,28 +19,48 @@ app.post('/api/ai-chat', async (req, res) => {
             return res.status(500).json({ error: "ยังไม่ได้ตั้งค่า GEMINI_API_KEY ใน Variables ครับ" });
         }
 
-        // ใช้โมเดล gemini-3.8-flash ตามที่ถูกต้อง
-        const modelName = 'gemini-3.8-flash';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [{ text: prompt }]
-                    }
-                ]
-            })
-        });
+        // รายชื่อโมเดลที่จะให้ระบบลองสลับใช้งานอัตโนมัติ (แก้ปัญหา 503 High Demand)
+        const modelsToTry = [
+            'gemini-3.8-flash',
+            'gemini-1.5-flash'
+        ];
 
-        const data = await response.json();
+        let data = null;
+        let success = false;
 
-        if (!response.ok) {
-            console.error("Google API Error:", JSON.stringify(data));
-            return res.status(500).json({ error: data.error?.message || "AI Connection error" });
+        for (const modelName of modelsToTry) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [{ text: prompt }]
+                            }
+                        ]
+                    })
+                });
+
+                data = await response.json();
+
+                if (response.ok) {
+                    success = true;
+                    break; // สำเร็จแล้ว หยุดวนลูปทันที
+                } else {
+                    console.warn(`Model ${modelName} busy/failed, trying fallback model...`, JSON.stringify(data));
+                }
+            } catch (innerErr) {
+                console.warn(`Error trying model ${modelName}:`, innerErr.message);
+            }
+        }
+
+        if (!success) {
+            console.error("All AI models failed:", JSON.stringify(data));
+            return res.status(500).json({ error: data?.error?.message || "ระบบ AI กำลังหนาแน่น กรุณาลองใหม่อีกครั้งครับ" });
         }
 
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ไม่ได้รับข้อมูลตอบกลับจาก AI";
