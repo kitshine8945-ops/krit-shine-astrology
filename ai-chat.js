@@ -170,6 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 🟢 เพิ่มตรงนี้: สั่งให้คำนวณและแสดงผลราศี/ลัคนาทันทีที่โหลดหน้าเว็บเสร็จ
+    if (typeof updateChatProfileCard === 'function') {
+        updateChatProfileCard();
+    }
+});
+
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
