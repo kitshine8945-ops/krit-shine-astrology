@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (เช็ก Login -> เช็ก VIP -> เช็กวันเกิด)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์ ปลอดภัย ไม่รบกวนฟอร์มหลัก)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
@@ -34,7 +34,7 @@ async function callGeminiAI(userMessage) {
 
 // 🔒 ฟังก์ชันตรวจสอบการเข้าสู่ระบบและสถานะ VIP
 function checkVipStatus() {
-    // 1. ตรวจสอบว่าเข้าสู่ระบบหรือยัง (อิงจากตัวแปร currentUser ใน index.html)
+    // 1. ตรวจสอบว่าเข้าสู่ระบบหรือยัง
     if (typeof currentUser !== 'undefined' && !currentUser) {
         alert("⚠️ กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนใช้งานหมอดู AI ครับ");
         if (typeof openAuthModal === 'function') {
@@ -60,18 +60,18 @@ function checkVipStatus() {
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
-    // 1. เช็ก Login และ VIP ก่อนทุกครั้ง
+    // 1. เช็ก Login และ VIP ก่อน
     if (!checkVipStatus()) {
         return;
     }
 
-    // 2. เช็กวันเกิดจากฟอร์มหน้าเว็บ (`birthDay`)
+    // 2. ตรวจสอบวันเกิดแบบผ่อนปรน (ไม่อ้างอิง required ของฟอร์มหลัก)
     const bDayEl = document.getElementById('birthDay');
     const bMonthEl = document.getElementById('birthMonth');
     const bYearEl = document.getElementById('birthYearBE');
 
     if (bDayEl && (!bDayEl.value || bDayEl.value === "" || !bYearEl || !bYearEl.value)) {
-        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
+        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนให้ครบถ้วนก่อนเริ่มสนทนากับหมอดู AI ครับ");
         if (typeof scrollToForm === 'function') {
             scrollToForm();
         } else {
@@ -157,13 +157,16 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
+// ผูก Event เฉพาะปุ่มส่งและปุ่มคำถามด่วนในโซนแชท
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
     if (sendBtn) {
-        sendBtn.addEventListener('click', () => handleInplaceAiChat());
+        sendBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleInplaceAiChat();
+        });
     }
 
     if (chatInputEl) {
