@@ -39,7 +39,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและกวาดหาค่าราศี/ลัคนาจากหน้าเว็บอัตโนมัติ
+// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าราศี/ลัคนาแบบสั้นและแม่นยำ
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -57,27 +57,29 @@ function updateChatProfileCard() {
 
     const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
     
-    // 1. ลองดึงจาก ID พื้นฐานก่อน (เผื่อมี)
-    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
-                      document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
+    const validSigns = ["เมษ", "พฤษภ", "เมถุน", "กรกฎ", "สิงห์", "กันย์", "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"];
 
-    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
-                      document.getElementById('ascendant-sign')?.innerText?.trim() || "-";
+    let sunSignText = "-";
+    let ascSignText = "-";
 
-    // 2. ถ้ายังเป็น "-" ให้สคริปต์กวาดหาข้อความแสดงผลบนหน้าเว็บโดยอัตโนมัติ
-    if (sunSignText === "-" || ascSignText === "-") {
-        const allElements = document.querySelectorAll('div, span, p, strong, b, td');
-        for (let el of allElements) {
-            const txt = el.innerText ? el.innerText.trim() : "";
-            // ค้นหาข้อความราศี
-            if (sunSignText === "-" && (txt.includes("ราศีเกิด") || (txt.startsWith("ราศี") && txt.length < 15))) {
-                const clean = txt.replace("ราศีเกิด", "").replace("ราศี:", "").trim();
-                if (clean.length > 0) sunSignText = clean.startsWith("ราศี") ? clean : "ราศี" + clean;
-            }
-            // ค้นหาข้อความลัคนา
-            if (ascSignText === "-" && (txt.includes("ลัคนาสถิต") || txt.includes("ลัคนา:"))) {
-                const clean = txt.replace("ลัคนาสถิต", "").replace("ลัคนา:", "").trim();
-                if (clean.length > 0) ascSignText = clean.startsWith("ราศี") ? clean : "ราศี" + clean;
+    // กวาดหาเฉพาะ Element สั้นๆ ที่ตรงกับชื่อราศีจริงๆ (จำกัดความยาวไม่เกิน 15 ตัวอักษร)
+    const allElements = document.querySelectorAll('div, span, p, strong, b, td');
+    for (let el of allElements) {
+        if (el.children.length > 1) continue; // ข้ามกล่องใหญ่
+        const txt = el.innerText ? el.innerText.trim() : "";
+        
+        if (txt.length > 0 && txt.length <= 15) {
+            for (let sign of validSigns) {
+                if (txt === sign || txt === "ราศี" + sign || txt === "ราศีสถิต" + sign) {
+                    if (sunSignText === "-" && !txt.includes("ลัคนา")) {
+                        sunSignText = txt.startsWith("ราศี") ? txt : "ราศี" + txt;
+                    }
+                }
+                if (txt.includes("ลัคนา") && txt.includes(sign)) {
+                    if (ascSignText === "-") {
+                        ascSignText = "ราศี" + sign;
+                    }
+                }
             }
         }
     }
