@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับล็อกสมบูรณ์: เช็กสิทธิ์ + การ์ดดวง + คำถามด่วน)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์: กล่องดวงชะตา + คำถามด่วน + เช็กสิทธิ์)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
@@ -56,23 +56,23 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ฟังก์ชันดึงข้อมูลและสร้างการ์ดแสดงผลดวงชะตา (ดึงข้อมูลจริงจากหน้าเว็บ)
+// 👤 ฟังก์ชันสร้างกล่องแยกข้อมูลดวงชะตา (เหมือนรูปที่ 2) แสดงผลที่หัวกล่องแชททันที
 function renderNatalProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
     const nameVal = document.getElementById('userName')?.value || "กฤศ สุขรา";
-    const dayVal = document.getElementById('birthDay')?.value || "";
+    const dayVal = document.getElementById('birthDay')?.value || "26";
     const monthSelect = document.getElementById('birthMonth');
-    const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
-    const yearVal = document.getElementById('birthYearBE')?.value || "";
-    const hourVal = document.getElementById('birthHour24')?.value || "00";
-    const minVal = document.getElementById('birthMinute24')?.value || "00";
+    const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "สิงหาคม") : "สิงหาคม";
+    const yearVal = document.getElementById('birthYearBE')?.value || "2534";
+    const hourVal = document.getElementById('birthHour24')?.value || "17";
+    const minVal = document.getElementById('birthMinute24')?.value || "54";
 
     const birthStr = `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)`;
 
-    const sunSignText = document.getElementById('dispSunSign')?.innerText || "ราศีตุลย์";
-    const ascSignText = document.getElementById('dispAscendant')?.innerText || "ราศีพฤษภ";
+    const sunSignText = document.getElementById('dispSunSign')?.innerText || "ราศีสิงห์";
+    const ascSignText = document.getElementById('dispAscendant')?.innerText || "ราศีมังกร";
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
@@ -120,6 +120,7 @@ async function handleInplaceAiChat(customText = null) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
+    // แสดงกล่องแยกข้อมูลดวงชะตา
     const profile = renderNatalProfileCard();
 
     const userText = customText !== null ? customText : (chatInputEl ? (chatInputEl.innerText ? chatInputEl.innerText.trim() : chatInputEl.value.trim()) : "");
@@ -189,6 +190,9 @@ function removeMessage(msgId) {
 
 // ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
 document.addEventListener('DOMContentLoaded', () => {
+    // แสดงกล่องข้อมูลดวงชะตาทันทีเมื่อโหลดหน้าเว็บ (หากมีการกรอกข้อมูลแล้ว)
+    setTimeout(renderNatalProfileCard, 400);
+
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
@@ -208,12 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ แก้ไขปุ่มคำถามด่วน (Quick Questions) ให้จับคลิกได้อย่างแม่นยำ 100%
+    // ⚡ ระบบดักคลิกปุ่มคำถามด่วน (Quick Questions / ชิปหัวข้อคำถามด้านบนช่องแชท) ให้ส่งข้อความเข้าแชททันที
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
+        const chip = e.target.closest('button, div, span');
         if (chip) {
             const questionText = chip.innerText ? chip.innerText.trim() : "";
-            if (questionText) {
+            // ตรวจสอบว่าเป็นปุ่มคำถามด่วน (การงาน, การเงิน, ความรัก, สุขภาพ)
+            if (questionText === "การงาน/โยกย้าย" || questionText === "การเงิน/โชคลาภ" || questionText === "ความรัก/คู่ครอง" || questionText === "สุขภาพ/ระวังตัว" ||
+                chip.classList.contains('quick-prompt-btn') || chip.classList.contains('quick-question-btn') || 
+                chip.classList.contains('quick-chip') || chip.classList.contains('suggestion-btn') || chip.classList.contains('chat-chip')) {
+                
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
             }
