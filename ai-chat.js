@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ไม่ฟิกข้อมูล + คำถามด่วนทำงานจริง)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับแก้ปัญหาเช็กวันเกิดและปุ่มคำถามด่วน)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
@@ -50,46 +50,55 @@ function checkVipStatus() {
     return false;
 }
 
-// 👤 ฟังก์ชันตรวจสอบและอัปเดตการ์ดข้อมูลดวงชะตา (ไม่แสดงผลถ้ายังไม่ได้กรอกวันเกิด)
-function updateNatalProfileBanner() {
-    const messagesBox = document.getElementById('ai-chat-messages-box');
-    if (!messagesBox) return null;
-
-    const nameEl = document.getElementById('name') || document.getElementById('owner-name') || document.getElementById('userName');
-    const dayEl = document.getElementById('birth-day') || document.getElementById('day') || document.getElementById('dayInput');
-    const monthEl = document.getElementById('birth-month') || document.getElementById('month') || document.getElementById('monthInput');
-    const yearEl = document.getElementById('birth-year') || document.getElementById('year') || document.getElementById('yearInput');
-    const timeEl = document.getElementById('birth-time') || document.getElementById('time') || document.getElementById('timeInput');
+// 👤 ฟังก์ชันตรวจสอบข้อมูลวันเกิดจากหน้าเว็บแบบยืดหยุ่น (อ่านค่าจาก Select/Input จริง)
+function getBirthProfileData() {
+    // ค้นหาฟิลด์วัน เดือน ปีเกิด จากหน้าเว็บแบบครอบคลุมทุกรูปแบบ
+    const nameEl = document.getElementById('name') || document.getElementById('owner-name') || document.getElementById('userName') || document.querySelector('input[name*="name"]');
+    
+    // ค้นหาช่องปี พ.ศ. (เช็กจาก ID หรือเลือกจาก tag select ทั้งหมดบนหน้าเว็บที่อาจเป็นปีเกิด)
+    let yearVal = "";
+    let monthVal = "";
+    let dayVal = "";
+    
+    const selects = document.querySelectorAll('select');
+    selects.forEach(sel => {
+        const text = sel.options?.[sel.selectedIndex]?.text || "";
+        const val = sel.value || "";
+        if (text.includes("พ.ศ.") || val.includes("พ.ศ.") || (parseInt(val) > 2400) || (parseInt(text) > 2400)) {
+            yearVal = text;
+        } else if (text.includes("มกราคม") || text.includes("กุมภาพันธ์") || text.includes("มีนาคม") || text.includes("เมษายน") || text.includes("พฤษภาคม") || text.includes("มิถุนายน") || text.includes("กรกฎาคม") || text.includes("สิงหาคม") || text.includes("กันยายน") || text.includes("ตุลาคม") || text.includes("พฤศจิกายน") || text.includes("ธันวาคม")) {
+            monthVal = text;
+        } else if (!dayVal && (parseInt(val) >= 1 && parseInt(val) <= 31 || parseInt(text) >= 1 && parseInt(text) <= 31)) {
+            dayVal = text;
+        }
+    });
 
     const nameVal = nameEl ? (nameEl.value || nameEl.innerText || "").trim() : "";
-    const dayVal = dayEl ? (dayEl.value || dayEl.options?.[dayEl.selectedIndex]?.text || "").trim() : "";
-    const monthVal = monthEl ? (monthEl.value || monthEl.options?.[monthEl.selectedIndex]?.text || "").trim() : "";
-    const yearVal = yearEl ? (yearEl.value || "").trim() : "";
-    const timeVal = timeEl ? (timeEl.value || "").trim() : "";
 
-    // ถ้ายังไม่ได้กรอกปีเกิด หรือยังเป็นค่าเริ่มต้น ให้ลบการ์ดทิ้งทันที (ไม่ฟิกข้อมูลมั่ว)
-    if (!yearVal || yearVal === "" || yearVal === "เลือกปี" || yearVal === "0") {
-        const existingCard = document.getElementById('natal-profile-card');
-        if (existingCard) existingCard.remove();
+    // ถ้ายังไม่มีการเลือกปีเกิด ให้ถือว่ายังไม่ได้กรอก
+    if (!yearVal || yearVal.includes("เลือก") || yearVal === "") {
         return null;
     }
 
-    const birthStr = `${dayVal !== 'เลือกวัน' ? dayVal : ''} ${monthVal !== 'เลือกเดือน' ? monthVal : ''} พ.ศ. ${yearVal} ${timeVal ? '(' + timeVal + ' น.)' : ''}`.trim();
+    const birthStr = `${dayVal !== 'เลือกวัน' ? dayVal : ''} ${monthVal !== 'เลือกเดือน' ? monthVal : ''} ${yearVal}`.trim();
 
-    let cardDiv = document.getElementById('natal-profile-card');
-    if (!cardDiv) {
-        cardDiv = document.createElement('div');
-        cardDiv.id = 'natal-profile-card';
-        cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px;";
-        messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+    // แสดงการ์ดข้อมูลดวงชะตาในแชทอัตโนมัติเมื่อเลือกครบ
+    const messagesBox = document.getElementById('ai-chat-messages-box');
+    if (messagesBox) {
+        let cardDiv = document.getElementById('natal-profile-card');
+        if (!cardDiv) {
+            cardDiv = document.createElement('div');
+            cardDiv.id = 'natal-profile-card';
+            cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px;";
+            messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+        }
+        cardDiv.innerHTML = `
+            <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal || "ผู้ใช้งาน"}</div>
+            <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
+            <div style="margin-bottom: 4px;">☀️ ราศี: คำนวณจากวันเกิด</div>
+            <div>🌙 ลัคนา: คำนวณจากลัคนาสุริยยาตร์</div>
+        `;
     }
-
-    cardDiv.innerHTML = `
-        <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal || "ผู้ใช้งาน"}</div>
-        <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-        <div style="margin-bottom: 4px;">☀️ ราศี: คำนวณจากวันเกิด</div>
-        <div>🌙 ลัคนา: คำนวณจากลัคนาสุริยยาตร์</div>
-    `;
 
     return { nameVal: nameVal || "ผู้ใช้งาน", birthStr };
 }
@@ -100,11 +109,11 @@ async function handleInplaceAiChat(customText = null) {
         return;
     }
 
-    // ตรวจสอบข้อมูลวันเกิดจากหน้าเว็บ
-    const profile = updateNatalProfileBanner();
+    // ตรวจสอบวันเกิดที่ผู้ใช้เลือกในฟอร์ม
+    const profile = getBirthProfileData();
     if (!profile) {
         alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนให้ครบถ้วนก่อนเริ่มสนทนากับหมอดู AI ครับ");
-        const formSection = document.getElementById('birth-form') || document.getElementById('calculator');
+        const formSection = document.getElementById('birth-form') || document.getElementById('calculator') || document.querySelector('form');
         if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
         return;
     }
@@ -204,7 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (questionText && 
                 !questionText.includes('ส่ง') && 
                 !questionText.includes('VIP') && 
-                !questionText.includes('สมัคร')) {
+                !questionText.includes('สมัคร') &&
+                !questionText.includes('ดูดวง')) {
                 
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
