@@ -1560,228 +1560,48 @@ header.navbar {
       </div>
     </div>
 
-    <!-- ขวา: กล่องคำคม & บทความ -->
-    <div>
-<!-- ================= กล่องภาพแบนเนอร์ + ถามดวงชะตาเจาะลึกเฉพาะเรื่อง (VIP Astro Consultation) ================= -->
+<!-- ================= กล่องภาพแบนเนอร์เดิม + แชทหมอดู AI สด (หน้าตาเดิมเป๊ะ) ================= -->
 <div id="vip-consult-panel" style="background: linear-gradient(160deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border: 1.5px solid rgba(234, 179, 8, 0.65); border-radius: 18px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; backdrop-filter: blur(8px);">
   
-  <!-- 1. รูปภาพเดิมด้านบน สวยคมชัดตามธีม -->
+  <!-- 1. รูปภาพเดิมด้านบน สวยคมชัดตามธีม (ยังอยู่ครบถ้วน) -->
   <div style="width: 100%; line-height: 0; border-bottom: 1px solid rgba(234, 179, 8, 0.35);">
     <img src="station-host.jpg" alt="KRIT SHINE STATION" style="width: 100%; display: block; object-fit: cover;">
   </div>
 
-  <!-- 2. ฟังก์ชันถามดวงเจาะลึก VIP พร้อมระบุช่วงเวลาเห็นผล -->
+  <!-- 2. ส่วนเนื้อหาเปลี่ยนเป็นแชทสด (แทนที่ดรอปดาวน์และปุ่มเก่า) -->
   <div style="padding: 18px 16px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <h4 style="color: #ffd700; font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
-        <i class="fa-solid fa-wand-magic-sparkles" style="color: #f59e0b;"></i> ถามดวงเจาะลึกเฉพาะเรื่อง (VIP)
+      <h4 style="color: #ffd700; font-size: 1.05rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 6px;">
+        <span style="width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #22c55e;"></span>
+        หมอดู AI สุริยยาตร์ (ถาม-ตอบสด)
       </h4>
       <span style="font-size: 0.7rem; background: rgba(255, 215, 0, 0.15); color: #ffd700; padding: 2px 8px; border-radius: 10px; font-weight: 600;">
         <i class="fa-solid fa-crown"></i> ระบบ VIP
       </span>
     </div>
     
-    <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin-bottom: 12px;">
-      วิเคราะห์จากลัคนาพยากรณ์และดาวจรจริง เพื่อชี้แนวโน้มพร้อมระบุ <strong>"ช่วงเวลาที่จะเห็นผลลัพธ์ชัดเจน"</strong>
+    <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin-bottom: 14px;">
+      วิเคราะห์จากลัคนาพยากรณ์และดาวจรจริง พิมพ์ถาม-ตอบเรื่องดวงชะตาได้แบบเรียลไทม์
     </p>
 
-    <!-- เมนูเลือกหมวดคำถาม -->
-    <div class="form-field" style="margin-bottom: 10px;">
-      <select id="vipQuestionTopic" class="form-control" style="background: rgba(10, 15, 30, 0.9); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 9px 12px; color: #fff; width: 100%; font-size: 0.86rem;">
-        <option value="career">การงาน / โอกาสเปลี่ยนงาน / เลื่อนตำแหน่ง / โปรเจกต์ใหม่</option>
-        <option value="wealth">การเงิน / เงินก้อน / โชคลาภ / การปลดหนี้สิน</option>
-        <option value="love">ความรัก / คนคุย / สถานะความสัมพันธ์ / คู่ครอง</option>
-        <option value="business">ธุรกิจส่วนตัว / ค้าขาย / การลงทุนร่วมกับหุ้นส่วน</option>
-        <option value="caution">สุขภาพ / เคราะห์กรรม / อุปสรรคที่ต้องระวังเป็นพิเศษ</option>
-      </select>
-    </div>
-
-    <!-- ปุ่มกดประมวลผล -->
-    <button type="button" class="btn-calc-submit" onclick="analyzeVipSpecificQuestion()" style="margin-top: 8px; width: 100%; padding: 10px; font-size: 0.9rem; border-radius: 10px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-      <i class="fa-solid fa-bolt"></i> วิเคราะห์คำทำนาย & ช่วงเวลาเห็นผล
-    </button>
-
-    <!-- กล่องแสดงผลลัพธ์คำทำนายเจาะลึก -->
-    <div id="vipConsultResultBox" style="display: none; margin-top: 14px; background: rgba(8, 14, 28, 0.95); border: 1.2px solid #ffd700; border-radius: 12px; padding: 14px; box-shadow: inset 0 0 12px rgba(255, 215, 0, 0.1);">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(234, 179, 8, 0.35); padding-bottom: 6px; margin-bottom: 8px;">
-        <strong id="vipConsultTopicTitle" style="color: #ffd700; font-size: 0.9rem;"></strong>
-        <span id="vipConsultTimingBadge" style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; font-size: 0.72rem; padding: 2px 7px; border-radius: 8px; font-weight: 600;"></span>
-      </div>
-      
-      <div style="margin-bottom: 8px;">
-        <span style="font-size: 0.78rem; color: #94a3b8;">• บทวิเคราะห์ตามลัคนาและดาวจร:</span>
-        <p id="vipConsultDetailText" style="font-size: 0.85rem; color: #f1f5f9; line-height: 1.6; margin-top: 3px;"></p>
-      </div>
-
-      <!-- ไฮไลต์ช่วงเวลาที่จะเห็นผล -->
-      <div style="background: rgba(255, 215, 0, 0.08); border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 6px; margin-top: 8px;">
-        <strong style="color: #ffd700; font-size: 0.82rem;"><i class="fa-regular fa-clock"></i> ช่วงเวลาที่จะเห็นผลลัพธ์ชัดเจน:</strong>
-        <div id="vipConsultTimingText" style="font-size: 0.84rem; color: #81c784; font-weight: 600; margin-top: 2px;"></div>
+    <!-- กล่องแสดงข้อความแชท (Messages Container) -->
+    <div id="ai-chat-messages-box" style="height: 300px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(8, 12, 22, 0.9); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 12px; margin-bottom: 12px;">
+      <div class="ai-chat-msg bot" style="max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #1e293b; color: #e2e8f0; border-left: 3px solid #f59e0b; align-self: flex-start;">
+        สวัสดีครับคุณสมาชิก ยินดีต้อนรับสู่ Krit Shine Astrology ครับ ผมคือหมอดู AI ส่วนตัว พร้อมทำนายดวงชะตา โหราศาสตร์ไทยระบบสุริยยาตร์ ทั้งเรื่องการงาน การเงิน ความรัก และช่วงเวลาเห็นผล พิมพ์คำถามของคุณมาได้เลยครับ!
       </div>
     </div>
+
+    <!-- แถบพิมพ์ข้อความและปุ่มส่ง -->
+    <div style="display: flex; gap: 8px;">
+      <input type="text" id="ai-chat-input-box" class="form-control" placeholder="พิมพ์คำถามเรื่องดวงของคุณที่นี่ เช่น ช่วงนี้การงานเป็นอย่างไร..." autocomplete="off" style="flex: 1; background: #0b0f19; border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.88rem;">
+      <button type="button" id="ai-chat-send-btn" onclick="handleInplaceAiChat()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; border: none; border-radius: 10px; padding: 0 16px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; white-space: nowrap;">
+        <i class="fa-solid fa-paper-plane"></i> ส่ง
+      </button>
+    </div>
+
   </div>
 
 </div>
-
-<!-- สคริปต์คำนวณการพยากรณ์เจาะลึก + ช่วงเวลาเห็นผล -->
-<script>
-function analyzeVipSpecificQuestion() {
-  // 1. ตรวจสอบสถานะ VIP
-  var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  if (!isVip) {
-    if (confirm('ฟีเจอร์พยากรณ์เจาะจงเฉพาะเรื่องพร้อมระบุช่วงเวลาเห็นผล สงวนสิทธิ์สำหรับสมาชิก VIP\n\nต้องการดูรายละเอียดแพ็กเกจ VIP หรือไม่?')) {
-      if (typeof openFeatureModal === 'function') openFeatureModal('member');
-    }
-    return;
-  }
-
-  // 2. ตรวจสอบข้อมูลวันเกิด
-  var ascIdx = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : 10;
-  var bD = document.getElementById('birthDay')?.value;
-  if (!bD) {
-    alert('กรุณากรอกข้อมูลวันเดือนปีเกิดที่แบบฟอร์มด้านบนก่อนทำการวิเคราะห์ครับ');
-    if (typeof scrollToForm === 'function') scrollToForm();
-    return;
-  }
-
-  // 3. ดึงวันและเวลาจร
-  var tD = parseInt(document.getElementById('transitDay')?.value, 10) || 12;
-  var tM = parseInt(document.getElementById('transitMonth')?.value, 10) || 10;
-  var tY = parseInt(document.getElementById('transitYearBE')?.value, 10) || 2569;
-  var tYearAD = (tY > 2400) ? (tY - 543) : tY;
-  var targetDate = new Date(tYearAD, tM - 1, tD);
-
-  // คำนวณตำแหน่งดาวจรจริงตามปฏิทินดาวย้าย 30 ปี
-  var curJupSign = (typeof getAccurateTransitSign === 'function') ? getAccurateTransitSign('jupiter', targetDate) : 4;
-  var curSatSign = (typeof getAccurateTransitSign === 'function') ? getAccurateTransitSign('saturn', targetDate) : 11;
-  var curRahSign = (typeof getAccurateTransitSign === 'function') ? getAccurateTransitSign('rahu', targetDate) : 10;
-
-  var jHouse = (curJupSign - ascIdx + 12) % 12;
-  var sHouse = (curSatSign - ascIdx + 12) % 12;
-  var rHouse = (curRahSign - ascIdx + 12) % 12;
-
- var jupNextDate = (typeof getNextTransitDate === 'function') ? getNextTransitDate('jupiter', targetDate) : 'ก.พ. 2570';
-  var satNextDate = (typeof getNextTransitDate === 'function') ? getNextTransitDate('saturn', targetDate) : 'เม.ย. 2571';
-
-  var topic = document.getElementById('vipQuestionTopic')?.value || 'career';
-  var resBox = document.getElementById('vipConsultResultBox');
-  var titleEl = document.getElementById('vipConsultTopicTitle');
-  var badgeEl = document.getElementById('vipConsultTimingBadge');
-  var detailEl = document.getElementById('vipConsultDetailText');
-  var timingEl = document.getElementById('vipConsultTimingText');
-
-  var titleText = "";
-  var badgeText = "";
-  var detailContent = "";
-  var timingContent = "";
-
-  // ----------------------------------------------------
-  // หมวด 1: การงาน / ธุรกิจ / โอกาสเลื่อนขั้น
-  // ----------------------------------------------------
-  if (topic === 'career') {
-    titleText = "พยากรณ์: ทิศทางการงาน โอกาสโยกย้าย & เลื่อนตำแหน่ง";
-    if (jHouse === 6 || jHouse === 9 || jHouse === 10 || jHouse === 0) {
-      badgeText = "ช่วงรับโอกาสใหญ่ (ดาวหนุนส่ง)";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• ทิศทางภาพรวม:</strong> วงโคจรของดาวพฤหัสบดี (๕) ส่งกระแสพลังงานสัมพันธ์ดีเยี่ยมต่อลัคนา เป็นช่วงที่สติปัญญาเฉียบคม ปฏิภาณไหวพริบโดดเด่น การติดต่อประสานงานกับผู้บริหาร ผู้มีอำนาจ หรือองค์กรขนาดใหญ่จะได้รับความไว้วางใจ มีเกณฑ์ได้รับการทาบทามให้รับผิดชอบโปรเจกต์สำคัญ หรือได้รับข้อเสนอโยกย้ายตำแหน่งที่ก้าวหน้าขึ้น</div>
-        <div style="margin-bottom: 8px;"><strong>• อุปสรรคและสิ่งที่ต้องระวัง:</strong> ระวังการรับภาระงานหลายด้านพร้อมกันจนเกินกำลัง อาจมีคนรอบข้างหรือทีมงานบางส่วนที่ทำงานไม่ทันความเร็วของคุณ ควรจัดทำข้อตกลงและเอกสารให้ชัดเจน อย่าพึ่งพาคำพูดปากเปล่า</div>
-        <div><strong>• กลยุทธ์เสริมชะตา:</strong> ใช้ความสุขุมและความรอบคอบเป็นหลัก งานที่เกี่ยวกับการวางแผน วางระบบ หรือเจรจาต่อรองให้รีบเร่งมือในช่วงนี้ เพราะมีโอกาสปิดจ็อบใหญ่ได้สำเร็จงดงาม</div>
-      `;
-      timingContent = `จังหวะความก้าวหน้าและการเห็นผลลัพธ์เป็นรูปธรรมจะเกิดขึ้นชัดเจนตั้งแต่ <strong>บัดนี้เป็นต้นไป ต่อเนื่องจนถึงช่วง ${jupNextDate}</strong> โดยเฉพาะช่วงการเจรจาเซ็นสัญญาหรือปรับโครงสร้างงานจะโดดเด่นสูงสุด`;
-    } else {
-      badgeText = "ช่วงจัดระเบียบ & สะสมบารมี";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• ทิศทางภาพรวม:</strong> กระแสงานอยู่ในช่วงที่ต้องใช้ความอดทนและระเบียบวินัยสูง อิทธิพลดาวเสาร์ (๗) กระตุ้นให้ต้องลงแรงจัดการเรื่องคั่งค้าง มีงานหนักและความรับผิดชอบที่ต้องพิสูจน์ฝีมืออย่างเข้มข้น การโยกย้ายแบบกะทันหันยังไม่แนะนำ ควรเน้นการสร้างผลงานในจุดเดิมให้แข็งแกร่ง</div>
-        <div style="margin-bottom: 8px;"><strong>• อุปสรรคและสิ่งที่ต้องระวัง:</strong> ระวังแรงกดดันจากสายงาน หรือความขัดแย้งในแนวทางปฏิบัติงานกับเพื่อนร่วมงาน ควรหลีกเลี่ยงการปะทะอารมณ์ตรงๆ และระวังความเหนื่อยล้าสะสมจากการแบกภาระคนเดียว</div>
-        <div><strong>• กลยุทธ์เสริมชะตา:</strong> เน้นการพัฒนาทักษะเฉพาะทาง ปรับปรุงระบบงานเบื้องหลัง และทำงานแบบมีหลักฐานรัดกุม ความตั้งใจจริงจะกลายเป็นรากฐานความมั่นคงในระยะยาว</div>
-      `;
-      timingContent = `ความกดดันจะค่อยๆ คลี่คลาย และจังหวะดาวจะเปิดทางให้เห็นความสำเร็จชัดเจน <strong>หลังจากช่วง ${jupNextDate} และจะมั่นคงถาวรเต็มที่หลัง ${satNextDate}</strong>`;
-    }
-
-  // ----------------------------------------------------
-  // หมวด 2: การเงิน / เงินก้อน / โชคลาภ / การปลดหนี้
-  // ----------------------------------------------------
-  } else if (topic === 'wealth') {
-    titleText = "พยากรณ์: กระแสการเงิน เงินก้อน โชคลาภ & การบริหารหนี้สิน";
-    if (jHouse === 1 || jHouse === 6 || jHouse === 10) {
-      badgeText = "กระแสเงินคล่องตัว (มีลาภผล)";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• ทิศทางภาพรวม:</strong> วงจรการเงินเริ่มมีกระแสเงินสดหมุนเวียนไหลลื่นขึ้นอย่างเห็นได้ชัด ได้รับผลตอบแทนจากน้ำพักน้ำแรง งานเสริม หรือการค้าขายที่เคยลงทุนลงแรงไว้ มีเกณฑ์ได้รับเงินก้อนจากการเจรจาธุรกิจ ปิดการขายอสังหาฯ หรือได้รับส่วนแบ่งผลประโยชน์ตามที่รอคอย</div>
-        <div style="margin-bottom: 8px;"><strong>• การบริหารหนี้สิน & สภาพคล่อง:</strong> จังหวะเวลานี้เหมาะแก่การเจรจาปรับโครงสร้างหนี้ การขอสินเชื่อ หรือการรีไฟแนนซ์ มีโอกาสได้รับการอนุมัติเงื่อนไขที่เป็นคุณอย่างมาก</div>
-        <div><strong>• ข้อควรระวัง:</strong> แม้เงินจะเข้าคล่องตัว แต่มีเกณฑ์จ่ายออกไปกับการต่อยอดงานหรือซ่อมแซมสิ่งจำเป็น ควรแบ่งสัดส่วนเก็บออมเป็นสินทรัพย์ถาวรทันทีที่ได้เงินเข้ามา</div>
-      `;
-      timingContent = `ช่วงเวลาทองในการรับทรัพย์และจัดการสภาพคล่องให้สำเร็จเด่นชัดที่สุดคือ <strong>ช่วง 1 - 3 เดือนนี้ มีผลต่อเนื่องไปจนถึงประมาณ ${jupNextDate}</strong>`;
-    } else {
-      badgeText = "เน้นตั้งรับ & ควบคุมรายจ่าย";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• ทิศทางภาพรวม:</strong> กระแสการเงินยังคงอยู่ในช่วงตึงตัวหรือมีรายจ่ายไหลออกเป็นระยะ อิทธิพลดาวเสาร์ (๗) และราหู (๘) ส่งผลให้มีรายจ่ายจรที่ไม่คาดฝันเข้ามาแทรก เช่น ค่าซ่อมแซมยานพาหนะ ค่าใช้จ่ายภายในครอบครัว หรือภาระหนี้สินเดิมที่ต้องหมุนเงินจัดการ</div>
-        <div style="margin-bottom: 8px;"><strong>• ข้อควรระวังขั้นเด็ดขาด:</strong> งดเว้นการให้บุคคลอื่นหยิบยืมเงิน ค้ำประกัน หรือลงทุนในธุรกิจที่สัญญาว่าจะให้ผลตอบแทนสูงเกินจริงโดยเด็ดขาด เพราะมีเกณฑ์เกิดข้อพิพาทหรือสูญหายไม่ได้คืน</div>
-        <div><strong>• กลยุทธ์เสริมชะตา:</strong> ชะลอการซื้อของฟุ่มเฟือย เน้นการหมุนเงินแบบประคองสภาพคล่อง และจัดทำบัญชีรายรับ-รายจ่ายอย่างรัดกุม การทำบุญปล่อยปลาหรือถวายค่าน้ำค่าไฟจะช่วยแก้เคล็ดเงินรั่วไหลได้ดี</div>
-      `;
-      timingContent = `สภาพคล่องจะเริ่มเบาบางลงและเข้าที่เข้าทางอย่างเป็นรูปธรรม <strong>หลังผ่านพ้นช่วง ${satNextDate} เป็นต้นไป</strong>`;
-    }
-
-  // ----------------------------------------------------
-  // หมวด 3: ความรัก / คนคุย / คู่ครอง
-  // ----------------------------------------------------
-  } else if (topic === 'love') {
-    titleText = "พยากรณ์: ดวงชะตาความรัก สถานะความสัมพันธ์ & คู่ครอง";
-    if (jHouse === 6 || jHouse === 0) {
-      badgeText = "เกณฑ์คู่เกื้อหนุน (รักสดใส)";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• คนโสด:</strong> เสน่ห์เมตตามหานิยมเปิดกว้าง มีเกณฑ์พบเจอคนที่ถูกชะตา มีวุฒิภาวะ หรือเป็นคนที่มีหน้าที่การงานมั่นคงเข้ามาสานสัมพันธ์ เป็นความรักที่เข้ามาช่วยส่งเสริมความคิดและชีวิตให้ดีขึ้น</div>
-        <div style="margin-bottom: 8px;"><strong>• คนมีคู่:</strong> บรรยากาศความสัมพันธ์อบอุ่นและเข้าใจกันลึกซึ้งยิ่งขึ้น ปัญหาหรือความเข้าใจผิดที่เคยสะสมไว้จะได้รับการปรับความเข้าใจ มีเกณฑ์ร่วมกันวางแผนซื้อทรัพย์สิน ชิ้นใหญ่ หรือวางรากฐานครอบครัวร่วมกัน</div>
-        <div><strong>• ข้อควรระวัง:</strong> ระวังเรื่องเวลาไม่ตรงกันอันเนื่องมาจากภาระหน้าที่การงาน ให้หมั่นแสดงความห่วงใยและให้กำลังใจกันอย่างสม่ำเสมอ</div>
-      `;
-      timingContent = `ความสัมพันธ์จะมีความคืบหน้าชัดเจนและลงตัวที่สุด <strong>ภายในช่วง 45 - 60 วันข้างหน้านี้</strong>`;
-    } else {
-      badgeText = "ต้องใจเย็น & ใช้เหตุผล";
-      detailContent = `
-        <div style="margin-bottom: 8px;"><strong>• ภาพรวมความสัมพันธ์:</strong> อิทธิพลของดาวจรทำให้บรรยากาศความรักมีความเปราะบาง อาจมีความคิดเห็นไม่ลงรอยกันในเรื่องเล็กๆ น้อยๆ หรือต่างฝ่ายต่างเหนื่อยล้าจากงานจนเกิดความห่างเหิน</div>
-        <div style="margin-bottom: 8px;"><strong>• สิ่งที่ต้องระวัง:</strong> ระวังคำพูดที่ตรงเกินไป หรือการหยิบยกเรื่องในอดีตขึ้นมาถกเถียง รวมถึงอารมณ์น้อยใจชั่ววูบ</div>
-        <div><strong>• ข้อแนะนำ:</strong> ให้พื้นที่ส่วนตัวแก่กันและกัน ใช้ความนิ่งและเหตุผลเป็นเกราะกำบัง หลีกเลี่ยงการปะทะอารมณ์ทันที</div>
-      `;
-      timingContent = `สถานการณ์จะเริ่มผ่อนคลายและกลับมาปรับความเข้าใจกันได้ดีขึ้น <strong>หลังช่วงกลางเดือนหน้าเป็นต้นไป</strong>`;
-    }
-
-  // ----------------------------------------------------
-  // หมวด 4: ธุรกิจส่วนตัว / ค้าขาย / การลงทุน
-  // ----------------------------------------------------
-  } else if (topic === 'business') {
-    titleText = "พยากรณ์: การค้า ธุรกิจส่วนตัว & การร่วมทุนกับหุ้นส่วน";
-    badgeText = "จังหวะขยายสาขา & ปิดดีล";
-    detailContent = `
-      <div style="margin-bottom: 8px;"><strong>• ทิศทางการค้า:</strong> ธุรกิจมีโอกาสเติบโตจากการปรับตัวเข้าสู่ช่องทางดิจิทัล ออนไลน์ หรือการเจาะกลุ่มลูกค้าใหม่ๆ การร่วมมือกับพันธมิตรหรือคู่ค้าจะช่วยหนุนเสริมยอดขายให้พุ่งขึ้นได้ดี</div>
-      <div style="margin-bottom: 8px;"><strong>• การลงทุน & การร่วมทุน:</strong> สามารถเริ่มโครงการใหม่ได้ แต่ต้องเป็นการลงทุนแบบเป็นขั้นตอน อย่าเพิ่งทุ่มเงินหมดหน้าตักในรอบเดียว ตรวจสอบระบบบัญชีและการบริหารจัดการสต็อกสินค้าให้รัดกุม</div>
-      <div><strong>• สิ่งที่ต้องระวัง:</strong> ระวังการสื่อสารที่คลาดเคลื่อนกับทีมงานหรือซัพพลายเออร์ ทุกข้อตกลงในการร่วมทุนควรทำเป็นลายลักษณ์อักษรที่ถูกต้องตามกฎหมาย</div>
-    `;
-    timingContent = `จังหวะทองของการขยายตัวและการลงนามสัญญาค้าขายจะประสบผลสำเร็จสูงสุด <strong>ตั้งแต่ช่วงนี้จนถึงก่อน ${jupNextDate}</strong>`;
-
-  // ----------------------------------------------------
-  // หมวด 5: สุขภาพ / อุบัติเหตุ / เคราะห์กรรม
-  // ----------------------------------------------------
-  } else {
-    titleText = "พยากรณ์: สุขภาพ โรคประจำตัว & เคราะห์กรรมที่ต้องระวัง";
-    badgeText = "ต้องมีสติรอบคอบ (อย่าประมาท)";
-    detailContent = `
-      <div style="margin-bottom: 8px;"><strong>• สุขภาพกาย:</strong> ให้ระวังอาการเกี่ยวกับระบบกล้ามเนื้อ คอบ่าไหล่ ออฟฟิศซินโดรม รวมถึงอาการไมเกรนและการพักผ่อนไม่เพียงพอ คนที่มีโรคประจำตัวเกี่ยวกับระบบทางเดินอาหารหรือความดันควรตรวจเช็กตามระยะ</div>
-      <div style="margin-bottom: 8px;"><strong>• อุบัติเหตุ & ความเสี่ยง:</strong> ระวังการเดินทางในยามค่ำคืน อุบัติเหตุจากความเร่งรีบ การขับขี่ยานพาหนะ หรือของมีคมบาด หลีกเลี่ยงการไปในสถานที่อโคจรหรือสถานที่เสี่ยงอันตราย</div>
-      <div><strong>• เคล็ดลับสะเดาะเคราะห์:</strong> ควรหาเวลาไปทำบุญปล่อยสัตว์น้ำ ไถ่ชีวิตโคกระบือ บริจาคโลหิต หรือบริจาคเงินให้โรงพยาบาล จะช่วยผ่อนหนักให้เป็นเบาและเสริมออร่าบารมีคุ้มครองดวงชะตาได้ดีเยี่ยม</div>
-    `;
-    timingContent = `ช่วงที่ต้องเพิ่มความระมัดระวังเป็นพิเศษคือ <strong>ตลอดช่วง 30 - 45 วันนี้</strong> จนกว่าองศาดาวจรจะเคลื่อนพ้นมุมปะทะ`;
-  }
-
-  // อัปเดตข้อความลงหน้าจอ
-  titleEl.textContent = titleText;
-  badgeEl.textContent = badgeText;
-  detailEl.innerHTML = detailContent;
-  timingEl.innerHTML = timingContent;
-
-  resBox.style.display = 'block';
-  resBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-</script>
-<!-- ================= จบกล่อง VIP ================= -->
 
       <div class="recent-articles-panel" style="background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:18px; padding:20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);">
         <div class="articles-top-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
