@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์: เช็ก VIP + แก้ปุ่มคำถามด่วน)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่ (รองรับทั้งคีย์มาตรฐาน AIzaSy และ AQ.)
@@ -32,13 +32,44 @@ async function callGeminiAI(userMessage) {
     return data.candidates[0].content.parts[0].text;
 }
 
+// 🔒 ฟังก์ชันตรวจสอบสถานะ VIP
+function checkVipStatus() {
+    // ตรวจสอบจากตัวแปรสิทธิ์ VIP ในระบบหลัก หรือ LocalStorage (ปรับแก้ตามตัวแปรเว็บของคุณกฤศได้ครับ)
+    const isVip = window.isVipUser || localStorage.getItem('krit_shine_vip') === 'true' || document.body.classList.contains('vip-active');
+    
+    if (!isVip) {
+        // หากยังไม่เป็น VIP ให้แสดงหน้าต่าง/โมดอลสมัครสมาชิก VIP
+        const vipModal = document.getElementById('vip-modal') || document.querySelector('.vip-modal, .vip-popup, #vipModal');
+        if (vipModal) {
+            vipModal.style.display = 'block';
+        } else {
+            // ถ้าหาโมดอลไม่พบ ให้ลองเรียกใช้ฟังก์ชันเปิด VIP ในเว็บหลัก หรือแจ้งเตือนพาไปหน้าสมัคร
+            if (typeof openVipModal === 'function') {
+                openVipModal();
+            } else {
+                alert("⭐ กรุณาสสมัครสมาชิก VIP เพื่อใช้งานระบบหมอดู AI สุริยยาตร์เชิงลึกครับ!");
+                // เลื่อนหน้าจอไปที่ส่วนแพ็กเกจ VIP ถ้ามี
+                const vipSection = document.getElementById('vip-pricing-section') || document.querySelector('.vip-container');
+                if (vipSection) vipSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        return false;
+    }
+    return true;
+}
+
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
+    // 1. เช็กสิทธิ์ VIP ก่อนทุกครั้งที่จะคุยกับ AI
+    if (!checkVipStatus()) {
+        return;
+    }
+
     const chatInputEl = document.getElementById('chat-user-input');
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
-    // 1. ตรวจสอบว่าผู้ใช้งานกรอกข้อมูลวัน/เดือน/ปีเกิด หรือยัง
+    // 2. ตรวจสอบว่าผู้ใช้งานกรอกข้อมูลวัน/เดือน/ปีเกิด หรือยัง
     const birthYearCheck = document.getElementById('birth-year') || document.getElementById('yearInput');
     if (birthYearCheck && (!birthYearCheck.value || birthYearCheck.value === "")) {
         alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ก่อนเริ่มสนทนากับหมอดู AI ครับ");
@@ -64,8 +95,8 @@ async function handleInplaceAiChat(customText = null) {
     const loadingId = appendMessage("หมอดู AI กำลังคำนวณดวงชะตาตามหลักสุริยยาตร์...", 'ai-loading');
 
     try {
-        // สร้าง Prompt บริบทหมอดู AI สุริยยาตร์
-        const prompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญด้านโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology จงทำนายและตอบคำถามของผู้ใช้เรื่อง: "${userText}" ด้วยภาษาที่สุภาพ น่าเชื่อถือ ให้คำแนะนำเชิงบวก และอิงตามหลักดวงดาวและลัคนา`;
+        // สร้าง Prompt บริบทหมอดู AI สุริยยาตร์แบบเจาะลึก
+        const prompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญด้านโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology จงทำนายและตอบคำถามของผู้ใช้เรื่อง: "${userText}" ด้วยภาษาที่สุภาพ น่าเชื่อถือ ให้คำทำนายที่เจาะลึก ละเอียดแม่นยำเทียบเท่าหลักการพยากรณ์ชั้นสูง และอิงตามหลักดวงดาวและลัคนาจริง`;
 
         const aiReply = await callGeminiAI(prompt);
 
@@ -116,7 +147,7 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งข้อความและปุ่มคำถามด่วน (Quick Questions) เมื่อโหลดหน้าเว็บเสร็จ
+// ผูก Event ปุ่มส่งข้อความและปุ่มคำถามด่วน (Quick Questions) ด้วยระบบ Event Delegation ป้องกันปุ่มกดไม่ติด
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
@@ -134,12 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // รองรับปุ่มคำถามด่วน (Quick prompt chips)
-    const quickChips = document.querySelectorAll('.quick-prompt-btn, .quick-question-btn');
-    quickChips.forEach(chip => {
-        chip.addEventListener('click', () => {
+    // ⚡ แก้ปัญหาปุ่มคำถามด่วนกดไม่ได้ ด้วยการใช้ Event Delegation จับคลิกทั่วทั้งหน้าเว็บสำหรับปุ่มคำถามด่วนทุกแบบ
+    document.addEventListener('click', (e) => {
+        const chip = e.target.closest('.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip, button');
+        if (chip && (chip.classList.contains('quick-prompt-btn') || chip.classList.contains('quick-question-btn') || chip.classList.contains('quick-chip') || chip.classList.contains('suggestion-btn') || chip.classList.contains('chat-chip') || chip.closest('.quick-prompts-container, .quick-questions-wrapper'))) {
             const questionText = chip.innerText.trim();
-            handleInplaceAiChat(questionText);
-        });
+            // ตรวจสอบว่าเป็นข้อคำถามด่วนจริง (ไม่ใช่ปุ่มส่งทั่วไป)
+            if (questionText && !questionText.includes('ส่ง') && !questionText.includes('VIP')) {
+                handleInplaceAiChat(questionText);
+            }
+        }
     });
 });
