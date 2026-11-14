@@ -39,38 +39,48 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาจากฟอร์มหน้าเว็บอัตโนมัติ (อ่านค่าอย่างปลอดภัย ไม่ทำให้ข้อมูลเด้งหาย)
+// 👤 ซิงค์ข้อมูลดวงชะตาและกวาดหาค่าราศี/ลัคนาจากหน้าเว็บอัตโนมัติ
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
+    const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
     const dayEl = document.getElementById('birthDay');
     const yearEl = document.getElementById('birthYearBE');
-
-    if (!dayEl || !yearEl || !dayEl.value || !yearEl.value || dayEl.value === "" || yearEl.value === "") {
-        const existingCard = document.getElementById('natal-profile-card');
-        if (existingCard) existingCard.remove();
-        return null;
-    }
-
-    const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
-    const dayVal = dayEl.value;
+    
+    const dayVal = dayEl ? dayEl.value : "";
     const monthSelect = document.getElementById('birthMonth');
     const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
-    const yearVal = yearEl.value;
+    const yearVal = yearEl ? yearEl.value : "";
     const hourVal = document.getElementById('birthHour24')?.value || "00";
     const minVal = document.getElementById('birthMinute24')?.value || "00";
 
-    const birthStr = `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)`;
+    const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
     
-    // 🟢 ดึงค่าราศีและลัคนาจากหน้าเว็บแบบรองรับหลาย ID เพื่อให้แสดงผลลัพธ์ได้ชัวร์ 100%
+    // 1. ลองดึงจาก ID พื้นฐานก่อน (เผื่อมี)
     let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
                       document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
-    if (!sunSignText || sunSignText === "") sunSignText = "-";
 
     let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
                       document.getElementById('ascendant-sign')?.innerText?.trim() || "-";
-    if (!ascSignText || ascSignText === "") ascSignText = "-";
+
+    // 2. ถ้ายังเป็น "-" ให้สคริปต์กวาดหาข้อความแสดงผลบนหน้าเว็บโดยอัตโนมัติ
+    if (sunSignText === "-" || ascSignText === "-") {
+        const allElements = document.querySelectorAll('div, span, p, strong, b, td');
+        for (let el of allElements) {
+            const txt = el.innerText ? el.innerText.trim() : "";
+            // ค้นหาข้อความราศี
+            if (sunSignText === "-" && (txt.includes("ราศีเกิด") || (txt.startsWith("ราศี") && txt.length < 15))) {
+                const clean = txt.replace("ราศีเกิด", "").replace("ราศี:", "").trim();
+                if (clean.length > 0) sunSignText = clean.startsWith("ราศี") ? clean : "ราศี" + clean;
+            }
+            // ค้นหาข้อความลัคนา
+            if (ascSignText === "-" && (txt.includes("ลัคนาสถิต") || txt.includes("ลัคนา:"))) {
+                const clean = txt.replace("ลัคนาสถิต", "").replace("ลัคนา:", "").trim();
+                if (clean.length > 0) ascSignText = clean.startsWith("ราศี") ? clean : "ราศี" + clean;
+            }
+        }
+    }
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
