@@ -1591,9 +1591,9 @@ header.navbar {
       </div>
     </div>
 
-   <!-- แถบพิมพ์ข้อความและปุ่มส่ง (ปราบเบราว์เซอร์ไม่ให้เอาเมลมาใส่) -->
+  <!-- แถบพิมพ์ข้อความและปุ่มส่ง (เปลี่ยน ID ใหม่เพื่อล้างประวัติมือถือ) -->
     <div style="display: flex; gap: 8px; padding: 12px; background: rgba(10, 15, 28, 0.95); border-top: 1px solid rgba(234, 179, 8, 0.25);">
-      <input type="text" id="ai-chat-input-box" name="chat_query_box" autocomplete="nope" placeholder="พิมพ์คำถามเรื่องดวงของคุณที่นี่ เช่น ช่วงนี้การงานเป็นอย่างไร..." style="flex: 1; width: auto; background: #0b0f19; border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.88rem; outline: none;">
+      <input type="text" id="chat-user-input" name="user_query_text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="พิมพ์คำถามเรื่องดวงของคุณที่นี่ เช่น ช่วงนี้การงานเป็นอย่างไร..." style="flex: 1; width: auto; background: #0b0f19; border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.88rem; outline: none;">
       <button type="button" id="ai-chat-send-btn" onclick="handleInplaceAiChat()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0b0f19; font-weight: 700; border: none; border-radius: 10px; padding: 0 16px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; white-space: nowrap;">
         <i class="fa-solid fa-paper-plane"></i> ส่ง
       </button>
