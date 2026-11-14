@@ -62,8 +62,13 @@ function updateChatProfileCard() {
     const minVal = document.getElementById('birthMinute24')?.value || "00";
 
     const birthStr = `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)`;
-    const sunSignText = document.getElementById('dispSunSign')?.innerText || "-";
-    const ascSignText = document.getElementById('dispAscendant')?.innerText || "-";
+    
+    // 🟢 ปรับปรุงให้ค้นหาค่าจากหลายๆ ID ที่เป็นไปได้ในหน้าเว็บ เพื่อให้ดึงค่ามาแสดงได้ชัวร์ 100%
+    const sunSignText = document.getElementById('dispSunSign')?.innerText || 
+                        document.getElementById('zodiac-sign')?.innerText || "-";
+                        
+    const ascSignText = document.getElementById('dispAscendant')?.innerText || 
+                        document.getElementById('ascendant-sign')?.innerText || "-";
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
