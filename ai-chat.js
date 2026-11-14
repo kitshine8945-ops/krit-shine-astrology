@@ -1,5 +1,6 @@
+
 // ==========================================
-// 2. โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์แก้ปัญหาค่า -
+// 2. โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์ ปลอดภัย ไม่วนลูป
 // ==========================================
 
 // 🤖 ฟังก์ชันส่งคำถามไปที่ Backend ของเรา
@@ -39,67 +40,60 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและบังคับคำนวณอัตโนมัติทันทีหากค่ายังไม่มา
+// 👤 ซิงค์ข้อมูลดวงชะตาแบบปลอดภัย (อ่านค่าอย่างเดียว ไม่เรียกคำนวณซ้ำซ้อนเพื่อป้องกันเว็บพัง)
 function updateChatProfileCard() {
-    const messagesBox = document.getElementById('ai-chat-messages-box');
-    if (!messagesBox) return null;
+    try {
+        const messagesBox = document.getElementById('ai-chat-messages-box');
+        if (!messagesBox) return null;
 
-    const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
-    const dayEl = document.getElementById('birthDay');
-    const yearEl = document.getElementById('birthYearBE');
-    
-    const dayVal = dayEl ? dayEl.value : "";
-    const monthSelect = document.getElementById('birthMonth');
-    const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
-    const yearVal = yearEl ? yearEl.value : "";
-    const hourVal = document.getElementById('birthHour24')?.value || "00";
-    const minVal = document.getElementById('birthMinute24')?.value || "00";
+        const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
+        const dayEl = document.getElementById('birthDay');
+        const yearEl = document.getElementById('birthYearBE');
+        
+        const dayVal = dayEl ? dayEl.value : "";
+        const monthSelect = document.getElementById('birthMonth');
+        const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
+        const yearVal = yearEl ? yearEl.value : "";
+        const hourVal = document.getElementById('birthHour24')?.value || "00";
+        const minVal = document.getElementById('birthMinute24')?.value || "00";
 
-    const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
-    
-    // ดึงค่าจาก ID บนหน้าเว็บ
-    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
-                      document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
+        const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
+        
+        // อ่านค่าจาก ID บนหน้าเว็บแบบปลอดภัย
+        let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
+                          document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
 
-    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
-                      document.getElementById('ascendant-sign')?.innerText?.trim() || 
-                      document.getElementById('lakhana')?.innerText?.trim() || "-";
+        let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
+                          document.getElementById('ascendant-sign')?.innerText?.trim() || 
+                          document.getElementById('lakhana')?.innerText?.trim() || "-";
 
-    // 🟢 หากราศีหรือลัคนาเป็น "-" ให้สั่งรันฟังก์ชันคำนวณหลักทันทีเพื่อดึงค่าผลลัพธ์ออกมาโชว์
-    if (sunSignText === "-" || ascSignText === "-") {
-        if (typeof handleCalculate === 'function') {
-            try { handleCalculate(); } catch (e) {}
-        } else if (typeof calculateAstrologyData === 'function') {
-            try { calculateAstrologyData(); } catch (e) {}
+        if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
+            sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
         }
-        // ดึงค่าหลังสั่งคำนวณทันที
-        sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
-        ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim() || "-";
-    }
+        if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
+            ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
+        }
 
-    if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
-        sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
-    }
-    if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
-        ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
-    }
+        let cardDiv = document.getElementById('natal-profile-card');
+        if (!cardDiv) {
+            cardDiv = document.createElement('div');
+            cardDiv.id = 'natal-profile-card';
+            cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+            messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+        }
 
-    let cardDiv = document.getElementById('natal-profile-card');
-    if (!cardDiv) {
-        cardDiv = document.createElement('div');
-        cardDiv.id = 'natal-profile-card';
-        cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
-        messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+        cardDiv.innerHTML = `
+            <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
+            <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
+            <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignText}</div>
+            <div>🌙 ลัคนา: ${ascSignText}</div>
+        `;
+
+        return { nameVal, birthStr, sunSignText, ascSignText };
+    } catch (e) {
+        console.error("updateChatProfileCard error:", e);
+        return null;
     }
-
-    cardDiv.innerHTML = `
-        <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
-        <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-        <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignTest}</div>
-        <div>🌙 ลัคนา: ${ascSignTest}</div>
-    `;
-
-    return { nameVal, birthStr, sunSignTest, ascSignTest };
 }
 
 // 💬 ฟังก์ชันหลักในการส่งข้อความแชท
@@ -179,30 +173,11 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ⚡ ผูก Event เริ่มต้นการทำงานหน้าเว็บ
+// ⚡ ผูก Event เริ่มต้นการทำงานหน้าเว็บแบบปลอดภัย
 document.addEventListener('DOMContentLoaded', () => {
-    ['userName', 'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', () => {
-                setTimeout(updateChatProfileCard, 200);
-            });
-        }
-    });
-
-    // ดักจับจังหวะการกดคำนวณหลัก เพื่ออัปเดตการ์ดแชทให้อัตโนมัติทันที
     setTimeout(() => {
-        if (typeof window.handleCalculate === 'function' && !window._chatCalcHooked) {
-            const originalCalc = window.handleCalculate;
-            window.handleCalculate = function(...args) {
-                const res = originalCalc.apply(this, args);
-                setTimeout(updateChatProfileCard, 350);
-                return res;
-            };
-            window._chatCalcHooked = true;
-        }
         updateChatProfileCard();
-    }, 700);
+    }, 500);
 
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
