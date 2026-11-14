@@ -2,7 +2,7 @@
 // ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับล็อกสมบูรณ์: การ์ดดวง + คำถามด่วน + เช็กสิทธิ์)
 // ==========================================
 
-// 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
+// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
 const INPLACE_GEMINI_API_KEY = "AIzaSy... (ใส่ API Key ของคุณกฤศที่นี่)";
 
 // 🤖 ฟังก์ชันเรียกใช้งาน Gemini AI
@@ -58,7 +58,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ฟังก์ชันดึงข้อมูลและสร้างการ์ดแสดงผลดวงชะตา (ตรงตามรูปแบบที่ต้องการ)
+// 👤 ฟังก์ชันดึงข้อมูลและสร้างการ์ดแสดงผลดวงชะตา (แสดงชื่อ วันเกิด ราศี ลัคนา ครบถ้วน)
 function renderNatalProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -196,7 +196,7 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน (ล็อกการจับคลิกเฉพาะปุ่มคำถามด่วนในแชท)
+// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน (รองรับปุ่มคำถามด่วนทุกแบบในโซนแชท)
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
@@ -217,17 +217,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ แก้ไขปุ่มคำถามด่วนให้กดแล้วส่งข้อความเข้าแชททันที 100%
+    // ⚡ ดักจับคลิกปุ่มคำถามด่วน (Quick Questions / Chips) ให้ส่งข้อความเข้าแชททันที
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('button, .quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
+        const chip = e.target.closest('button, div, span', '.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
             const questionText = chip.innerText ? chip.innerText.trim() : "";
-            // ตรวจสอบว่าเป็นปุ่มคำถามด่วนจริง (มีข้อความและไม่ใช่ปุ่มส่งหลักหรือปุ่มระบบ)
+            // เงื่อนไขจับเฉพาะปุ่มที่เป็นคำถามด่วน (มีข้อความสั้นและไม่ใช่ปุ่มระบบทั่วไป)
             if (questionText && 
+                questionText.length < 50 &&
                 !questionText.includes('ส่ง') && 
                 !questionText.includes('VIP') && 
                 !questionText.includes('สมัคร') &&
-                !questionText.includes('ดูดวงลัคนาเลย')) {
+                !questionText.includes('ดูดวงลัคนาเลย') &&
+                (chip.classList.contains('quick-prompt-btn') || 
+                 chip.classList.contains('quick-question-btn') || 
+                 chip.classList.contains('quick-chip') || 
+                 chip.classList.contains('suggestion-btn') || 
+                 chip.classList.contains('chat-chip') ||
+                 chip.closest('#ai-chat-messages-box, .quick-prompts, .quick-questions, .chat-suggestions'))) {
                 
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
