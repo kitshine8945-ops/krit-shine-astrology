@@ -1591,6 +1591,14 @@ header.navbar {
       </div>
     </div>
 
+    <!-- 🟢 วาง "ปุ่มคำถามด่วน" ตรงนี้ครับ -->
+    <div style="display: flex; gap: 6px; padding: 6px 0 12px 0; overflow-x: auto; white-space: nowrap;">
+      <button type="button" onclick="sendQuickPrompt('ช่วงนี้การงานและโอกาสโยกย้ายเป็นอย่างไรบ้าง?')" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #ffd700; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0;">💼 การงาน/โยกย้าย</button>
+      <button type="button" onclick="sendQuickPrompt('การเงิน เงินก้อน และโชคลาภช่วงนี้เป็นอย่างไร?')" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #ffd700; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0;">💰 การเงิน/โชคลาภ</button>
+      <button type="button" onclick="sendQuickPrompt('ความรัก สถานะความสัมพันธ์ช่วงนี้เป็นอย่างไร?')" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #ffd700; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0;">❤️ ความรัก/คู่ครอง</button>
+      <button type="button" onclick="sendQuickPrompt('สุขภาพและสิ่งที่ต้องระวังเป็นพิเศษในช่วงนี้คืออะไร?')" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #ffd700; padding: 6px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; flex-shrink: 0;">⚠️ สุขภาพ/ระวังตัว</button>
+    </div>
+      
     <!-- แถบพิมพ์ข้อความและปุ่มส่ง (ใช้ div contenteditable เพื่อตัดปัญหาป๊อปอัปอีเมลในมือถือ 100%) -->
     <div style="display: flex; gap: 8px; padding: 12px; background: rgba(10, 15, 28, 0.95); border-top: 1px solid rgba(234, 179, 8, 0.25); align-items: center; border-radius: 12px;">
       <div id="chat-user-input" contenteditable="true" data-placeholder="พิมพ์คำถามเรื่องดวงของคุณที่นี่ เช่น ช่วงนี้การงานเป็นอย่างไร..." style="flex: 1; background: #0b0f19; border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.88rem; outline: none; min-height: 22px; max-height: 80px; overflow-y: auto; word-break: break-word;"></div>
