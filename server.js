@@ -19,9 +19,8 @@ app.post('/api/ai-chat', async (req, res) => {
             return res.status(500).json({ error: "ยังไม่ได้ตั้งค่า GEMINI_API_KEY ใน Variables ครับ" });
         }
 
-        // ส่ง API Key ผ่าน URL Query Parameter (AQ... ใช้ระบบเดียวกับคีย์ปกติครับ)
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-        
+      // เปลี่ยนจาก gemini-2.5-flash เป็น gemini-3.8-flash
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
         const response = await fetch(url, {
             method: "POST",
             headers: {
