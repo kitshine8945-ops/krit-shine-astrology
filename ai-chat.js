@@ -160,24 +160,28 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ⚡ ผูก Event เริ่มต้นการทำงานหน้าเว็บ
+// ⚡ ผูก Event และสั่งคำนวณดวงชะตาอัตโนมัติทันทีเมื่อเปิดหน้าเว็บ
 document.addEventListener('DOMContentLoaded', () => {
     ['userName', 'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('change', updateChatProfileCard);
+            el.addEventListener('change', () => {
+                if (typeof handleCalculate === 'function') handleCalculate();
+                updateChatProfileCard();
+            });
             el.addEventListener('input', updateChatProfileCard);
         }
     });
 
-    // 🟢 สั่งให้อัปเดตและแสดงผลราศี/ลัคนาทันทีที่โหลดหน้าเว็บเสร็จ
-    if (typeof updateChatProfileCard === 'function') {
-        try {
-            updateChatProfileCard();
-        } catch (err) {
-            console.error("Profile card update error:", err);
+    // 🟢 สั่งรันคำนวณหลักและอัปเดตการแสดงผลทันทีเมื่อโหลดหน้าเว็บเสร็จ
+    setTimeout(() => {
+        if (typeof handleCalculate === 'function') {
+            handleCalculate();
+        } else if (typeof calculateAstrologyData === 'function') {
+            calculateAstrologyData();
         }
-    }
+        updateChatProfileCard();
+    }, 200);
 
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
