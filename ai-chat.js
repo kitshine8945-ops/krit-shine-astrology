@@ -9,12 +9,12 @@ const INPLACE_GEMINI_MODEL = "gemini-1.5-flash";
 
 document.addEventListener('DOMContentLoaded', () => {
   const chatInputEl = document.getElementById('chat-user-input');
-  const chatMessagesBox = document.getElementById('ai-chat-messages-box');
 
   // กด Enter ในช่องพิมพ์เพื่อส่งข้อความได้ทันที
   if (chatInputEl) {
     chatInputEl.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
         handleInplaceAiChat();
       }
     });
@@ -35,12 +35,27 @@ async function handleInplaceAiChat() {
     return;
   }
 
-  const queryText = chatInputEl.value.trim();
+  // ดึงข้อความจากกล่องพิมพ์ (รองรับทั้ง div contenteditable และ input)
+  let rawText = chatInputEl.innerText !== undefined ? chatInputEl.innerText : chatInputEl.value;
+  const placeholderText = chatInputEl.getAttribute ? chatInputEl.getAttribute('data-placeholder') : '';
+  
+  if (rawText === placeholderText) {
+    rawText = '';
+  }
+  
+  const queryText = rawText.trim();
   if (!queryText) return;
 
   // 2. แสดงข้อความผู้ใช้ในกล่องแชท
   appendInplaceMessage(queryText, 'user');
-  chatInputEl.value = '';
+  
+  // ล้างข้อความในช่องพิมพ์
+  if (chatInputEl.innerText !== undefined) {
+    chatInputEl.innerText = '';
+  } else {
+    chatInputEl.value = '';
+  }
+  
   scrollChatToBottom();
 
   // 3. แสดงสถานะกำลังคำนวณของบอท
