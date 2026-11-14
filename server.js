@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import { GoogleGenAI } from '@google/genai';
 
 const app = express();
 
@@ -8,12 +7,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-// กำหนดค่า SDK โดยดึง GEMINI_API_KEY จาก Railway โดยตรง
-const ai = new GoogleGenAI({ 
-    apiKey: process.env.GEMINI_API_KEY 
-});
-
-// 🤖 Endpoint สำหรับ AI Chat
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt } = req.body;
@@ -21,15 +14,35 @@ app.post('/api/ai-chat', async (req, res) => {
             return res.status(400).json({ error: "กรุณาระบุข้อความครับ" });
         }
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-1.5-flash',
-            contents: prompt,
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ error: "ยังไม่ได้ตั้งค่า GEMINI_API_KEY ใน Variables ครับ" });
+        }
+
+        const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+        
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
         });
 
-        res.json({ reply: response.text });
+        const data = await response.json();
+        if (!response.ok) {
+            console.error("Google API Error:", JSON.stringify(data));
+            return res.status(500).json({ error: data.error?.message || "AI Connection error" });
+        }
+
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ไม่ได้รับข้อมูลตอบกลับจาก AI";
+        res.json({ reply });
     } catch (err) {
-        console.error("AI Error:", err);
-        res.status(500).json({ error: err.message || "เกิดข้อผิดพลาดในการเชื่อมต่อระบบ AI" });
+        console.error("Server Error:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
