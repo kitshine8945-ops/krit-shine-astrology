@@ -146,3 +146,15 @@ function scrollChatToBottom() {
     chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
   }
 }
+// ฟังก์ชันสำหรับกดปุ่มคำถามด่วนเพื่อให้ส่งข้อความหา AI ทันที
+function sendQuickPrompt(text) {
+  const chatInputEl = document.getElementById('chat-user-input');
+  if (chatInputEl) {
+    if (chatInputEl.innerText !== undefined) {
+      chatInputEl.innerText = text;
+    } else {
+      chatInputEl.value = text;
+    }
+    handleInplaceAiChat();
+  }
+}
