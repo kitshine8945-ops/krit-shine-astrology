@@ -1,5 +1,6 @@
+
 // ==========================================
-// 🤖 โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับแก้ไขจุดพัง ปลอดภัย 100%
+// 🤖 โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์ เสถียร แม่นยำ ไม่ติดขีด -
 // ==========================================
 
 async function callGeminiAI(userMessage) {
@@ -37,69 +38,77 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและสั่งคำนวณอัตโนมัติทันทีหากพบว่าข้อมูลพร้อมแต่ผลลัพธ์ยังไม่แสดง
+// 👤 ซิงค์ข้อมูลดวงชะตา (ดึงจาก DOM และดึงตรงจาก AppState เพื่อความแม่นยำ 100%)
 function updateChatProfileCard() {
-    const messagesBox = document.getElementById('ai-chat-messages-box');
-    if (!messagesBox) return null;
+    try {
+        const messagesBox = document.getElementById('ai-chat-messages-box');
+        if (!messagesBox) return null;
 
-    const nameVal = document.getElementById('userName')?.value || document.getElementById('name')?.value || "เจ้าชะตา";
-    const dayEl = document.getElementById('birthDay');
-    const yearEl = document.getElementById('birthYearBE') || document.getElementById('birthYear');
-    
-    const dayVal = dayEl ? dayEl.value : "";
-    const monthSelect = document.getElementById('birthMonth');
-    let monthVal = "";
-    if (monthSelect && monthSelect.selectedIndex >= 0 && monthSelect.options[monthSelect.selectedIndex]) {
-        monthVal = monthSelect.options[monthSelect.selectedIndex].text || "";
-    }
-    const yearVal = yearEl ? yearEl.value : "";
-    const hourVal = document.getElementById('birthHour24')?.value || document.getElementById('birthHour')?.value || "00";
-    const minVal = document.getElementById('birthMinute24')?.value || document.getElementById('birthMinute')?.value || "00";
+        const nameVal = document.getElementById('userName')?.value || document.getElementById('name')?.value || "เจ้าชะตา";
+        const dayEl = document.getElementById('birthDay');
+        const yearEl = document.getElementById('birthYearBE') || document.getElementById('birthYear');
+        
+        const dayVal = dayEl ? dayEl.value : "";
+        const monthSelect = document.getElementById('birthMonth');
+        let monthVal = "";
+        if (monthSelect && monthSelect.selectedIndex >= 0 && monthSelect.options[monthSelect.selectedIndex]) {
+            monthVal = monthSelect.options[monthSelect.selectedIndex].text || "";
+        }
+        const yearVal = yearEl ? yearEl.value : "";
+        const hourVal = document.getElementById('birthHour24')?.value || document.getElementById('birthHour')?.value || "00";
+        const minVal = document.getElementById('birthMinute24')?.value || document.getElementById('birthMinute')?.value || "00";
 
-    const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
-    
-    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || "-";
-    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || "-";
+        const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
+        
+        let sunSignText = "-";
+        let ascSignText = "-";
 
-    // ถ้าฟอร์มมีวันเกิดครบแล้ว แต่ผลลัพธ์บนหน้าเว็บยังเป็น "-" ให้สั่งรันฟังก์ชันคำนวณหลักของหน้าเว็บอัตโนมัติทันที
-    if ((sunSignText === "-" || ascSignText === "-") && dayVal && yearVal) {
-        if (typeof calculateAscendantAndTransit === 'function') {
-            try {
-                calculateAscendantAndTransit();
-                sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || "-";
-                ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || "-";
-            } catch (err) {
-                console.error("Auto calc error:", err);
+        // 1. อ่านจาก DOM หลักบนหน้าเว็บก่อน
+        const dispSun = document.getElementById('dispSunSign')?.innerText?.trim();
+        const dispAsc = document.getElementById('dispAscendant')?.innerText?.trim();
+        if (dispSun && dispSun !== "-") sunSignText = dispSun;
+        if (dispAsc && dispAsc !== "-") ascSignText = dispAsc;
+
+        // 2. ถ้าใน DOM ยังเป็น "-" ให้ดึงจากตัวแปรระบบ AppState ทันที
+        if ((sunSignText === "-" || ascSignText === "-") && typeof AppState !== 'undefined' && typeof ZODIAC_DATA !== 'undefined') {
+            if (sunSignText === "-" && AppState.currentCalculatedSunIndex !== null && ZODIAC_DATA[AppState.currentCalculatedSunIndex]) {
+                sunSignText = ZODIAC_DATA[AppState.currentCalculatedSunIndex].name;
+            }
+            if (ascSignText === "-" && AppState.currentCalculatedAscIndex !== null && ZODIAC_DATA[AppState.currentCalculatedAscIndex]) {
+                ascSignText = ZODIAC_DATA[AppState.currentCalculatedAscIndex].name;
             }
         }
-    }
 
-    if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
-        sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
-    }
-    if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
-        ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
-    }
+        if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
+            sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
+        }
+        if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
+            ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
+        }
 
-    let cardDiv = document.getElementById('natal-profile-card');
-    if (!cardDiv) {
-        cardDiv = document.createElement('div');
-        cardDiv.id = 'natal-profile-card';
-        cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
-        messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+        let cardDiv = document.getElementById('natal-profile-card');
+        if (!cardDiv) {
+            cardDiv = document.createElement('div');
+            cardDiv.id = 'natal-profile-card';
+            cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+            messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
+        }
+
+        cardDiv.innerHTML = `
+            <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
+            <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
+            <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignText}</div>
+            <div>🌙 ลัคนา: ${ascSignText}</div>
+        `;
+
+        return { nameVal, birthStr, sunSignText, ascSignText };
+    } catch (err) {
+        console.error("updateChatProfileCard error:", err);
+        return null;
     }
-
-    cardDiv.innerHTML = `
-        <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
-        <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-        <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignText}</div>
-        <div>🌙 ลัคนา: ${ascSignText}</div>
-    `;
-
-    return { nameVal, birthStr, sunSignText, ascSignText };
 }
 
-// 💬 ฟังก์ชันส่งข้อความแชท
+// 💬 ฟังก์ชันหลักในการส่งข้อความแชท
 async function handleInplaceAiChat(customText = null) {
     if (!checkVipStatus()) return;
 
@@ -187,14 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ดักจับฟังก์ชันคำนวณหลักของหน้าเว็บ
     setTimeout(() => {
-        if (typeof window.handleCalculate === 'function' && !window._chatCalcHooked) {
-            const originalCalc = window.handleCalculate;
-            window.handleCalculate = function(...args) {
+        if (typeof window.calculateAscendantAndTransit === 'function' && !window._chatCalcHooked1) {
+            const originalCalc = window.calculateAscendantAndTransit;
+            window.calculateAscendantAndTransit = function(...args) {
                 const res = originalCalc.apply(this, args);
                 setTimeout(updateChatProfileCard, 350);
                 return res;
             };
-            window._chatCalcHooked = true;
+            window._chatCalcHooked1 = true;
+        }
+        if (typeof window.syncBirthDataToAllModules === 'function' && !window._chatCalcHooked2) {
+            const originalSync = window.syncBirthDataToAllModules;
+            window.syncBirthDataToAllModules = function(...args) {
+                const res = originalSync.apply(this, args);
+                setTimeout(updateChatProfileCard, 350);
+                return res;
+            };
+            window._chatCalcHooked2 = true;
         }
         updateChatProfileCard();
     }, 600);
