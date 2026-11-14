@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับล็อกสมบูรณ์: การ์ดดวง + คำถามด่วน + เช็กสิทธิ์)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับล็อกสมบูรณ์: เช็กสิทธิ์ + การ์ดดวง + คำถามด่วน)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
@@ -34,7 +34,6 @@ async function callGeminiAI(userMessage) {
 
 // 🔒 ฟังก์ชันตรวจสอบการเข้าสู่ระบบและสถานะ VIP (ล็อกไว้ สมบูรณ์แล้ว)
 function checkVipStatus() {
-    // 1. เช็กว่าเข้าสู่ระบบหรือยัง
     if (typeof currentUser !== 'undefined' && !currentUser) {
         alert("⚠️ กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนใช้งานหมอดู AI ครับ");
         if (typeof openAuthModal === 'function') {
@@ -43,7 +42,6 @@ function checkVipStatus() {
         return false;
     }
 
-    // 2. เช็กสถานะ VIP
     const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
     if (!isVip) {
         alert("⭐ กรุณาสมัครสมาชิก VIP เพื่อใช้งานระบบหมอดู AI สุริยยาตร์เชิงลึกครับ!");
@@ -58,12 +56,11 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ฟังก์ชันดึงข้อมูลและสร้างการ์ดแสดงผลดวงชะตา (แสดงชื่อ วันเกิด ราศี ลัคนา ครบถ้วน)
+// 👤 ฟังก์ชันดึงข้อมูลและสร้างการ์ดแสดงผลดวงชะตา (ดึงข้อมูลจริงจากหน้าเว็บ)
 function renderNatalProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
-    // ดึงข้อมูลจากฟอร์มหน้าเว็บจริง
     const nameVal = document.getElementById('userName')?.value || "กฤศ สุขรา";
     const dayVal = document.getElementById('birthDay')?.value || "";
     const monthSelect = document.getElementById('birthMonth');
@@ -74,9 +71,8 @@ function renderNatalProfileCard() {
 
     const birthStr = `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)`;
 
-    // ดึงราศีและลัคนาจากผลการคำนวณบนหน้าเว็บ
-    const sunSignText = document.getElementById('dispSunSign')?.innerText || "ราศีกันย์";
-    const ascSignText = document.getElementById('dispAscendant')?.innerText || "ราศีมังกร";
+    const sunSignText = document.getElementById('dispSunSign')?.innerText || "ราศีตุลย์";
+    const ascSignText = document.getElementById('dispAscendant')?.innerText || "ราศีพฤษภ";
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
@@ -103,12 +99,10 @@ function renderNatalProfileCard() {
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
-    // 1. เช็ก Login และ VIP
     if (!checkVipStatus()) {
         return;
     }
 
-    // 2. เช็กวันเกิดจากฟอร์ม
     const bDayEl = document.getElementById('birthDay');
     const bYearEl = document.getElementById('birthYearBE');
     if (bDayEl && (!bDayEl.value || bDayEl.value === "" || !bYearEl || !bYearEl.value)) {
@@ -126,7 +120,6 @@ async function handleInplaceAiChat(customText = null) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
-    // แสดงการ์ดข้อมูลดวงชะตา
     const profile = renderNatalProfileCard();
 
     const userText = customText !== null ? customText : (chatInputEl ? (chatInputEl.innerText ? chatInputEl.innerText.trim() : chatInputEl.value.trim()) : "");
@@ -135,14 +128,12 @@ async function handleInplaceAiChat(customText = null) {
         return;
     }
 
-    // แสดงข้อความผู้ใช้
     appendMessage(userText, 'user');
     if (chatInputEl) {
         if (chatInputEl.innerText !== undefined) chatInputEl.innerText = "";
         else chatInputEl.value = "";
     }
 
-    // แสดงสถานะกำลังคำนวณ
     const loadingId = appendMessage("หมอดู AI กำลังคำนวณดวงชะตาตามหลักสุริยยาตร์...", 'ai-loading');
 
     try {
@@ -196,7 +187,7 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน (รองรับปุ่มคำถามด่วนทุกแบบในโซนแชท)
+// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
@@ -217,25 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ดักจับคลิกปุ่มคำถามด่วน (Quick Questions / Chips) ให้ส่งข้อความเข้าแชททันที
+    // ⚡ แก้ไขปุ่มคำถามด่วน (Quick Questions) ให้จับคลิกได้อย่างแม่นยำ 100%
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('button, div, span', '.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
+        const chip = e.target.closest('.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
             const questionText = chip.innerText ? chip.innerText.trim() : "";
-            // เงื่อนไขจับเฉพาะปุ่มที่เป็นคำถามด่วน (มีข้อความสั้นและไม่ใช่ปุ่มระบบทั่วไป)
-            if (questionText && 
-                questionText.length < 50 &&
-                !questionText.includes('ส่ง') && 
-                !questionText.includes('VIP') && 
-                !questionText.includes('สมัคร') &&
-                !questionText.includes('ดูดวงลัคนาเลย') &&
-                (chip.classList.contains('quick-prompt-btn') || 
-                 chip.classList.contains('quick-question-btn') || 
-                 chip.classList.contains('quick-chip') || 
-                 chip.classList.contains('suggestion-btn') || 
-                 chip.classList.contains('chat-chip') ||
-                 chip.closest('#ai-chat-messages-box, .quick-prompts, .quick-questions, .chat-suggestions'))) {
-                
+            if (questionText) {
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
             }
