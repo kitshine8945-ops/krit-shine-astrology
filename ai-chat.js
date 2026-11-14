@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับแก้ปัญหาคลิกแล้วเด้งรบกวน)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (เช็ก Login -> เช็ก VIP -> เช็กวันเกิด)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
@@ -32,8 +32,18 @@ async function callGeminiAI(userMessage) {
     return data.candidates[0].content.parts[0].text;
 }
 
-// 🔒 ฟังก์ชันตรวจสอบสถานะ VIP ตามระบบของ index.html
+// 🔒 ฟังก์ชันตรวจสอบการเข้าสู่ระบบและสถานะ VIP
 function checkVipStatus() {
+    // 1. ตรวจสอบว่าเข้าสู่ระบบหรือยัง (อิงจากตัวแปร currentUser ใน index.html)
+    if (typeof currentUser !== 'undefined' && !currentUser) {
+        alert("⚠️ กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนใช้งานหมอดู AI ครับ");
+        if (typeof openAuthModal === 'function') {
+            openAuthModal();
+        }
+        return false;
+    }
+
+    // 2. ตรวจสอบสถานะ VIP
     const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
     if (!isVip) {
         alert("⭐ กรุณาสมัครสมาชิก VIP เพื่อใช้งานระบบหมอดู AI สุริยยาตร์เชิงลึกครับ!");
@@ -50,17 +60,16 @@ function checkVipStatus() {
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
-    // 1. เช็กสิทธิ์ VIP
+    // 1. เช็ก Login และ VIP ก่อนทุกครั้ง
     if (!checkVipStatus()) {
         return;
     }
 
-    // 2. ดึงข้อมูลวันเกิดจากฟอร์มหน้าเว็บจริง (`birthDay`)
+    // 2. เช็กวันเกิดจากฟอร์มหน้าเว็บ (`birthDay`)
     const bDayEl = document.getElementById('birthDay');
     const bMonthEl = document.getElementById('birthMonth');
     const bYearEl = document.getElementById('birthYearBE');
 
-    // ถ้ายังไม่ได้เลือกวันเกิด ให้แจ้งเตือนเฉพาะตอนกดส่งข้อความแชทเท่านั้น
     if (bDayEl && (!bDayEl.value || bDayEl.value === "" || !bYearEl || !bYearEl.value)) {
         alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
         if (typeof scrollToForm === 'function') {
@@ -148,7 +157,7 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วนเฉพาะกลุ่มแชท (ไม่ยุ่งกับปุ่มอื่นบนหน้าเว็บ)
+// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
@@ -166,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ดักจับเฉพาะปุ่มคำถามด่วนหรือชิปในโซนแชทเท่านั้น ไม่จับปุ่มทั่วไป
     document.addEventListener('click', (e) => {
         const chip = e.target.closest('.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
