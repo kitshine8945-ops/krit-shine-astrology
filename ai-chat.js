@@ -1,25 +1,18 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ดึงข้อมูลจริง + เช็กวันเกิดครบถ้วน)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ไม่ฟิกข้อมูล + คำถามด่วนทำงานจริง)
 // ==========================================
 
-// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
-const INPLACE_GEMINI_API_KEY = "AQ.Ab8RN6LdeDop7HeNzt1DLVpVScdwB9wU9ORi0vKocXI7tkoBMQ";
+// 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
+const INPLACE_GEMINI_API_KEY = "AIzaSy... (ใส่ API Key ของคุณกฤศที่นี่)";
 
-// 🤖 ฟังก์ชันช่วยยิง Request ไปหา Gemini AI
+// 🤖 ฟังก์ชันเรียกใช้งาน Gemini AI
 async function callGeminiAI(userMessage) {
     const apiKey = INPLACE_GEMINI_API_KEY.trim();
-    let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    let headers = { "Content-Type": "application/json" };
-
-    if (apiKey.startsWith("AIzaSy")) {
-        url += `?key=${apiKey}`;
-    } else {
-        headers["Authorization"] = `Bearer ${apiKey}`;
-    }
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
         method: "POST",
-        headers: headers,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             contents: [{ parts: [{ text: userMessage }] }]
         })
@@ -35,7 +28,7 @@ async function callGeminiAI(userMessage) {
 // 🔒 ฟังก์ชันตรวจสอบสถานะ VIP
 function checkVipStatus() {
     const bodyText = document.body.innerText || "";
-    const hasVipBadge = bodyText.includes("สมาชิก VIP") || bodyText.includes("VIP Active");
+    const hasVipBadge = bodyText.includes("สมาชิก VIP") || bodyText.includes("VIP Active") || bodyText.includes("ระบบ VIP");
     const isVipLocal = window.isVipUser || localStorage.getItem('krit_shine_vip') === 'true' || document.body.classList.contains('vip-active');
     
     if (hasVipBadge || isVipLocal) {
@@ -57,61 +50,48 @@ function checkVipStatus() {
     return false;
 }
 
-// 👤 ฟังก์ชันดึงและแสดงการ์ดข้อมูลดวงชะตาจาก "สิ่งที่ผู้ใช้กรอกบนหน้าเว็บ" แบบไดนามิกจริง
-function renderNatalProfileBanner() {
+// 👤 ฟังก์ชันตรวจสอบและอัปเดตการ์ดข้อมูลดวงชะตา (ไม่แสดงผลถ้ายังไม่ได้กรอกวันเกิด)
+function updateNatalProfileBanner() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
-    // ค้นหาฟิลด์ข้อมูลวันเกิดจากไอดีหลากหลายรูปแบบในหน้าเว็บของคุณกฤศ
-    const nameInput = document.getElementById('name') || document.getElementById('userName') || document.getElementById('owner-name') || document.querySelector('input[name*="name"]');
-    const dayInput = document.getElementById('birth-day') || document.getElementById('dayInput') || document.getElementById('birthDay') || document.getElementById('day') || document.querySelector('select[name*="day"]');
-    const monthInput = document.getElementById('birth-month') || document.getElementById('monthInput') || document.getElementById('birthMonth') || document.getElementById('month') || document.querySelector('select[name*="month"]');
-    const yearInput = document.getElementById('birth-year') || document.getElementById('yearInput') || document.getElementById('birthYear') || document.getElementById('year') || document.querySelector('input[name*="year"], select[name*="year"]');
-    const timeInput = document.getElementById('birth-time') || document.getElementById('timeInput') || document.getElementById('birthTime') || document.getElementById('time') || document.querySelector('input[name*="time"]');
-    
-    const zodiacDisplay = document.getElementById('zodiac-display') || document.getElementById('sun-sign') || document.getElementById('zodiac-text') || document.querySelector('.zodiac-result');
-    const laksanaDisplay = document.getElementById('laksana-display') || document.getElementById('laksana-sign') || document.getElementById('laksana-text') || document.querySelector('.laksana-result');
+    const nameEl = document.getElementById('name') || document.getElementById('owner-name') || document.getElementById('userName');
+    const dayEl = document.getElementById('birth-day') || document.getElementById('day') || document.getElementById('dayInput');
+    const monthEl = document.getElementById('birth-month') || document.getElementById('month') || document.getElementById('monthInput');
+    const yearEl = document.getElementById('birth-year') || document.getElementById('year') || document.getElementById('yearInput');
+    const timeEl = document.getElementById('birth-time') || document.getElementById('time') || document.getElementById('timeInput');
 
-    const nameVal = nameInput ? (nameInput.value || nameInput.innerText || nameInput.options?.[nameInput.selectedIndex]?.text || "กฤศ สุขรา") : "กฤศ สุขรา";
-    const dayVal = dayInput ? (dayInput.value || dayInput.options?.[dayInput.selectedIndex]?.text || "") : "";
-    const monthVal = monthInput ? (monthInput.options ? monthInput.options[monthInput.selectedIndex]?.text : monthInput.value) : "";
-    const yearVal = yearInput ? (yearInput.value || "") : "";
-    const timeVal = timeInput ? (timeInput.value || "") : "";
+    const nameVal = nameEl ? (nameEl.value || nameEl.innerText || "").trim() : "";
+    const dayVal = dayEl ? (dayEl.value || dayEl.options?.[dayEl.selectedIndex]?.text || "").trim() : "";
+    const monthVal = monthEl ? (monthEl.value || monthEl.options?.[monthEl.selectedIndex]?.text || "").trim() : "";
+    const yearVal = yearEl ? (yearEl.value || "").trim() : "";
+    const timeVal = timeEl ? (timeEl.value || "").trim() : "";
 
-    const birthStr = (dayVal || monthVal || yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} ${timeVal ? '(' + timeVal + ' น.)' : ''}`.trim() : "30 เมษายน พ.ศ. 2522 (01:52 น.)";
+    // ถ้ายังไม่ได้กรอกปีเกิด หรือยังเป็นค่าเริ่มต้น ให้ลบการ์ดทิ้งทันที (ไม่ฟิกข้อมูลมั่ว)
+    if (!yearVal || yearVal === "" || yearVal === "เลือกปี" || yearVal === "0") {
+        const existingCard = document.getElementById('natal-profile-card');
+        if (existingCard) existingCard.remove();
+        return null;
+    }
+
+    const birthStr = `${dayVal !== 'เลือกวัน' ? dayVal : ''} ${monthVal !== 'เลือกเดือน' ? monthVal : ''} พ.ศ. ${yearVal} ${timeVal ? '(' + timeVal + ' น.)' : ''}`.trim();
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
         cardDiv = document.createElement('div');
         cardDiv.id = 'natal-profile-card';
-        cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+        cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px;";
         messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
     }
 
     cardDiv.innerHTML = `
-        <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
+        <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal || "ผู้ใช้งาน"}</div>
         <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-        <div style="margin-bottom: 4px;">☀️ ราศี: ${zodiacDisplay ? zodiacDisplay.innerText : "ราศีเมษ"}</div>
-        <div>🌙 ลัคนา: ${laksanaDisplay ? laksanaDisplay.innerText : "ราศีกุมภ์"}</div>
+        <div style="margin-bottom: 4px;">☀️ ราศี: คำนวณจากวันเกิด</div>
+        <div>🌙 ลัคนา: คำนวณจากลัคนาสุริยยาตร์</div>
     `;
 
-    return { nameVal, birthStr };
-}
-
-// ฟังก์ชันตรวจสอบว่ากรอกวันเกิดหรือยัง
-function validateBirthInput() {
-    const yearInput = document.getElementById('birth-year') || document.getElementById('yearInput') || document.getElementById('birthYear') || document.getElementById('year') || document.querySelector('input[name*="year"], select[name*="year"]');
-    
-    // ถ้าพบช่องปีเกิดและยังว่างอยู่
-    if (yearInput && (!yearInput.value || yearInput.value === "" || yearInput.value === "0")) {
-        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
-        const formSection = document.getElementById('birth-form') || document.getElementById('calculator') || yearInput;
-        if (formSection) {
-            formSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        return false;
-    }
-    return true;
+    return { nameVal: nameVal || "ผู้ใช้งาน", birthStr };
 }
 
 // ฟังก์ชันส่งข้อความแชทหลัก
@@ -120,8 +100,12 @@ async function handleInplaceAiChat(customText = null) {
         return;
     }
 
-    // ตรวจสอบวันเกิดก่อนส่ง
-    if (!validateBirthInput()) {
+    // ตรวจสอบข้อมูลวันเกิดจากหน้าเว็บ
+    const profile = updateNatalProfileBanner();
+    if (!profile) {
+        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนให้ครบถ้วนก่อนเริ่มสนทนากับหมอดู AI ครับ");
+        const formSection = document.getElementById('birth-form') || document.getElementById('calculator');
+        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
         return;
     }
 
@@ -129,22 +113,18 @@ async function handleInplaceAiChat(customText = null) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
-    const profile = renderNatalProfileBanner();
-
     const userText = customText !== null ? customText : (chatInputEl ? (chatInputEl.innerText ? chatInputEl.innerText.trim() : chatInputEl.value.trim()) : "");
 
     if (!userText || userText.startsWith("พิมพ์คำถามเรื่องดวง")) {
         return;
     }
 
-    // แสดงข้อความฝั่ง User ในแชท
     appendMessage(userText, 'user');
     if (chatInputEl) {
         if (chatInputEl.innerText !== undefined) chatInputEl.innerText = "";
         else chatInputEl.value = "";
     }
 
-    // แสดงสถานะกำลังพิมพ์ (Loading)
     const loadingId = appendMessage("หมอดู AI กำลังคำนวณดวงชะตาตามหลักสุริยยาตร์...", 'ai-loading');
 
     try {
@@ -161,7 +141,7 @@ async function handleInplaceAiChat(customText = null) {
     }
 }
 
-// ฟังก์ชันช่วยจัดการแสดงผลข้อความในกล่องแชท
+// ฟังก์ชันแสดงข้อความในกล่องแชท
 function appendMessage(text, sender) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -198,10 +178,8 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งข้อความและปุ่มคำถามด่วน
+// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(renderNatalProfileBanner, 500);
-
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
@@ -218,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ระบบดักคลิกปุ่มคำถามด่วนทุกประเภทในหน้าเว็บให้ทำงานได้ 100%
+    // ⚡ ระบบดักคลิกปุ่มคำถามด่วนทุกแบบในหน้าเว็บให้ทำงานได้ 100%
     document.addEventListener('click', (e) => {
         const chip = e.target.closest('button, .quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
@@ -226,13 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (questionText && 
                 !questionText.includes('ส่ง') && 
                 !questionText.includes('VIP') && 
-                !questionText.includes('สมัคร') &&
-                (chip.classList.contains('quick-prompt-btn') || 
-                 chip.classList.contains('quick-question-btn') || 
-                 chip.classList.contains('quick-chip') || 
-                 chip.classList.contains('suggestion-btn') || 
-                 chip.classList.contains('chat-chip') ||
-                 chip.closest('.quick-prompts, .quick-questions, .chat-suggestions, .quick-prompt-container'))) {
+                !questionText.includes('สมัคร')) {
                 
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
