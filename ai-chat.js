@@ -39,7 +39,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าผลลัพธ์ (พร้อมระบบสั่งคำนวณอัตโนมัติหากค่ายังไม่มา)
+// 👤 ซิงค์ข้อมูลดวงชะตาและบังคับคำนวณอัตโนมัติทันทีหากค่ายังไม่มา
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -65,16 +65,16 @@ function updateChatProfileCard() {
                       document.getElementById('ascendant-sign')?.innerText?.trim() || 
                       document.getElementById('lakhana')?.innerText?.trim() || "-";
 
-    // 🟢 ถ้าราศีหรือลัคนาเป็น "-" ให้ลองสั่งรันฟังก์ชันคำนวณหลักอัตโนมัติทันที
-    if ((sunSignText === "-" || ascSignText === "-") && typeof handleCalculate === 'function') {
-        try {
-            handleCalculate();
-            // ดึงค่าใหม่อีกรอบทันทีหลังคำนวณ
-            sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
-            ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim() || "-";
-        } catch (e) {
-            console.error("Auto calc error:", e);
+    // 🟢 หากราศีหรือลัคนาเป็น "-" ให้สั่งรันฟังก์ชันคำนวณหลักทันทีเพื่อดึงค่าผลลัพธ์ออกมาโชว์
+    if (sunSignText === "-" || ascSignText === "-") {
+        if (typeof handleCalculate === 'function') {
+            try { handleCalculate(); } catch (e) {}
+        } else if (typeof calculateAstrologyData === 'function') {
+            try { calculateAstrologyData(); } catch (e) {}
         }
+        // ดึงค่าหลังสั่งคำนวณทันที
+        sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
+        ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim() || "-";
     }
 
     if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
@@ -95,11 +95,11 @@ function updateChatProfileCard() {
     cardDiv.innerHTML = `
         <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal}</div>
         <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-        <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignText}</div>
-        <div>🌙 ลัคนา: ${ascSignText}</div>
+        <div style="margin-bottom: 4px;">☀️ ราศี: ${sunSignTest}</div>
+        <div>🌙 ลัคนา: ${ascSignTest}</div>
     `;
 
-    return { nameVal, birthStr, sunSignText, ascSignText };
+    return { nameVal, birthStr, sunSignTest, ascSignTest };
 }
 
 // 💬 ฟังก์ชันหลักในการส่งข้อความแชท
