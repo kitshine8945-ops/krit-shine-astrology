@@ -9,8 +9,8 @@ app.use(express.static('.'));
 
 app.post('/api/ai-chat', async (req, res) => {
     try {
-        // 🌟 รับ prompt และข้อมูลตำแหน่งดาวจริง (currentSigns) ที่ส่งมาจากหน้าเว็บ
-        const { prompt, currentSigns, transitDate } = req.body;
+        // 🌟 รับ prompt, currentSigns, transitDate และ transitAspects ที่ส่งมาจากหน้าเว็บ
+        const { prompt, currentSigns, transitDate, transitAspects } = req.body;
         if (!prompt) {
             return res.status(400).json({ error: "กรุณาระบุข้อความครับ" });
         }
@@ -22,16 +22,24 @@ app.post('/api/ai-chat', async (req, res) => {
 
         const targetDateStr = transitDate || new Date().toISOString().split('T')[0];
 
-        // 🌟 นำข้อมูลดาวจริงที่หน้าเว็บคำนวณส่งมา มาล็อกคอบังคับ AI ใน System Instruction
+        // 🌟 แปลงข้อมูลดาวและคำทำนายมุมสัมพันธ์ดาวจร (Transit Aspects) ที่หน้าเว็บคำนวณส่งมา
         const signsJsonString = currentSigns ? JSON.stringify(currentSigns, null, 2) : "ไม่ได้ระบุตำแหน่งดาว";
+        const aspectsString = transitAspects ? transitAspects : "ไม่มีข้อมูลมุมดาวจรพิเศษในขณะนี้";
 
         const systemInstructionText = `
-คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" 
-ห้ามแต่งเติมหรือมโนตำแหน่งดาวเด็ดขาด! ให้วิเคราะห์และพยากรณ์จากตำแหน่งดาวจรจริง ณ วันที่ ${targetDateStr} ตามข้อมูลดิบด้านล่างนี้เท่านั้น:
-${signsJsonString}
+คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" ของคุณกฤศ สุขรา 
+กฎเหล็กเคร่งครัด:
+1. ห้ามแต่งเติมหรือมโนตำแหน่งดาวหรือคำทำนายเด็ดขาด!
+2. ให้วิเคราะห์และพยากรณ์โดยยึดถือตำแหน่งดาวจรจริง และข้อมูลคำทำนายมุมสัมพันธ์ดาวจร (Transit Aspects) ที่แนบมานี้เป็นหลัก:
+---
+[ข้อมูลมุมสัมพันธ์ดาวจรปัจจุบันของเจ้าชะตา]
+${aspectsString}
 
+[ตำแหน่งราศีดาวจรจริง ณ วันที่ ${targetDateStr}]
+${signsJsonString}
+---
 รหัสราศี (0=เมษ, 1=พฤษภ, 2=เมถุน, 3=กรกฎ, 4=สิงห์, 5=กันย์, 6=ตุลย์, 7=พิจิก, 8=ธนู, 9=มังกร, 10=กุมภ์, 11=มีน)
-หากตำแหน่งดาวในคำทำนายไม่ตรงกับข้อมูลใน JSON นี้ ถือว่าผิดพลาดร้ายแรง!
+หากตำแหน่งดาวหรือคำทำนายในแชทไม่สอดคล้องกับข้อมูลดิบชุดนี้ ถือว่าผิดพลาดร้ายแรง!
 `;
 
         const modelsToTry = [
