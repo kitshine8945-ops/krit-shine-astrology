@@ -1,13 +1,36 @@
-
 // ==========================================
 // 🤖 โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์ เสถียร แม่นยำ ไม่ติดขีด -
 // ==========================================
 
 async function callGeminiAI(userMessage) {
+    // 1. กวาดข้อมูลคำทำนายมุมสัมพันธ์ดาวจร (Transit Aspects) จากหน้าจออัตโนมัติ
+    const aspectBox = document.getElementById('transitAspectResultBox');
+    let transitAspects = aspectBox ? aspectBox.innerText.trim() : "";
+
+    if (!transitAspects) {
+        const fallbackCards = document.querySelectorAll('.desc-block, .result-row, [style*="border-left"]');
+        fallbackCards.forEach(el => {
+            transitAspects += `- ${el.innerText.trim()}\n`;
+        });
+    }
+
+    // 2. ดึงตำแหน่งราศีดาวจรปัจจุบันจากหน้าเว็บ
+    let currentSigns = {};
+    if (typeof calcState !== 'undefined' && calcState && calcState.planetsTransit) {
+        currentSigns = calcState.planetsTransit;
+    } else if (typeof calculateAllTransitPlanets === 'function') {
+        currentSigns = calculateAllTransitPlanets(new Date());
+    }
+
     const response = await fetch('/api/ai-chat', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: userMessage })
+        body: JSON.stringify({ 
+            prompt: userMessage,
+            transitAspects: transitAspects, // ส่งข้อมูลมุมดาวและองศาจริงจากหน้าจอเข้า Server
+            currentSigns: currentSigns,         // ส่งตำแหน่งราศีดาวจรจริง
+            transitDate: (typeof calcState !== 'undefined' && calcState.targetTransitDate) ? calcState.targetTransitDate : new Date().toISOString()
+        })
     });
 
     const data = await response.json();
