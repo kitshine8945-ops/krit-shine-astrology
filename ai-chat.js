@@ -1,157 +1,129 @@
-/**
- * Krit Shine Astrology - Inplace AI Astrologer Chat Script
- * เชื่อมต่อระบบแชทสดกับ Gemini API และดึงข้อมูลดวงชะตาจากฟอร์มหน้าเว็บอัตโนมัติ
- */
+// ==========================================
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์
+// ==========================================
 
-// กำหนด Gemini API Key ของคุณกฤศที่นี่
+// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่ (รับฟรีจาก aistudio.google.com)
 const INPLACE_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; 
-const INPLACE_GEMINI_MODEL = "gemini-1.5-flash";
 
-document.addEventListener('DOMContentLoaded', () => {
-  const chatInputEl = document.getElementById('chat-user-input');
-
-  // กด Enter ในช่องพิมพ์เพื่อส่งข้อความได้ทันที
-  if (chatInputEl) {
-    chatInputEl.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleInplaceAiChat();
-      }
-    });
-  }
-});
-
+// ฟังก์ชันส่งข้อความแชทหลัก (รองรับทั้งพิมพ์เองและกดปุ่มด่วน)
 async function handleInplaceAiChat() {
   const chatInputEl = document.getElementById('chat-user-input');
-  const chatMessagesBox = document.getElementById('ai-chat-messages-box');
-  if (!chatInputEl || !chatMessagesBox) return;
+  const messagesBox = document.getElementById('ai-chat-messages-box');
+  if (!chatInputEl || !messagesBox) return;
 
-  // 1. ตรวจสอบสถานะ VIP ก่อนใช้งาน
-  var isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
-  if (!isVip) {
-    if (confirm('⚠️ ฟีเจอร์แชทหมอดู AI ถาม-ตอบสด สงวนสิทธิ์สำหรับสมาชิก VIP\n\nต้องการดูรายละเอียดแพ็กเกจ VIP หรือไม่?')) {
-      if (typeof openFeatureModal === 'function') openFeatureModal('member');
-    }
+  const userText = chatInputEl.innerText ? chatInputEl.innerText.trim() : "";
+  
+  // ถ้าไม่มีข้อความ หรือเป็นข้อความ placeholder ให้ข้าม
+  if (!userText || userText.startsWith("พิมพ์คำถามเรื่องดวง")) {
     return;
   }
 
-  // ดึงข้อความจากกล่องพิมพ์ (รองรับทั้ง div contenteditable และ input)
-  let rawText = chatInputEl.innerText !== undefined ? chatInputEl.innerText : chatInputEl.value;
-  const placeholderText = chatInputEl.getAttribute ? chatInputEl.getAttribute('data-placeholder') : '';
+  // 🛑 1. ตรวจสอบว่าผู้ใช้งานกรอกข้อมูลวัน/เดือน/ปีเกิด บนหน้าเว็บหรือยัง
+  const birthYearCheck = document.getElementById('birth-year') || document.getElementById('yearInput') || document.getElementById('b-year') || document.getElementById('year');
   
-  if (rawText === placeholderText) {
-    rawText = '';
+  if (birthYearCheck && (!birthYearCheck.value || birthYearCheck.value === "")) {
+    alert("⚠️ รบกวนกรอกข้อมูลวัน เดือน ปีเกิด และกดคำนวณดวงชะตาก่อนเริ่มพูดคุยกับหมอดู AI ครับ");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
   }
-  
-  const queryText = rawText.trim();
-  if (!queryText) return;
 
-  // 2. แสดงข้อความผู้ใช้ในกล่องแชท
-  appendInplaceMessage(queryText, 'user');
-  
-  // ล้างข้อความในช่องพิมพ์
-  if (chatInputEl.innerText !== undefined) {
-    chatInputEl.innerText = '';
-  } else {
-    chatInputEl.value = '';
+  // ดึงข้อมูลวันเกิดจากหน้าเว็บมาเป็น Context เพิ่มเติมให้ AI (ถ้ามี)
+  let birthInfo = "";
+  try {
+    const dInput = document.getElementById('day') || document.getElementById('birth-day');
+    const mInput = document.getElementById('month') || document.getElementById('birth-month');
+    const yInput = birthYearCheck;
+    if (dInput && mInput && yInput) {
+      birthInfo = `วันเกิดเจ้าชะตา: ${dInput.value}/${mInput.value}/${yInput.value}`;
+    }
+  } catch (e) {
+    console.log("Context warning:", e);
   }
-  
+
+  // แสดงข้อความของผู้ใช้งานในกล่องแชท
+  const userMsgDiv = document.createElement('div');
+  userMsgDiv.className = 'ai-chat-msg user';
+  userMsgDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #334155; color: #fff; align-self: flex-end; word-break: break-word;';
+  userMsgDiv.textContent = userText;
+  messagesBox.appendChild(userMsgDiv);
+
+  // เคลียร์ช่องพิมพ์ข้อความ
+  chatInputEl.innerText = "";
   scrollChatToBottom();
 
-  // 3. แสดงสถานะกำลังคำนวณของบอท
-  const loadingId = appendInplaceMessage('กำลังคำนวณดวงชะตากำเนิดและตำแหน่งดาวจร...', 'bot loading');
+  // แสดงสถานะกำลังประมวลผลของ AI
+  const loadingId = 'ai-loading-' + Date.now();
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = loadingId;
+  loadingDiv.className = 'ai-chat-msg bot';
+  loadingDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #1e293b; color: #94a3b8; border-left: 3px solid #f59e0b; align-self: flex-start;';
+  loadingDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังผูกดวงและตรวจดวงชะตาตามหลักสุริยยาตร์...';
+  messagesBox.appendChild(loadingDiv);
   scrollChatToBottom();
 
   try {
-    // 4. ดึงข้อมูลวันเกิดและลัคนาที่ผู้ใช้กรอกไว้บนหน้าเว็บมาเป็น Context ให้ AI โดยอัตโนมัติ
-    var userName = document.getElementById('userName')?.value || 'คุณสมาชิก';
-    var birthDay = document.getElementById('birthDay')?.value || 'ไม่ระบุ';
-    var birthMonth = document.getElementById('birthMonth')?.value || 'ไม่ระบุ';
-    var birthYearBE = document.getElementById('birthYearBE')?.value || 'ไม่ระบุ';
+    // กำหนด System Prompt ให้ AI ทำหน้าที่เป็นหมอดูสุริยยาตร์
+    const systemPrompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตร์ของเว็บไซต์ Krit Shine Astrology จงทำนายดวงชะตาอย่างลึกซึ้ง แม่นยำ ชัดเจน ระบุช่วงเวลาเห็นผลตามหลักโหราศาสตร์ไทย ${birthInfo}`;
     
-    var ascIndex = (typeof AppState !== 'undefined' && AppState.currentCalculatedAscIndex !== null) ? AppState.currentCalculatedAscIndex : null;
-    var zodiacList = ["ราศีเมษ", "ราศีพฤษภ", "ราศีเมถุน", "ราศีกรกฎ", "ราศีสิงห์", "ราศีกันย์", "ราศีตุลย์", "ราศีพิจิก", "ราศีธนู", "ราศีมังกร", "ราศีกุมภ์", "ราศีมีน"];
-    var userAscName = (ascIndex !== null && zodiacList[ascIndex]) ? zodiacList[ascIndex] : "ไม่ระบุ";
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${INPLACE_GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: systemPrompt + "\n\nคำถามจากผู้ใช้: " + userText }] }
+        ]
+      })
+    });
 
-    var userContextPrompt = `ข้อมูลเจ้าชะตา: ชื่อ ${userName}, วันเกิด ${birthDay}/${birthMonth}/${birthYearBE}, ลัคนาสถิต ${userAscName}.`;
-
-    const botReply = await callInplaceGeminiAPI(queryText, userContextPrompt);
+    const data = await response.json();
     
+    // ลบข้อความกำลังโหลด
     removeInplaceMessage(loadingId);
-    appendInplaceMessage(botReply, 'bot');
+
+    if (data && data.candidates && data.candidates[0].content.parts[0].text) {
+      const replyText = data.candidates[0].content.parts[0].text;
+      const botMsgDiv = document.createElement('div');
+      botMsgDiv.className = 'ai-chat-msg bot';
+      botMsgDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #1e293b; color: #e2e8f0; border-left: 3px solid #f59e0b; align-self: flex-start; word-break: break-word;';
+      botMsgDiv.innerText = replyText;
+      messagesBox.appendChild(botMsgDiv);
+    } else {
+      throw new Error("Invalid API response structure");
+    }
   } catch (err) {
+    console.error("AI Chat Error:", err);
     removeInplaceMessage(loadingId);
-    appendInplaceMessage('ขออภัยครับ เกิดข้อผิดพลาดในการเชื่อมต่อระบบ AI กรุณาลองใหม่อีกครั้ง', 'bot');
-    console.error(err);
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'ai-chat-msg bot';
+    errorDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #1e293b; color: #ef4444; border-left: 3px solid #ef4444; align-self: flex-start;';
+    errorDiv.innerText = "ขออภัยครับ เกิดข้อผิดพลาดในการเชื่อมต่อระบบ AI กรุณาตรวจสอบ API Key หรือลองใหม่อีกครั้ง";
+    messagesBox.appendChild(errorDiv);
   }
+
   scrollChatToBottom();
 }
 
-async function callInplaceGeminiAPI(userQuery, contextData) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${INPLACE_GEMINI_MODEL}:generateContent?key=${INPLACE_GEMINI_API_KEY}`;
-
-  const systemInstruction = `คุณคือหมอดู AI ผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology ทำหน้าที่ให้คำปรึกษา ทำนายดวงชะตา เจาะลึกเรื่องการงาน การเงิน ความรัก และสุขภาพ พร้อมระบุช่วงเวลาที่จะเห็นผลลัพธ์ชัดเจนอย่างแม่นยำ สุภาพ และให้กำลังใจ ${contextData}`;
-
-  const payload = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: `[System Instruction: ${systemInstruction}]\n\nคำถามจากผู้ใช้: ${userQuery}` }
-        ]
-      }
-    ]
-  };
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok) throw new Error('Gemini API request failed');
-
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ดวงชะตากำลังโคจรผิดปกติ ลองถามใหม่อีกครั้งนะครับ";
-}
-
-function appendInplaceMessage(text, className) {
-  const chatMessagesBox = document.getElementById('ai-chat-messages-box');
-  if (!chatMessagesBox) return '';
-
-  const msgDiv = document.createElement('div');
-  msgDiv.className = `ai-chat-msg ${className}`;
-  
-  if (className.includes('user')) {
-    msgDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #f59e0b; color: #0b0f19; align-self: flex-end; font-weight: 500; word-break: break-word;';
-  } else {
-    msgDiv.style.cssText = 'max-width: 85%; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; line-height: 1.5; background: #1e293b; color: #e2e8f0; border-left: 3px solid #f59e0b; align-self: flex-start; word-break: break-word;';
-  }
-
-  msgDiv.innerText = text;
-  const id = 'msg-' + Date.now() + Math.random();
-  msgDiv.id = id;
-  chatMessagesBox.appendChild(msgDiv);
-  return id;
-}
-
+// ฟังก์ชันช่วยลบข้อความกำลังโหลด
 function removeInplaceMessage(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
+// ฟังก์ชันเลื่อนหน้าต่างแชทลงล่างสุดอัตโนมัติ
 function scrollChatToBottom() {
   const chatMessagesBox = document.getElementById('ai-chat-messages-box');
   if (chatMessagesBox) {
     chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
   }
 }
-// ฟังก์ชันสำหรับกดปุ่มคำถามด่วนเพื่อให้ส่งข้อความหา AI ทันที
+
+// ฟังก์ชันสำหรับรองรับปุ่มคำถามด่วน (Quick Prompt Chips)
 function sendQuickPrompt(text) {
   const chatInputEl = document.getElementById('chat-user-input');
   if (chatInputEl) {
     if (chatInputEl.innerText !== undefined) {
       chatInputEl.innerText = text;
+      chatInputEl.style.color = '#fff';
     } else {
       chatInputEl.value = text;
     }
