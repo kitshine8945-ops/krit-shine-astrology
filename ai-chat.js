@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับแก้ปัญหาเช็กวันเกิดและปุ่มคำถามด่วน)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (เชื่อมต่อสมบูรณ์กับ Krit Shine Astrology)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
@@ -8,11 +8,18 @@ const INPLACE_GEMINI_API_KEY = "AIzaSy... (ใส่ API Key ของคุณ�
 // 🤖 ฟังก์ชันเรียกใช้งาน Gemini AI
 async function callGeminiAI(userMessage) {
     const apiKey = INPLACE_GEMINI_API_KEY.trim();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    let headers = { "Content-Type": "application/json" };
+
+    if (apiKey.startsWith("AIzaSy")) {
+        url += `?key=${apiKey}`;
+    } else {
+        headers["Authorization"] = `Bearer ${apiKey}`;
+    }
 
     const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: JSON.stringify({
             contents: [{ parts: [{ text: userMessage }] }]
         })
@@ -25,96 +32,39 @@ async function callGeminiAI(userMessage) {
     return data.candidates[0].content.parts[0].text;
 }
 
-// 🔒 ฟังก์ชันตรวจสอบสถานะ VIP
+// 🔒 ฟังก์ชันตรวจสอบสถานะ VIP ตามระบบของ index.html
 function checkVipStatus() {
-    const bodyText = document.body.innerText || "";
-    const hasVipBadge = bodyText.includes("สมาชิก VIP") || bodyText.includes("VIP Active") || bodyText.includes("ระบบ VIP");
-    const isVipLocal = window.isVipUser || localStorage.getItem('krit_shine_vip') === 'true' || document.body.classList.contains('vip-active');
-    
-    if (hasVipBadge || isVipLocal) {
-        return true; 
-    }
-
-    const vipModal = document.getElementById('vip-modal') || document.querySelector('.vip-modal, .vip-popup, #vipModal');
-    if (vipModal) {
-        vipModal.style.display = 'block';
-    } else {
-        if (typeof openVipModal === 'function') {
-            openVipModal();
+    const isVip = (typeof AppState !== 'undefined' && AppState.isVipUser) || localStorage.getItem('ks_vip_active') === 'true';
+    if (!isVip) {
+        alert("⭐ กรุณาสมัครสมาชิก VIP เพื่อใช้งานระบบหมอดู AI สุริยยาตร์เชิงลึกครับ!");
+        if (typeof openFeatureModal === 'function') {
+            openFeatureModal('member');
         } else {
-            alert("⭐ กรุณาสมัครสมาชิก VIP เพื่อใช้งานระบบหมอดู AI สุริยยาตร์เชิงลึกครับ!");
-            const vipSection = document.getElementById('vip-pricing-section') || document.querySelector('.vip-container');
-            if (vipSection) vipSection.scrollIntoView({ behavior: 'smooth' });
+            const memberModal = document.getElementById('modal-member');
+            if (memberModal) memberModal.style.display = 'flex';
         }
+        return false;
     }
-    return false;
-}
-
-// 👤 ฟังก์ชันตรวจสอบข้อมูลวันเกิดจากหน้าเว็บแบบยืดหยุ่น (อ่านค่าจาก Select/Input จริง)
-function getBirthProfileData() {
-    // ค้นหาฟิลด์วัน เดือน ปีเกิด จากหน้าเว็บแบบครอบคลุมทุกรูปแบบ
-    const nameEl = document.getElementById('name') || document.getElementById('owner-name') || document.getElementById('userName') || document.querySelector('input[name*="name"]');
-    
-    // ค้นหาช่องปี พ.ศ. (เช็กจาก ID หรือเลือกจาก tag select ทั้งหมดบนหน้าเว็บที่อาจเป็นปีเกิด)
-    let yearVal = "";
-    let monthVal = "";
-    let dayVal = "";
-    
-    const selects = document.querySelectorAll('select');
-    selects.forEach(sel => {
-        const text = sel.options?.[sel.selectedIndex]?.text || "";
-        const val = sel.value || "";
-        if (text.includes("พ.ศ.") || val.includes("พ.ศ.") || (parseInt(val) > 2400) || (parseInt(text) > 2400)) {
-            yearVal = text;
-        } else if (text.includes("มกราคม") || text.includes("กุมภาพันธ์") || text.includes("มีนาคม") || text.includes("เมษายน") || text.includes("พฤษภาคม") || text.includes("มิถุนายน") || text.includes("กรกฎาคม") || text.includes("สิงหาคม") || text.includes("กันยายน") || text.includes("ตุลาคม") || text.includes("พฤศจิกายน") || text.includes("ธันวาคม")) {
-            monthVal = text;
-        } else if (!dayVal && (parseInt(val) >= 1 && parseInt(val) <= 31 || parseInt(text) >= 1 && parseInt(text) <= 31)) {
-            dayVal = text;
-        }
-    });
-
-    const nameVal = nameEl ? (nameEl.value || nameEl.innerText || "").trim() : "";
-
-    // ถ้ายังไม่มีการเลือกปีเกิด ให้ถือว่ายังไม่ได้กรอก
-    if (!yearVal || yearVal.includes("เลือก") || yearVal === "") {
-        return null;
-    }
-
-    const birthStr = `${dayVal !== 'เลือกวัน' ? dayVal : ''} ${monthVal !== 'เลือกเดือน' ? monthVal : ''} ${yearVal}`.trim();
-
-    // แสดงการ์ดข้อมูลดวงชะตาในแชทอัตโนมัติเมื่อเลือกครบ
-    const messagesBox = document.getElementById('ai-chat-messages-box');
-    if (messagesBox) {
-        let cardDiv = document.getElementById('natal-profile-card');
-        if (!cardDiv) {
-            cardDiv = document.createElement('div');
-            cardDiv.id = 'natal-profile-card';
-            cardDiv.style.cssText = "background: #1e2530; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; color: #e2e8f0; font-size: 14px;";
-            messagesBox.insertBefore(cardDiv, messagesBox.firstChild);
-        }
-        cardDiv.innerHTML = `
-            <div style="font-weight: bold; color: #f59e0b; margin-bottom: 6px; font-size: 15px;">👤 เจ้าชะตา: ${nameVal || "ผู้ใช้งาน"}</div>
-            <div style="margin-bottom: 4px;">📅 วันเกิด: ${birthStr}</div>
-            <div style="margin-bottom: 4px;">☀️ ราศี: คำนวณจากวันเกิด</div>
-            <div>🌙 ลัคนา: คำนวณจากลัคนาสุริยยาตร์</div>
-        `;
-    }
-
-    return { nameVal: nameVal || "ผู้ใช้งาน", birthStr };
+    return true;
 }
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
+    // 1. เช็กสิทธิ์ VIP ก่อนทุกครั้ง
     if (!checkVipStatus()) {
         return;
     }
 
-    // ตรวจสอบวันเกิดที่ผู้ใช้เลือกในฟอร์ม
-    const profile = getBirthProfileData();
-    if (!profile) {
-        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนให้ครบถ้วนก่อนเริ่มสนทนากับหมอดู AI ครับ");
-        const formSection = document.getElementById('birth-form') || document.getElementById('calculator') || document.querySelector('form');
-        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
+    // 2. เช็กวันเกิดจาก ID จริงในฟอร์มหน้าเว็บ (`birthDay`)
+    const bDayEl = document.getElementById('birthDay');
+    if (bDayEl && (!bDayEl.value || bDayEl.value === "")) {
+        alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
+        if (typeof scrollToForm === 'function') {
+            scrollToForm();
+        } else {
+            const formEl = document.getElementById('birth-form');
+            if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+        }
         return;
     }
 
@@ -128,16 +78,25 @@ async function handleInplaceAiChat(customText = null) {
         return;
     }
 
+    // แสดงข้อความผู้ใช้
     appendMessage(userText, 'user');
     if (chatInputEl) {
         if (chatInputEl.innerText !== undefined) chatInputEl.innerText = "";
         else chatInputEl.value = "";
     }
 
+    // แสดงสถานะกำลังคำนวณ
     const loadingId = appendMessage("หมอดู AI กำลังคำนวณดวงชะตาตามหลักสุริยยาตร์...", 'ai-loading');
 
     try {
-        const prompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญด้านโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology ผู้ใช้มีข้อมูลดวงชะตาคือ: ชื่อ ${profile.nameVal}, วันเกิด ${profile.birthStr} จงทำนายและตอบคำถามเรื่อง: "${userText}" ด้วยภาษาที่สุภาพ น่าเชื่อถือ ให้คำทำนายที่เจาะลึก ละเอียดแม่นยำเทียบเท่าหลักการพยากรณ์ชั้นสูง อิงตามหลักดวงดาวและลัคนาจริง`;
+        // ดึงข้อมูลชื่อและวันเกิดจริงจากฟอร์มมาประกอบบริบทให้ AI
+        const userName = document.getElementById('userName')?.value || "ผู้ใช้งาน";
+        const bDay = document.getElementById('birthDay')?.value || "";
+        const bMonthSelect = document.getElementById('birthMonth');
+        const bMonth = bMonthSelect ? (bMonthSelect.options[bMonthSelect.selectedIndex]?.text || "") : "";
+        const bYear = document.getElementById('birthYearBE')?.value || "";
+
+        const prompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญด้านโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology ผู้ใช้ชื่อ ${userName} เกิดวันที่ ${bDay} ${bMonth} พ.ศ. ${bYear} จงทำนายและตอบคำถามเรื่อง: "${userText}" ด้วยภาษาที่สุภาพ น่าเชื่อถือ ให้คำทำนายที่เจาะลึก ละเอียดแม่นยำเทียบเท่าหลักการพยากรณ์ชั้นสูง อิงตามหลักดวงดาวและลัคนาจริง`;
 
         const aiReply = await callGeminiAI(prompt);
 
@@ -150,7 +109,7 @@ async function handleInplaceAiChat(customText = null) {
     }
 }
 
-// ฟังก์ชันแสดงข้อความในกล่องแชท
+// ฟังก์ชันจัดการแสดงผลข้อความในกล่องแชท
 function appendMessage(text, sender) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -205,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ระบบดักคลิกปุ่มคำถามด่วนทุกแบบในหน้าเว็บให้ทำงานได้ 100%
+    // ⚡ ระบบดักคลิกปุ่มคำถามด่วนทุกแบบบนหน้าเว็บให้ทำงานส่งแชทได้ทันที
     document.addEventListener('click', (e) => {
         const chip = e.target.closest('button, .quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
