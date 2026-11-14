@@ -37,7 +37,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตา (ปลอดภัย ไม่เด้งแม้ยังเลือกข้อมูลไม่ครบ)
+// 👤 ซิงค์ข้อมูลดวงชะตาและสั่งคำนวณอัตโนมัติทันทีหากพบว่าข้อมูลพร้อมแต่ผลลัพธ์ยังไม่แสดง
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -48,48 +48,29 @@ function updateChatProfileCard() {
     
     const dayVal = dayEl ? dayEl.value : "";
     const monthSelect = document.getElementById('birthMonth');
-    
-    // ป้องกัน Error กรณี index เป็น -1 หรือยังไม่เลือกเดือน
     let monthVal = "";
     if (monthSelect && monthSelect.selectedIndex >= 0 && monthSelect.options[monthSelect.selectedIndex]) {
         monthVal = monthSelect.options[monthSelect.selectedIndex].text || "";
     }
-
     const yearVal = yearEl ? yearEl.value : "";
     const hourVal = document.getElementById('birthHour24')?.value || document.getElementById('birthHour')?.value || "00";
     const minVal = document.getElementById('birthMinute24')?.value || document.getElementById('birthMinute')?.value || "00";
 
     const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
     
-    const sunCandidates = [
-        document.getElementById('dispSunSign'),
-        document.getElementById('zodiac-sign'),
-        document.getElementById('sunSign'),
-        document.getElementById('sun_sign'),
-        document.getElementById('zodiac')
-    ];
-    
-    const ascCandidates = [
-        document.getElementById('dispAscendant'),
-        document.getElementById('ascendant-sign'),
-        document.getElementById('lakhana'),
-        document.getElementById('ascendant'),
-        document.getElementById('asc_sign')
-    ];
+    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || "-";
+    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || "-";
 
-    let sunSignText = "-";
-    for (let el of sunCandidates) {
-        if (el && el.innerText && el.innerText.trim() !== "" && el.innerText.trim() !== "-") {
-            sunSignText = el.innerText.trim();
-            break;
-        }
-    }
-
-    let ascSignText = "-";
-    for (let el of ascCandidates) {
-        if (el && el.innerText && el.innerText.trim() !== "" && el.innerText.trim() !== "-") {
-            ascSignText = el.innerText.trim();
-            break;
+    // ถ้าฟอร์มมีวันเกิดครบแล้ว แต่ผลลัพธ์บนหน้าเว็บยังเป็น "-" ให้สั่งรันฟังก์ชันคำนวณหลักของหน้าเว็บอัตโนมัติทันที
+    if ((sunSignText === "-" || ascSignText === "-") && dayVal && yearVal) {
+        if (typeof calculateAscendantAndTransit === 'function') {
+            try {
+                calculateAscendantAndTransit();
+                sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || "-";
+                ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || "-";
+            } catch (err) {
+                console.error("Auto calc error:", err);
+            }
         }
     }
 
