@@ -1,8 +1,7 @@
 // ==========================================
-// 🤖 โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์ แม่นยำ ไม่ดึงค่าจากฟอร์ม
+// 🤖 โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับนิ่งสนิท รองรับทุก ID ของระบบ
 // ==========================================
 
-// 1. ฟังก์ชันส่งคำถามไปที่ Backend
 async function callGeminiAI(userMessage) {
     const response = await fetch('/api/ai-chat', {
         method: "POST",
@@ -17,7 +16,6 @@ async function callGeminiAI(userMessage) {
     return data.reply;
 }
 
-// 2. ตรวจสอบสถานะการล็อกอินและ VIP
 function checkVipStatus() {
     if (typeof currentUser !== 'undefined' && !currentUser) {
         alert("⚠️ กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนใช้งานหมอดู AI ครับ");
@@ -39,65 +37,62 @@ function checkVipStatus() {
     return true;
 }
 
-// 3. ซิงค์ข้อมูลดวงชะตา (อ่านเฉพาะผลลัพธ์การคำนวณจริง ตัดฟอร์มและดรอปดาวน์ออก 100%)
+// 👤 ซิงค์ข้อมูลดวงชะตา (ดึงจากฟอร์มและตรวจสอบ ID ผลลัพธ์ทุกรูปแบบอย่างแม่นยำ)
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
-    const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
+    // ดึงชื่อและวันเกิดจากฟอร์มหลักโดยตรง
+    const nameVal = document.getElementById('userName')?.value || document.getElementById('name')?.value || "เจ้าชะตา";
     const dayEl = document.getElementById('birthDay');
-    const yearEl = document.getElementById('birthYearBE');
+    const yearEl = document.getElementById('birthYearBE') || document.getElementById('birthYear');
     
     const dayVal = dayEl ? dayEl.value : "";
     const monthSelect = document.getElementById('birthMonth');
     const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
     const yearVal = yearEl ? yearEl.value : "";
-    const hourVal = document.getElementById('birthHour24')?.value || "00";
-    const minVal = document.getElementById('birthMinute24')?.value || "00";
+    const hourVal = document.getElementById('birthHour24')?.value || document.getElementById('birthHour')?.value || "00";
+    const minVal = document.getElementById('birthMinute24')?.value || document.getElementById('birthMinute')?.value || "00";
 
     const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
     
-    const validSigns = ["เมษ", "พฤษภ", "เมถุน", "กรกฎ", "สิงห์", "กันย์", "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"];
+    // ตรวจสอบ ID ที่ใช้แสดงผลราศีและลัคนาที่เป็นไปได้ทั้งหมดในโปรเจกต์
+    const sunCandidates = [
+        document.getElementById('dispSunSign'),
+        document.getElementById('zodiac-sign'),
+        document.getElementById('sunSign'),
+        document.getElementById('sun_sign'),
+        document.getElementById('zodiac')
+    ];
+    
+    const ascCandidates = [
+        document.getElementById('dispAscendant'),
+        document.getElementById('ascendant-sign'),
+        document.getElementById('lakhana'),
+        document.getElementById('ascendant'),
+        document.getElementById('asc_sign')
+    ];
 
     let sunSignText = "-";
-    let ascSignText = "-";
-
-    // กวาดหาเฉพาะในส่วนผลลัพธ์จริงเท่านั้น (ตัดฟอร์ม, select, input, option และฟอร์มวันเกิดออกเด็ดขาด)
-    const elements = document.querySelectorAll('div, span, p, strong, b, td');
-    for (let el of elements) {
-        if (el.closest('form') || el.closest('#birth-form') || el.closest('select') || el.closest('input') || el.closest('option') || el.id === 'natal-profile-card' || el.closest('#natal-profile-card')) {
-            continue;
-        }
-
-        const text = el.innerText ? el.innerText.trim() : "";
-
-        if (text.length > 0 && text.length < 60) {
-            // ค้นหาราศีเกิด
-            if (sunSignText === "-" && (text.includes("ราศีเกิด") || text.includes("ราศี (อาทิตย์)") || text.includes("ราศีสถิต"))) {
-                for (let sign of validSigns) {
-                    if (text.includes(sign) && !text.includes("ลัคนา")) {
-                        sunSignText = "ราศี" + sign;
-                        break;
-                    }
-                }
-            }
-
-            // ค้นหาลัคนาสถิต
-            if (ascSignText === "-" && (text.includes("ลัคนาสถิต") || text.includes("ลัคนสถิต") || text.includes("ลัคนา"))) {
-                for (let sign of validSigns) {
-                    if (text.includes(sign) && !text.includes("ราศีเกิด")) {
-                        ascSignText = "ราศี" + sign;
-                        break;
-                    }
-                }
-            }
+    for (let el of sunCandidates) {
+        if (el && el.innerText && el.innerText.trim() !== "" && el.innerText.trim() !== "-") {
+            sunSignText = el.innerText.trim();
+            break;
         }
     }
 
-    if (sunSignText !== "-" && !sunSignText.startsWith("ราศี")) {
+    let ascSignText = "-";
+    for (let el of ascCandidates) {
+        if (el && el.innerText && el.innerText.trim() !== "" && el.innerText.trim() !== "-") {
+            ascSignText = el.innerText.trim();
+            break;
+        }
+    }
+
+    if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
         sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
     }
-    if (ascSignText !== "-" && !ascSignText.startsWith("ราศี")) {
+    if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
         ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
     }
 
@@ -119,12 +114,12 @@ function updateChatProfileCard() {
     return { nameVal, birthStr, sunSignText, ascSignText };
 }
 
-// 4. ฟังก์ชันส่งข้อความแชท
+// 💬 ฟังก์ชันส่งข้อความแชท
 async function handleInplaceAiChat(customText = null) {
     if (!checkVipStatus()) return;
 
     const bDayEl = document.getElementById('birthDay');
-    const bYearEl = document.getElementById('birthYearBE');
+    const bYearEl = document.getElementById('birthYearBE') || document.getElementById('birthYear');
     if (bDayEl && (!bDayEl.value || bDayEl.value === "" || !bYearEl || !bYearEl.value)) {
         alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
         const formEl = document.getElementById('birth-form');
@@ -163,7 +158,6 @@ async function handleInplaceAiChat(customText = null) {
     }
 }
 
-// 5. จัดการแสดงผลข้อความ
 function appendMessage(text, sender) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -196,9 +190,27 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// 6. ผูก Event และรันอัปเดตการ์ดแชท
+// ⚡ ผูก Event และดักจับจังหวะการคำนวณหลัก
 document.addEventListener('DOMContentLoaded', () => {
+    ['userName', 'name', 'birthDay', 'birthMonth', 'birthYearBE', 'birthYear', 'birthHour24', 'birthHour', 'birthMinute24', 'birthMinute'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', updateChatProfileCard);
+            el.addEventListener('input', updateChatProfileCard);
+        }
+    });
+
+    // ดักจับฟังก์ชันคำนวณหลักของหน้าเว็บ
     setTimeout(() => {
+        if (typeof window.handleCalculate === 'function' && !window._chatCalcHooked) {
+            const originalCalc = window.handleCalculate;
+            window.handleCalculate = function(...args) {
+                const res = originalCalc.apply(this, args);
+                setTimeout(updateChatProfileCard, 350);
+                return res;
+            };
+            window._chatCalcHooked = true;
+        }
         updateChatProfileCard();
     }, 600);
 
