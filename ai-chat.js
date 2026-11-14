@@ -62,48 +62,43 @@ function updateChatProfileCard() {
     let sunSignText = "-";
     let ascSignText = "-";
 
-    // ค้นหาเฉพาะในกล่องผลลัพธ์หลักบนหน้าเว็บ (ไม่เอาฟอร์มกรอกข้อมูล)
-    const allDivs = document.querySelectorAll('div');
-    for (let div of allDivs) {
-        if (div.closest('form') || div.id === 'natal-profile-card') continue;
+    // 1. ดึงจาก ID ที่หน้าเว็บหลักใช้แสดงผลผลลัพธ์โดยตรง
+    const dispSun = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim();
+    const dispAsc = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim();
 
-        const text = div.innerText || "";
+    if (dispSun && dispSun !== "-" && dispSun.length < 20) sunSignText = dispSun;
+    if (dispAsc && dispAsc !== "-" && dispAsc.length < 20) ascSignText = dispAsc;
 
-        // แยกบรรทัดเพื่อเช็คทีละบรรทัดอย่างแม่นยำ
-        const lines = text.split('\n');
-        for (let line of lines) {
-            const cleanLine = line.trim();
+    // 2. หากยังไม่ได้ค่า ให้ค้นหาเฉพาะในส่วนกล่องแสดงผล (ห้ามอยู่ในฟอร์มกรอกข้อมูลเด็ดขาด)
+    if (sunSignText === "-" || ascSignText === "-") {
+        const elements = document.querySelectorAll('div, span, p, strong, b');
+        for (let el of elements) {
+            // ตัดฟอร์ม ช่องกรอก และการ์ดแชทออกทั้งหมด
+            if (el.closest('form') || el.closest('select') || el.closest('input') || el.id === 'natal-profile-card' || el.closest('#natal-profile-card')) continue;
 
-            // หาบรรทัดที่เป็นราศีเกิด / ราศี
-            if (sunSignText === "-" && (cleanLine.includes("ราศีเกิด") || cleanLine.includes("ราศี (อาทิตย์)") || cleanLine.startsWith("ราศี"))) {
-                for (let sign of validSigns) {
-                    if (cleanLine.includes(sign) && !cleanLine.includes("ลัคนา")) {
-                        sunSignText = "ราศี" + sign;
-                        break;
+            const text = el.innerText ? el.innerText.trim() : "";
+
+            // ต้องเป็นบล็อกข้อความสั้นๆ ที่ระบุผลลัพธ์จริง
+            if (text.length > 0 && text.length < 40) {
+                if (sunSignText === "-" && (text.includes("ราศีเกิด") || text.includes("ราศี (อาทิตย์)"))) {
+                    for (let sign of validSigns) {
+                        if (text.includes(sign) && !text.includes("ลัคนา")) {
+                            sunSignText = "ราศี" + sign;
+                            break;
+                        }
                     }
                 }
-            }
 
-            // หาบรรทัดที่เป็นลัคนาสถิต / ลัคนา
-            if (ascSignText === "-" && (cleanLine.includes("ลัคนสถิต") || cleanLine.includes("ลัคนาสถิต") || cleanLine.startsWith("ลัคนา"))) {
-                for (let sign of validSigns) {
-                    if (cleanLine.includes(sign) && !cleanLine.includes("ราศีเกิด")) {
-                        ascSignText = "ราศี" + sign;
-                        break;
+                if (ascSignText === "-" && (text.includes("ลัคนสถิต") || text.includes("ลัคนาสถิต"))) {
+                    for (let sign of validSigns) {
+                        if (text.includes(sign)) {
+                            ascSignText = "ราศี" + sign;
+                            break;
+                        }
                     }
                 }
             }
         }
-    }
-
-    // Fallback เช็คจาก ID พื้นฐานเผื่อมี
-    if (sunSignText === "-") {
-        const el = document.getElementById('dispSunSign') || document.getElementById('zodiac-sign');
-        if (el && el.innerText.trim() !== "-") sunSignText = el.innerText.trim();
-    }
-    if (ascSignText === "-") {
-        const el = document.getElementById('dispAscendant') || document.getElementById('ascendant-sign') || document.getElementById('lakhana');
-        if (el && el.innerText.trim() !== "-") ascSignText = el.innerText.trim();
     }
 
     if (sunSignText !== "-" && !sunSignText.startsWith("ราศี")) sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
@@ -126,6 +121,7 @@ function updateChatProfileCard() {
 
     return { nameVal, birthStr, sunSignText, ascSignText };
 }
+
 // 💬 ฟังก์ชันหลักในการส่งข้อความแชท
 async function handleInplaceAiChat(customText = null) {
     if (!checkVipStatus()) return;
