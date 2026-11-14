@@ -1,33 +1,29 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์: ซิงค์ฟอร์มทันที + คำถามด่วนทำงาน 100%)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับแก้ไข Project Number ให้ตรงกับของคุณกฤศ 100%)
 // ==========================================
 
-// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
-const INPLACE_GEMINI_API_KEY = "AIzaSy... (ใส่ API Key ของคุณกฤศที่นี่)";
+// 🔑 ใส่ Token ที่ขึ้นต้นด้วย AQ. ของคุณกฤศที่นี่
+const INPLACE_GEMINI_API_KEY = "AQ.Ab8RN6LdeDop7HeNzt1DLVpVScdwB9wU9ORi0vKocXI7tkoBMQ";
 
-// 🤖 ฟังก์ชันเรียกใช้งาน Gemini AI
+// 🤖 ฟังก์ชันเรียกใช้งาน Gemini AI (เชื่อมต่อ Vertex AI ด้วย Project Number: 819125532272)
 async function callGeminiAI(userMessage) {
     const apiKey = INPLACE_GEMINI_API_KEY.trim();
-    let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-    let headers = { "Content-Type": "application/json" };
-
-    if (apiKey.startsWith("AIzaSy")) {
-        url += `?key=${apiKey}`;
-    } else {
-        headers["Authorization"] = `Bearer ${apiKey}`;
-    }
+    const url = "https://us-central1-aiplatform.googleapis.com/v1/projects/819125532272/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent";
 
     const response = await fetch(url, {
         method: "POST",
-        headers: headers,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: userMessage }] }]
+            contents: [{ role: "user", parts: [{ text: userMessage }] }]
         })
     });
 
     const data = await response.json();
     if (!response.ok) {
-        throw new Error(data.error?.message || "Connection error");
+        throw new Error(data.error?.message || "Vertex AI Connection error");
     }
     return data.candidates[0].content.parts[0].text;
 }
@@ -56,7 +52,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ฟังก์ชันอัปเดตการ์ดข้อมูลดวงชะตา (ซิงค์อัตโนมัติทันทีเมื่อกรอกฟอร์มหรือกดคำนวณ)
+// 👤 ฟังก์ชันสร้างกล่องแยกข้อมูลดวงชะตา (ซิงค์อัตโนมัติกับฟอร์มหน้าเว็บ)
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -64,7 +60,6 @@ function updateChatProfileCard() {
     const dayEl = document.getElementById('birthDay');
     const yearEl = document.getElementById('birthYearBE');
 
-    // ถ้ายังไม่ได้กรอกวัน/ปีเกิด ให้ซ่อนการ์ดไว้ (ปล่อยว่าง)
     if (!dayEl || !yearEl || !dayEl.value || !yearEl.value || dayEl.value === "" || yearEl.value === "") {
         const existingCard = document.getElementById('natal-profile-card');
         if (existingCard) existingCard.remove();
@@ -130,7 +125,6 @@ async function handleInplaceAiChat(customText = null) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
-    // อัปเดตและดึงข้อมูลการ์ดดวงชะตาปัจจุบัน
     const profile = updateChatProfileCard();
     if (!profile) return;
 
@@ -201,7 +195,6 @@ function removeMessage(msgId) {
 
 // ผูก Event และซิงค์ข้อมูลแบบเรียลไทม์
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. อัปเดตการ์ดดวงทันทีเมื่อมีการเปลี่ยนแปลงในฟอร์มวันเกิด
     ['userName', 'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -210,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. อัปเดตการ์ดดวงทันทีเมื่อกดปุ่มคำนวณลัคนาพยากรณ์ (เช่น #main-submit-btn)
     const mainSubmitBtn = document.getElementById('main-submit-btn');
     if (mainSubmitBtn) {
         mainSubmitBtn.addEventListener('click', () => {
@@ -218,10 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ลองอัปเดตการ์ดเผื่อมีข้อมูลเดิมค้างอยู่
     setTimeout(updateChatProfileCard, 300);
 
-    // 3. ปุ่มส่งแชทและ Enter
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
@@ -241,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. ⚡ ดักจับคลิกปุ่มคำถามด่วน (Quick Questions เช่น การงาน/โยกย้าย, การเงิน/โชคลาภ ฯลฯ) ให้ทำงานได้ 100%
+    // ⚡ ระบบดักจับคลิกปุ่มคำถามด่วน (Quick Questions) ให้ทำงานได้ 100%
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
         if (btn) {
