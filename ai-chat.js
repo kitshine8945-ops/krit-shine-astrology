@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (เชื่อมต่อสมบูรณ์กับ Krit Shine Astrology)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับแก้ปัญหาคลิกแล้วเด้งรบกวน)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key แบบมาตรฐานที่ขึ้นต้นด้วย AIzaSy ของคุณกฤศที่นี่
@@ -50,14 +50,18 @@ function checkVipStatus() {
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat(customText = null) {
-    // 1. เช็กสิทธิ์ VIP ก่อนทุกครั้ง
+    // 1. เช็กสิทธิ์ VIP
     if (!checkVipStatus()) {
         return;
     }
 
-    // 2. เช็กวันเกิดจาก ID จริงในฟอร์มหน้าเว็บ (`birthDay`)
+    // 2. ดึงข้อมูลวันเกิดจากฟอร์มหน้าเว็บจริง (`birthDay`)
     const bDayEl = document.getElementById('birthDay');
-    if (bDayEl && (!bDayEl.value || bDayEl.value === "")) {
+    const bMonthEl = document.getElementById('birthMonth');
+    const bYearEl = document.getElementById('birthYearBE');
+
+    // ถ้ายังไม่ได้เลือกวันเกิด ให้แจ้งเตือนเฉพาะตอนกดส่งข้อความแชทเท่านั้น
+    if (bDayEl && (!bDayEl.value || bDayEl.value === "" || !bYearEl || !bYearEl.value)) {
         alert("⚠️ กรุณากรอกข้อมูลวัน/เดือน/ปีเกิด ในฟอร์มด้านบนก่อนเริ่มสนทนากับหมอดู AI ครับ");
         if (typeof scrollToForm === 'function') {
             scrollToForm();
@@ -89,12 +93,10 @@ async function handleInplaceAiChat(customText = null) {
     const loadingId = appendMessage("หมอดู AI กำลังคำนวณดวงชะตาตามหลักสุริยยาตร์...", 'ai-loading');
 
     try {
-        // ดึงข้อมูลชื่อและวันเกิดจริงจากฟอร์มมาประกอบบริบทให้ AI
         const userName = document.getElementById('userName')?.value || "ผู้ใช้งาน";
-        const bDay = document.getElementById('birthDay')?.value || "";
-        const bMonthSelect = document.getElementById('birthMonth');
-        const bMonth = bMonthSelect ? (bMonthSelect.options[bMonthSelect.selectedIndex]?.text || "") : "";
-        const bYear = document.getElementById('birthYearBE')?.value || "";
+        const bDay = bDayEl ? bDayEl.value : "";
+        const bMonth = bMonthEl ? (bMonthEl.options[bMonthEl.selectedIndex]?.text || "") : "";
+        const bYear = bYearEl ? bYearEl.value : "";
 
         const prompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญด้านโหราศาสตร์ไทยระบบสุริยยาตร์ ประจำเว็บไซต์ Krit Shine Astrology ผู้ใช้ชื่อ ${userName} เกิดวันที่ ${bDay} ${bMonth} พ.ศ. ${bYear} จงทำนายและตอบคำถามเรื่อง: "${userText}" ด้วยภาษาที่สุภาพ น่าเชื่อถือ ให้คำทำนายที่เจาะลึก ละเอียดแม่นยำเทียบเท่าหลักการพยากรณ์ชั้นสูง อิงตามหลักดวงดาวและลัคนาจริง`;
 
@@ -146,7 +148,7 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
+// ผูก Event ปุ่มส่งและปุ่มคำถามด่วนเฉพาะกลุ่มแชท (ไม่ยุ่งกับปุ่มอื่นบนหน้าเว็บ)
 document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
@@ -164,17 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ระบบดักคลิกปุ่มคำถามด่วนทุกแบบบนหน้าเว็บให้ทำงานส่งแชทได้ทันที
+    // ⚡ ดักจับเฉพาะปุ่มคำถามด่วนหรือชิปในโซนแชทเท่านั้น ไม่จับปุ่มทั่วไป
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('button, .quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
+        const chip = e.target.closest('.quick-prompt-btn, .quick-question-btn, .quick-chip, .suggestion-btn, .chat-chip');
         if (chip) {
             const questionText = chip.innerText ? chip.innerText.trim() : "";
-            if (questionText && 
-                !questionText.includes('ส่ง') && 
-                !questionText.includes('VIP') && 
-                !questionText.includes('สมัคร') &&
-                !questionText.includes('ดูดวง')) {
-                
+            if (questionText) {
                 e.preventDefault();
                 handleInplaceAiChat(questionText);
             }
