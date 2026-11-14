@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { GoogleGenAI } from '@google/genai';
 
 const app = express();
 
@@ -7,42 +8,27 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
+// เรียกใช้งาน SDK ทางการ (ระบบจะอ่าน GEMINI_API_KEY แบบ AQ... จาก Railway อัตโนมัติ)
+const ai = new GoogleGenAI();
+
 // 🤖 Endpoint สำหรับ AI Chat
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt } = req.body;
-        
-        // ดึงคีย์จากตัวแปรลับใน Railway อัตโนมัติ (ปลอดภัย 100%)
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({ error: "ยังไม่ได้ตั้งค่า GEMINI_API_KEY ใน Variables ของ Railway ครับ" });
+        if (!prompt) {
+            return res.status(400).json({ error: "กรุณาระบุข้อความครับ" });
         }
 
-        let url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-        let headers = { "Content-Type": "application/json" };
-
-        if (apiKey.startsWith("AQ.")) {
-            headers["Authorization"] = `Bearer ${apiKey}`;
-        } else {
-            url += `?key=${apiKey}`;
-        }
-
-        const response = await fetch(url, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
+        // เรียกใช้งานผ่าน SDK หลักของ Google
+        const response = await ai.models.generateContent({
+            model: 'gemini-1.5-flash',
+            contents: prompt,
         });
 
-        const data = await response.json();
-        if (!response.ok) {
-            return res.status(500).json({ error: data.error?.message || "AI Connection error" });
-        }
-
-        res.json({ reply: data.candidates[0].content.parts[0].text });
+        res.json({ reply: response.text });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("AI Error:", err);
+        res.status(500).json({ error: err.message || "เกิดข้อผิดพลาดในการเชื่อมต่อระบบ AI" });
     }
 });
 
