@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-// 🤖 Endpoint สำหรับระบบ AI Chat
+// 🤖 Endpoint สำหรับ AI Chat
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt } = req.body;
@@ -45,8 +45,6 @@ app.post('/api/ai-chat', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-// (หากมี Endpoint ระบบชำระเงินหรือ SlipOK เดิม สามารถวางต่อตรงนี้ได้เลยครับ)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
