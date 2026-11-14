@@ -1,5 +1,5 @@
 // ==========================================
-// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์: กล่องดวงชะตา + คำถามด่วน + เช็กสิทธิ์)
+// ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์ (ฉบับสมบูรณ์: ซิงค์ฟอร์มทันที + คำถามด่วนทำงาน 100%)
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
@@ -56,23 +56,33 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ฟังก์ชันสร้างกล่องแยกข้อมูลดวงชะตา (เหมือนรูปที่ 2) แสดงผลที่หัวกล่องแชททันที
-function renderNatalProfileCard() {
+// 👤 ฟังก์ชันอัปเดตการ์ดข้อมูลดวงชะตา (ซิงค์อัตโนมัติทันทีเมื่อกรอกฟอร์มหรือกดคำนวณ)
+function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
 
-    const nameVal = document.getElementById('userName')?.value || "กฤศ สุขรา";
-    const dayVal = document.getElementById('birthDay')?.value || "26";
+    const dayEl = document.getElementById('birthDay');
+    const yearEl = document.getElementById('birthYearBE');
+
+    // ถ้ายังไม่ได้กรอกวัน/ปีเกิด ให้ซ่อนการ์ดไว้ (ปล่อยว่าง)
+    if (!dayEl || !yearEl || !dayEl.value || !yearEl.value || dayEl.value === "" || yearEl.value === "") {
+        const existingCard = document.getElementById('natal-profile-card');
+        if (existingCard) existingCard.remove();
+        return null;
+    }
+
+    const nameVal = document.getElementById('userName')?.value || "เจ้าชะตา";
+    const dayVal = dayEl.value;
     const monthSelect = document.getElementById('birthMonth');
-    const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "สิงหาคม") : "สิงหาคม";
-    const yearVal = document.getElementById('birthYearBE')?.value || "2534";
-    const hourVal = document.getElementById('birthHour24')?.value || "17";
-    const minVal = document.getElementById('birthMinute24')?.value || "54";
+    const monthVal = monthSelect ? (monthSelect.options[monthSelect.selectedIndex]?.text || "") : "";
+    const yearVal = yearEl.value;
+    const hourVal = document.getElementById('birthHour24')?.value || "00";
+    const minVal = document.getElementById('birthMinute24')?.value || "00";
 
     const birthStr = `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)`;
 
-    const sunSignText = document.getElementById('dispSunSign')?.innerText || "ราศีสิงห์";
-    const ascSignText = document.getElementById('dispAscendant')?.innerText || "ราศีมังกร";
+    const sunSignText = document.getElementById('dispSunSign')?.innerText || "-";
+    const ascSignText = document.getElementById('dispAscendant')?.innerText || "-";
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
@@ -120,8 +130,9 @@ async function handleInplaceAiChat(customText = null) {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return;
 
-    // แสดงกล่องแยกข้อมูลดวงชะตา
-    const profile = renderNatalProfileCard();
+    // อัปเดตและดึงข้อมูลการ์ดดวงชะตาปัจจุบัน
+    const profile = updateChatProfileCard();
+    if (!profile) return;
 
     const userText = customText !== null ? customText : (chatInputEl ? (chatInputEl.innerText ? chatInputEl.innerText.trim() : chatInputEl.value.trim()) : "");
 
@@ -188,11 +199,29 @@ function removeMessage(msgId) {
     if (el) el.remove();
 }
 
-// ผูก Event ปุ่มส่งและปุ่มคำถามด่วน
+// ผูก Event และซิงค์ข้อมูลแบบเรียลไทม์
 document.addEventListener('DOMContentLoaded', () => {
-    // แสดงกล่องข้อมูลดวงชะตาทันทีเมื่อโหลดหน้าเว็บ (หากมีการกรอกข้อมูลแล้ว)
-    setTimeout(renderNatalProfileCard, 400);
+    // 1. อัปเดตการ์ดดวงทันทีเมื่อมีการเปลี่ยนแปลงในฟอร์มวันเกิด
+    ['userName', 'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', updateChatProfileCard);
+            el.addEventListener('input', updateChatProfileCard);
+        }
+    });
 
+    // 2. อัปเดตการ์ดดวงทันทีเมื่อกดปุ่มคำนวณลัคนาพยากรณ์ (เช่น #main-submit-btn)
+    const mainSubmitBtn = document.getElementById('main-submit-btn');
+    if (mainSubmitBtn) {
+        mainSubmitBtn.addEventListener('click', () => {
+            setTimeout(updateChatProfileCard, 350);
+        });
+    }
+
+    // ลองอัปเดตการ์ดเผื่อมีข้อมูลเดิมค้างอยู่
+    setTimeout(updateChatProfileCard, 300);
+
+    // 3. ปุ่มส่งแชทและ Enter
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
 
@@ -212,18 +241,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⚡ ระบบดักคลิกปุ่มคำถามด่วน (Quick Questions / ชิปหัวข้อคำถามด้านบนช่องแชท) ให้ส่งข้อความเข้าแชททันที
+    // 4. ⚡ ดักจับคลิกปุ่มคำถามด่วน (Quick Questions เช่น การงาน/โยกย้าย, การเงิน/โชคลาภ ฯลฯ) ให้ทำงานได้ 100%
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('button, div, span');
-        if (chip) {
-            const questionText = chip.innerText ? chip.innerText.trim() : "";
-            // ตรวจสอบว่าเป็นปุ่มคำถามด่วน (การงาน, การเงิน, ความรัก, สุขภาพ)
-            if (questionText === "การงาน/โยกย้าย" || questionText === "การเงิน/โชคลาภ" || questionText === "ความรัก/คู่ครอง" || questionText === "สุขภาพ/ระวังตัว" ||
-                chip.classList.contains('quick-prompt-btn') || chip.classList.contains('quick-question-btn') || 
-                chip.classList.contains('quick-chip') || chip.classList.contains('suggestion-btn') || chip.classList.contains('chat-chip')) {
+        const btn = e.target.closest('button');
+        if (btn) {
+            const text = btn.innerText ? btn.innerText.trim() : "";
+            if (text && 
+                (text.includes('/') || text.includes('การงาน') || text.includes('การเงิน') || text.includes('ความรัก') || text.includes('สุขภาพ')) &&
+                !text.includes('ส่ง') && 
+                !text.includes('VIP') && 
+                !text.includes('สมัคร') && 
+                !text.includes('ดูดวงลัคนาเลย')) {
                 
                 e.preventDefault();
-                handleInplaceAiChat(questionText);
+                handleInplaceAiChat(text);
             }
         }
     });
