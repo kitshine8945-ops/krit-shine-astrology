@@ -2,10 +2,10 @@
 // ai-chat.js - ระบบแชทหมอดู AI สุริยยาตร์
 // ==========================================
 
-// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่ (รับฟรีจาก aistudio.google.com)
+// 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
 const INPLACE_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; 
 
-// ฟังก์ชันส่งข้อความแชทหลัก (รองรับทั้งพิมพ์เองและกดปุ่มด่วน)
+// ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat() {
   const chatInputEl = document.getElementById('chat-user-input');
   const messagesBox = document.getElementById('ai-chat-messages-box');
@@ -13,17 +13,19 @@ async function handleInplaceAiChat() {
 
   const userText = chatInputEl.innerText ? chatInputEl.innerText.trim() : "";
   
-  // ถ้าไม่มีข้อความ หรือเป็นข้อความ placeholder ให้ข้าม
   if (!userText || userText.startsWith("พิมพ์คำถามเรื่องดวง")) {
     return;
   }
 
-  // 🛑 1. ตรวจสอบว่าผู้ใช้งานกรอกข้อมูลวัน/เดือน/ปีเกิด บนหน้าเว็บหรือยัง
+  // 🛑 1. ตรวจสอบว่าผู้ใช้งานกรอกข้อมูลวัน/เดือน/ปีเกิด หรือยัง
   const birthYearCheck = document.getElementById('birth-year') || document.getElementById('yearInput') || document.getElementById('b-year') || document.getElementById('year');
   
   if (birthYearCheck && (!birthYearCheck.value || birthYearCheck.value === "")) {
-    alert("⚠️ รบกวนกรอกข้อมูลวัน เดือน ปีเกิด และกดคำนวณดวงชะตาก่อนเริ่มพูดคุยกับหมอดู AI ครับ");
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    alert("⚠️ รบกวนกรอกข้อมูล วัน/เดือน/ปีเกิด ที่หน้าแรกก่อนครับ");
+    
+    // เลื่อนหน้าจอพุ่งตรงไปที่ช่องกรอกวันเกิดทันที
+    birthYearCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    birthYearCheck.focus();
     return;
   }
 
@@ -47,11 +49,10 @@ async function handleInplaceAiChat() {
   userMsgDiv.textContent = userText;
   messagesBox.appendChild(userMsgDiv);
 
-  // เคลียร์ช่องพิมพ์ข้อความ
   chatInputEl.innerText = "";
   scrollChatToBottom();
 
-  // แสดงสถานะกำลังประมวลผลของ AI
+  // แสดงสถานะกำลังประมวลผล
   const loadingId = 'ai-loading-' + Date.now();
   const loadingDiv = document.createElement('div');
   loadingDiv.id = loadingId;
@@ -62,7 +63,6 @@ async function handleInplaceAiChat() {
   scrollChatToBottom();
 
   try {
-    // กำหนด System Prompt ให้ AI ทำหน้าที่เป็นหมอดูสุริยยาตร์
     const systemPrompt = `คุณคือหมอดู AI ผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตร์ของเว็บไซต์ Krit Shine Astrology จงทำนายดวงชะตาอย่างลึกซึ้ง แม่นยำ ชัดเจน ระบุช่วงเวลาเห็นผลตามหลักโหราศาสตร์ไทย ${birthInfo}`;
     
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${INPLACE_GEMINI_API_KEY}`, {
@@ -76,8 +76,6 @@ async function handleInplaceAiChat() {
     });
 
     const data = await response.json();
-    
-    // ลบข้อความกำลังโหลด
     removeInplaceMessage(loadingId);
 
     if (data && data.candidates && data.candidates[0].content.parts[0].text) {
@@ -103,13 +101,11 @@ async function handleInplaceAiChat() {
   scrollChatToBottom();
 }
 
-// ฟังก์ชันช่วยลบข้อความกำลังโหลด
 function removeInplaceMessage(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
-// ฟังก์ชันเลื่อนหน้าต่างแชทลงล่างสุดอัตโนมัติ
 function scrollChatToBottom() {
   const chatMessagesBox = document.getElementById('ai-chat-messages-box');
   if (chatMessagesBox) {
@@ -117,7 +113,6 @@ function scrollChatToBottom() {
   }
 }
 
-// ฟังก์ชันสำหรับรองรับปุ่มคำถามด่วน (Quick Prompt Chips)
 function sendQuickPrompt(text) {
   const chatInputEl = document.getElementById('chat-user-input');
   if (chatInputEl) {
