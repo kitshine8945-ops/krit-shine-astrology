@@ -8,8 +8,10 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-// เรียกใช้งาน SDK ทางการ (ระบบจะอ่าน GEMINI_API_KEY แบบ AQ... จาก Railway อัตโนมัติ)
-const ai = new GoogleGenAI();
+// กำหนดค่า SDK โดยดึง GEMINI_API_KEY จาก Railway โดยตรง
+const ai = new GoogleGenAI({ 
+    apiKey: process.env.GEMINI_API_KEY 
+});
 
 // 🤖 Endpoint สำหรับ AI Chat
 app.post('/api/ai-chat', async (req, res) => {
@@ -19,7 +21,6 @@ app.post('/api/ai-chat', async (req, res) => {
             return res.status(400).json({ error: "กรุณาระบุข้อความครับ" });
         }
 
-        // เรียกใช้งานผ่าน SDK หลักของ Google
         const response = await ai.models.generateContent({
             model: 'gemini-1.5-flash',
             contents: prompt,
