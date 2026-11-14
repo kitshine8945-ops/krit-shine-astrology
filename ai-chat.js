@@ -3,7 +3,7 @@
 // ==========================================
 
 // 🔑 ใส่ Gemini API Key ของคุณกฤศที่นี่
-const INPLACE_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"; 
+const INPLACE_GEMINI_API_KEY = "AQ.Ab8RN6LdeDop7HeNzt1DLVpVScdwB9wU9ORi0vKocXI7tkoBMQ";
 
 // ฟังก์ชันส่งข้อความแชทหลัก
 async function handleInplaceAiChat() {
