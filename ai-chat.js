@@ -8,7 +8,7 @@ const INPLACE_GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
 const INPLACE_GEMINI_MODEL = "gemini-1.5-flash";
 
 document.addEventListener('DOMContentLoaded', () => {
-  const chatInputEl = document.getElementById('ai-chat-input-box');
+  const chatInputEl = document.getElementById('chat-user-input');
   const chatMessagesBox = document.getElementById('ai-chat-messages-box');
 
   // กด Enter ในช่องพิมพ์เพื่อส่งข้อความได้ทันที
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function handleInplaceAiChat() {
-  const chatInputEl = document.getElementById('ai-chat-input-box');
+  const chatInputEl = document.getElementById('chat-user-input');
   const chatMessagesBox = document.getElementById('ai-chat-messages-box');
   if (!chatInputEl || !chatMessagesBox) return;
 
