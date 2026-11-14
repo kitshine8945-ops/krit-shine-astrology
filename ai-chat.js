@@ -1,5 +1,5 @@
 // ==========================================
-// 2. โค้ดฝั่งหน้าเว็บ (ai-chat.js) - สมบูรณ์พร้อมใช้งาน
+// 2. โค้ดฝั่งหน้าเว็บ (ai-chat.js) - ฉบับสมบูรณ์แก้ปัญหาค่า -
 // ==========================================
 
 // 🤖 ฟังก์ชันส่งคำถามไปที่ Backend ของเรา
@@ -17,7 +17,7 @@ async function callGeminiAI(userMessage) {
     return data.reply;
 }
 
-// 🔒 ตรวจสอบสถานะการล็อกอินและ VIP (ล็อกไว้ครบถ้วน)
+// 🔒 ตรวจสอบสถานะการล็อกอินและ VIP
 function checkVipStatus() {
     if (typeof currentUser !== 'undefined' && !currentUser) {
         alert("⚠️ กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกก่อนใช้งานหมอดู AI ครับ");
@@ -39,7 +39,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าผลลัพธ์ที่คำนวณแล้วจากหน้าเว็บ (กรองฟอร์มและดรอปดาวน์ออก 100%)
+// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าผลลัพธ์ (พร้อมระบบสั่งคำนวณอัตโนมัติหากค่ายังไม่มา)
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -57,51 +57,32 @@ function updateChatProfileCard() {
 
     const birthStr = (dayVal && yearVal) ? `${dayVal} ${monthVal} พ.ศ. ${yearVal} (${String(hourVal).padStart(2,'0')}:${String(minVal).padStart(2,'0')} น.)` : "ยังไม่ระบุวันเกิด";
     
-    const validSigns = ["เมษ", "พฤษภ", "เมถุน", "กรกฎ", "สิงห์", "กันย์", "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"];
+    // ดึงค่าจาก ID บนหน้าเว็บ
+    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
+                      document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
 
-    let sunSignText = "-";
-    let ascSignText = "-";
+    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
+                      document.getElementById('ascendant-sign')?.innerText?.trim() || 
+                      document.getElementById('lakhana')?.innerText?.trim() || "-";
 
-    // 1. ดึงจาก ID ที่หน้าเว็บหลักใช้แสดงผลผลลัพธ์โดยตรงก่อน
-    const dispSun = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim();
-    const dispAsc = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim();
-
-    if (dispSun && dispSun !== "-" && dispSun.length < 20) sunSignText = dispSun;
-    if (dispAsc && dispAsc !== "-" && dispAsc.length < 20) ascSignText = dispAsc;
-
-    // 2. หากยังไม่ได้ค่า ให้ค้นหาเฉพาะในส่วนผลลัพธ์ (ตัดฟอร์ม, select, input และ dropdown ออกเด็ดขาด)
-    if (sunSignText === "-" || ascSignText === "-") {
-        const elements = document.querySelectorAll('div, span, p, strong, b');
-        for (let el of elements) {
-            // ตัดฟอร์ม ช่องกรอก select input และการ์ดแชทออกทั้งหมด
-            if (el.closest('form') || el.closest('select') || el.closest('input') || el.querySelector('select, input') || el.id === 'natal-profile-card' || el.closest('#natal-profile-card')) continue;
-
-            const text = el.innerText ? el.innerText.trim() : "";
-
-            if (text.length > 0 && text.length < 50) {
-                if (sunSignText === "-" && (text.includes("ราศีเกิด") || text.includes("ราศี (อาทิตย์)"))) {
-                    for (let sign of validSigns) {
-                        if (text.includes(sign) && !text.includes("ลัคนา")) {
-                            sunSignText = "ราศี" + sign;
-                            break;
-                        }
-                    }
-                }
-
-                if (ascSignText === "-" && (text.includes("ลัคนสถิต") || text.includes("ลัคนาสถิต"))) {
-                    for (let sign of validSigns) {
-                        if (text.includes(sign)) {
-                            ascSignText = "ราศี" + sign;
-                            break;
-                        }
-                    }
-                }
-            }
+    // 🟢 ถ้าราศีหรือลัคนาเป็น "-" ให้ลองสั่งรันฟังก์ชันคำนวณหลักอัตโนมัติทันที
+    if ((sunSignText === "-" || ascSignText === "-") && typeof handleCalculate === 'function') {
+        try {
+            handleCalculate();
+            // ดึงค่าใหม่อีกรอบทันทีหลังคำนวณ
+            sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
+            ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || document.getElementById('ascendant-sign')?.innerText?.trim() || document.getElementById('lakhana')?.innerText?.trim() || "-";
+        } catch (e) {
+            console.error("Auto calc error:", e);
         }
     }
 
-    if (sunSignText !== "-" && !sunSignText.startsWith("ราศี")) sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
-    if (ascSignText !== "-" && !ascSignText.startsWith("ราศี")) ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
+    if (sunSignText !== "-" && !sunSignText.includes("ราศี")) {
+        sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
+    }
+    if (ascSignText !== "-" && !ascSignText.includes("ราศี")) {
+        ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
+    }
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
@@ -203,11 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ['userName', 'birthDay', 'birthMonth', 'birthYearBE', 'birthHour24', 'birthMinute24'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('change', updateChatProfileCard);
+            el.addEventListener('change', () => {
+                setTimeout(updateChatProfileCard, 200);
+            });
         }
     });
 
-    // ดักจับจังหวะการกดคำนวณหลัก เพื่อให้อัปเดตการ์ดแชทอัตโนมัติทันที
+    // ดักจับจังหวะการกดคำนวณหลัก เพื่ออัปเดตการ์ดแชทให้อัตโนมัติทันที
     setTimeout(() => {
         if (typeof window.handleCalculate === 'function' && !window._chatCalcHooked) {
             const originalCalc = window.handleCalculate;
@@ -219,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window._chatCalcHooked = true;
         }
         updateChatProfileCard();
-    }, 600);
+    }, 700);
 
     const sendBtn = document.getElementById('chat-send-btn') || document.querySelector('.chat-send-btn');
     const chatInputEl = document.getElementById('chat-user-input');
