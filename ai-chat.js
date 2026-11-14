@@ -39,7 +39,7 @@ function checkVipStatus() {
     return true;
 }
 
-// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าราศี/ลัคนาแบบสั้นและแม่นยำ
+// 👤 ซิงค์ข้อมูลดวงชะตาและดึงค่าราศีกับลัคนาจากหน้าเว็บอัตโนมัติแบบแม่นยำ
 function updateChatProfileCard() {
     const messagesBox = document.getElementById('ai-chat-messages-box');
     if (!messagesBox) return null;
@@ -59,30 +59,43 @@ function updateChatProfileCard() {
     
     const validSigns = ["เมษ", "พฤษภ", "เมถุน", "กรกฎ", "สิงห์", "กันย์", "ตุลย์", "พิจิก", "ธนู", "มังกร", "กุมภ์", "มีน"];
 
-    let sunSignText = "-";
-    let ascSignText = "-";
+    // 1. ดึงจาก ID พื้นฐาน
+    let sunSignText = document.getElementById('dispSunSign')?.innerText?.trim() || 
+                      document.getElementById('zodiac-sign')?.innerText?.trim() || "-";
 
-    // กวาดหาเฉพาะ Element สั้นๆ ที่ตรงกับชื่อราศีจริงๆ (จำกัดความยาวไม่เกิน 15 ตัวอักษร)
+    let ascSignText = document.getElementById('dispAscendant')?.innerText?.trim() || 
+                      document.getElementById('ascendant-sign')?.innerText?.trim() || 
+                      document.getElementById('lakhana')?.innerText?.trim() || "-";
+
+    // 2. กวาดสแกนหาข้อความราศีและลัคนาจากหน้าเว็บอัตโนมัติ
     const allElements = document.querySelectorAll('div, span, p, strong, b, td');
     for (let el of allElements) {
-        if (el.children.length > 1) continue; // ข้ามกล่องใหญ่
         const txt = el.innerText ? el.innerText.trim() : "";
         
-        if (txt.length > 0 && txt.length <= 15) {
+        // ค้นหาราศีเกิด
+        if (sunSignText === "-" || sunSignText.includes("-")) {
             for (let sign of validSigns) {
-                if (txt === sign || txt === "ราศี" + sign || txt === "ราศีสถิต" + sign) {
-                    if (sunSignText === "-" && !txt.includes("ลัคนา")) {
-                        sunSignText = txt.startsWith("ราศี") ? txt : "ราศี" + txt;
-                    }
+                if ((txt.includes("ราศี") || txt.includes("ราศีเกิด")) && txt.includes(sign) && !txt.includes("ลัคนา")) {
+                    sunSignText = "ราศี" + sign;
+                    break;
                 }
-                if (txt.includes("ลัคนา") && txt.includes(sign)) {
-                    if (ascSignText === "-") {
-                        ascSignText = "ราศี" + sign;
-                    }
+            }
+        }
+
+        // ค้นหาลัคนาสถิต
+        if (ascSignText === "-" || ascSignText.includes("-")) {
+            for (let sign of validSigns) {
+                if ((txt.includes("ลัคนา") || txt.includes("ลัคนาสถิต")) && txt.includes(sign)) {
+                    ascSignText = "ราศี" + sign;
+                    break;
                 }
             }
         }
     }
+
+    // จัดรูปแบบให้สวยงาม
+    if (sunSignText !== "-" && !sunSignText.startsWith("ราศี")) sunSignText = "ราศี" + sunSignText.replace("ราศี", "").trim();
+    if (ascSignText !== "-" && !ascSignText.startsWith("ราศี")) ascSignText = "ราศี" + ascSignText.replace("ราศี", "").trim();
 
     let cardDiv = document.getElementById('natal-profile-card');
     if (!cardDiv) {
