@@ -9,7 +9,7 @@ app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 🌟 เพิ่ม Endpoint ตรวจสอบสลิป SlipOK ตรงนี้ (ไม่กระทบระบบ AI ด้านล่าง)
+// 🌟 Endpoint ตรวจสอบสลิป SlipOK (แก้ไขให้ถูกต้องสมบูรณ์)
 app.post('/api/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
@@ -18,20 +18,25 @@ app.post('/api/verify-slip', async (req, res) => {
         }
 
         const slipOkKey = process.env.SLIPOK_API_KEY;
-        const branchId = process.env.SLIPOK_BRANCH_ID || "";
+        const branchId = process.env.SLIPOK_BRANCH_ID ? process.env.SLIPOK_BRANCH_ID.trim() : "";
 
         if (!slipOkKey) {
             return res.status(500).json({ success: false, error: "ยังไม่ได้ตั้งค่า SLIPOK_API_KEY ใน Railway Variables ครับ" });
         }
 
-        const response = await fetch(`https://api.slipok.com/api/v1/check/${branchId}`, {
+        // จัดการ URL กรณีมีหรือไม่มี Branch ID
+        const slipOkUrl = branchId 
+            ? `https://api.slipok.com/api/v1/check/${branchId}` 
+            : `https://api.slipok.com/api/v1/check`;
+
+        const response = await fetch(slipOkUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'x-authorization': slipOkKey
             },
             body: JSON.stringify({
-                files: imageBase64,
+                image: imageBase64, // 🌟 แก้จาก files เป็น image ตามมาตรฐาน SlipOK API
                 log: true
             })
         });
@@ -76,7 +81,7 @@ app.post('/api/ai-chat', async (req, res) => {
 คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" ของคุณกฤศ สุขรา 
 กฎเหล็กเด็ดขาดในการตอบแชท:
 1. ห้ามเกริ่นยาว ห้ามใช้สำนวนน้ำท่วมทุ่ง หรือข้อความเวิ่นเว้อเด็ดขาด! ตอบให้สั้น กระชับ คมชัด และตรงประเด็นที่สุด
-​2. ห้ามแต่งเติมหรือมโนตำแหน่งดาวเด็ดขาด! ต้องวิเคราะห์และพยากรณ์โดยอิงจาก "เกณฑ์องศา, มุมสัมพันธ์ดาวจร (Transit Aspects), และภพเรือน" ตามข้อมูลดิบด้านล่างนี้เท่านั้น:
+2. ห้ามแต่งเติมหรือมโนตำแหน่งดาวเด็ดขาด! ต้องวิเคราะห์และพยากรณ์โดยอิงจาก "เกณฑ์องศา, มุมสัมพันธ์ดาวจร (Transit Aspects), และภพเรือน" ตามข้อมูลดิบด้านล่างนี้เท่านั้น:
 ---
 [ข้อมูลมุมสัมพันธ์ดาวจร & ระยะองศาปัจจุบันของเจ้าชะตา]
 ${aspectsString}
