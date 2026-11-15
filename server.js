@@ -9,25 +9,28 @@ app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 1. Endpoint ตรวจสอบสลิป (เพิ่มเข้ามาเพื่อให้ Express รับคำขอจากหน้าเว็บได้ถูกต้อง)
+// 1. Endpoint ตรวจสอบสลิป (เพิ่มระบบ Log เพื่อให้เช็ก Error ใน Railway ได้ง่ายขึ้น)
 app.post('/api/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
 
         if (!imageBase64) {
+            console.error("Verify Slip Error: ไม่พบข้อมูล imageBase64 ใน request body");
             return res.status(400).json({ success: false, message: 'ไม่พบข้อมูลรูปภาพสลิป' });
         }
 
-        // แปลงภาพ Base64 เป็น Binary Buffer
+        // แปลงภาพ Base64 เป็น Binary Buffer ตามโค้ดเดิมของพี่กฤศ
         const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
 
-        // จัดเตรียม FormData ส่งไปยัง SlipOK ตามค่าดั้งเดิมของพี่กฤศ
+        // จัดเตรียม FormData ส่งไปยัง SlipOK
         const formData = new FormData();
         const blob = new Blob([buffer], { type: 'image/jpeg' });
         formData.append('files', blob, 'slip.jpg');
 
-        // ส่งตรวจสอบกับ SlipOK API
+        console.log("กำลังส่งสลิปไปตรวจสอบที่ SlipOK API...");
+
+        // ส่งตรวจสอบกับ SlipOK API ตามค่าดั้งเดิมของพี่กฤศ
         const response = await fetch('https://api.slipok.com/api/line/apikey/77524', {
             method: 'POST',
             headers: {
@@ -37,15 +40,17 @@ app.post('/api/verify-slip', async (req, res) => {
         });
 
         const data = await response.json();
+        console.log("SlipOK Response Status:", response.status, data);
+
         return res.status(response.status).json(data);
 
     } catch (error) {
-        console.error('Error verifying slip:', error);
+        console.error('Error verifying slip (Catch):', error);
         return res.status(500).json({ success: false, message: error.message || 'Server error' });
     }
 });
 
-// 2. ระบบ AI Chat ของพี่กฤศ (ใช้ 'gemini-3.8-flash' ตัวเดิมเป๊ะๆ ไม่เปลี่ยนแปลง)
+// 2. ระบบ AI Chat ของพี่กฤศ (ใช้ 'gemini-3.8-flash' ตัวเดิมเป๊ะๆ ปลอดภัย 100% ไม่แตะต้องใดๆ)
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt, currentSigns, transitDate, transitAspects } = req.body;
@@ -64,6 +69,7 @@ app.post('/api/ai-chat', async (req, res) => {
         const signsJsonString = currentSigns ? JSON.stringify(currentSigns, null, 2) : "ไม่ได้ระบุตำแหน่งดาว";
         const aspectsString = transitAspects ? transitAspects : "ไม่มีข้อมูลมุมดาวจรพิเศษในขณะนี้";
 
+        // ล็อก System Instruction ให้ AI ตอบสั้น ตรงประเด็น และยึดองศา/มุมดาวจริงเท่านั้น
         const systemInstructionText = `
 คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" ของคุณกฤศ สุขรา 
 กฎเหล็กเด็ดขาดในการตอบแชท:
