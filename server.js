@@ -3,63 +3,51 @@ import cors from 'cors';
 
 const app = express();
 
-// 🌟 ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
+// ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 🌟 Endpoint ตรวจสอบสลิป SlipOK (แก้ไขให้ถูกต้องสมบูรณ์)
+// 1. Endpoint ตรวจสอบสลิป SlipOK (ทำงานบน Express โดยตรง)
 app.post('/api/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
+
         if (!imageBase64) {
-            return res.status(400).json({ success: false, error: "กรุณาแนบรูปภาพสลิป" });
+            return res.status(400).json({ success: false, message: 'ไม่พบข้อมูลรูปภาพสลิป' });
         }
 
-        const slipOkKey = process.env.SLIPOK_API_KEY;
-        const branchId = process.env.SLIPOK_BRANCH_ID ? process.env.SLIPOK_BRANCH_ID.trim() : "";
+        // แปลงภาพ Base64 เป็น Binary Buffer
+        const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
 
-        if (!slipOkKey) {
-            return res.status(500).json({ success: false, error: "ยังไม่ได้ตั้งค่า SLIPOK_API_KEY ใน Railway Variables ครับ" });
-        }
+        // จัดเตรียม FormData ส่งไปยัง SlipOK
+        const formData = new FormData();
+        const blob = new Blob([buffer], { type: 'image/jpeg' });
+        formData.append('files', blob, 'slip.jpg');
 
-        // จัดการ URL กรณีมีหรือไม่มี Branch ID
-        const slipOkUrl = branchId 
-            ? `https://api.slipok.com/api/v1/check/${branchId}` 
-            : `https://api.slipok.com/api/v1/check`;
-
-        const response = await fetch(slipOkUrl, {
+        // ส่งตรวจสอบกับ SlipOK API ตามที่พี่กฤศตั้งค่าไว้
+        const response = await fetch('https://api.slipok.com/api/line/apikey/77524', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'x-authorization': slipOkKey
+                'x-authorization': 'SLIPOK646DDOC'
             },
-            body: JSON.stringify({
-                image: imageBase64, // 🌟 แก้จาก files เป็น image ตามมาตรฐาน SlipOK API
-                log: true
-            })
+            body: formData
         });
 
         const data = await response.json();
+        return res.status(response.status).json(data);
 
-        if (response.ok && data.success) {
-            return res.json({ success: true, data: data.data });
-        } else {
-            return res.status(400).json({ 
-                success: false, 
-                error: data.message || "ตรวจสอบสลิปไม่สำเร็จ" 
-            });
-        }
-    } catch (err) {
-        console.error("Verify Slip Error:", err);
-        res.status(500).json({ success: false, error: err.message });
+    } catch (error) {
+        console.error('Error verifying slip:', error);
+        return res.status(500).json({ success: false, message: error.message || 'Server error' });
     }
 });
 
+// 2. Endpoint สำหรับ AI Chat (สุริยยาตร์เชิงลึก)
 app.post('/api/ai-chat', async (req, res) => {
     try {
-        // 🌟 รับข้อมูล prompt, ตำแหน่งดาว (currentSigns) และคำทำนายมุมดาว (transitAspects) จากหน้าเว็บ
         const { prompt, currentSigns, transitDate, transitAspects } = req.body;
         if (!prompt) {
             return res.status(400).json({ error: "กรุณาระบุข้อความครับ" });
@@ -71,12 +59,9 @@ app.post('/api/ai-chat', async (req, res) => {
         }
 
         const targetDateStr = transitDate || new Date().toISOString().split('T')[0];
-
-        // จัดรูปแบบข้อมูลดิบจากหน้าเว็บ
         const signsJsonString = currentSigns ? JSON.stringify(currentSigns, null, 2) : "ไม่ได้ระบุตำแหน่งดาว";
         const aspectsString = transitAspects ? transitAspects : "ไม่มีข้อมูลมุมดาวจรพิเศษในขณะนี้";
 
-        // 🌟 ล็อก System Instruction ให้ AI ตอบสั้น ตรงประเด็น และยึดองศา/มุมดาวจริงเท่านั้น
         const systemInstructionText = `
 คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" ของคุณกฤศ สุขรา 
 กฎเหล็กเด็ดขาดในการตอบแชท:
@@ -93,7 +78,7 @@ ${signsJsonString}
 `;
 
         const modelsToTry = [
-            'gemini-3.8-flash',
+            'gemini-2.0-flash',
             'gemini-1.5-flash'
         ];
 
