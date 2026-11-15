@@ -1,18 +1,51 @@
 import express from 'express';
 import cors from 'cors';
-import verifySlipRouter from './verify-slip.js'; // 🌟 ดึงไฟล์แยกเข้ามาใช้ตรงนี้
 
 const app = express();
 
+// ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 🌟 ให้ Express วิ่งไปใช้ระบบตรวจสอบสลิปจากไฟล์ที่แยกไว้
-app.use('/api', verifySlipRouter);
+// 1. ระบบตรวจสอบสลิป (รวมอยู่ในไฟล์เดียว ตัดปัญหาหาไฟล์ไม่เจอ)
+app.post('/api/verify-slip', async (req, res) => {
+    try {
+        const { imageBase64 } = req.body;
 
-// 🌟 ระบบ AI Chat ของพี่กฤศ (ใช้ 'gemini-3.8-flash' ตัวเดิม ปลอดภัย 100% ไม่แตะต้องใดๆ)
+        if (!imageBase64) {
+            return res.status(400).json({ success: false, message: 'ไม่พบข้อมูลรูปภาพสลิป' });
+        }
+
+        // แปลงภาพ Base64 เป็น Binary Buffer (โค้ดดั้งเดิมของพี่กฤศ)
+        const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        // จัดเตรียม FormData ส่งไปยัง SlipOK
+        const formData = new FormData();
+        const blob = new Blob([buffer], { type: 'image/jpeg' });
+        formData.append('files', blob, 'slip.jpg');
+
+        // ส่งตรวจสอบกับ SlipOK API
+        const response = await fetch('https://api.slipok.com/api/line/apikey/77524', {
+            method: 'POST',
+            headers: {
+                'x-authorization': 'SLIPOK646DDOC'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        return res.status(response.status).json(data);
+
+    } catch (error) {
+        console.error('Error verifying slip:', error);
+        return res.status(500).json({ success: false, message: error.message || 'Server error' });
+    }
+});
+
+// 2. ระบบ AI Chat ของพี่กฤศ (ใช้ 'gemini-3.8-flash' ตัวเดิมเป๊ะๆ ปลอดภัย 100% ไม่เปลี่ยนแปลงใดๆ)
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt, currentSigns, transitDate, transitAspects } = req.body;
