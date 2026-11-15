@@ -3,9 +3,54 @@ import cors from 'cors';
 
 const app = express();
 
-app.use(express.json());
+// 🌟 ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
+
+// 🌟 เพิ่ม Endpoint ตรวจสอบสลิป SlipOK ตรงนี้ (ไม่กระทบระบบ AI ด้านล่าง)
+app.post('/api/verify-slip', async (req, res) => {
+    try {
+        const { imageBase64 } = req.body;
+        if (!imageBase64) {
+            return res.status(400).json({ success: false, error: "กรุณาแนบรูปภาพสลิป" });
+        }
+
+        const slipOkKey = process.env.SLIPOK_API_KEY;
+        const branchId = process.env.SLIPOK_BRANCH_ID || "";
+
+        if (!slipOkKey) {
+            return res.status(500).json({ success: false, error: "ยังไม่ได้ตั้งค่า SLIPOK_API_KEY ใน Railway Variables ครับ" });
+        }
+
+        const response = await fetch(`https://api.slipok.com/api/v1/check/${branchId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-authorization': slipOkKey
+            },
+            body: JSON.stringify({
+                files: imageBase64,
+                log: true
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            return res.json({ success: true, data: data.data });
+        } else {
+            return res.status(400).json({ 
+                success: false, 
+                error: data.message || "ตรวจสอบสลิปไม่สำเร็จ" 
+            });
+        }
+    } catch (err) {
+        console.error("Verify Slip Error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 app.post('/api/ai-chat', async (req, res) => {
     try {
@@ -31,7 +76,7 @@ app.post('/api/ai-chat', async (req, res) => {
 คุณคือผู้เชี่ยวชาญโหราศาสตร์ไทยระบบสุริยยาตรประจำเว็บไซต์ "Krit Shine Astrology" ของคุณกฤศ สุขรา 
 กฎเหล็กเด็ดขาดในการตอบแชท:
 1. ห้ามเกริ่นยาว ห้ามใช้สำนวนน้ำท่วมทุ่ง หรือข้อความเวิ่นเว้อเด็ดขาด! ตอบให้สั้น กระชับ คมชัด และตรงประเด็นที่สุด
-2. ห้ามแต่งเติมหรือมโนตำแหน่งดาวเด็ดขาด! ต้องวิเคราะห์และพยากรณ์โดยอิงจาก "เกณฑ์องศา, มุมสัมพันธ์ดาวจร (Transit Aspects), และภพเรือน" ตามข้อมูลดิบด้านล่างนี้เท่านั้น:
+​2. ห้ามแต่งเติมหรือมโนตำแหน่งดาวเด็ดขาด! ต้องวิเคราะห์และพยากรณ์โดยอิงจาก "เกณฑ์องศา, มุมสัมพันธ์ดาวจร (Transit Aspects), และภพเรือน" ตามข้อมูลดิบด้านล่างนี้เท่านั้น:
 ---
 [ข้อมูลมุมสัมพันธ์ดาวจร & ระยะองศาปัจจุบันของเจ้าชะตา]
 ${aspectsString}
