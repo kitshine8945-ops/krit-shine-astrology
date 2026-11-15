@@ -1,17 +1,8 @@
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '10mb',
-        },
-    },
-};
+import express from 'express';
 
-export default async function handler(req, res) {
-    // กำหนดให้รับเฉพาะ HTTP POST
-    if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, message: 'Method Not Allowed' });
-    }
+const router = express.Router();
 
+router.post('/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
 
@@ -19,7 +10,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ success: false, message: 'ไม่พบข้อมูลรูปภาพสลิป' });
         }
 
-        // แปลงภาพ Base64 เป็น Binary Buffer
+        // แปลงภาพ Base64 เป็น Binary Buffer (โค้ดดั้งเดิมของพี่กฤศ)
         const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
 
@@ -44,4 +35,6 @@ export default async function handler(req, res) {
         console.error('Error verifying slip:', error);
         return res.status(500).json({ success: false, message: error.message || 'Server error' });
     }
-}
+});
+
+export default router;
