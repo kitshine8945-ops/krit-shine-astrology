@@ -3,13 +3,13 @@ import cors from 'cors';
 
 const app = express();
 
-// 🌟 ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
+// ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 1. Endpoint ตรวจสอบสลิป (ใช้โค้ด FormData และ Endpoint ดั้งเดิมของพี่กฤศ)
+// 1. Endpoint ตรวจสอบสลิป (เพิ่มเข้ามาเพื่อให้ Express รับคำขอจากหน้าเว็บได้ถูกต้อง)
 app.post('/api/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
@@ -22,12 +22,12 @@ app.post('/api/verify-slip', async (req, res) => {
         const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
 
-        // จัดเตรียม FormData ส่งไปยัง SlipOK
+        // จัดเตรียม FormData ส่งไปยัง SlipOK ตามค่าดั้งเดิมของพี่กฤศ
         const formData = new FormData();
         const blob = new Blob([buffer], { type: 'image/jpeg' });
         formData.append('files', blob, 'slip.jpg');
 
-        // ส่งตรวจสอบกับ SlipOK API ตามค่าดั้งเดิมที่ถูกต้อง
+        // ส่งตรวจสอบกับ SlipOK API
         const response = await fetch('https://api.slipok.com/api/line/apikey/77524', {
             method: 'POST',
             headers: {
@@ -45,7 +45,7 @@ app.post('/api/verify-slip', async (req, res) => {
     }
 });
 
-// 2. Endpoint สำหรับ AI Chat (ใช้ 'gemini-3.8-flash' ตามที่พี่กฤศต้องการเป๊ะๆ)
+// 2. ระบบ AI Chat ของพี่กฤศ (ใช้ 'gemini-3.8-flash' ตัวเดิมเป๊ะๆ ไม่เปลี่ยนแปลง)
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt, currentSigns, transitDate, transitAspects } = req.body;
@@ -59,6 +59,8 @@ app.post('/api/ai-chat', async (req, res) => {
         }
 
         const targetDateStr = transitDate || new Date().toISOString().split('T')[0];
+
+        // จัดรูปแบบข้อมูลดิบจากหน้าเว็บ
         const signsJsonString = currentSigns ? JSON.stringify(currentSigns, null, 2) : "ไม่ได้ระบุตำแหน่งดาว";
         const aspectsString = transitAspects ? transitAspects : "ไม่มีข้อมูลมุมดาวจรพิเศษในขณะนี้";
 
