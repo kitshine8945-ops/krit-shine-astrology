@@ -3,13 +3,13 @@ import cors from 'cors';
 
 const app = express();
 
-// ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่
+// 🌟 ขยายขนาดการรับข้อมูล JSON เพื่อรองรับรูปสลิป Base64 ขนาดใหญ่ไม่ให้พัง
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
 app.use(cors());
 app.use(express.static('.'));
 
-// 1. Endpoint ตรวจสอบสลิป SlipOK (ทำงานบน Express โดยตรง)
+// 1. Endpoint ตรวจสอบสลิป (ใช้โค้ด FormData และ Endpoint ดั้งเดิมของพี่กฤศ)
 app.post('/api/verify-slip', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
@@ -27,7 +27,7 @@ app.post('/api/verify-slip', async (req, res) => {
         const blob = new Blob([buffer], { type: 'image/jpeg' });
         formData.append('files', blob, 'slip.jpg');
 
-        // ส่งตรวจสอบกับ SlipOK API ตามที่พี่กฤศตั้งค่าไว้
+        // ส่งตรวจสอบกับ SlipOK API ตามค่าดั้งเดิมที่ถูกต้อง
         const response = await fetch('https://api.slipok.com/api/line/apikey/77524', {
             method: 'POST',
             headers: {
@@ -45,7 +45,7 @@ app.post('/api/verify-slip', async (req, res) => {
     }
 });
 
-// 2. Endpoint สำหรับ AI Chat (สุริยยาตร์เชิงลึก)
+// 2. Endpoint สำหรับ AI Chat (ใช้ 'gemini-3.8-flash' ตามที่พี่กฤศต้องการเป๊ะๆ)
 app.post('/api/ai-chat', async (req, res) => {
     try {
         const { prompt, currentSigns, transitDate, transitAspects } = req.body;
@@ -78,7 +78,7 @@ ${signsJsonString}
 `;
 
         const modelsToTry = [
-            'gemini-2.0-flash',
+            'gemini-3.8-flash',
             'gemini-1.5-flash'
         ];
 
